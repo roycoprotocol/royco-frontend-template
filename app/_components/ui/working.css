@@ -1,0 +1,4 @@
+.working-modal-box {
+  border-radius: 0.75rem;
+  background: var(--Base-White, #fff);
+}

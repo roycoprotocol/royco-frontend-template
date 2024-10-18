@@ -1,0 +1,41 @@
+.benefits-title {
+  color: #000;
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.benefits-subtitle {
+  color: #000;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.benefits-modal-title {
+  color: #000;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.benefits-modal-description {
+  width: 15.99213rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 1.19869rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.024rem;
+}
+
+.benefits-modal-container {
+  display: flex;
+  width: 19.875rem;
+  height: 23.5rem;
+  flex-direction: column;
+  align-items: start;
+}

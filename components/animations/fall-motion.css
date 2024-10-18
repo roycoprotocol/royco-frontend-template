@@ -1,0 +1,12 @@
+.blur-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
+  filter: blur(12px);
+}
+
+.blur-animation {
+  backdrop-filter: blur(12px);
+}

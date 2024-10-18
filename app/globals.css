@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.animated-element {
+  will-change: transform, opacity;
+}
+
+:root {
+  --animation-duration: 0.8s;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  width: 0px;
+  height: 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  width: 0px;
+  height: 0px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  width: 0px;
+  height: 0px;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.ping-shadow {
+  box-shadow:
+    0 4px 4px 0 rgba(0, 0, 0, 0.25),
+    /* Drop Shadow */ inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2); /* Inner Shadow */
+}
+
+@layer base {
+  :root {
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer components {
+  .text-nav-link {
+    @apply font-gt text-[1.09375rem] font-300 leading-[1.53125rem];
+  }
+
+  button {
+    @apply focus:appearance-none focus:outline-none focus:outline focus:ring-0;
+  }
+
+  .hero {
+    @apply font-ortica text-5xl font-light tracking-[-4%] lg:text-[4rem];
+  }
+
+  .heading-1 {
+    @apply font-ortica text-[4rem] font-light tracking-[-4%];
+  }
+
+  .heading-2 {
+    @apply font-ortica text-4xl font-light tracking-[-2%] md:text-5xl;
+  }
+
+  .heading-3 {
+    @apply font-ortica text-4xl font-light;
+  }
+
+  .subtitle-1 {
+    @apply font-gt text-xl font-medium;
+  }
+
+  .subtitle-2 {
+    @apply font-gt text-base font-medium;
+  }
+
+  .body-1 {
+    @apply font-gt text-lg font-light md:text-xl;
+  }
+
+  .body-2 {
+    @apply font-gt text-sm font-light md:text-base;
+  }
+
+  .money-1 {
+    @apply font-gt text-[2.5rem] font-light;
+  }
+
+  .money-2 {
+    @apply font-gt text-[2rem] font-light;
+  }
+
+  .money-3 {
+    @apply font-gt text-[1.45rem] font-light md:text-[1.75rem];
+  }
+
+  .caption {
+    @apply font-gt text-xs font-light md:text-sm;
+  }
+
+  .badge {
+    @apply font-gt text-[0.75rem] font-normal;
+  }
+}
+
+@keyframes cycleOpacity {
+  0%,
+  100% {
+    fill: rgba(142, 142, 147, 1);
+  }
+  14% {
+    fill: rgba(142, 142, 147, 0.87);
+  }
+  28% {
+    fill: rgba(142, 142, 147, 0.75);
+  }
+  42% {
+    fill: rgba(142, 142, 147, 0.63);
+  }
+  56% {
+    fill: rgba(142, 142, 147, 0.51);
+  }
+  70% {
+    fill: rgba(142, 142, 147, 0.39);
+  }
+  84% {
+    fill: rgba(142, 142, 147, 0.27);
+  }
+}
+
+.spinner-path {
+  animation: cycleOpacity var(--animation-duration) linear infinite;
+}
+
+.spinner-path:nth-child(1) {
+  animation-delay: calc(var(--animation-duration) * -0 / 8);
+}
+.spinner-path:nth-child(2) {
+  animation-delay: calc(var(--animation-duration) * -1 / 8);
+}
+.spinner-path:nth-child(3) {
+  animation-delay: calc(var(--animation-duration) * -2 / 8);
+}
+.spinner-path:nth-child(4) {
+  animation-delay: calc(var(--animation-duration) * -3 / 8);
+}
+.spinner-path:nth-child(5) {
+  animation-delay: calc(var(--animation-duration) * -4 / 8);
+}
+.spinner-path:nth-child(6) {
+  animation-delay: calc(var(--animation-duration) * -5 / 8);
+}
+.spinner-path:nth-child(7) {
+  animation-delay: calc(var(--animation-duration) * -6 / 8);
+}
+.spinner-path:nth-child(8) {
+  animation-delay: calc(var(--animation-duration) * -7 / 8);
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white; /* Ensure the header has a background color */
+  z-index: 10; /* Ensure the header is above the table body */
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
+}
+
+.blur-edges {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    white 24px,
+    white calc(100% - 24px),
+    transparent calc(100%)
+  );
+}
+
+.blur-edges-white-1 {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    white 4px,
+    white calc(100% - 4px),
+    transparent calc(100%)
+  );
+}

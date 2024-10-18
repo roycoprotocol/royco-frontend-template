@@ -1,0 +1,43 @@
+.partners-title {
+  color: #000;
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.partners-subtitle {
+  color: #606055;
+
+  /* Body 1 */
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 140%; /* 1.75rem */
+}
+
+.partners-left-block {
+  border-radius: 0.3125rem;
+  background: #f7f7f6;
+}
+
+.partners-right-block {
+  border-radius: 0.3125rem;
+  background: #fff;
+}
+
+.partners-name {
+  color: #606055;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.3125rem; /* 105% */
+}
+
+.partners-association {
+  color: #2a2a27;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.3125rem; /* 105% */
+}
