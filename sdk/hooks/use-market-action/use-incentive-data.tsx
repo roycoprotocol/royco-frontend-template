@@ -29,6 +29,7 @@ export const useIncentivesData = ({
       token_amount: number;
       per_input_token: number;
       annual_change_ratio: number;
+      token_amount_usd: number;
     }
   > = [];
 
@@ -48,7 +49,7 @@ export const useIncentivesData = ({
       const input_token_data = getSupportedToken(
         market.input_token_id as string
       );
-      const input_token_raw_amount = quantity as string;
+      const input_token_raw_amount = (quantity ?? "0") as string;
       const input_token_token_amount = parseFloat(
         ethers.utils.formatUnits(
           input_token_raw_amount,
@@ -97,6 +98,7 @@ export const useIncentivesData = ({
         ...incentive_token_data,
         raw_amount: incentive_token_raw_amount,
         token_amount: incentive_token_token_amount,
+        token_amount_usd: incentive_token_token_amount_usd,
         per_input_token,
         annual_change_ratio,
       };

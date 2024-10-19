@@ -499,7 +499,7 @@ export const useContractOptions = ({
                 chainId: chain_id,
                 address: interactionContractAddress,
                 tokenIds: tokenIds || [],
-                existingTokenIds: market.incentive_ids || [],
+                existingTokenIds: market.base_incentive_ids || [],
               });
 
             const setRewardTxOptions: TransactionOptionsType[] =
@@ -510,7 +510,8 @@ export const useContractOptions = ({
                 tokenAmounts: incentive_token_amounts as string[],
                 startTimestamps: incentive_start_timestamps as string[],
                 endTimestamps: incentive_end_timestamps as string[],
-                existingTokenIds: market.incentive_ids || [],
+                existingTokenIds: market.base_incentive_ids || [],
+                existingTokenAmounts: market.base_incentive_amounts || [],
                 frontendFeeRecipient,
               });
 

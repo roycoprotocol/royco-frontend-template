@@ -24,6 +24,9 @@ import { useTokenIds } from "./use-token-ids";
 import { useIncentivesData } from "./use-incentive-data";
 import { useContractOptions } from "./use-contract-options";
 import { useTokenAllowance } from "../use-token-allowance";
+import { useReadVaultPreview } from "../use-read-vault-preview";
+import { EnrichedMarketDataType } from "@/sdk/queries";
+import { MarketType } from "@/store";
 
 export const useMarketAction = ({
   chain_id,
@@ -113,6 +116,17 @@ export const useMarketAction = ({
   // let action_incentive_token_amounts: string[] = [];
   let writeContractOptions: TransactionOptionsType[] = [];
 
+  const propsReadVaultPreview = useReadVaultPreview({
+    market: market as EnrichedMarketDataType,
+    quantity: quantity ?? "0",
+    enabled:
+      enabled &&
+      isValid &&
+      !!market &&
+      !propsReadMarket.isLoading &&
+      !!propsReadMarket.data,
+  });
+
   /**
    * Fetch Market Offers
    *
@@ -147,15 +161,26 @@ export const useMarketAction = ({
       !!market &&
       !propsReadMarket.isLoading &&
       !!propsReadMarket.data &&
-      !propsMarketOffers.isLoading,
+      !propsMarketOffers.isLoading &&
+      !propsReadVaultPreview.isLoading,
     market_type,
     market,
     user_type,
     offer_type,
     propsMarketOffers,
     propsReadMarket,
-    incentive_token_ids,
-    incentive_token_amounts,
+    incentive_token_ids:
+      market_type === RoycoMarketType.vault.id &&
+      user_type === RoycoMarketUserType.ap.id &&
+      offer_type === RoycoMarketOfferType.market.id
+        ? propsReadVaultPreview.incentive_token_ids
+        : incentive_token_ids,
+    incentive_token_amounts:
+      market_type === RoycoMarketType.vault.id &&
+      user_type === RoycoMarketUserType.ap.id &&
+      offer_type === RoycoMarketOfferType.market.id
+        ? propsReadVaultPreview.incentive_token_amounts
+        : incentive_token_amounts,
   });
 
   // Get token quotes

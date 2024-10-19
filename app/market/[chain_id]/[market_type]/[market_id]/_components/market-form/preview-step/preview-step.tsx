@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import {
   BASE_LABEL_BORDER,
   BASE_MARGIN_TOP,
@@ -18,6 +18,7 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import {
   MarketOfferType,
   MarketSteps,
+  MarketType,
   MarketUserType,
   useMarketManager,
 } from "@/store";
@@ -205,6 +206,9 @@ export const PreviewStep = React.forwardRef<
               : "Offered"}
         </SecondaryLabel>
 
+        {/**
+         * Incentive Table
+         */}
         <div className="flex h-fit shrink-0 flex-col">
           {!!incentivesData &&
             incentivesData.map((incentive, index) => {
@@ -223,52 +227,109 @@ export const PreviewStep = React.forwardRef<
                     <SecondaryLabel className="font-light text-black">
                       +
                       {Intl.NumberFormat("en-US", {
-                        style: "percent",
+                        style:
+                          marketMetadata.market_type === MarketType.vault.id &&
+                          userType === MarketUserType.ip.id &&
+                          marketForm.watch("offer_type") ===
+                            MarketOfferType.limit.id
+                            ? "decimal"
+                            : "percent",
                         notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      }).format(incentive.annual_change_ratio)}
+                      }).format(
+                        marketMetadata.market_type === MarketType.vault.id &&
+                          userType === MarketUserType.ip.id &&
+                          marketForm.watch("offer_type") ===
+                            MarketOfferType.limit.id
+                          ? incentive.token_amount
+                          : incentive.annual_change_ratio / 100
+                      )}
                     </SecondaryLabel>
-                    <TertiaryLabel>
-                      (
-                      {Intl.NumberFormat("en-US", {
-                        style: "decimal",
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(incentive.per_input_token)}{" "}
-                      {incentive.symbol.toUpperCase()} / 1{" "}
-                      {currentMarketData?.input_token_data.symbol.toUpperCase()}
-                      )
-                    </TertiaryLabel>
+
+                    {marketMetadata.market_type === MarketType.vault.id &&
+                    userType === MarketUserType.ip.id &&
+                    marketForm.watch("offer_type") ===
+                      MarketOfferType.limit.id ? (
+                      <TertiaryLabel>
+                        (
+                        {Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(incentive.token_amount_usd)}
+                        )
+                      </TertiaryLabel>
+                    ) : (
+                      <TertiaryLabel>
+                        (
+                        {Intl.NumberFormat("en-US", {
+                          style: "decimal",
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(incentive.per_input_token)}{" "}
+                        {incentive.symbol.toUpperCase()} / 1{" "}
+                        {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                        )
+                      </TertiaryLabel>
+                    )}
                   </div>
                 </div>
               );
             })}
 
+          {/**
+           * Indicator for empty incentives
+           */}
           {incentivesData.length === 0 && (
             <AlertIndicator className="border-b border-divider">
               No incentives available
             </AlertIndicator>
           )}
 
+          {/**
+           * Net/Total Indicator
+           */}
           {!!incentivesData && (
             <div className="flex w-full flex-row items-center justify-between py-3">
-              <SecondaryLabel className="text-success">Net AIP</SecondaryLabel>
+              <SecondaryLabel className="text-success">
+                {`${userType === MarketUserType.ap.id ? "Net AIP" : "Net Incentives"}`}
+              </SecondaryLabel>
 
               <div className="flex w-fit flex-col items-end text-right">
                 <SecondaryLabel className="text-black">
                   +
-                  {Intl.NumberFormat("en-US", {
-                    style: "percent",
-                    notation: "compact",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }).format(
-                    incentivesData.reduce(
-                      (acc, incentive) => acc + incentive.annual_change_ratio,
-                      0
-                    )
-                  )}
+                  {marketMetadata.market_type === MarketType.vault.id &&
+                  userType === MarketUserType.ip.id &&
+                  marketForm.watch("offer_type") === MarketOfferType.limit.id
+                    ? Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }).format(
+                        incentivesData.reduce(
+                          (acc, incentive) => acc + incentive.token_amount_usd,
+                          0
+                        )
+                      )
+                    : Intl.NumberFormat("en-US", {
+                        style: "decimal",
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }).format(
+                        incentivesData.reduce(
+                          (acc, incentive) =>
+                            acc + incentive.annual_change_ratio,
+                          0
+                        )
+                      )}
                 </SecondaryLabel>
                 <TertiaryLabel>Estimated (May Change)</TertiaryLabel>
               </div>
@@ -276,7 +337,7 @@ export const PreviewStep = React.forwardRef<
           )}
         </div>
 
-        <SecondaryLabel className={cn(BASE_MARGIN_TOP.SM, BASE_LABEL_BORDER)}>
+        <SecondaryLabel className={cn(BASE_MARGIN_TOP.MD, BASE_LABEL_BORDER)}>
           Transactions
         </SecondaryLabel>
         <div className={cn(BASE_MARGIN_TOP.SM, "flex flex-col gap-2")}>

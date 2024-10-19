@@ -1,44 +1,10 @@
-import {
-  RoycoMarketUserType,
-  RoycoMarketOfferType,
-  RoycoMarketRewardStyle,
-  RoycoMarketType,
-  TypedRoycoMarketUserType,
-  TypedRoycoMarketOfferType,
-  TypedRoycoMarketRewardStyle,
-  TypedRoycoTransactionType,
-  RoycoTransactionType,
-  TypedRoycoMarketType,
-} from "../../market";
-import {
-  getSupportedToken,
-  NULL_ADDRESS,
-  SupportedToken,
-} from "../../constants";
-import { ContractMap, MulticallAbi } from "../../contracts";
-import {
-  getSupportedChain,
-  isSolidityAddressArrayValid,
-  isSolidityAddressValid,
-  isSolidityIntArrayValid,
-  isSolidityIntValid,
-  shortAddress,
-} from "../../utils";
-import { Address } from "abitype";
-import { useTokenAllowance } from ".././use-token-allowance";
-import { BigNumber, ethers } from "ethers";
-import { erc20Abi, multicall3Abi } from "viem";
-import { useTokenQuotes } from ".././use-token-quotes";
-import { useEnrichedMarket } from ".././use-enriched-market";
-import { useMarketOffersRecipe } from ".././use-market-offers-recipe";
-import { useReadRecipeMarket } from ".././use-read-recipe-market";
-import { useReadProtocolFeeRecipe } from ".././use-read-protocol-fee-recipe";
+import { RoycoMarketType } from "../../market";
+import { ContractMap } from "../../contracts";
+import { shortAddress } from "../../utils";
+import { ethers } from "ethers";
+import { erc20Abi } from "viem";
 import { TransactionOptionsType } from "../../types";
-import { MarketTransactionType } from "@/store";
-import { isMarketActionValid } from "./use-market-action-validator";
-import { useEnrichedMarkets } from ".././use-enriched-markets";
-
-const erc20Interface = new ethers.utils.Interface(erc20Abi);
+import { getSupportedToken } from "@/sdk/constants";
 
 export const getAPMarketOfferVaultTransactionOptions = ({
   chainId,
@@ -51,7 +17,8 @@ export const getAPMarketOfferVaultTransactionOptions = ({
   account: string;
   quantity: string;
 }): TransactionOptionsType => {
-  const abi = ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
+  const abi =
+    ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
 
   const txOptions: TransactionOptionsType = {
     contractId: "WrappedVault",
@@ -127,7 +94,8 @@ export const getIPLimitOfferVaultAddRewardTransactionOptions = ({
   tokenIds: string[];
   existingTokenIds: string[];
 }) => {
-  const abi = ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
+  const abi =
+    ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
 
   let txOptions: TransactionOptionsType[] = [];
 
@@ -140,11 +108,16 @@ export const getIPLimitOfferVaultAddRewardTransactionOptions = ({
       continue;
     }
 
+    // get incentive token data
+    let incentiveTokenData = getSupportedToken(
+      `${chainId}-${tokenAddresses[i]}`
+    );
+
     let newTxOptions: TransactionOptionsType = {
       contractId: "WrappedVault",
       chainId,
       id: `add_reward_${tokenAddresses[i]}`,
-      label: `Add Reward (${shortAddress(tokenAddresses[i])})`,
+      label: `Add Reward ${incentiveTokenData?.symbol.toUpperCase()} (${shortAddress(tokenAddresses[i])})`,
       address,
       abi,
       functionName: "addRewardsToken",
@@ -168,6 +141,7 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
   startTimestamps,
   endTimestamps,
   existingTokenIds,
+  existingTokenAmounts,
   frontendFeeRecipient,
 }: {
   chainId: number;
@@ -177,9 +151,11 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
   startTimestamps: string[];
   endTimestamps: string[];
   existingTokenIds: string[];
+  existingTokenAmounts: string[];
   frontendFeeRecipient: string;
 }) => {
-  const abi = ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
+  const abi =
+    ContractMap[chainId as keyof typeof ContractMap]["WrappedVault"].abi;
 
   let txOptions: TransactionOptionsType[] = [];
 
@@ -188,13 +164,25 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
   });
 
   for (let i = 0; i < tokenAddresses.length; i++) {
-    if (existingTokenIds.includes(tokenIds[i])) {
+    let isExistingTokenIndex = existingTokenIds.indexOf(tokenIds[i]);
+    let isExistingTokenAmount = "0";
+
+    if (isExistingTokenIndex !== -1) {
+      isExistingTokenAmount = existingTokenAmounts[isExistingTokenIndex];
+    }
+
+    if (isExistingTokenAmount !== "0") {
+      // get incentive token data
+      let incentiveTokenData = getSupportedToken(
+        `${chainId}-${tokenAddresses[i]}`
+      );
+
       // update reward
       let newTxOptions: TransactionOptionsType = {
         contractId: "WrappedVault",
         chainId,
         id: `update_reward_${tokenAddresses[i]}`,
-        label: `Update Reward (${shortAddress(tokenAddresses[i])})`,
+        label: `Update Reward ${incentiveTokenData?.symbol.toUpperCase()} (${shortAddress(tokenAddresses[i])})`,
         address,
         abi,
         functionName: "extendRewardsInterval",
@@ -211,12 +199,17 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
 
       txOptions.push(newTxOptions);
     } else {
+      // get incentive token data
+      let incentiveTokenData = getSupportedToken(
+        `${chainId}-${tokenAddresses[i]}`
+      );
+
       // set new reward
       let newTxOptions: TransactionOptionsType = {
         contractId: "WrappedVault",
         chainId,
         id: `set_reward_${tokenAddresses[i]}`,
-        label: `Set Reward (${shortAddress(tokenAddresses[i])})`,
+        label: `Set Reward ${incentiveTokenData?.symbol.toUpperCase()} (${shortAddress(tokenAddresses[i])})`,
         address,
         abi,
         functionName: "setRewardsInterval",

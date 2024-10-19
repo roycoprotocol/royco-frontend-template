@@ -58,8 +58,9 @@ export const useReadMarket = ({
       address:
         ContractMap[chain_id as keyof typeof ContractMap]["WrappedVaultFactory"]
           .address,
-      abi: ContractMap[chain_id as keyof typeof ContractMap]["WrappedVaultFactory"]
-        .abi,
+      abi: ContractMap[chain_id as keyof typeof ContractMap][
+        "WrappedVaultFactory"
+      ].abi,
       functionName: "protocolFee",
     },
   ];
