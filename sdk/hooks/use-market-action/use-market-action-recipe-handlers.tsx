@@ -48,7 +48,7 @@ export const getIPMarketOfferRecipeTransactionOptions = ({
   chainId: number;
   offers: Array<{
     offerID: string;
-    targetMarketID: string;
+    targetMarketHash: string;
     ap: string;
     fundingVault: string;
     quantity: string;

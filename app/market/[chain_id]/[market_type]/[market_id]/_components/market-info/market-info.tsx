@@ -37,6 +37,12 @@ import {
 import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useState, useCallback } from "react";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -60,16 +66,6 @@ export const MarketInfo = React.forwardRef<
   } = useActiveMarket();
 
   const { scriptType, setScriptType, viewType } = useMarketManager();
-
-  // console.log("currentMarketData", currentMarketData);
-  // console.log("previousMarketData", previousMarketData);
-
-  // console.log("isLoadingActionsDecoderEnterMarket", isLoadingActionsDecoderEnterMarket);
-  // console.log("dataActionsDecoderEnterMarket", dataActionsDecoderEnterMarket);
-  // console.log("isLoadingActionsDecoderExitMarket", isLoadingActionsDecoderExitMarket);
-  // console.log("dataActionsDecoderExitMarket", dataActionsDecoderExitMarket);
-
-  // console.log("currentMarketData", currentMarketData);
 
   if (
     !isLoading &&

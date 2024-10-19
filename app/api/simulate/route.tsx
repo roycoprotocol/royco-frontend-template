@@ -10,10 +10,6 @@ import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "../evm/contract/rpc-constants";
 import { BigNumber } from "ethers";
 
-// Tenderly API URL path params
-const accountSlug = process.env.TENDERLY_ACCOUNT_SLUG;
-const projectSlug = process.env.TENDERLY_PROJECT_SLUG;
-
 export const dynamic = true;
 
 export const config = createConfig({
@@ -132,6 +128,10 @@ export async function POST(request: Request) {
 }
 
 async function simulateBundle(transactionsToSimulate: Array<any>) {
+  // Tenderly API URL path params
+  const accountSlug = process.env.TENDERLY_ACCOUNT_SLUG;
+  const projectSlug = process.env.TENDERLY_PROJECT_SLUG;
+
   const url = `https://api.tenderly.co/api/v1/account/${accountSlug}/project/${projectSlug}/simulate-bundle`;
 
   const body = {

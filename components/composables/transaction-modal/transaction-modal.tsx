@@ -52,6 +52,10 @@ export const TransactionModal = React.forwardRef<
     reset: resetTx,
   } = useWriteContract();
 
+  // console.log("transactions", transactions);
+
+  // console.log("txError", txError);
+
   const {
     isLoading: isTxConfirming,
     isSuccess: isTxConfirmed,

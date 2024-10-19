@@ -59,10 +59,11 @@ export const useIncentivesData = ({
         input_token_token_amount * input_token_price;
 
       const incentive_token_data = getSupportedToken(id);
-      const incentive_token_raw_amount_without_fees =
-        action_incentive_token_amounts[index];
-      const incentive_token_raw_amount =
-        incentive_token_raw_amount_without_fees;
+      const incentive_token_raw_amount = action_incentive_token_amounts[index];
+      // const incentive_token_raw_amount_without_fees =
+      //   action_incentive_token_amounts[index];
+      // const incentive_token_raw_amount =
+      //   incentive_token_raw_amount_without_fees;
 
       const incentive_token_token_amount = parseFloat(
         ethers.utils.formatUnits(

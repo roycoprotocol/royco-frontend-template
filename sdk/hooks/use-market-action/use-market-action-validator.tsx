@@ -98,7 +98,7 @@ export const isMarketActionValid = ({
       user_type === RoycoMarketUserType.ip.id
     ) {
       // skip
-    } else {
+    } else if (offer_type === RoycoMarketOfferType.limit.id) {
       if (!expiry) {
         throw new Error("Expiry time is missing");
       } else if (!isSolidityIntValid("uint256", expiry)) {
@@ -135,6 +135,38 @@ export const isMarketActionValid = ({
         }
       }
 
+      if (
+        market_type === RoycoMarketType.vault.id &&
+        user_type === RoycoMarketUserType.ap.id
+      ) {
+        // Check if incentive rates are provided
+        if (!incentive_rates) {
+          throw new Error("Incentive rates are missing");
+        }
+
+        // Check if incentive rates are valid
+        for (let i = 0; i < incentive_rates.length; i++) {
+          if (!isSolidityIntValid("uint256", incentive_rates[i])) {
+            throw new Error("Incentive rate is invalid");
+          }
+
+          if (incentive_rates[i] === "0") {
+            throw new Error("Incentive rate must be greater than 0");
+          }
+        }
+
+        // Check if incentive rates match
+        if (incentive_rates.length !== incentive_token_ids.length) {
+          throw new Error("Incentive rates are invalid");
+        }
+
+        for (let i = 0; i < incentive_rates.length; i++) {
+          if (!isSolidityIntValid("uint256", incentive_rates[i])) {
+            throw new Error("Incentive rate is invalid");
+          }
+        }
+      }
+
       // Extra conditions for vault markets
       if (
         market_type === RoycoMarketType.vault.id &&
@@ -157,39 +189,12 @@ export const isMarketActionValid = ({
           throw new Error("Incentive timestamps are missing");
         }
 
-        // Check if incentive rates are provided
-        if (!incentive_rates) {
-          throw new Error("Incentive rates are missing");
-        }
-
-        // Check if incentive rates are valid
-        for (let i = 0; i < incentive_rates.length; i++) {
-          if (!isSolidityIntValid("uint256", incentive_rates[i])) {
-            throw new Error("Incentive rate is invalid");
-          }
-
-          if (incentive_rates[i] === "0") {
-            throw new Error("Incentive rate must be greater than 0");
-          }
-        }
-
         // Check if incentive timestamps match
         if (
           incentive_start_timestamps.length !== incentive_token_ids.length &&
           incentive_start_timestamps.length !== incentive_end_timestamps.length
         ) {
           throw new Error("Incentive timestamps are invalid");
-        }
-
-        // Check if incentive rates match
-        if (incentive_rates.length !== incentive_token_ids.length) {
-          throw new Error("Incentive rates are invalid");
-        }
-
-        for (let i = 0; i < incentive_rates.length; i++) {
-          if (!isSolidityIntValid("uint256", incentive_rates[i])) {
-            throw new Error("Incentive rate is invalid");
-          }
         }
 
         // Check incentive timestamps validity

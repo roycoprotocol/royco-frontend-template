@@ -7,7 +7,6 @@ import {
   TypedRoycoMarketType,
 } from "../../market";
 import {
-  ContractMap,
   getSupportedToken,
   NULL_ADDRESS,
   SupportedToken,
@@ -362,10 +361,17 @@ export const useMarketAction = ({
             existingToken.raw_amount = BigNumber.from(existingToken.raw_amount)
               .add(BigNumber.from(d.raw_amount ?? "0") ?? "0")
               .toString();
+
             existingToken.token_amount = (
               parseFloat(existingToken.token_amount) +
-              parseFloat(d.amount ?? "0")
+              parseFloat(
+                ethers.utils.formatUnits(
+                  d.raw_amount ?? "0",
+                  token_data.decimals
+                )
+              )
             ).toString();
+
             existingToken.token_amount_usd += d.dollar_value ?? 0;
           } else {
             // If token doesn't exist, add it to the accumulator

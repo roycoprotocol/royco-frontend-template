@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
-
 import { ArrowDownUpIcon } from "lucide-react";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
@@ -123,7 +122,13 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               <TooltipTrigger className="flex flex-col place-content-center items-center">
                 <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
               </TooltipTrigger>
-              <TooltipContent>Verified Market</TooltipContent>
+              {typeof window !== "undefined" &&
+                createPortal(
+                  <TooltipContent className="z-9999">
+                    Verified Market
+                  </TooltipContent>,
+                  document.body
+                )}
             </Tooltip>
           )}
         </div>

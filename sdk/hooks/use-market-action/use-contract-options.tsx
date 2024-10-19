@@ -225,17 +225,19 @@ export const useContractOptions = ({
                 chainId: chain_id,
                 offers: (propsMarketOffers.data || []).map((offer) => {
                   const offerID = offer.offer_id;
-                  const targetMarketID = offer.market_id;
+                  const targetMarketHash = offer.market_id;
                   const quantity = offer.quantity;
                   const ap = offer.creator;
                   const fundingVault = offer.funding_vault;
                   const expiry = offer.expiry;
-                  const incentivesRequested = offer.token_ids;
+                  const incentivesRequested = offer.token_ids.map(
+                    (id) => id.split("-")[1]
+                  );
                   const incentiveAmountsRequested = offer.token_amounts;
 
                   return {
                     offerID,
-                    targetMarketID,
+                    targetMarketHash,
                     ap,
                     fundingVault,
                     quantity,
@@ -269,25 +271,25 @@ export const useContractOptions = ({
                   },
                 ],
                 tokensOut: incentivesData.map((incentive, index) => {
-                  const raw_amount_without_fees =
+                  const raw_amount_with_fees =
                     action_incentive_token_amounts[index];
-                  const raw_amount_with_fees = BigNumber.from(
-                    raw_amount_without_fees
-                  )
-                    .add(
-                      BigNumber.from(raw_amount_without_fees).mul(
-                        BigNumber.from(
-                          propsReadMarket.data?.protocol_fee as string
-                        ).div(BigNumber.from(10).pow(18))
-                      )
-                    )
-                    .add(
-                      BigNumber.from(raw_amount_without_fees).mul(
-                        BigNumber.from(
-                          propsReadMarket.data?.frontend_fee as string
-                        ).div(BigNumber.from(10).pow(18))
-                      )
-                    );
+                  // const raw_amount_with_fees = BigNumber.from(
+                  //   raw_amount_without_fees
+                  // )
+                  //   .add(
+                  //     BigNumber.from(raw_amount_without_fees).mul(
+                  //       BigNumber.from(
+                  //         propsReadMarket.data?.protocol_fee as string
+                  //       ).div(BigNumber.from(10).pow(18))
+                  //     )
+                  //   )
+                  //   .add(
+                  //     BigNumber.from(raw_amount_without_fees).mul(
+                  //       BigNumber.from(
+                  //         propsReadMarket.data?.frontend_fee as string
+                  //       ).div(BigNumber.from(10).pow(18))
+                  //     )
+                  //   );
 
                   const raw_amount = raw_amount_with_fees.toString();
 
