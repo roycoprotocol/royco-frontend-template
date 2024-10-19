@@ -110,10 +110,7 @@ export const useMarketAction = ({
     market,
   });
 
-  // Hold all token quotes
-  // let token_ids: string[] = [];
-  // let action_incentive_token_ids: string[] = [];
-  // let action_incentive_token_amounts: string[] = [];
+  // Hold all write contract options
   let writeContractOptions: TransactionOptionsType[] = [];
 
   const propsReadVaultPreview = useReadVaultPreview({
@@ -204,28 +201,6 @@ export const useMarketAction = ({
     action_incentive_token_amounts,
     quantity,
   });
-
-  // console.log("incentivesData", incentivesData);
-
-  // const propsTokenAllowance = useTokenAllowance({
-  //   chain_id: chain_id,
-  //   account: account ? (account as Address) : NULL_ADDRESS,
-  //   spender:
-  //     market_type === RoycoMarketType.recipe.id
-  //       ? (ContractMap[chain_id]["RecipeMarketHub"].contract_address as Address)
-  //       : (user_type === RoycoMarketUserType.ip.id &&
-  //             offer_type === RoycoMarketOfferType.market.id) ||
-  //           (user_type === RoycoMarketUserType.ap.id &&
-  //             offer_type === RoycoMarketOfferType.limit.id)
-  //         ? (ContractMap[chain_id]["VaultMarketHub"]
-  //             .contract_address as Address)
-  //         : (market_id as Address),
-  //   tokens: token_ids.map((token) => {
-  //     const [chainId, contractAddress] = token.split("-");
-
-  //     return contractAddress as Address;
-  //   }),
-  // });
 
   // Combine all contract options
   const {
