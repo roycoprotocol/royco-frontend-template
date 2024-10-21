@@ -20,13 +20,14 @@ export type SearchContractsData = {
 
 export type ContractFilter = {
   id: string;
-  value: string | number;
+  value: string | number | boolean;
 };
 
 const constructFilterClauses = (filters: ContractFilter[]): string => {
   let typeFilter = "";
   let sourceFilter = "";
   let chainIdFilter = "";
+  let whitelistedContractFilter = "";
 
   /**
    * @note To filter string: wrap in single quotes
@@ -46,6 +47,10 @@ const constructFilterClauses = (filters: ContractFilter[]): string => {
         if (chainIdFilter) chainIdFilter += " OR ";
         chainIdFilter = `chain_id = ${filter.value}`;
         break;
+      case "is_whitelisted":
+        if (whitelistedContractFilter) whitelistedContractFilter += " OR ";
+        whitelistedContractFilter = `is_whitelisted = ${filter.value}`;
+        break;
     }
   });
 
@@ -54,7 +59,8 @@ const constructFilterClauses = (filters: ContractFilter[]): string => {
   if (typeFilter) filterClauses += `(${typeFilter}) AND `;
   if (sourceFilter) filterClauses += `(${sourceFilter}) AND `;
   if (chainIdFilter) filterClauses += `(${chainIdFilter}) AND `;
-
+  if (whitelistedContractFilter)
+    filterClauses += `(${whitelistedContractFilter}) AND `;
   if (filterClauses) {
     filterClauses = filterClauses.slice(0, -5); // Remove the trailing " AND "
   }

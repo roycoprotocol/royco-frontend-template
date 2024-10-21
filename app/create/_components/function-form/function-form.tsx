@@ -139,7 +139,13 @@ export const FunctionForm = React.forwardRef<
       !(dataContract instanceof Error) &&
       dataContract.length > 0
     ) {
-      if (
+      if (dataContract.length === 1 && dataContract[0].abi === null) {
+        // setIsContractAbiUpdated(true);
+
+        setTimeout(() => {
+          functionForm.setValue("contract_abi", "");
+        }, 200);
+      } else if (
         dataContract.length === 1 &&
         isAbiValid(JSON.stringify(dataContract[0].abi)) &&
         !isEqual(

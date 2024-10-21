@@ -51,9 +51,7 @@ export const NoOutputsIndicator = React.forwardRef<
       <AnimatePresence mode="popLayout">
         {(stateLength === 0 || stateLength > 1) && (
           <AlertIndicator className="h-20 bg-z2 py-0">
-            {stateLength === 0
-              ? "No outputs available"
-              : "Multiple outputs not supported"}
+            {stateLength === 0 ? "No outputs available" : "Not supported"}
           </AlertIndicator>
         )}
       </AnimatePresence>
