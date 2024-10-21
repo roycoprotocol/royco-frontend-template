@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useMarketManager } from "@/store";
 import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";

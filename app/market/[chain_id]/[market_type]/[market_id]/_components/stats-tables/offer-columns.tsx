@@ -55,7 +55,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
             props.row.original.offer_side === 0 ? "text-success" : "text-error"
           )}
         >
-          {props.row.original.offer_side === 0 ? "Supply" : "Withdraw"}
+          {props.row.original.offer_side === 0 ? "AP" : "IP"}
         </div>
       );
     },

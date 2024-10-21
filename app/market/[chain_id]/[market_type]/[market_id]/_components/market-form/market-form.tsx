@@ -1,11 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect } from "react";
 import { MarketFormSchema } from "../market-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { MarketSteps, MarketUserType, useMarketManager } from "@/store";
+import {
+  MarketSteps,
+  MarketUserType,
+  MarketViewType,
+  useMarketManager,
+} from "@/store";
 import { useActiveMarket } from "../hooks";
 import { MarketActionType, MarketOfferType, MarketType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +27,6 @@ import {
 } from "../composables";
 import { Button } from "@/components/ui/button";
 import { ErrorAlert, HorizontalTabs } from "@/components/composables";
-import { isSolidityIntValid } from "@/sdk/utils";
 import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
@@ -30,12 +34,8 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/components/web3-modal/modal-config";
 import { ParamsStep } from "./params-step";
 import { PreviewStep } from "./preview-step";
-import { isValid } from "date-fns";
-import { SlideUpWrapper } from "@/components/animations";
 import { ChevronLeftIcon } from "lucide-react";
-
-import { AnimatePresence, motion } from "framer-motion";
-import { TypedRoycoMarketUserType } from "@/sdk/market";
+import { motion } from "framer-motion";
 import { WithdrawSection } from "./withdraw-section";
 
 export const MarketForm = React.forwardRef<
@@ -51,6 +51,7 @@ export const MarketForm = React.forwardRef<
     setActionType,
     userType,
     setUserType,
+    viewType,
   } = useMarketManager();
   const { address, isConnected } = useAccount();
   const { open, close } = useWeb3Modal();
@@ -132,74 +133,6 @@ export const MarketForm = React.forwardRef<
     simulation_url: process.env.NEXT_PUBLIC_SIMULATION_URL || "",
   });
 
-  // console.log("marketForm incentives", marketForm.watch("incentive_tokens"));
-
-  // const isOfferValid = async () => {
-  //   try {
-  //     if (!currentMarketData) return false;
-
-  //     if (marketMetadata.market_type === MarketType.recipe.id) {
-  //       if (marketForm.watch("offer_type") === MarketOfferType.limit.id) {
-  //         // limit offer
-  //         if (
-  //           !isSolidityIntValid("uint256", marketForm.watch("offer_raw_amount"))
-  //         ) {
-  //           toast.custom(<ErrorAlert message="Invalid offer amount" />);
-  //           return false;
-  //         } else if (marketForm.watch("incentive_tokens").length === 0) {
-  //           toast.custom(<ErrorAlert message="No incentive token added" />);
-  //           return false;
-  //         } else if (
-  //           marketForm
-  //             .watch("incentive_tokens")
-  //             .some((token) => !isSolidityIntValid("uint256", token.raw_amount))
-  //         ) {
-  //           toast.custom(<ErrorAlert message="Invalid incentive amount" />);
-  //           return false;
-  //         } else if (marketForm.watch("no_expiry") === false) {
-  //           if (!!marketForm.watch("expiry")) {
-  //             const currentUTC = new Date().getTime();
-  //             const expiryUTC = marketForm.watch("expiry")?.getTime();
-
-  //             if (expiryUTC && expiryUTC < currentUTC) {
-  //               toast.custom(
-  //                 <ErrorAlert message="Offer expiry can't be in the past" />
-  //               );
-  //               return false;
-  //             }
-  //           } else {
-  //             toast.custom(<ErrorAlert message="Offer expiry not set" />);
-  //             return false;
-  //           }
-  //         }
-
-  //         return true;
-  //       } else {
-  //         // market offer
-  //         if (
-  //           !isSolidityIntValid("uint256", marketForm.watch("offer_raw_amount"))
-  //         ) {
-  //           toast.custom(<ErrorAlert message="Invalid offer amount" />);
-  //           return false;
-  //         } else {
-  //           return true;
-  //         }
-  //       }
-  //     } else {
-  //       if (
-  //         !isSolidityIntValid("uint256", marketForm.watch("offer_raw_amount"))
-  //       ) {
-  //         toast.custom(<ErrorAlert message="Invalid offer amount" />);
-  //         return false;
-  //       } else {
-  //         return true;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // };
-
   const handleNextStep = async () => {
     try {
       if (!isConnected) {
@@ -253,9 +186,11 @@ export const MarketForm = React.forwardRef<
     }
   };
 
-  // const setUserType = (value: TypedRoycoMarketUserType) => {
-  //   marketForm.setValue("user_type", value);
-  // };
+  useEffect(() => {
+    if (viewType === MarketViewType.simple.id) {
+      setUserType(MarketUserType.ap.id);
+    }
+  }, [viewType]);
 
   if (!!currentMarketData) {
     return (
@@ -321,29 +256,30 @@ export const MarketForm = React.forwardRef<
         {/**
          * User Type (AP / IP)
          */}
-        {marketStep === MarketSteps.params.id && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeIn" }}
-            className={cn(
-              "flex flex-col",
-              BASE_PADDING_LEFT,
-              BASE_PADDING_RIGHT
-            )}
-          >
-            <HorizontalTabs
-              className={cn("", "mt-3")}
-              size="sm"
-              key="market:user-type:container"
-              baseId="market:user-type"
-              tabs={Object.values(MarketUserType)}
-              activeTab={userType}
-              setter={setUserType}
-            />
-          </motion.div>
-        )}
+        {marketStep === MarketSteps.params.id &&
+          viewType === MarketViewType.advanced.id && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeIn" }}
+              className={cn(
+                "flex flex-col",
+                BASE_PADDING_LEFT,
+                BASE_PADDING_RIGHT
+              )}
+            >
+              <HorizontalTabs
+                className={cn("", "mt-3")}
+                size="sm"
+                key="market:user-type:container"
+                baseId="market:user-type"
+                tabs={Object.values(MarketUserType)}
+                activeTab={userType}
+                setter={setUserType}
+              />
+            </motion.div>
+          )}
 
         {/**
          * Action Type (Supply / Withdraw)

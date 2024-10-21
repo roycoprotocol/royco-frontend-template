@@ -50,6 +50,7 @@ export const useIncentivesData = ({
         market.input_token_id as string
       );
       const input_token_raw_amount = (quantity ?? "0") as string;
+
       const input_token_token_amount = parseFloat(
         ethers.utils.formatUnits(
           input_token_raw_amount,
@@ -72,6 +73,7 @@ export const useIncentivesData = ({
           incentive_token_data.decimals
         )
       );
+
       const incentive_token_token_amount_usd =
         incentive_token_token_amount * incentive_token_price;
 

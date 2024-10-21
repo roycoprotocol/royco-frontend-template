@@ -4,4 +4,4 @@ export const ContractMap = {
   11155111: Contracts_11155111,
 };
 
-export { MulticallAbi } from "./multicall-abi";
+export * from "./utils";

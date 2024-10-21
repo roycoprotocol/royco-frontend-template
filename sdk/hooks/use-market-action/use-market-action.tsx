@@ -12,7 +12,7 @@ import {
   SupportedToken,
 } from "../../constants";
 import { BigNumber, ethers } from "ethers";
-import { Address, erc20Abi } from "viem";
+import { Address } from "viem";
 import { useTokenQuotes } from ".././use-token-quotes";
 import { TransactionOptionsType } from "../../types";
 import { isMarketActionValid } from "./use-market-action-validator";
@@ -26,7 +26,6 @@ import { useContractOptions } from "./use-contract-options";
 import { useTokenAllowance } from "../use-token-allowance";
 import { useReadVaultPreview } from "../use-read-vault-preview";
 import { EnrichedMarketDataType } from "@/sdk/queries";
-import { MarketType } from "@/store";
 
 export const useMarketAction = ({
   chain_id,

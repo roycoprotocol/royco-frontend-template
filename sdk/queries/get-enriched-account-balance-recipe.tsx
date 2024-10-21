@@ -1,5 +1,4 @@
 import { type TypedRoycoClient } from "@/sdk/client";
-
 import { getSupportedToken, SupportedToken } from "../constants";
 import { BigNumber } from "ethers";
 
@@ -30,10 +29,7 @@ export const getEnrichedAccountBalanceRecipeQueryOptions = (
         (incentiveId, incentiveIndex) => {
           const token_info: SupportedToken = getSupportedToken(incentiveId);
           const raw_amount: string = BigNumber.from(
-            row.incentives_given_amount[incentiveIndex].toLocaleString(
-              "fullwide",
-              { useGrouping: false }
-            )
+            row.incentives_given_amount[incentiveIndex]
           ).toString();
 
           const token_amount: string = BigNumber.from(raw_amount)
@@ -56,10 +52,7 @@ export const getEnrichedAccountBalanceRecipeQueryOptions = (
         (incentiveId, incentiveIndex) => {
           const token_info: SupportedToken = getSupportedToken(incentiveId);
           const raw_amount: string = BigNumber.from(
-            row.protocol_fee_amounts[incentiveIndex].toLocaleString(
-              "fullwide",
-              { useGrouping: false }
-            )
+            row.protocol_fee_amounts[incentiveIndex]
           ).toString();
 
           const token_amount: string = BigNumber.from(raw_amount)
@@ -82,10 +75,7 @@ export const getEnrichedAccountBalanceRecipeQueryOptions = (
         (incentiveId, incentiveIndex) => {
           const token_info: SupportedToken = getSupportedToken(incentiveId);
           const raw_amount: string = BigNumber.from(
-            row.frontend_fee_amounts[incentiveIndex].toLocaleString(
-              "fullwide",
-              { useGrouping: false }
-            )
+            row.frontend_fee_amounts[incentiveIndex]
           ).toString();
 
           const token_amount: string = BigNumber.from(raw_amount)
@@ -107,10 +97,7 @@ export const getEnrichedAccountBalanceRecipeQueryOptions = (
         (incentiveId, incentiveIndex) => {
           const token_info: SupportedToken = getSupportedToken(incentiveId);
           const raw_amount: string = BigNumber.from(
-            row.incentives_received_amount[incentiveIndex].toLocaleString(
-              "fullwide",
-              { useGrouping: false }
-            )
+            row.incentives_received_amount[incentiveIndex]
           ).toString();
 
           const token_amount: string = BigNumber.from(raw_amount)
@@ -136,27 +123,17 @@ export const getEnrichedAccountBalanceRecipeQueryOptions = (
       const input_token_data = {
         ...input_token_info,
         quantity_given_amount_raw: BigNumber.from(
-          row.quantity_given_amount.toLocaleString("fullwide", {
-            useGrouping: false,
-          })
+          row.quantity_given_amount
         ).toString(),
         quantity_received_amount_raw: BigNumber.from(
-          row.quantity_received_amount.toLocaleString("fullwide", {
-            useGrouping: false,
-          })
+          row.quantity_received_amount
         ).toString(),
 
-        quantity_given_amount_token: BigNumber.from(
-          row.quantity_given_amount.toLocaleString("fullwide", {
-            useGrouping: false,
-          })
-        )
+        quantity_given_amount_token: BigNumber.from(row.quantity_given_amount)
           .div(BigNumber.from(10).pow(input_token_info.decimals))
           .toString(),
         quantity_received_amount_token: BigNumber.from(
-          row.quantity_received_amount.toLocaleString("fullwide", {
-            useGrouping: false,
-          })
+          row.quantity_received_amount
         )
           .div(BigNumber.from(10).pow(input_token_info.decimals))
 

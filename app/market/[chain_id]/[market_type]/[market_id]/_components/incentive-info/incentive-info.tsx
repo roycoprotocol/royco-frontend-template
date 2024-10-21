@@ -117,27 +117,13 @@ export const IncentiveInfo = React.forwardRef<
       >
         <TertiaryLabel>INCENTIVES</TertiaryLabel>
 
-        {/**
-         * No distinction between incentive types
-         */}
-        {/* <HorizontalTabs
-          className={cn(BASE_MARGIN_TOP.MD)}
-          size="sm"
-          key="market:incentive-type:container"
-          baseId="market:incentive-type"
-          tabs={Object.values(MarketIncentiveType)}
-          activeTab={incentiveType}
-          setter={setIncentiveType}
-        /> */}
-
         {currentMarketData.incentive_tokens_data.length === 0 && (
           <AlertIndicator
             iconClassName={cn("w-4 h-4")}
             className="pb-3 pt-7"
             contentClassName={cn("text-sm")}
           >
-            No incentives{" "}
-            {incentiveType === MarketIncentiveType.ap.id ? "asked" : "offered"}
+            No incentives offered
           </AlertIndicator>
         )}
 
