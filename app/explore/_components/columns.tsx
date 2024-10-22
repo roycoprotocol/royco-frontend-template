@@ -21,6 +21,7 @@ import React, { Fragment } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  BadgeAlertIcon,
   BadgeCheckIcon,
   CircleCheckIcon,
   EllipsisVerticalIcon,
@@ -117,20 +118,24 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             {props.row.original.name}
           </div>
 
-          {props.row.original.is_verified && (
-            <Tooltip>
-              <TooltipTrigger className="flex flex-col place-content-center items-center">
+          <Tooltip>
+            <TooltipTrigger className="flex flex-col place-content-center items-center">
+              {props.row.original.is_verified ? (
                 <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
-              </TooltipTrigger>
-              {typeof window !== "undefined" &&
-                createPortal(
-                  <TooltipContent className="z-9999">
-                    Verified Market
-                  </TooltipContent>,
-                  document.body
-                )}
-            </Tooltip>
-          )}
+              ) : (
+                <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
+              )}
+            </TooltipTrigger>
+            {typeof window !== "undefined" &&
+              createPortal(
+                <TooltipContent className="z-9999">
+                  {props.row.original.is_verified
+                    ? "Verified Market"
+                    : "Unverified Market"}
+                </TooltipContent>,
+                document.body
+              )}
+          </Tooltip>
         </div>
       );
     },

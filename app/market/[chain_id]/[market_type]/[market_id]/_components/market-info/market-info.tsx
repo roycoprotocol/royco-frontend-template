@@ -44,6 +44,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useState, useCallback } from "react";
 import { WarningBox } from "@/components/composables";
+import { createPortal } from "react-dom";
+import { BadgeAlertIcon, BadgeCheckIcon } from "lucide-react";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -89,7 +91,7 @@ export const MarketInfo = React.forwardRef<
 
           <PrimaryLabel
             className={cn(BASE_MARGIN_TOP.XS)}
-            displayCheck={currentMarketData.is_verified ? true : false}
+            isVerified={currentMarketData.is_verified ? true : false}
           >
             {currentMarketData.name && currentMarketData.name.trim() !== ""
               ? currentMarketData.name.trim()

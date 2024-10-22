@@ -5,6 +5,7 @@ export type RoycoMarketMapDataType = {
 };
 
 export const MarketMap: Record<string, RoycoMarketMapDataType> = {
-  "11155111_0_0x655c42f78c176db052676ac728b585d1b9c2c50ec1ed5c93a33e359e43a7f857":
+  "11155111_0_0x1a020823449b7ee71b6888d81cbeae6de3c1fd615d81ba9783da674e5d47ba83":
     {},
+  "11155111_1_0x5802fb13468d943be6e4dca369f651e6e6088e92": {},
 };

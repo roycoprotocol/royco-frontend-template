@@ -1,6 +1,12 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "lucide-react";
+import { BadgeAlertIcon, BadgeCheckIcon, CheckIcon } from "lucide-react";
 import React from "react";
+import { createPortal } from "react-dom";
 
 export const SecondaryLabel = React.forwardRef<
   HTMLDivElement,
@@ -41,9 +47,9 @@ export const TertiaryLabel = React.forwardRef<
 export const PrimaryLabel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    displayCheck?: boolean;
+    isVerified?: boolean;
   }
->(({ className, displayCheck, ...props }, ref) => {
+>(({ className, isVerified, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -56,12 +62,23 @@ export const PrimaryLabel = React.forwardRef<
       <div className="flex h-8 max-w-full grow overflow-hidden truncate text-ellipsis">
         <span className="leading-9">{props.children}</span>
       </div>
-      {displayCheck === true && (
-        <div className="flex h-6 flex-col place-content-center items-center">
-          <div className="ml-2 flex h-6 w-6 shrink-0 flex-col place-content-center items-center rounded-full bg-primary">
-            <CheckIcon strokeWidth={2.5} className="h-6 w-6 p-1 text-white" />
-          </div>
-        </div>
+      {isVerified !== undefined && (
+        <Tooltip>
+          <TooltipTrigger className="ml-2 flex flex-col place-content-center items-center">
+            {isVerified ? (
+              <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
+            ) : (
+              <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
+            )}
+          </TooltipTrigger>
+          {typeof window !== "undefined" &&
+            createPortal(
+              <TooltipContent className="z-9999">
+                {isVerified ? "Verified Market" : "Unverified Market"}
+              </TooltipContent>,
+              document.body
+            )}
+        </Tooltip>
       )}
     </div>
   );
