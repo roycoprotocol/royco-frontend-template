@@ -27,6 +27,7 @@ import { BalanceIndicator } from "../balance-indicator";
 import { motion, AnimatePresence } from "framer-motion";
 import { OfferTable } from "../stats-tables";
 import { StatsTables } from "../stats-tables/stats-tables";
+import { WarningBox } from "@/components/composables";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -61,6 +62,17 @@ export const MarketManager = React.forwardRef<
   } else if (!!currentMarketData && !!marketMetadata) {
     return (
       <Fragment>
+        {currentMarketData.is_verified === false && (
+          <WarningBox
+            className={cn(
+              "max-w-[83.625rem]",
+              viewType === MarketViewType.simple.id && "",
+              viewType === MarketViewType.advanced.id && "mb-10 w-full"
+            )}
+            text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
+          />
+        )}
+
         <div
           className={cn(
             "relative flex w-full max-w-[83.625rem] shrink-0 flex-row place-content-end items-center gap-3 pb-3",
@@ -115,29 +127,34 @@ export const MarketManager = React.forwardRef<
                 )}
               />
 
-              <div
-                className={cn(
-                  "flex-0",
-                  "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
-                  BASE_PADDING_LEFT,
-                  BASE_PADDING_RIGHT,
-                  "py-3"
-                )}
-              >
-                <div className="font-gt text-sm font-light text-secondary">
-                  Advanced Mode
+              {/**
+               * Temporarily disabled advanced mode on live networks
+               */}
+              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && false && (
+                <div
+                  className={cn(
+                    "flex-0",
+                    "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
+                    BASE_PADDING_LEFT,
+                    BASE_PADDING_RIGHT,
+                    "py-3"
+                  )}
+                >
+                  <div className="font-gt text-sm font-light text-secondary">
+                    Advanced Mode
+                  </div>
+                  <Switch
+                    checked={viewType === MarketViewType.advanced.id}
+                    onCheckedChange={() => {
+                      setViewType(
+                        viewType === MarketViewType.advanced.id
+                          ? MarketViewType.simple.id
+                          : MarketViewType.advanced.id
+                      );
+                    }}
+                  />
                 </div>
-                <Switch
-                  checked={viewType === MarketViewType.advanced.id}
-                  onCheckedChange={() => {
-                    setViewType(
-                      viewType === MarketViewType.advanced.id
-                        ? MarketViewType.simple.id
-                        : MarketViewType.advanced.id
-                    );
-                  }}
-                />
-              </div>
+              )}
             </Fragment>
           ) : (
             // <MarketForm />

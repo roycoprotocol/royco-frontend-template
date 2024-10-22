@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { AlertIndicator } from "@/components/common";
 import { isSolidityAddressValid } from "@/sdk/utils";
-import { getWhitelistedContractFilters } from "./whitelisted-contract-filters";
 
 export const SelectionMenu = React.forwardRef<
   HTMLDivElement,
@@ -133,12 +132,9 @@ export const SelectionMenu = React.forwardRef<
 
       {/* {activeTab.id === "contracts" && <ContractTypeSelector />} */}
 
-      {/**
-       * Temporarily hidden, to only only whitelisted contracts
-       */}
-      {/* <SearchBar className="" /> */}
+      <SearchBar className="" />
 
-      <div className="hide-scrollbar w-full grow overflow-y-scroll rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
+      <div className="hide-scrollbar mt-5 w-full grow overflow-y-scroll rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
         {isLoadingContractList && (
           <div className="flex w-full flex-col items-center p-5">
             <LoadingSpinner className="h-4 w-4" />

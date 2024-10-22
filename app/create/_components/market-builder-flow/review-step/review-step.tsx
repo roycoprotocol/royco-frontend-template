@@ -221,11 +221,11 @@ export const ReviewStep = React.forwardRef<
       {marketBuilderForm.watch("action_type") === "recipe" &&
         marketBuilderForm.watch("exit_actions").length === 0 && (
           <MotionWrapper delay={0.4}>
-            <h4 className="mt-10 font-gt text-base font-medium text-black">
+            {/* <h4 className="mt-10 font-gt text-base font-medium text-black">
               Recipe Notes
-            </h4>
+            </h4> */}
 
-            <AlertLabel className="mt-2" />
+            <AlertLabel className="mt-10" />
           </MotionWrapper>
         )}
     </div>

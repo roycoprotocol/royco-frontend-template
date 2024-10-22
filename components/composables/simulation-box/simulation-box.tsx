@@ -12,34 +12,17 @@ import {
 } from "lucide-react";
 import { SlideUpWrapper } from "@/components/animations";
 import { AnimatePresence } from "framer-motion";
+import { WarningBox } from "../warning-box";
 
 export const AlertLabel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex flex-col rounded-xl bg-error p-5 font-gt text-sm font-300 text-white",
-        className
-      )}
-    >
-      <div className="flex flex-row items-center justify-center text-center">
-        <div className="h-6 w-6 shrink-0">
-          <TriangleAlertIcon strokeWidth={1.5} className="h-6 w-6 text-white" />
-        </div>
-
-        <div className="ml-1 h-6 text-wrap text-lg font-normal text-white">
-          <span className="leading-2">WARNING</span>
-        </div>
-      </div>
-
-      <div className="mt-2 flex text-base leading-tight">
-        Exit market script is empty and this could lead to AP's assets being
-        lost. Please make sure that this is the intended behavior that you want.
-      </div>
-    </div>
+    <WarningBox
+      className={className}
+      text="Exit market script is empty and this could lead to AP's assets being lost. Please make sure that this is the intended behavior that you want."
+    />
   );
 });
 

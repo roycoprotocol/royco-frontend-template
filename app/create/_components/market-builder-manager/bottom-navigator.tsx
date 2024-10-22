@@ -335,7 +335,7 @@ export const BottomNavigator = React.forwardRef<
 
         {activeStep === MarketBuilderSteps.review.id && (
           <MotionWrapper delay={0.4}>
-            <div className="mb-3 mt-10 w-full text-center font-gt text-base font-light text-secondary">
+            <div className="mb-3 mt-5 w-full text-center font-gt text-base font-light text-secondary">
               Royco markets are immutable.
             </div>
           </MotionWrapper>

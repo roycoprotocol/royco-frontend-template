@@ -43,6 +43,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState, useCallback } from "react";
+import { WarningBox } from "@/components/composables";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
