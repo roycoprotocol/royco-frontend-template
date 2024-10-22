@@ -45,6 +45,7 @@ export const useMarketAction = ({
   frontendFeeRecipient,
   enabled = true,
   simulation_url,
+  custom_incentive_data,
 }: {
   chain_id: number;
   market_type: TypedRoycoMarketType;
@@ -66,6 +67,18 @@ export const useMarketAction = ({
   frontendFeeRecipient: string;
   enabled?: boolean;
   simulation_url?: string;
+  custom_incentive_data?: Array<
+    SupportedToken & {
+      aip: number;
+      fdv: number;
+      distribution: number;
+      offerAmount: number;
+      inputTokenPrice: number;
+      incentiveTokenPrice: number;
+      rate: number;
+      rateInWei: string;
+    }
+  >;
 }) => {
   // Get Market Data from contract for protocol fee and frontend fee
   const propsReadMarket = useReadMarket({
@@ -166,18 +179,22 @@ export const useMarketAction = ({
     offer_type,
     propsMarketOffers,
     propsReadMarket,
+
     incentive_token_ids:
-      market_type === RoycoMarketType.vault.id &&
-      user_type === RoycoMarketUserType.ap.id &&
-      offer_type === RoycoMarketOfferType.market.id
-        ? propsReadVaultPreview.incentive_token_ids
-        : incentive_token_ids,
+      market_type === RoycoMarketType.recipe.id
+        ? incentive_token_ids
+        : offer_type === RoycoMarketOfferType.limit.id &&
+            user_type === RoycoMarketUserType.ap.id
+          ? incentive_token_ids
+          : propsReadVaultPreview.incentive_token_ids,
+
     incentive_token_amounts:
-      market_type === RoycoMarketType.vault.id &&
-      user_type === RoycoMarketUserType.ap.id &&
-      offer_type === RoycoMarketOfferType.market.id
-        ? propsReadVaultPreview.incentive_token_amounts
-        : incentive_token_amounts,
+      market_type === RoycoMarketType.recipe.id
+        ? incentive_token_amounts
+        : offer_type === RoycoMarketOfferType.limit.id &&
+            user_type === RoycoMarketUserType.ap.id
+          ? incentive_rates
+          : propsReadVaultPreview.incentive_token_amounts,
   });
 
   // Get token quotes
@@ -193,17 +210,26 @@ export const useMarketAction = ({
       !propsTokenQuotes.isLoading &&
       !!propsTokenQuotes.data,
     market_type,
+    offer_type,
+    user_type,
     market,
     propsTokenQuotes,
     action_incentive_token_ids:
-      market?.market_type === 0
+      market_type === RoycoMarketType.recipe.id
         ? action_incentive_token_ids
-        : propsReadVaultPreview.incentive_token_ids,
+        : offer_type === RoycoMarketOfferType.limit.id &&
+            user_type === RoycoMarketUserType.ap.id
+          ? action_incentive_token_ids
+          : propsReadVaultPreview.incentive_token_ids,
     action_incentive_token_amounts:
-      market?.market_type === 0
+      market_type === RoycoMarketType.recipe.id
         ? action_incentive_token_amounts
-        : propsReadVaultPreview.incentive_token_amounts,
+        : offer_type === RoycoMarketOfferType.limit.id &&
+            user_type === RoycoMarketUserType.ap.id
+          ? action_incentive_token_amounts
+          : propsReadVaultPreview.incentive_token_amounts,
     quantity,
+    custom_incentive_data,
   });
 
   // Combine all contract options

@@ -14,7 +14,7 @@ import {
 import { useActiveMarket } from "../hooks";
 import { MarketActionType, MarketOfferType, MarketType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BaseFundingVault, useMarketAction } from "@/sdk/hooks";
+import { BaseFundingVault, useMarketAction, useTokenQuotes } from "@/sdk/hooks";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING_BOTTOM,
@@ -38,6 +38,13 @@ import { ChevronLeftIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { WithdrawSection } from "./withdraw-section";
 import { AlertIndicator } from "@/components/common";
+import { ethers } from "ethers";
+import { SupportedToken } from "@/sdk/constants";
+import {
+  RoycoMarketOfferType,
+  RoycoMarketType,
+  RoycoMarketUserType,
+} from "@/sdk/market";
 
 export const MarketForm = React.forwardRef<
   HTMLDivElement,
@@ -70,13 +77,23 @@ export const MarketForm = React.forwardRef<
     },
   });
 
+  const propsTokenQuotes = useTokenQuotes({
+    token_ids: [
+      currentMarketData?.input_token_id ?? "",
+      ...marketForm.watch("incentive_tokens").map((token) => token.id),
+    ].filter(Boolean),
+  });
+
   const {
+    isLoading,
     isValid,
     isValidMessage,
     isReady,
     writeContractOptions,
     canBePerformedCompletely,
     canBePerformedPartially,
+    simulationData,
+    incentivesData,
     // incentivesInfo: incentivesInfoCreateOfferRecipe,
   } = useMarketAction({
     chain_id: marketMetadata.chain_id,
@@ -104,9 +121,107 @@ export const MarketForm = React.forwardRef<
       .map((token) => token.raw_amount ?? "0"),
 
     // Incentive Rates
-    incentive_rates: marketForm
-      .watch("incentive_tokens")
-      .map((token) => token.rate ?? "0"),
+    incentive_rates:
+      marketMetadata.market_type === MarketType.vault.id &&
+      userType === MarketUserType.ap.id
+        ? marketForm.watch("incentive_tokens").map((token) => {
+            try {
+              const aip = parseFloat(token.aip ?? "0");
+              const fdv = parseFloat(token.fdv ?? "0");
+              const distribution = parseFloat(token.distribution ?? "0");
+              const offerAmount = parseFloat(
+                marketForm.watch("offer_amount") ?? "0"
+              );
+              const totalSupply =
+                propsTokenQuotes.data?.find(
+                  (quote: any) => quote.id === token.id
+                )?.total_supply ?? 0;
+              const inputTokenPrice =
+                propsTokenQuotes.data?.find(
+                  (quote: any) => quote.id === currentMarketData?.input_token_id
+                )?.price ?? 0;
+
+              const rate =
+                (aip * offerAmount * inputTokenPrice) / (fdv * distribution);
+
+              if (isNaN(rate)) {
+                return "0";
+              }
+
+              const rateInWei = ethers.utils.parseUnits(
+                rate.toFixed(token.decimals),
+                token.decimals
+              );
+
+              return rateInWei.toString();
+            } catch (error) {
+              return "0";
+            }
+          })
+        : marketForm
+            .watch("incentive_tokens")
+            .map((token) => token.raw_amount ?? "0"),
+
+    // custom incentive data for ap limit offers in vault markets
+    custom_incentive_data:
+      marketMetadata.market_type === MarketType.vault.id &&
+      userType === MarketUserType.ap.id
+        ? marketForm.watch("incentive_tokens").map(
+            (
+              token: SupportedToken & {
+                aip?: string;
+                fdv?: string;
+                distribution?: string;
+              }
+            ) => {
+              try {
+                const aipPercentage = parseFloat(token.aip ?? "0");
+                const aip = aipPercentage / 100;
+                const fdv = parseFloat(token.fdv ?? "0");
+                const distribution = parseFloat(token.distribution ?? "0");
+                const offerAmount = parseFloat(
+                  marketForm.watch("offer_amount") ?? "0"
+                );
+
+                const inputTokenPrice =
+                  propsTokenQuotes.data?.find(
+                    (quote: any) =>
+                      quote.id === currentMarketData?.input_token_id
+                  )?.price ?? 0;
+                const incentiveTokenPrice = fdv / distribution;
+
+                let rate =
+                  (aip * offerAmount * inputTokenPrice) /
+                  (incentiveTokenPrice * (365 * 24 * 60 * 60));
+
+                if (isNaN(rate)) {
+                  return "0";
+                }
+
+                const rateInWei = ethers.utils.parseUnits(
+                  rate.toFixed(token.decimals),
+                  token.decimals
+                );
+
+                return {
+                  ...token,
+                  aip,
+                  fdv,
+                  distribution,
+                  offerAmount,
+                  inputTokenPrice,
+                  incentiveTokenPrice,
+                  rate,
+                  rateInWei: rateInWei.toString(),
+                };
+              } catch (error) {
+                return "0";
+              }
+            }
+          ) ?? []
+        : marketForm
+            .watch("incentive_tokens")
+            .map((token) => token.raw_amount ?? "0"),
 
     // Incentive Start timestamps
     incentive_start_timestamps: marketForm
@@ -405,10 +520,19 @@ export const MarketForm = React.forwardRef<
 
             <Button
               disabled={
-                marketStep === MarketSteps.preview.id &&
-                canBePerformedPartially === false
+                (marketMetadata.market_type === RoycoMarketType.vault.id &&
+                  userType === RoycoMarketUserType.ap.id &&
+                  marketForm.watch("offer_type") ===
+                    RoycoMarketOfferType.limit.id) ||
+                (marketMetadata.market_type === RoycoMarketType.vault.id &&
+                  userType === RoycoMarketUserType.ip.id &&
+                  marketForm.watch("offer_type") ===
+                    RoycoMarketOfferType.market.id)
                   ? true
-                  : false
+                  : marketStep === MarketSteps.preview.id &&
+                      canBePerformedPartially === false
+                    ? true
+                    : false
               }
               onClick={async () => {
                 await handleNextStep();
@@ -417,7 +541,16 @@ export const MarketForm = React.forwardRef<
               type="button"
               className="shrink-0"
             >
-              {nextLabel()}
+              {(marketMetadata.market_type === RoycoMarketType.vault.id &&
+                userType === RoycoMarketUserType.ap.id &&
+                marketForm.watch("offer_type") ===
+                  RoycoMarketOfferType.limit.id) ||
+              (marketMetadata.market_type === RoycoMarketType.vault.id &&
+                userType === RoycoMarketUserType.ip.id &&
+                marketForm.watch("offer_type") ===
+                  RoycoMarketOfferType.market.id)
+                ? "Coming Soon"
+                : nextLabel()}
             </Button>
           </div>
         )}

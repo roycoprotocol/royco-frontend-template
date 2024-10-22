@@ -37,6 +37,45 @@ export const getAPMarketOfferVaultTransactionOptions = ({
   return txOptions;
 };
 
+export const getIPMarketOfferVaultTransactionOptions = ({
+  chainId,
+  offers,
+  fillAmounts,
+}: {
+  chainId: number;
+  offers: Array<{
+    offerID: string;
+    targetVault: string;
+    ap: string;
+    fundingVault: string;
+    expiry: string;
+    incentivesRequested: string[];
+    incentivesRatesRequested: string[];
+  }>;
+  fillAmounts: string[];
+}) => {
+  const address =
+    ContractMap[chainId as keyof typeof ContractMap]["VaultMarketHub"].address;
+  const abi =
+    ContractMap[chainId as keyof typeof ContractMap]["VaultMarketHub"].abi;
+
+  const txOptions: TransactionOptionsType = {
+    contractId: "VaultMarketHub",
+    chainId,
+    id: "fill_ap_offers",
+    label: "Fill AP Offers",
+    address,
+    abi,
+    functionName: "allocateOffers",
+    marketType: RoycoMarketType.vault.id,
+    args: [offers, fillAmounts],
+    txStatus: "idle",
+    txHash: null,
+  };
+
+  return txOptions;
+};
+
 export const getAPLimitOfferVaultTransactionOptions = ({
   chainId,
   address,

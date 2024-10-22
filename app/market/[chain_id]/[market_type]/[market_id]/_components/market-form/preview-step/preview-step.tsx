@@ -9,7 +9,7 @@ import {
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketFormSchema } from "../market-form-schema";
-import { useMarketAction } from "@/sdk/hooks";
+import { useMarketAction, useTokenQuotes } from "@/sdk/hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { TransactionOptionsType } from "@/sdk/types";
 import { useAccount } from "wagmi";
@@ -24,6 +24,8 @@ import {
 } from "@/store";
 import { TransactionRow } from "@/components/composables/transaction-modal/transaction-row";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ethers } from "ethers";
+import { SupportedToken } from "@/sdk/constants";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -40,6 +42,13 @@ export const PreviewStep = React.forwardRef<
     useActiveMarket();
 
   const { userType, marketStep } = useMarketManager();
+
+  const propsTokenQuotes = useTokenQuotes({
+    token_ids: [
+      currentMarketData?.input_token_id ?? "",
+      ...marketForm.watch("incentive_tokens").map((token) => token.id),
+    ].filter(Boolean),
+  });
 
   const {
     isLoading,
@@ -78,9 +87,107 @@ export const PreviewStep = React.forwardRef<
       .map((token) => token.raw_amount ?? "0"),
 
     // Incentive Rates
-    incentive_rates: marketForm
-      .watch("incentive_tokens")
-      .map((token) => token.rate ?? "0"),
+    incentive_rates:
+      marketMetadata.market_type === MarketType.vault.id &&
+      userType === MarketUserType.ap.id
+        ? marketForm.watch("incentive_tokens").map((token) => {
+            try {
+              const aip = parseFloat(token.aip ?? "0");
+              const fdv = parseFloat(token.fdv ?? "0");
+              const distribution = parseFloat(token.distribution ?? "0");
+              const offerAmount = parseFloat(
+                marketForm.watch("offer_amount") ?? "0"
+              );
+              const totalSupply =
+                propsTokenQuotes.data?.find(
+                  (quote: any) => quote.id === token.id
+                )?.total_supply ?? 0;
+              const inputTokenPrice =
+                propsTokenQuotes.data?.find(
+                  (quote: any) => quote.id === currentMarketData?.input_token_id
+                )?.price ?? 0;
+
+              const rate =
+                (aip * totalSupply * offerAmount * inputTokenPrice) /
+                (fdv * distribution);
+
+              if (isNaN(rate)) {
+                return "0";
+              }
+
+              const rateInWei = ethers.utils.parseUnits(
+                rate.toFixed(token.decimals),
+                token.decimals
+              );
+
+              return rateInWei.toString();
+            } catch (error) {
+              return "0";
+            }
+          })
+        : marketForm
+            .watch("incentive_tokens")
+            .map((token) => token.raw_amount ?? "0"),
+    // custom incentive data for ap limit offers in vault markets
+    custom_incentive_data:
+      marketMetadata.market_type === MarketType.vault.id &&
+      userType === MarketUserType.ap.id
+        ? marketForm.watch("incentive_tokens").map(
+            (
+              token: SupportedToken & {
+                aip?: string;
+                fdv?: string;
+                distribution?: string;
+              }
+            ) => {
+              try {
+                const aipPercentage = parseFloat(token.aip ?? "0");
+                const aip = aipPercentage / 100;
+                const fdv = parseFloat(token.fdv ?? "0");
+                const distribution = parseFloat(token.distribution ?? "0");
+                const offerAmount = parseFloat(
+                  marketForm.watch("offer_amount") ?? "0"
+                );
+
+                const inputTokenPrice =
+                  propsTokenQuotes.data?.find(
+                    (quote: any) =>
+                      quote.id === currentMarketData?.input_token_id
+                  )?.price ?? 0;
+                const incentiveTokenPrice = fdv / distribution;
+
+                let rate =
+                  (aip * offerAmount * inputTokenPrice) /
+                  (incentiveTokenPrice * (365 * 24 * 60 * 60));
+
+                if (isNaN(rate)) {
+                  return "0";
+                }
+
+                const rateInWei = ethers.utils.parseUnits(
+                  rate.toFixed(token.decimals),
+                  token.decimals
+                );
+
+                return {
+                  ...token,
+                  aip,
+                  fdv,
+                  distribution,
+                  offerAmount,
+                  inputTokenPrice,
+                  incentiveTokenPrice,
+                  rate,
+                  rateInWei: rateInWei.toString(),
+                };
+              } catch (error) {
+                return "0";
+              }
+            }
+          ) ?? []
+        : marketForm
+            .watch("incentive_tokens")
+            .map((token) => token.raw_amount ?? "0"),
 
     // Incentive Start timestamps
     incentive_start_timestamps: marketForm
@@ -227,24 +334,51 @@ export const PreviewStep = React.forwardRef<
                     <SecondaryLabel className="font-light text-black">
                       +
                       {Intl.NumberFormat("en-US", {
+                        // style:
+                        //   marketMetadata.market_type === MarketType.vault.id &&
+                        //   userType === MarketUserType.ip.id &&
+                        //   marketForm.watch("offer_type") ===
+                        //     MarketOfferType.limit.id
+                        //     ? "decimal"
+                        //     : "percent",
                         style:
-                          marketMetadata.market_type === MarketType.vault.id &&
-                          userType === MarketUserType.ip.id &&
-                          marketForm.watch("offer_type") ===
-                            MarketOfferType.limit.id
-                            ? "decimal"
-                            : "percent",
+                          // recipe market
+                          marketMetadata.market_type === MarketType.recipe.id
+                            ? "percent"
+                            : // vault market
+                              userType === MarketUserType.ap.id &&
+                                marketForm.watch("offer_type") ===
+                                  MarketOfferType.limit.id
+                              ? "percent"
+                              : userType === MarketUserType.ip.id &&
+                                  MarketOfferType.limit.id
+                                ? "decimal"
+                                : "percent",
+
                         notation: "compact",
                         useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(
-                        marketMetadata.market_type === MarketType.vault.id &&
-                          userType === MarketUserType.ip.id &&
-                          marketForm.watch("offer_type") ===
-                            MarketOfferType.limit.id
-                          ? incentive.token_amount
-                          : incentive.annual_change_ratio / 100
+                        // recipe market
+                        marketMetadata.market_type === MarketType.recipe.id
+                          ? incentive.annual_change_ratio
+                          : // vault market
+                            userType === MarketUserType.ap.id &&
+                              marketForm.watch("offer_type") ===
+                                MarketOfferType.limit.id
+                            ? incentive.annual_change_ratio
+                            : userType === MarketUserType.ip.id &&
+                                MarketOfferType.limit.id
+                              ? incentive.token_amount
+                              : incentive.annual_change_ratio
+
+                        // marketMetadata.market_type === MarketType.vault.id &&
+                        //   userType === MarketUserType.ip.id &&
+                        //   marketForm.watch("offer_type") ===
+                        //     MarketOfferType.limit.id
+                        //   ? incentive.token_amount
+                        //   : incentive.annual_change_ratio
                       )}
                     </SecondaryLabel>
 
@@ -269,11 +403,23 @@ export const PreviewStep = React.forwardRef<
                         (
                         {Intl.NumberFormat("en-US", {
                           style: "decimal",
+                          notation: "compact",
+                          useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(incentive.per_input_token)}{" "}
-                        {incentive.symbol.toUpperCase()} / 1{" "}
-                        {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                        }).format(
+                          userType === MarketUserType.ap.id &&
+                            marketForm.watch("offer_type") ===
+                              MarketOfferType.limit.id
+                            ? incentive.token_amount
+                            : incentive.per_input_token
+                        )}{" "}
+                        {incentive.symbol.toUpperCase()} /{" "}
+                        {userType === MarketUserType.ap.id &&
+                        marketForm.watch("offer_type") ===
+                          MarketOfferType.limit.id
+                          ? "Year"
+                          : currentMarketData?.input_token_data.symbol.toUpperCase()}
                         )
                       </TertiaryLabel>
                     )}
@@ -320,7 +466,9 @@ export const PreviewStep = React.forwardRef<
                         )
                       )
                     : Intl.NumberFormat("en-US", {
-                        style: "decimal",
+                        style: "percent",
+                        notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(

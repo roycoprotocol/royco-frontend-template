@@ -50,10 +50,11 @@ export const MarketFormSchema = z
         image: z.string(),
         decimals: z.number(),
         amount: z.string().optional(),
-        rate: z.string().optional(),
-        fdv: z.string().optional(),
-        aip: z.string().optional(),
-        distribution: z.string().optional(),
+        rate: z.string().optional(), // rate in wei per second (scaled up by 10^18)
+        fdv: z.string().optional(), // fully diluted value of token
+        aip: z.string().optional(), // annual incentive percentage
+        allocation: z.string().optional(), // percentage of shares to this offer
+        distribution: z.string().optional(), // percentage of shares to this offer
         raw_amount: z.string().optional(),
         start_timestamp: z.date().optional(),
         end_timestamp: z.date().optional(),

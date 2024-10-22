@@ -15,6 +15,7 @@ import {
   getAPMarketOfferVaultTransactionOptions,
   getIPLimitOfferVaultAddRewardTransactionOptions,
   getIPLimitOfferVaultSetRewardTransactionOptions,
+  getIPMarketOfferVaultTransactionOptions,
 } from "./use-market-action-vault-handlers";
 import {
   getAPLimitOfferRecipeTransactionOptions,
@@ -471,18 +472,109 @@ export const useContractOptions = ({
           }
         } else {
           // handle IP
-
           if (offer_type === RoycoMarketOfferType.market.id) {
-            // handle IP limit offer vault market
-            const interactionContractAddress =
-              ContractMap[chain_id as keyof typeof ContractMap][
-                "VaultMarketHub"
-              ].address;
+            // handle IP market offer vault market
 
-            // handle IP limit offer vault market
-            /**
-             * @TODO Implement IP limit offer vault market (need to call allocate function on VaultMarketHub contract)
-             */
+            // Get Total Fill Quantity
+            const total_fill_quantity: BigNumber =
+              propsMarketOffers.data?.reduce((acc, offer) => {
+                return acc.add(BigNumber.from(offer.quantity));
+              }, BigNumber.from(0)) || BigNumber.from(0);
+
+            // Check if the offer can be performed completely or partially
+            if (total_fill_quantity === BigNumber.from(0)) {
+              canBePerformedCompletely = false;
+              canBePerformedPartially = false;
+            } else if (total_fill_quantity.lt(BigNumber.from(quantity))) {
+              canBePerformedCompletely = false;
+              canBePerformedPartially = true;
+            } else {
+              canBePerformedCompletely = true;
+              canBePerformedPartially = true;
+            }
+
+            const txOptions: TransactionOptionsType =
+              getIPMarketOfferVaultTransactionOptions({
+                chainId: chain_id,
+                offers: (propsMarketOffers.data || []).map((offer) => {
+                  const offerID = offer.offer_id;
+                  const targetVault = offer.funding_vault;
+                  const ap = offer.creator;
+                  const fundingVault = offer.funding_vault;
+                  const expiry = offer.expiry;
+                  const incentivesRequested = offer.token_ids.map(
+                    (id) => id.split("-")[1]
+                  );
+                  const incentivesRatesRequested = offer.token_amounts;
+
+                  return {
+                    offerID,
+                    targetVault,
+                    ap,
+                    fundingVault,
+                    expiry,
+                    incentivesRequested,
+                    incentivesRatesRequested,
+                  };
+                }),
+
+                fillAmounts: (propsMarketOffers.data || []).map(
+                  (offer) => offer.fill_quantity
+                ),
+              });
+
+            // Offer options
+            postContractOptions = [
+              {
+                ...txOptions,
+                tokensIn: [
+                  {
+                    ...getSupportedToken(market.input_token_id as string),
+                    raw_amount: quantity as string,
+                    token_amount: parseFloat(
+                      ethers.utils.formatUnits(
+                        quantity as string,
+                        getSupportedToken(market.input_token_id as string)
+                          .decimals
+                      )
+                    ),
+                  },
+                ],
+                tokensOut: incentivesData.map((incentive, index) => {
+                  // @TODO: Fees need to be added here
+                  const raw_amount_with_fees =
+                    action_incentive_token_amounts[index];
+
+                  const raw_amount = raw_amount_with_fees.toString();
+
+                  const token_amount = parseFloat(
+                    ethers.utils.formatUnits(
+                      raw_amount_with_fees.toString(),
+                      incentive.decimals
+                    )
+                  );
+
+                  return {
+                    ...incentive,
+                    raw_amount,
+                    token_amount,
+                  };
+                }),
+              },
+            ];
+
+            const approvalTxOptions = getTokenApprovalContractOptions({
+              marketType: market_type,
+              tokenIds: [...action_incentive_token_ids],
+              spender:
+                ContractMap[chain_id as keyof typeof ContractMap][
+                  "VaultMarketHub"
+                ].address,
+              requiredApprovalAmounts: incentive_token_amounts || [],
+            });
+
+            // Approval options
+            preContractOptions = [...approvalTxOptions];
           } else {
             // handle IP market offer vault market
             canBePerformedCompletely = true;

@@ -1,38 +1,13 @@
 import { cn } from "@/lib/utils";
-import { SpringNumber } from "@/components/composables";
-import {
-  AipInfo,
-  AssetInfo,
-  IncentiveInfo,
-  TypedObjectDistinctAsset,
-  TypedObjectDistinctIncentive,
-  EnrichedMarketDataType,
-} from "@/sdk/hooks";
-import {
-  AipBreakdown,
-  AssetBreakdown,
-  IncentiveBreakdown,
-  InfoGrid,
-  TokenDisplayer,
-} from "@/components/common";
-
-import { exploreColumnNames, useExplore } from "@/store/use-explore";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { createPortal } from "react-dom";
-import React, { Fragment } from "react";
-import { ArrowDownIcon, ArrowUpIcon, EllipsisVerticalIcon } from "lucide-react";
+import { TokenDisplayer } from "@/components/common";
+import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EnrichedOfferDataType } from "@/sdk/queries";
 
-import { ArrowDownUpIcon } from "lucide-react";
-import { BASE_UNDERLINE, SecondaryLabel, TertiaryLabel } from "../composables";
+import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
-import { RewardStyleMap } from "@/store/use-market-manager";
+import { RewardStyleMap } from "@/store";
 
 /**
  * @description Column definitions for the table

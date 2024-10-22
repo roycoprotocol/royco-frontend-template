@@ -54,7 +54,7 @@ export const TransactionModal = React.forwardRef<
 
   // console.log("transactions", transactions);
 
-  console.log("txError", txError);
+  // console.log("txError", txError);
 
   const {
     isLoading: isTxConfirming,

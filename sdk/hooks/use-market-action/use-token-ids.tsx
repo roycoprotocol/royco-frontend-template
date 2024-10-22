@@ -12,6 +12,9 @@ import { useReadMarket } from "../use-read-market";
 import { useMarketOffers } from "../use-market-offers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 
+/**
+ * Used for fetching token quotes
+ */
 export const useTokenIds = ({
   enabled,
   market_type,
@@ -38,7 +41,7 @@ export const useTokenIds = ({
   let action_incentive_token_amounts: string[] = [];
 
   // Modify token_ids
-  if (enabled) {
+  if (enabled && !!market) {
     // handle Recipe Market
     if (market_type === RoycoMarketType.recipe.id) {
       // handle AP
@@ -224,17 +227,71 @@ export const useTokenIds = ({
       if (user_type === RoycoMarketUserType.ap.id) {
         // handle AP Market Offer Vault Market
         if (offer_type === RoycoMarketOfferType.market.id) {
-          token_ids = [market?.input_token_id as string];
+          token_ids = [
+            market.input_token_id as string,
+            ...(market.incentive_ids ?? []),
+          ];
+
+          action_incentive_token_ids = market.incentive_ids || [];
+          action_incentive_token_amounts = incentive_token_amounts || [];
         }
         // handle AP Limit Offer Vault Market
         else {
+          token_ids = [
+            market.input_token_id as string,
+            ...(incentive_token_ids || []),
+          ];
+
+          action_incentive_token_ids = incentive_token_ids || [];
+          action_incentive_token_amounts = incentive_token_amounts || [];
         }
       }
       // handle IP
       else {
         // handle IP Market Offer Vault Market
         if (offer_type === RoycoMarketOfferType.market.id) {
-          // @TODO based on market offers
+          // based on market offers
+          const token_id_to_amount_map =
+            propsMarketOffers.data?.reduce(
+              (acc, offer) => {
+                offer.token_ids.forEach((token_id, index) => {
+                  const amount = BigNumber.from(
+                    offer.token_amounts[index].toString()
+                  );
+
+                  const actual_amount = amount
+                    .mul(BigNumber.from(offer.fill_quantity))
+                    .div(BigNumber.from(offer.quantity));
+
+                  if (acc[token_id]) {
+                    acc[token_id] = acc[token_id].add(actual_amount);
+                  } else {
+                    acc[token_id] = actual_amount; // Initialize with the BigNumber amount
+                  }
+                });
+                return acc;
+              },
+              {} as Record<string, BigNumber>
+            ) ?? {};
+
+          // Get the unique token IDs
+          const market_offer_incentive_token_ids = Object.keys(
+            token_id_to_amount_map
+          );
+
+          // Get the summed token amounts as strings to avoid any floating-point issues
+          const market_offer_incentive_token_amounts =
+            market_offer_incentive_token_ids.map((token_id) =>
+              token_id_to_amount_map[token_id].toString()
+            );
+
+          token_ids = [
+            market?.input_token_id as string,
+            ...market_offer_incentive_token_ids,
+          ];
+
+          action_incentive_token_ids = market_offer_incentive_token_ids;
+          action_incentive_token_amounts = market_offer_incentive_token_amounts;
         }
         // handle IP Limit Offer Vault Market
         else {

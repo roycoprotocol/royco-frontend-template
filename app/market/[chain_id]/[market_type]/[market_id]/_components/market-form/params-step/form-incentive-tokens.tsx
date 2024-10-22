@@ -143,7 +143,8 @@ export const FormIncentiveTokens = React.forwardRef<
       | "distribution"
       | "fdv"
       | "start_timestamp"
-      | "end_timestamp";
+      | "end_timestamp"
+      | "allocation";
     value: string | Date | undefined;
   }) => {
     try {
@@ -189,32 +190,6 @@ export const FormIncentiveTokens = React.forwardRef<
           marketForm.setValue("incentive_tokens", newIncentives);
         }
       }
-
-      // ===== ... ===== //
-      // Update Rate
-      let currentIncentives = marketForm.watch("incentive_tokens");
-
-      try {
-        if (!!currentIncentives && index < currentIncentives.length) {
-          const rate =
-            parseFloat(currentIncentives[index].distribution ?? "") /
-            (365 * 24 * 60 * 60);
-
-          const rateInWei = ethers.utils
-            .parseUnits(
-              rate.toFixed(currentIncentives[index].decimals),
-              currentIncentives[index].decimals
-            )
-            .toString();
-
-          currentIncentives[index].rate = rateInWei;
-        }
-      } catch (error) {
-        currentIncentives[index].rate = "0";
-      }
-      // ===== xxx ===== //
-
-      marketForm.setValue("incentive_tokens", currentIncentives);
     } catch (e) {
       console.log("e", e);
     }
@@ -474,38 +449,21 @@ export const FormIncentiveTokens = React.forwardRef<
                               containerClassName="h-9 text-sm bg-white grow text-black"
                               className=""
                               placeholder={
-                                // "Amount"
-
                                 marketMetadata.market_type ===
                                   MarketType.vault.id &&
                                 userType === MarketUserType.ap.id
-                                  ? "Distribution"
+                                  ? "Market Cap"
                                   : "Amount"
-
-                                // marketMetadata.market_type ===
-                                //   MarketType.vault.id &&
-                                // userType === MarketUserType.ap.id
-                                //   ? "Market Cap"
-                                //   : "Amount"
                               }
                               defaultValue={undefined}
                               value={
-                                // marketForm.watch("incentive_tokens")[index]
-                                //   .amount
-
                                 marketMetadata.market_type ===
                                   MarketType.vault.id &&
                                 userType === MarketUserType.ap.id
-                                  ? incentive_token.distribution
-                                  : incentive_token.amount
-
-                                // marketMetadata.market_type ===
-                                //   MarketType.vault.id &&
-                                // userType === MarketUserType.ap.id
-                                //   ? marketForm.watch("incentive_tokens")[index]
-                                //       .fdv
-                                //   : marketForm.watch("incentive_tokens")[index]
-                                //       .amount
+                                  ? marketForm.watch("incentive_tokens")[index]
+                                      .fdv
+                                  : marketForm.watch("incentive_tokens")[index]
+                                      .amount
                               }
                               onChange={(e) => {
                                 changeIncentiveValue({
@@ -514,15 +472,8 @@ export const FormIncentiveTokens = React.forwardRef<
                                     marketMetadata.market_type ===
                                       MarketType.vault.id &&
                                     userType === MarketUserType.ap.id
-                                      ? "distribution"
+                                      ? "fdv"
                                       : "amount",
-
-                                  // type: "amount",
-                                  // marketMetadata.market_type ===
-                                  //   MarketType.vault.id &&
-                                  // userType === MarketUserType.ap.id
-                                  //   ? "fdv"
-                                  //   : "amount",
                                   value: e.target.value,
                                 });
                               }}
@@ -539,7 +490,7 @@ export const FormIncentiveTokens = React.forwardRef<
                                           marketMetadata.market_type ===
                                             MarketType.vault.id &&
                                           userType === MarketUserType.ap.id
-                                            ? "/year"
+                                            ? ""
                                             : ""
                                         }`,
                                       },
@@ -585,72 +536,72 @@ export const FormIncentiveTokens = React.forwardRef<
                           {/**
                            * AIP and Distribution
                            */}
-                          {/* {marketMetadata.market_type ===
-                            MarketType.vault.id && (
-                            <div className="flex w-full flex-row items-center gap-1">
-                              <Input
-                                type="number"
-                                step="any"
-                                containerClassName={cn(
-                                  "h-9 text-sm bg-white grow text-black",
-                                  marketMetadata.market_type ===
-                                    MarketType.vault.id &&
-                                    userType === MarketUserType.ip.id &&
-                                    "hidden"
-                                )}
-                                className=""
-                                placeholder="AIP"
-                                defaultValue={undefined}
-                                value={
-                                  marketForm.watch("incentive_tokens")[index]
-                                    .aip
-                                }
-                                onChange={(e) => {
-                                  changeIncentiveValue({
-                                    index,
-                                    type: "aip",
-                                    value: e.target.value,
-                                  });
-                                }}
-                                min="0"
-                                Suffix={() => {
-                                  return (
-                                    <SecondaryLabel className="font-light text-black">
-                                      %
-                                    </SecondaryLabel>
-                                  );
-                                }}
-                              />
+                          {marketMetadata.market_type === MarketType.vault.id &&
+                            userType === MarketUserType.ap.id && (
+                              <div className="flex w-full flex-row items-center gap-1">
+                                <Input
+                                  type="number"
+                                  step="any"
+                                  containerClassName={cn(
+                                    "h-9 text-sm bg-white grow text-black",
+                                    marketMetadata.market_type ===
+                                      MarketType.vault.id &&
+                                      userType === MarketUserType.ip.id &&
+                                      "hidden"
+                                  )}
+                                  className=""
+                                  placeholder="AIP"
+                                  defaultValue={undefined}
+                                  value={
+                                    marketForm.watch("incentive_tokens")[index]
+                                      .aip
+                                  }
+                                  onChange={(e) => {
+                                    changeIncentiveValue({
+                                      index,
+                                      type: "aip",
+                                      value: e.target.value,
+                                    });
+                                  }}
+                                  min="0"
+                                  Suffix={() => {
+                                    return (
+                                      <SecondaryLabel className="font-light text-black">
+                                        %
+                                      </SecondaryLabel>
+                                    );
+                                  }}
+                                />
 
-                              <Input
-                                type="number"
-                                step="any"
-                                containerClassName="h-9 text-sm bg-white grow text-black"
-                                className=""
-                                placeholder="Distribution"
-                                defaultValue={undefined}
-                                value={
-                                  marketForm.watch("incentive_tokens")[index]
-                                    .distribution
-                                }
-                                onChange={(e) => {
-                                  changeIncentiveValue({
-                                    index,
-                                    type: "distribution",
-                                    value: e.target.value,
-                                  });
-                                }}
-                                min="0"
-                                Suffix={() => {
-                                  return (
-                                    <SecondaryLabel className="font-light text-black">
-                                      {`${incentive_token.symbol.toUpperCase()}/year`}
-                                    </SecondaryLabel>
-                                  );
-                                }}
-                              />
-                            </div>
-                          )} */}
+                                <Input
+                                  type="number"
+                                  step="any"
+                                  containerClassName="h-9 text-sm bg-white grow text-black"
+                                  className=""
+                                  placeholder="Distribution"
+                                  defaultValue={undefined}
+                                  value={
+                                    marketForm.watch("incentive_tokens")[index]
+                                      .distribution
+                                  }
+                                  onChange={(e) => {
+                                    changeIncentiveValue({
+                                      index,
+                                      type: "distribution",
+                                      value: e.target.value,
+                                    });
+                                  }}
+                                  min="0"
+                                  Suffix={() => {
+                                    return (
+                                      <SecondaryLabel className="font-light text-black">
+                                        {`${marketForm.watch("incentive_tokens")[index].symbol.toUpperCase()}/year`}
+                                      </SecondaryLabel>
+                                    );
+                                  }}
+                                />
+                              </div>
+                            )}
 
                           {/**
                            * Start Timestamp

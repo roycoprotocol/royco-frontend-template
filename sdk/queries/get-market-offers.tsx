@@ -20,8 +20,6 @@ export const getMarketOffersQueryOptions = (
     quantity,
   ],
   queryFn: async () => {
-    console.log("get-market-offers quantity", quantity);
-
     const result = await client.rpc("get_market_offers", {
       in_chain_id: chain_id,
       in_market_type: market_type,

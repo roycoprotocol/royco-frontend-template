@@ -212,8 +212,12 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                 onClick={() => {
                   const contract =
                     marketMetadata.market_type === MarketType.recipe.id
-                      ? ContractMap[marketMetadata.chain_id]["RecipeMarketHub"]
-                      : ContractMap[marketMetadata.chain_id]["VaultMarketHub"];
+                      ? ContractMap[
+                          marketMetadata.chain_id as keyof typeof ContractMap
+                        ]["RecipeMarketHub"]
+                      : ContractMap[
+                          marketMetadata.chain_id as keyof typeof ContractMap
+                        ]["VaultMarketHub"];
 
                   const address = contract.address;
                   const abi = contract.abi;
@@ -235,7 +239,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                           props.row.original.quantity,
                           props.row.original.expiry,
                           props.row.original.token_ids.map(
-                            (tokenId, tokenIndex) => {
+                            (tokenId: string, tokenIndex: number) => {
                               const [chainId, contractAddress] =
                                 tokenId.split("-");
 
