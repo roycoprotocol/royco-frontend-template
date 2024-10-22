@@ -225,13 +225,6 @@ export const useTokenIds = ({
         // handle AP Market Offer Vault Market
         if (offer_type === RoycoMarketOfferType.market.id) {
           token_ids = [market?.input_token_id as string];
-
-          // token_ids = [
-          //   market?.input_token_id as string,
-          //   ...(incentive_token_ids || []),
-          // ];
-          // action_incentive_token_ids = incentive_token_ids || [];
-          // action_incentive_token_amounts = incentive_token_amounts || [];
         }
         // handle AP Limit Offer Vault Market
         else {

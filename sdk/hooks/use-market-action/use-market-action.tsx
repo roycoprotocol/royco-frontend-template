@@ -21,7 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useReadMarket } from "../use-read-market";
 import { useMarketOffers } from "../use-market-offers";
 import { useTokenIds } from "./use-token-ids";
-import { useIncentivesData } from "./use-incentive-data";
+import { useIncentivesData } from "./use-incentives-data";
 import { useContractOptions } from "./use-contract-options";
 import { useTokenAllowance } from "../use-token-allowance";
 import { useReadVaultPreview } from "../use-read-vault-preview";
@@ -120,7 +120,8 @@ export const useMarketAction = ({
       isValid &&
       !!market &&
       !propsReadMarket.isLoading &&
-      !!propsReadMarket.data,
+      !!propsReadMarket.data &&
+      market.market_type === 1,
   });
 
   /**
@@ -189,15 +190,19 @@ export const useMarketAction = ({
     enabled:
       enabled &&
       !!market &&
-      action_incentive_token_ids.length > 0 &&
-      action_incentive_token_amounts.length > 0 &&
       !propsTokenQuotes.isLoading &&
       !!propsTokenQuotes.data,
     market_type,
     market,
     propsTokenQuotes,
-    action_incentive_token_ids,
-    action_incentive_token_amounts,
+    action_incentive_token_ids:
+      market?.market_type === 0
+        ? action_incentive_token_ids
+        : propsReadVaultPreview.incentive_token_ids,
+    action_incentive_token_amounts:
+      market?.market_type === 0
+        ? action_incentive_token_amounts
+        : propsReadVaultPreview.incentive_token_amounts,
     quantity,
   });
 
@@ -282,7 +287,7 @@ export const useMarketAction = ({
 
   // Simulate contract options via a post call to simulation_url, useQuery will be used for making the post call
   const simulationProps = useQuery({
-    enabled: enabled && isReady && !!simulation_url,
+    enabled: enabled && isReady && !!simulation_url && !!account,
     queryKey: [
       "simulate",
       ...writeContractOptions.map((option) => JSON.stringify(option)).join(""),
@@ -317,8 +322,8 @@ export const useMarketAction = ({
           raw_amount: string;
           amount: string | null;
           dollar_value: number | null;
-          from: string;
-          to: string;
+          from?: string;
+          to?: string;
           token_info: {
             standard: string;
             contract_address: string;
@@ -338,13 +343,17 @@ export const useMarketAction = ({
 
       const tokens_out = asset_changes.filter(
         (d) =>
+          !!d.from &&
           d.from.toLowerCase() === account?.toLowerCase() &&
+          !!d.to &&
           d.to.toLowerCase() !== account?.toLowerCase()
       );
 
       const tokens_in = asset_changes.filter(
         (d) =>
+          !!d.to &&
           d.to.toLowerCase() === account?.toLowerCase() &&
+          !!d.from &&
           d.from.toLowerCase() !== account?.toLowerCase()
       );
 

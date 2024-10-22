@@ -30,7 +30,7 @@ export const useReadVaultPreview = ({
   const vaultContracts = market.incentive_tokens_data.map((incentive) => {
     return {
       chainId: market.chain_id,
-      address: incentive.contract_address as Address,
+      address: market.market_id as Address,
       abi: ContractMap[market.chain_id as keyof typeof ContractMap][
         "WrappedVault"
       ].abi as Abi,
@@ -59,9 +59,12 @@ export const useReadVaultPreview = ({
         incentive_token_amounts.push(incentive_token_amount);
       }
     } catch (error) {
-      console.log("useReadMarket error", error);
+      // console.log("useReadVaultPreview error", error);
     }
   }
+
+  // console.log("incentive_token_ids", incentive_token_ids);
+  // console.log("incentive_token_amounts", incentive_token_amounts);
 
   return {
     ...propsReadContracts,

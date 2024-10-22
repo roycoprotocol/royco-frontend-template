@@ -301,7 +301,8 @@ export const AipBreakdown = ({
                 <div className="flex flex-row items-center space-x-2">
                   <div className="h-5">
                     <span className="leading-5">
-                      {!!aip_info.annual_change_ratio
+                      {!!aip_info.annual_change_ratio &&
+                      aip_info.annual_change_ratio !== Math.pow(10, 18)
                         ? Intl.NumberFormat("en-US", {
                             style: "percent",
                             notation: "compact",
@@ -309,7 +310,7 @@ export const AipBreakdown = ({
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           }).format(aip_info.annual_change_ratio)
-                        : "?"}
+                        : "N/D"}
                     </span>
                   </div>
 

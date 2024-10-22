@@ -377,25 +377,29 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           <Tooltip>
-            <TooltipTrigger className={cn("cursor-pointer")}>
-              <SpringNumber
-                previousValue={previousValue}
-                currentValue={currentValue}
-                numberFormatOptions={{
-                  style: "percent",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }}
-                className={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                  props.view === "list" && "h-5"
-                )}
-                spanClassName={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Span,
-                  props.view === "list" && "leading-5"
-                )}
-              />
-            </TooltipTrigger>
+            {props.row.original.annual_change_ratio === Math.pow(10, 18) ? (
+              "N/D"
+            ) : (
+              <TooltipTrigger className={cn("cursor-pointer")}>
+                <SpringNumber
+                  previousValue={previousValue}
+                  currentValue={currentValue}
+                  numberFormatOptions={{
+                    style: "percent",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }}
+                  className={cn(
+                    props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
+                    props.view === "list" && "h-5"
+                  )}
+                  spanClassName={cn(
+                    props.view === "grid" && InfoGrid.Content.Primary.Span,
+                    props.view === "list" && "leading-5"
+                  )}
+                />
+              </TooltipTrigger>
+            )}
 
             {props.row.original.incentive_tokens_data.length > 0 && (
               <AipBreakdown
