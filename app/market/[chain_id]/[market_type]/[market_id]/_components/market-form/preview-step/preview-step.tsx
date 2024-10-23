@@ -234,10 +234,7 @@ export const PreviewStep = React.forwardRef<
     );
   } else if (!!propsEnrichedMarket.data) {
     return (
-      <div
-        className={cn("max-h-[40rem] grow overflow-y-scroll", className)}
-        {...props}
-      >
+      <div className={cn("grow overflow-y-scroll", className)} {...props}>
         {/* <SecondaryLabel className={cn(BASE_LABEL_BORDER)}>
           Simulation
         </SecondaryLabel>
@@ -513,7 +510,7 @@ export const PreviewStep = React.forwardRef<
                   <span className="leading-5">WARNING</span>
                 </div>
               </div>
-              <div className="mt-1">
+              <div className="mt-2">
                 Complete offer cannot be filled completely, but partial fill is
                 available.
               </div>

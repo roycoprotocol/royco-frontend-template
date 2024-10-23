@@ -155,6 +155,8 @@ export const MarketForm = React.forwardRef<
                 token.decimals
               );
 
+              console.log("rateInWei", rateInWei.toString());
+
               return rateInWei.toString();
             } catch (error) {
               return "0";
@@ -163,7 +165,6 @@ export const MarketForm = React.forwardRef<
         : marketForm
             .watch("incentive_tokens")
             .map((token) => token.raw_amount ?? "0"),
-
     // custom incentive data for ap limit offers in vault markets
     custom_incentive_data:
       marketMetadata.market_type === MarketType.vault.id &&
@@ -523,24 +524,24 @@ export const MarketForm = React.forwardRef<
 
             <Button
               disabled={
-                // marketStep === MarketSteps.preview.id &&
-                // canBePerformedPartially === false
-                //   ? true
-                //   : false
-
-                (marketMetadata.market_type === RoycoMarketType.vault.id &&
-                  userType === RoycoMarketUserType.ap.id &&
-                  marketForm.watch("offer_type") ===
-                    RoycoMarketOfferType.limit.id) ||
-                (marketMetadata.market_type === RoycoMarketType.vault.id &&
-                  userType === RoycoMarketUserType.ip.id &&
-                  marketForm.watch("offer_type") ===
-                    RoycoMarketOfferType.market.id)
+                marketStep === MarketSteps.preview.id &&
+                canBePerformedPartially === false
                   ? true
-                  : marketStep === MarketSteps.preview.id &&
-                      canBePerformedPartially === false
-                    ? true
-                    : false
+                  : false
+
+                // (marketMetadata.market_type === RoycoMarketType.vault.id &&
+                //   userType === RoycoMarketUserType.ap.id &&
+                //   marketForm.watch("offer_type") ===
+                //     RoycoMarketOfferType.limit.id) ||
+                // (marketMetadata.market_type === RoycoMarketType.vault.id &&
+                //   userType === RoycoMarketUserType.ip.id &&
+                //   marketForm.watch("offer_type") ===
+                //     RoycoMarketOfferType.market.id)
+                //   ? true
+                //   : marketStep === MarketSteps.preview.id &&
+                //       canBePerformedPartially === false
+                //     ? true
+                //     : false
               }
               onClick={async () => {
                 await handleNextStep();
@@ -549,8 +550,8 @@ export const MarketForm = React.forwardRef<
               type="button"
               className="shrink-0"
             >
-              {/* {nextLabel()} */}
-              {(marketMetadata.market_type === RoycoMarketType.vault.id &&
+              {nextLabel()}
+              {/* {(marketMetadata.market_type === RoycoMarketType.vault.id &&
                 userType === RoycoMarketUserType.ap.id &&
                 marketForm.watch("offer_type") ===
                   RoycoMarketOfferType.limit.id) ||
@@ -559,7 +560,7 @@ export const MarketForm = React.forwardRef<
                 marketForm.watch("offer_type") ===
                   RoycoMarketOfferType.market.id)
                 ? "Coming Soon"
-                : nextLabel()}
+                : nextLabel()} */}
             </Button>
           </div>
         )}

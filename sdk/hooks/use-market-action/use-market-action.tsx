@@ -189,16 +189,15 @@ export const useMarketAction = ({
     incentive_token_ids:
       market_type === RoycoMarketType.recipe.id
         ? incentive_token_ids
-        : offer_type === RoycoMarketOfferType.limit.id &&
-            user_type === RoycoMarketUserType.ap.id
+        : // vault markets
+          offer_type === RoycoMarketOfferType.limit.id
           ? incentive_token_ids
           : propsReadVaultPreview.incentive_token_ids,
 
     incentive_token_amounts:
       market_type === RoycoMarketType.recipe.id
         ? incentive_token_amounts
-        : offer_type === RoycoMarketOfferType.limit.id &&
-            user_type === RoycoMarketUserType.ap.id
+        : offer_type === RoycoMarketOfferType.limit.id
           ? incentive_rates
           : propsReadVaultPreview.incentive_token_amounts,
   });
@@ -223,15 +222,13 @@ export const useMarketAction = ({
     action_incentive_token_ids:
       market_type === RoycoMarketType.recipe.id
         ? action_incentive_token_ids
-        : offer_type === RoycoMarketOfferType.limit.id &&
-            user_type === RoycoMarketUserType.ap.id
+        : offer_type === RoycoMarketOfferType.limit.id
           ? action_incentive_token_ids
           : propsReadVaultPreview.incentive_token_ids,
     action_incentive_token_amounts:
       market_type === RoycoMarketType.recipe.id
         ? action_incentive_token_amounts
-        : offer_type === RoycoMarketOfferType.limit.id &&
-            user_type === RoycoMarketUserType.ap.id
+        : offer_type === RoycoMarketOfferType.limit.id
           ? action_incentive_token_amounts
           : propsReadVaultPreview.incentive_token_amounts,
     quantity,
