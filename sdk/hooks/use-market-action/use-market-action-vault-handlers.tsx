@@ -174,7 +174,7 @@ export const getIPLimitOfferVaultAddRewardTransactionOptions = ({
       contractId: "WrappedVault",
       chainId,
       id: `add_reward_${tokenAddresses[i]}`,
-      label: `Add Reward ${incentiveTokenData?.symbol.toUpperCase()} (${shortAddress(tokenAddresses[i])})`,
+      label: `Add Reward ${incentiveTokenData?.symbol.toUpperCase()} ${incentiveTokenData?.symbol === "N/D" && `(${shortAddress(tokenAddresses[i])})`}`,
       address,
       abi,
       functionName: "addRewardsToken",

@@ -22,6 +22,7 @@ import toast from "react-hot-toast";
 import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
 import { TransactionOptionsType } from "@/sdk/types";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -162,7 +163,7 @@ export const TransactionModal = React.forwardRef<
 
   return (
     <Dialog
-      open={transactions.length > 0 ? true : false}
+      open={transactions.length > 0}
       onOpenChange={() => {
         setTransactions([]);
       }}
@@ -170,80 +171,83 @@ export const TransactionModal = React.forwardRef<
       <DialogTrigger asChild className="hidden">
         <Button variant="outline">Transaction Menu</Button>
       </DialogTrigger>
-      <DialogContent
-        className={cn("z-[999] sm:max-w-[425px]", className)}
-        ref={ref}
-        {...otherProps}
-      >
-        <DialogHeader>
-          <DialogTitle>Transaction Progress</DialogTitle>
-          <DialogDescription>
-            Do not close this window when the transaction is in progress.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-3">
-          {allTransactionsExecuted && (
-            <AlertIndicator
-              className="w-full"
-              contentClassName="w-full"
-              type="success"
-            >
-              <div>All transactions successful</div>
-              <div className="mt-5 px-5 font-gt text-sm font-light text-secondary">
-                Changes will be reflected on your market dashboard in a few
-                mins.
-              </div>
-            </AlertIndicator>
-          )}
-          {!allTransactionsExecuted && (
-            <div className={cn("flex flex-col gap-2")}>
-              {!!transactions &&
-                transactions.map((txOptions, txIndex) => {
-                  if (!!txOptions) {
-                    const key = `transaction:${txOptions.id}`;
 
-                    return (
-                      <TransactionRow
-                        key={key}
-                        transactionIndex={txIndex + 1}
-                        transaction={txOptions}
-                        txStatus={txStatus}
-                      />
-                    );
-                  }
-                })}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col space-y-2">
-          <Button
-            className="h-9 text-sm"
-            disabled={isTxPending || isTxConfirming ? true : false}
-            onClick={() => {
-              handleNextStep();
-            }}
-            type="submit"
-          >
-            {isTxPending || isTxConfirming ? (
-              <LoadingSpinner className="h-5 w-5" />
-            ) : (
-              <div className="h-5">{getNextLabel()}</div>
-            )}
-          </Button>
-
-          {!allTransactionsExecuted && (
-            <DialogClose asChild>
-              <Button
-                className="h-9 bg-error text-sm"
-                onClick={() => setTransactions([])}
-                type="button"
+      {transactions.length > 0 && (
+        <DialogContent
+          className={cn("z-[999] sm:max-w-[425px]", className)}
+          ref={ref}
+          {...otherProps}
+        >
+          <DialogHeader>
+            <DialogTitle>Transaction Progress</DialogTitle>
+            <DialogDescription>
+              Do not close this window when the transaction is in progress.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-3">
+            {allTransactionsExecuted && (
+              <AlertIndicator
+                className="w-full"
+                contentClassName="w-full"
+                type="success"
               >
-                <div className="h-5">Close</div>
-              </Button>
-            </DialogClose>
-          )}
-        </div>
-      </DialogContent>
+                <div>All transactions successful</div>
+                <div className="mt-5 px-5 font-gt text-sm font-light text-secondary">
+                  Changes will be reflected on your market dashboard in a few
+                  mins.
+                </div>
+              </AlertIndicator>
+            )}
+            {!allTransactionsExecuted && (
+              <div className={cn("flex flex-col gap-2")}>
+                {!!transactions &&
+                  transactions.map((txOptions, txIndex) => {
+                    if (!!txOptions) {
+                      const key = `transaction:${txOptions.id}`;
+
+                      return (
+                        <TransactionRow
+                          key={key}
+                          transactionIndex={txIndex + 1}
+                          transaction={txOptions}
+                          txStatus={txStatus}
+                        />
+                      );
+                    }
+                  })}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Button
+              className="h-9 text-sm"
+              disabled={isTxPending || isTxConfirming ? true : false}
+              onClick={() => {
+                handleNextStep();
+              }}
+              type="submit"
+            >
+              {isTxPending || isTxConfirming ? (
+                <LoadingSpinner className="h-5 w-5" />
+              ) : (
+                <div className="h-5">{getNextLabel()}</div>
+              )}
+            </Button>
+
+            {!allTransactionsExecuted && (
+              <DialogClose asChild>
+                <Button
+                  className="h-9 bg-error text-sm"
+                  onClick={() => setTransactions([])}
+                  type="button"
+                >
+                  <div className="h-5">Close</div>
+                </Button>
+              </DialogClose>
+            )}
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 });
