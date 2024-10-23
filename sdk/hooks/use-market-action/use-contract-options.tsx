@@ -100,11 +100,11 @@ export const useContractOptions = ({
             // Get Total Fill Quantity
             const total_fill_quantity: BigNumber =
               propsMarketOffers.data?.reduce((acc, offer) => {
-                return acc.add(BigNumber.from(offer.quantity));
+                return acc.add(BigNumber.from(offer.fill_quantity));
               }, BigNumber.from(0)) || BigNumber.from(0);
 
             // Check if the offer can be performed completely or partially
-            if (total_fill_quantity === BigNumber.from(0)) {
+            if (total_fill_quantity.eq(BigNumber.from(0))) {
               canBePerformedCompletely = false;
               canBePerformedPartially = false;
             } else if (total_fill_quantity.lt(BigNumber.from(quantity))) {
@@ -135,10 +135,10 @@ export const useContractOptions = ({
                 tokensOut: [
                   {
                     ...getSupportedToken(market.input_token_id as string),
-                    raw_amount: quantity as string,
+                    raw_amount: total_fill_quantity.toString() as string,
                     token_amount: parseFloat(
                       ethers.utils.formatUnits(
-                        quantity as string,
+                        total_fill_quantity.toString() as string,
                         getSupportedToken(market.input_token_id as string)
                           .decimals
                       )
@@ -210,7 +210,7 @@ export const useContractOptions = ({
               }, BigNumber.from(0)) || BigNumber.from(0);
 
             // Check if the offer can be performed completely or partially
-            if (total_fill_quantity === BigNumber.from(0)) {
+            if (total_fill_quantity.eq(BigNumber.from(0))) {
               canBePerformedCompletely = false;
               canBePerformedPartially = false;
             } else if (total_fill_quantity.lt(BigNumber.from(quantity))) {
@@ -274,23 +274,6 @@ export const useContractOptions = ({
                 tokensOut: incentivesData.map((incentive, index) => {
                   const raw_amount_with_fees =
                     action_incentive_token_amounts[index];
-                  // const raw_amount_with_fees = BigNumber.from(
-                  //   raw_amount_without_fees
-                  // )
-                  //   .add(
-                  //     BigNumber.from(raw_amount_without_fees).mul(
-                  //       BigNumber.from(
-                  //         propsReadMarket.data?.protocol_fee as string
-                  //       ).div(BigNumber.from(10).pow(18))
-                  //     )
-                  //   )
-                  //   .add(
-                  //     BigNumber.from(raw_amount_without_fees).mul(
-                  //       BigNumber.from(
-                  //         propsReadMarket.data?.frontend_fee as string
-                  //       ).div(BigNumber.from(10).pow(18))
-                  //     )
-                  //   );
 
                   const raw_amount = raw_amount_with_fees.toString();
 
@@ -419,7 +402,24 @@ export const useContractOptions = ({
               });
 
             // Offer options
-            postContractOptions = [txOptions];
+            postContractOptions = [
+              {
+                ...txOptions,
+                tokensOut: [
+                  {
+                    ...getSupportedToken(market.input_token_id as string),
+                    raw_amount: quantity as string,
+                    token_amount: parseFloat(
+                      ethers.utils.formatUnits(
+                        quantity as string,
+                        getSupportedToken(market.input_token_id as string)
+                          .decimals
+                      )
+                    ),
+                  },
+                ],
+              },
+            ];
 
             const approvalTxOptions = getTokenApprovalContractOptions({
               marketType: market_type,
@@ -443,7 +443,6 @@ export const useContractOptions = ({
             const txOptions: TransactionOptionsType =
               getAPLimitOfferVaultTransactionOptions({
                 chainId: chain_id,
-                address: interactionContractAddress,
                 targetMarketId: market.market_id as string,
                 fundingVault: funding_vault as string,
                 quantity: quantity as string,
@@ -482,7 +481,7 @@ export const useContractOptions = ({
               }, BigNumber.from(0)) || BigNumber.from(0);
 
             // Check if the offer can be performed completely or partially
-            if (total_fill_quantity === BigNumber.from(0)) {
+            if (total_fill_quantity.eq(BigNumber.from(0))) {
               canBePerformedCompletely = false;
               canBePerformedPartially = false;
             } else if (total_fill_quantity.lt(BigNumber.from(quantity))) {
@@ -523,6 +522,8 @@ export const useContractOptions = ({
                 ),
               });
 
+            // @TODO: needs to be fixed
+
             // Offer options
             postContractOptions = [
               {
@@ -530,18 +531,18 @@ export const useContractOptions = ({
                 tokensIn: [
                   {
                     ...getSupportedToken(market.input_token_id as string),
-                    raw_amount: quantity as string,
+                    raw_amount: total_fill_quantity.toString() as string,
                     token_amount: parseFloat(
                       ethers.utils.formatUnits(
-                        quantity as string,
+                        total_fill_quantity.toString() as string,
                         getSupportedToken(market.input_token_id as string)
                           .decimals
                       )
                     ),
                   },
                 ],
+
                 tokensOut: incentivesData.map((incentive, index) => {
-                  // @TODO: Fees need to be added here
                   const raw_amount_with_fees =
                     action_incentive_token_amounts[index];
 
@@ -626,7 +627,7 @@ export const useContractOptions = ({
         }
       }
     } catch (error) {
-      console.log("market action error", error);
+      // console.log("market action error", error);
     }
   }
 

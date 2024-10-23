@@ -36,7 +36,7 @@ import { ParamsStep } from "./params-step";
 import { PreviewStep } from "./preview-step";
 import { ChevronLeftIcon } from "lucide-react";
 import { motion } from "framer-motion";
-import { WithdrawSection } from "./withdraw-section";
+import { WithdrawSection } from "./withdraw-section"; // @todo fix it
 import { AlertIndicator } from "@/components/common";
 import { ethers } from "ethers";
 import { SupportedToken } from "@/sdk/constants";
@@ -126,23 +126,25 @@ export const MarketForm = React.forwardRef<
       userType === MarketUserType.ap.id
         ? marketForm.watch("incentive_tokens").map((token) => {
             try {
-              const aip = parseFloat(token.aip ?? "0");
+              const aipPercentage = parseFloat(token.aip ?? "0");
+              const aip = aipPercentage / 100;
               const fdv = parseFloat(token.fdv ?? "0");
               const distribution = parseFloat(token.distribution ?? "0");
               const offerAmount = parseFloat(
                 marketForm.watch("offer_amount") ?? "0"
               );
-              const totalSupply =
-                propsTokenQuotes.data?.find(
-                  (quote: any) => quote.id === token.id
-                )?.total_supply ?? 0;
+
               const inputTokenPrice =
                 propsTokenQuotes.data?.find(
                   (quote: any) => quote.id === currentMarketData?.input_token_id
                 )?.price ?? 0;
 
+              const incentiveTokenPrice = fdv / distribution;
+
+              // rate is amount of input tokens per incentive token per second
               const rate =
-                (aip * offerAmount * inputTokenPrice) / (fdv * distribution);
+                (aip * offerAmount * inputTokenPrice) /
+                (incentiveTokenPrice * (365 * 24 * 60 * 60));
 
               if (isNaN(rate)) {
                 return "0";
@@ -188,6 +190,7 @@ export const MarketForm = React.forwardRef<
                     (quote: any) =>
                       quote.id === currentMarketData?.input_token_id
                   )?.price ?? 0;
+
                 const incentiveTokenPrice = fdv / distribution;
 
                 let rate =
@@ -520,6 +523,11 @@ export const MarketForm = React.forwardRef<
 
             <Button
               disabled={
+                // marketStep === MarketSteps.preview.id &&
+                // canBePerformedPartially === false
+                //   ? true
+                //   : false
+
                 (marketMetadata.market_type === RoycoMarketType.vault.id &&
                   userType === RoycoMarketUserType.ap.id &&
                   marketForm.watch("offer_type") ===
@@ -541,6 +549,7 @@ export const MarketForm = React.forwardRef<
               type="button"
               className="shrink-0"
             >
+              {/* {nextLabel()} */}
               {(marketMetadata.market_type === RoycoMarketType.vault.id &&
                 userType === RoycoMarketUserType.ap.id &&
                 marketForm.watch("offer_type") ===

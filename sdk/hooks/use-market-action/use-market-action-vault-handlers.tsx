@@ -78,7 +78,6 @@ export const getIPMarketOfferVaultTransactionOptions = ({
 
 export const getAPLimitOfferVaultTransactionOptions = ({
   chainId,
-  address,
   targetMarketId,
   fundingVault,
   quantity,
@@ -87,7 +86,6 @@ export const getAPLimitOfferVaultTransactionOptions = ({
   tokenRates,
 }: {
   chainId: number;
-  address: string;
   targetMarketId: string;
   fundingVault: string;
   quantity: string;
@@ -95,8 +93,28 @@ export const getAPLimitOfferVaultTransactionOptions = ({
   tokenAddresses: string[];
   tokenRates: string[];
 }) => {
+  const address =
+    ContractMap[chainId as keyof typeof ContractMap]["VaultMarketHub"].address;
   const abi =
     ContractMap[chainId as keyof typeof ContractMap]["VaultMarketHub"].abi;
+
+  // Sort the tokens based on the address in ascending order
+  const sortedTokens = (tokenAddresses as string[]).map((id, index) => {
+    const address = tokenAddresses[index];
+    const amount = tokenRates[index];
+
+    return {
+      address,
+      amount,
+    };
+  });
+
+  // Sort the tokens based on the address in ascending order
+  sortedTokens.sort((a, b) => (a.address > b.address ? 1 : -1));
+
+  // Extract the sorted addresses and amounts
+  const sortedTokenAddresses = sortedTokens.map((token) => token.address);
+  const sortedTokenAmounts = sortedTokens.map((token) => token.amount);
 
   const txOptions: TransactionOptionsType = {
     contractId: "VaultMarketHub",
@@ -112,8 +130,8 @@ export const getAPLimitOfferVaultTransactionOptions = ({
       fundingVault,
       quantity,
       expiry,
-      tokenAddresses,
-      tokenRates,
+      sortedTokenAddresses,
+      sortedTokenAmounts,
     ],
     txStatus: "idle",
     txHash: null,

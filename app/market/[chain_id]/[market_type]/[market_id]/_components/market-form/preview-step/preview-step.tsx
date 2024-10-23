@@ -26,6 +26,7 @@ import { TransactionRow } from "@/components/composables/transaction-modal/trans
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ethers } from "ethers";
 import { SupportedToken } from "@/sdk/constants";
+import { TriangleAlertIcon } from "lucide-react";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -92,24 +93,25 @@ export const PreviewStep = React.forwardRef<
       userType === MarketUserType.ap.id
         ? marketForm.watch("incentive_tokens").map((token) => {
             try {
-              const aip = parseFloat(token.aip ?? "0");
+              const aipPercentage = parseFloat(token.aip ?? "0");
+              const aip = aipPercentage / 100;
               const fdv = parseFloat(token.fdv ?? "0");
               const distribution = parseFloat(token.distribution ?? "0");
               const offerAmount = parseFloat(
                 marketForm.watch("offer_amount") ?? "0"
               );
-              const totalSupply =
-                propsTokenQuotes.data?.find(
-                  (quote: any) => quote.id === token.id
-                )?.total_supply ?? 0;
+
               const inputTokenPrice =
                 propsTokenQuotes.data?.find(
                   (quote: any) => quote.id === currentMarketData?.input_token_id
                 )?.price ?? 0;
 
+              const incentiveTokenPrice = fdv / distribution;
+
+              // rate is amount of input tokens per incentive token per second
               const rate =
-                (aip * totalSupply * offerAmount * inputTokenPrice) /
-                (fdv * distribution);
+                (aip * offerAmount * inputTokenPrice) /
+                (incentiveTokenPrice * (365 * 24 * 60 * 60));
 
               if (isNaN(rate)) {
                 return "0";
@@ -119,6 +121,8 @@ export const PreviewStep = React.forwardRef<
                 rate.toFixed(token.decimals),
                 token.decimals
               );
+
+              console.log("rateInWei", rateInWei.toString());
 
               return rateInWei.toString();
             } catch (error) {
@@ -154,6 +158,7 @@ export const PreviewStep = React.forwardRef<
                     (quote: any) =>
                       quote.id === currentMarketData?.input_token_id
                   )?.price ?? 0;
+
                 const incentiveTokenPrice = fdv / distribution;
 
                 let rate =
@@ -302,7 +307,7 @@ export const PreviewStep = React.forwardRef<
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <SecondaryLabel className={cn(BASE_MARGIN_TOP.LG, BASE_LABEL_BORDER)}>
+        <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL, BASE_LABEL_BORDER)}>
           Incentives{" "}
           {userType === MarketUserType.ap.id
             ? marketForm.watch("offer_type") === MarketOfferType.market.id
@@ -395,7 +400,7 @@ export const PreviewStep = React.forwardRef<
                           useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(incentive.token_amount_usd)}
+                        }).format(incentive.per_input_token)}
                         )
                       </TertiaryLabel>
                     ) : (
@@ -407,19 +412,9 @@ export const PreviewStep = React.forwardRef<
                           useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(
-                          userType === MarketUserType.ap.id &&
-                            marketForm.watch("offer_type") ===
-                              MarketOfferType.limit.id
-                            ? incentive.token_amount
-                            : incentive.per_input_token
-                        )}{" "}
-                        {incentive.symbol.toUpperCase()} /{" "}
-                        {userType === MarketUserType.ap.id &&
-                        marketForm.watch("offer_type") ===
-                          MarketOfferType.limit.id
-                          ? "Year"
-                          : currentMarketData?.input_token_data.symbol.toUpperCase()}
+                        }).format(incentive.per_input_token)}{" "}
+                        {incentive.symbol.toUpperCase()} /{" 1.00 "}
+                        {currentMarketData?.input_token_data.symbol.toUpperCase()}
                         )
                       </TertiaryLabel>
                     )}
@@ -502,6 +497,28 @@ export const PreviewStep = React.forwardRef<
               }
             })}
         </div>
+
+        {canBePerformedCompletely === false &&
+          canBePerformedPartially === true && (
+            <div
+              className={cn(
+                BASE_MARGIN_TOP.XL,
+                "w-full rounded-xl border border-divider bg-error p-2 text-left font-gt text-sm font-light text-white"
+              )}
+            >
+              <div className="flex w-full flex-row place-content-center items-center gap-1">
+                <TriangleAlertIcon className="h-4 w-4" />
+
+                <div className="flex h-4">
+                  <span className="leading-5">WARNING</span>
+                </div>
+              </div>
+              <div className="mt-1">
+                Complete offer cannot be filled completely, but partial fill is
+                available.
+              </div>
+            </div>
+          )}
       </div>
     );
   }

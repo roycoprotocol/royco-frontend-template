@@ -62,29 +62,57 @@ export const useIncentivesData = ({
   // Combine all incentives data
   if (enabled && !!market) {
     incentivesData = action_incentive_token_ids.map((id, index) => {
+      // Get input token quote
       const input_token_quote = (propsTokenQuotes.data ?? []).find(
         (quote) => quote.id === market.input_token_id
       );
+
+      // Get incentive token quote
       const incentive_token_quote = (propsTokenQuotes.data ?? []).find(
         (quote) => quote.id === id
       );
 
+      // Get input token price
       const input_token_price = input_token_quote?.price || 0;
 
+      // Get input token data
       const input_token_data = getSupportedToken(
         market.input_token_id as string
       );
-      const input_token_raw_amount = (quantity ?? "0") as string;
 
+      // Get input token raw amount
+      // const input_token_raw_amount = (quantity ?? "0") as string;
+      let input_token_raw_amount = "0";
+
+      if (market_type === RoycoMarketType.recipe.id) {
+        input_token_raw_amount = (quantity ?? "0") as string;
+      } else if (!!market && !!market.end_timestamps) {
+        // @note: in vault markets
+        if (
+          offer_type === RoycoMarketOfferType.limit.id &&
+          user_type === RoycoMarketUserType.ap.id
+        ) {
+          input_token_raw_amount = BigNumber.from(quantity ?? "0")
+            .div(365 * 24 * 60 * 60)
+            .toString();
+        } else {
+          input_token_raw_amount = (quantity ?? "0") as string;
+        }
+      }
+
+      // Get input token token amount
       const input_token_token_amount = parseFloat(
         ethers.utils.formatUnits(
           input_token_raw_amount,
           input_token_data.decimals
         )
       );
+
+      // Get input token token amount in USD
       const input_token_token_amount_usd =
         input_token_token_amount * input_token_price;
 
+      // Get incentive token price
       let incentive_token_price = 0;
 
       if (market_type === RoycoMarketType.recipe.id) {
@@ -101,24 +129,23 @@ export const useIncentivesData = ({
         }
       }
 
+      // Get incentive token data
       const incentive_token_data = getSupportedToken(id);
+
+      // Get incentive token raw amount
       let incentive_token_raw_amount = "0";
 
       if (market_type === RoycoMarketType.recipe.id) {
         incentive_token_raw_amount = action_incentive_token_amounts[index];
       } else if (!!market && !!market.end_timestamps) {
         // handle vault market
+        // @note: in vault markets, the incentive token amount is the rate in wei per second
         if (
           offer_type === RoycoMarketOfferType.limit.id &&
           user_type === RoycoMarketUserType.ap.id
         ) {
-          const rate = custom_incentive_data?.[index]?.rate ?? 0;
-
-          const scaledRate = BigNumber.from(Math.floor(rate).toString());
-
-          incentive_token_raw_amount = scaledRate
-            .mul(BigNumber.from(365 * 24 * 60 * 60))
-            .toString();
+          incentive_token_raw_amount =
+            custom_incentive_data?.[index]?.rateInWei ?? "0";
         } else {
           const end_time = market.end_timestamps[index] ?? "0";
           const current_time = Math.floor(Date.now() / 1000);
@@ -133,6 +160,7 @@ export const useIncentivesData = ({
         }
       }
 
+      // Get incentive token token amount
       const incentive_token_token_amount = parseFloat(
         ethers.utils.formatUnits(
           incentive_token_raw_amount,
@@ -140,12 +168,15 @@ export const useIncentivesData = ({
         )
       );
 
+      // Get incentive token token amount in USD
       const incentive_token_token_amount_usd =
         incentive_token_token_amount * incentive_token_price;
 
+      // Get per input token
       const per_input_token =
         incentive_token_token_amount / input_token_token_amount;
 
+      // Get annual change ratio
       let annual_change_ratio = 0;
 
       // handle recipe market
