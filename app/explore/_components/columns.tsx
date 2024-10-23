@@ -386,6 +386,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   currentValue={currentValue}
                   numberFormatOptions={{
                     style: "percent",
+                    notation: "compact",
+                    useGrouping: true,
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   }}
@@ -480,7 +482,9 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 numberFormatOptions={{
                   style: "currency",
                   currency: "USD",
-                  notation: props.view === "grid" ? "compact" : "standard",
+                  notation: "compact",
+                  useGrouping: true,
+                  // notation: props.view === "grid" ? "compact" : "standard",
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 }}

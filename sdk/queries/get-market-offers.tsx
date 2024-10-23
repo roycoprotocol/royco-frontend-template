@@ -9,15 +9,17 @@ export const getMarketOffersQueryOptions = (
   market_type: number,
   market_id: string,
   offer_side: number,
-  quantity: string
+  quantity: string,
+  incentive_ids?: string[]
 ) => ({
   queryKey: [
-    "get-market-offers-recipe",
+    "get-market-offers",
     chain_id,
     market_type,
     market_id,
     offer_side,
     quantity,
+    incentive_ids?.join(","),
   ],
   queryFn: async () => {
     const result = await client.rpc("get_market_offers", {
@@ -26,6 +28,7 @@ export const getMarketOffersQueryOptions = (
       in_market_id: market_id,
       in_offer_side: offer_side,
       in_quantity: quantity,
+      in_incentive_ids: incentive_ids,
     });
 
     return result.data;
@@ -33,8 +36,6 @@ export const getMarketOffersQueryOptions = (
   keepPreviousData: true,
   placeholderData: (previousData: any) => previousData,
   refetchInterval: 1000 * 60 * 1, // 1 min
-  // refetchInterval: 1000 * 60 * 1, // 1 min
-  // refetchInterval: 1000 * 10 * 1, // 10 seconds
   refetchOnWindowFocus: false,
   refreshInBackground: true,
 });

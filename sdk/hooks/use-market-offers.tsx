@@ -8,6 +8,7 @@ export const useMarketOffers = ({
   market_id,
   offer_side,
   quantity,
+  incentive_ids,
   enabled = true,
 }: {
   chain_id: number;
@@ -16,6 +17,7 @@ export const useMarketOffers = ({
   offer_side: number;
   quantity: string;
   enabled?: boolean;
+  incentive_ids?: string[];
 }) => {
   const client: RoycoClient = useRoycoClient();
 
@@ -26,7 +28,8 @@ export const useMarketOffers = ({
       market_type,
       market_id,
       offer_side,
-      quantity
+      quantity,
+      incentive_ids
     ),
     enabled,
   });

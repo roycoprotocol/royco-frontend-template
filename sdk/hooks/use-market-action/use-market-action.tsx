@@ -149,6 +149,12 @@ export const useMarketAction = ({
     market_id,
     offer_side: user_type === RoycoMarketUserType.ap.id ? 1 : 0, // AP fills IP offers and IP fills AP offers
     quantity: quantity ?? "0",
+    incentive_ids:
+      market_type === RoycoMarketType.vault.id &&
+      user_type === RoycoMarketUserType.ip.id &&
+      offer_type === RoycoMarketOfferType.market.id
+        ? incentive_token_ids
+        : undefined,
     enabled:
       (market_type === RoycoMarketType.recipe.id &&
         offer_type === RoycoMarketOfferType.market.id) ||
