@@ -146,6 +146,11 @@ export const useIncentivesData = ({
         ) {
           incentive_token_raw_amount =
             custom_incentive_data?.[index]?.rateInWei ?? "0";
+        } else if (
+          offer_type === RoycoMarketOfferType.limit.id &&
+          user_type === RoycoMarketUserType.ip.id
+        ) {
+          incentive_token_raw_amount = action_incentive_token_amounts[index];
         } else {
           const end_time = market.end_timestamps[index] ?? "0";
           const current_time = Math.floor(Date.now() / 1000);
@@ -196,6 +201,11 @@ export const useIncentivesData = ({
           user_type === RoycoMarketUserType.ap.id
         ) {
           annual_change_ratio = custom_incentive_data?.[index]?.aip ?? 0;
+        } else if (
+          offer_type === RoycoMarketOfferType.limit.id &&
+          user_type === RoycoMarketUserType.ip.id
+        ) {
+          annual_change_ratio = 0;
         } else {
           const end_time = market.end_timestamps[index] ?? "0";
           const current_time = Math.floor(Date.now() / 1000);

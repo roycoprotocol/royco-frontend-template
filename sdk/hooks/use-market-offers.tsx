@@ -29,7 +29,7 @@ export const useMarketOffers = ({
       market_id,
       offer_side,
       quantity,
-      incentive_ids
+      incentive_ids && incentive_ids.length > 0 ? incentive_ids : undefined
     ),
     enabled,
   });

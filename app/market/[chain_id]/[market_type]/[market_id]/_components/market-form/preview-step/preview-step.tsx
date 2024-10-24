@@ -241,7 +241,7 @@ export const PreviewStep = React.forwardRef<
                           useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(incentive.per_input_token)}
+                        }).format(incentive.token_amount_usd)}
                         )
                       </TertiaryLabel>
                     ) : (

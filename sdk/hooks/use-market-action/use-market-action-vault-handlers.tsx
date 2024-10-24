@@ -174,7 +174,11 @@ export const getIPLimitOfferVaultAddRewardTransactionOptions = ({
       contractId: "WrappedVault",
       chainId,
       id: `add_reward_${tokenAddresses[i]}`,
-      label: `Add Reward ${incentiveTokenData?.symbol.toUpperCase()} ${incentiveTokenData?.symbol === "N/D" && `(${shortAddress(tokenAddresses[i])})`}`,
+      label:
+        `Add Reward ${incentiveTokenData?.symbol.toUpperCase()}` +
+        (incentiveTokenData?.symbol === "N/D"
+          ? ` (${shortAddress(tokenAddresses[i])})`
+          : ""),
       address,
       abi,
       functionName: "addRewardsToken",
@@ -252,6 +256,24 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
         ],
         txStatus: "idle",
         txHash: null,
+        tokensOut: tokenAddresses.map((tokenAddress, index) => {
+          const tokenId = `${chainId}-${tokenAddress}`;
+          const raw_amount_with_fees = tokenAmounts[index];
+
+          const raw_amount = raw_amount_with_fees.toString();
+          const token_amount = parseFloat(
+            ethers.utils.formatUnits(
+              raw_amount_with_fees.toString(),
+              incentiveTokenData.decimals
+            )
+          );
+
+          return {
+            ...getSupportedToken(tokenId),
+            raw_amount,
+            token_amount,
+          };
+        }),
       };
 
       txOptions.push(newTxOptions);
@@ -266,7 +288,11 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
         contractId: "WrappedVault",
         chainId,
         id: `set_reward_${tokenAddresses[i]}`,
-        label: `Set Reward ${incentiveTokenData?.symbol.toUpperCase()} (${shortAddress(tokenAddresses[i])})`,
+        label:
+          `Set Reward ${incentiveTokenData?.symbol.toUpperCase()}` +
+          (incentiveTokenData?.symbol === "N/D"
+            ? ` (${shortAddress(tokenAddresses[i])})`
+            : ""),
         address,
         abi,
         functionName: "setRewardsInterval",
@@ -280,6 +306,24 @@ export const getIPLimitOfferVaultSetRewardTransactionOptions = ({
         ],
         txStatus: "idle",
         txHash: null,
+        tokensOut: tokenAddresses.map((tokenAddress, index) => {
+          const tokenId = `${chainId}-${tokenAddress}`;
+          const raw_amount_with_fees = tokenAmounts[index];
+
+          const raw_amount = raw_amount_with_fees.toString();
+          const token_amount = parseFloat(
+            ethers.utils.formatUnits(
+              raw_amount_with_fees.toString(),
+              incentiveTokenData.decimals
+            )
+          );
+
+          return {
+            ...getSupportedToken(tokenId),
+            raw_amount,
+            token_amount,
+          };
+        }),
       };
 
       txOptions.push(newTxOptions);

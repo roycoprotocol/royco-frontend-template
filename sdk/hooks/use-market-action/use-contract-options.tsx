@@ -497,7 +497,7 @@ export const useContractOptions = ({
                 chainId: chain_id,
                 offers: (propsMarketOffers.data || []).map((offer) => {
                   const offerID = offer.offer_id;
-                  const targetVault = offer.funding_vault;
+                  const targetVault = market.market_id as string;
                   const ap = offer.creator;
                   const fundingVault = offer.funding_vault;
                   const expiry = offer.expiry;
@@ -577,7 +577,7 @@ export const useContractOptions = ({
             // Approval options
             preContractOptions = [...approvalTxOptions];
           } else {
-            // handle IP market offer vault market
+            // handle IP limit offer vault market
             canBePerformedCompletely = true;
             canBePerformedPartially = true;
 

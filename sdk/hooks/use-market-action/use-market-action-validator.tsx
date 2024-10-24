@@ -42,6 +42,7 @@ export const isMarketActionValid = ({
   incentive_rates?: string[];
   incentive_start_timestamps?: string[];
   incentive_end_timestamps?: string[];
+
   account?: string;
 }): {
   status: boolean;
@@ -215,6 +216,65 @@ export const isMarketActionValid = ({
             Math.floor(Date.now() / 1000)
           ) {
             throw new Error("Incentive end time must be in the future");
+          }
+        }
+
+        // Check if any existing incentives have the same token ids
+        // exisitng incenitves are in market.incentive_ids
+        // if they do, then do following checks
+        // 1. Make sure the end time of the new incentive is after the end time of the existing incentive => If not, throw error "Incentive end time must be greater than the existing incentive end time"
+        // 2. Make sure the difference between the start time of exisiting incentive and end time of new incentive is greater than 1 week => If not, throw error "Incentives must be at least 1 week apart"
+
+        if (!!market.incentive_ids && market.incentive_ids.length > 0) {
+          // check if any of the new incentive token ids match with existing incentive token ids
+          // if they do, then do the checks mentioned above
+          if (
+            incentive_token_ids.some((id) => market.incentive_ids?.includes(id))
+          ) {
+            // Perform the checks mentioned above
+            for (let i = 0; i < incentive_token_ids.length; i++) {
+              const existingIncentiveIndex = market.incentive_ids?.indexOf(
+                incentive_token_ids[i]
+              );
+              if (existingIncentiveIndex !== -1) {
+                const existingIncentiveEndTime =
+                  market.end_timestamps?.[existingIncentiveIndex];
+
+                // Check 1: Make sure the end time of the new incentive is after the end time of the existing incentive
+                if (
+                  existingIncentiveEndTime &&
+                  parseInt(incentive_end_timestamps[i]) <=
+                    parseInt(existingIncentiveEndTime)
+                ) {
+                  throw new Error(
+                    "Incentive end time must be greater than the existing incentive end time"
+                  );
+                }
+              }
+
+              // Check 2: Make sure the difference between the start time of existing incentive and end time of new incentive is greater than 1 week
+              const oneWeekInSeconds = 7 * 24 * 60 * 60;
+              if (
+                parseInt(incentive_start_timestamps[i]) -
+                  existingIncentiveIndex <
+                oneWeekInSeconds
+              ) {
+                throw new Error("Incentives must be at least 1 week apart");
+              }
+            }
+          }
+        } else {
+          // else do following checks
+          // 1. Make sure the difference between the start time of new incentive and end time of new incentive is greater than 1 week => If not, throw error "Incentives must be at least 1 week apart"
+          const oneWeekInSeconds = 7 * 24 * 60 * 60;
+          for (let i = 0; i < incentive_start_timestamps.length; i++) {
+            if (
+              parseInt(incentive_end_timestamps[i]) -
+                parseInt(incentive_start_timestamps[i]) <
+              oneWeekInSeconds
+            ) {
+              throw new Error("Incentives must be at least 1 week apart");
+            }
           }
         }
       }
