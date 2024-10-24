@@ -316,6 +316,7 @@ export const useMarketAction = ({
 
   // Simulate contract options via a post call to simulation_url, useQuery will be used for making the post call
   const simulationProps = useQuery({
+    // enabled: false,
     enabled: enabled && isReady && !!simulation_url && !!account,
     queryKey: [
       "simulate",

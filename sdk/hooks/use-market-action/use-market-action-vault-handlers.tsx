@@ -2,7 +2,6 @@ import { RoycoMarketType } from "../../market";
 import { ContractMap } from "../../contracts";
 import { shortAddress } from "../../utils";
 import { ethers } from "ethers";
-import { erc20Abi } from "viem";
 import { TransactionOptionsType } from "../../types";
 import { getSupportedToken } from "@/sdk/constants";
 

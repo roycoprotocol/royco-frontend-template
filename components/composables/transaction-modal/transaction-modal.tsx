@@ -145,7 +145,8 @@ export const TransactionModal = React.forwardRef<
   // console.log("txHash", txHash);
   // console.log("isTxPending", isTxPending);
   // console.log("isTxError", isTxError);
-  // console.log("txError", txError);
+
+  console.log("txError", txError);
 
   // console.log("transactions", transactions);
 
