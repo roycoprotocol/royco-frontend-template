@@ -125,22 +125,22 @@ export const FormIncentives = React.forwardRef<
     type: "aip" | "distribution" | "market_cap";
     value: string;
   }) => {
-    let newIncentives = marketForm.watch("incentives");
+    let newIncentives = marketForm.watch("incentive_tokens");
 
     if (value === "") {
       newIncentives[index][type] = undefined;
-      marketForm.setValue("incentives", newIncentives);
+      marketForm.setValue("incentive_tokens", newIncentives);
       return;
     } else if (!isNaN(parseFloat(value))) {
       // Prevent negative values
       if (parseFloat(value) < 0) {
-        let newIncentives = marketForm.watch("incentives");
+        let newIncentives = marketForm.watch("incentive_tokens");
         newIncentives[index][type] = 0;
-        marketForm.setValue("incentives", newIncentives);
+        marketForm.setValue("incentive_tokens", newIncentives);
       } else {
-        let newIncentives = marketForm.watch("incentives");
+        let newIncentives = marketForm.watch("incentive_tokens");
         newIncentives[index][type] = parseFloat(value);
-        marketForm.setValue("incentives", newIncentives);
+        marketForm.setValue("incentive_tokens", newIncentives);
       }
     }
   };

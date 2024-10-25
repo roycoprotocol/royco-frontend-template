@@ -156,14 +156,14 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   // Get input token data
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
-    raw_amount: quantity ?? "0",
+    raw_amount: quantity === "" ? "0" : quantity ?? "0",
     token_amount: parseFloat(
-      ethers.utils.formatUnits(quantity ?? "0", input_token_quote.decimals)
+      ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
     ),
     token_amount_usd:
       input_token_quote.price *
       parseFloat(
-        ethers.utils.formatUnits(quantity ?? "0", input_token_quote.decimals)
+        ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
       ),
   };
 
@@ -183,7 +183,7 @@ export const calculateRecipeAPLimitOfferTokenData = ({
         // Get incentive token amount
         const incentive_token_amount = parseFloat(
           ethers.utils.formatUnits(
-            incentive_token_raw_amount,
+            incentive_token_raw_amount || "0",
             incentive_token_quote.decimals
           )
         );

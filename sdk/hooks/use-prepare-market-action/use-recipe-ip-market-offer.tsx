@@ -115,7 +115,7 @@ export const calculateRecipeIPMarketOfferTokenData = ({
     raw_amount: total_quantity_filled ?? "0",
     token_amount: parseFloat(
       ethers.utils.formatUnits(
-        total_quantity_filled,
+        total_quantity_filled || "0",
         input_token_quote.decimals
       )
     ),
@@ -123,7 +123,7 @@ export const calculateRecipeIPMarketOfferTokenData = ({
       input_token_quote.price *
       parseFloat(
         ethers.utils.formatUnits(
-          total_quantity_filled,
+          total_quantity_filled || "0",
           input_token_quote.decimals
         )
       ),
@@ -145,7 +145,7 @@ export const calculateRecipeIPMarketOfferTokenData = ({
       // Get incentive token amount
       const incentive_token_amount = parseFloat(
         ethers.utils.formatUnits(
-          incentive_token_raw_amount,
+          incentive_token_raw_amount || "0",
           incentive_token_quote.decimals
         )
       );
@@ -340,7 +340,10 @@ export const useRecipeIPMarketOffer = ({
 
       // Get token amount
       const token_amount: number = parseFloat(
-        ethers.utils.formatUnits(raw_amount, incentive.decimals)
+        ethers.utils.formatUnits(
+          raw_amount.toString() || "0",
+          incentive.decimals
+        )
       );
 
       // Get token amount in USD

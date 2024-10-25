@@ -99,14 +99,14 @@ export const calculateVaultAPMarketOfferTokenData = ({
   // Get input token data
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
-    raw_amount: quantity ?? "0",
+    raw_amount: quantity || "0",
     token_amount: parseFloat(
-      ethers.utils.formatUnits(quantity, input_token_quote.decimals)
+      ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
     ),
     token_amount_usd:
       input_token_quote.price *
       parseFloat(
-        ethers.utils.formatUnits(quantity, input_token_quote.decimals)
+        ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
       ),
   };
 
@@ -256,7 +256,7 @@ export const useVaultAPMarketOffer = ({
   // Get incentives after deposit
   const propsReadVaultPreview = useReadVaultPreview({
     market: enrichedMarket as EnrichedMarketDataType,
-    quantity: quantity ?? "0",
+    quantity: quantity || "0",
     enabled: isValid.status && enabled,
   });
 
@@ -279,7 +279,7 @@ export const useVaultAPMarketOffer = ({
       enrichedMarket,
       propsTokenQuotes,
       propsReadVaultPreview,
-      quantity: quantity ?? "0",
+      quantity: quantity || "0",
     });
 
   // Create transaction options
@@ -295,8 +295,8 @@ export const useVaultAPMarketOffer = ({
       getVaultAPMarketOfferTransactionOptions({
         chain_id,
         market_id,
-        quantity: quantity ?? "0",
-        account: account ?? "",
+        quantity: quantity || "0",
+        account: account || "",
       });
 
     // Set offer transaction options

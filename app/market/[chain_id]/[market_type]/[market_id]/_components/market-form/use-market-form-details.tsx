@@ -74,6 +74,8 @@ export const useMarketFormDetails = (
 
   const { address, isConnected } = useAccount();
 
+  console.log(marketForm.watch("incentive_tokens"));
+
   const {
     isValid,
     isLoading,
@@ -98,11 +100,11 @@ export const useMarketFormDetails = (
     token_ids: marketForm.watch("incentive_tokens").map((token) => token.id),
     token_amounts: marketForm
       .watch("incentive_tokens")
-      .map((token) => token.raw_amount ?? "0"),
+      .map((token) => token.raw_amount || "0"),
     expiry: marketForm.watch("no_expiry")
       ? "0"
       : Math.floor(
-          (marketForm.watch("expiry") ?? new Date()).getTime() / 1000
+          (marketForm.watch("expiry") || new Date(0)).getTime() / 1000
         ).toString(),
 
     token_rates: marketForm.watch("incentive_tokens").map((incentiveData) => {
@@ -113,7 +115,7 @@ export const useMarketFormDetails = (
         const distribution = parseFloat(incentiveData.distribution ?? "0");
 
         const offerAmount = parseFloat(
-          marketForm.watch("offer_raw_amount") ?? "0"
+          marketForm.watch("offer_raw_amount") || "0"
         );
 
         const inputTokenData = getTokenQuote({
@@ -138,7 +140,7 @@ export const useMarketFormDetails = (
           return "0";
         }
 
-        return refinedRate.toString();
+        return refinedRate.toString() || "0";
       } catch (error) {
         return "0";
       }

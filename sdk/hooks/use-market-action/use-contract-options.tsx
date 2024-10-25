@@ -264,7 +264,7 @@ export const useContractOptions = ({
                     raw_amount: quantity as string,
                     token_amount: parseFloat(
                       ethers.utils.formatUnits(
-                        quantity as string,
+                        quantity === "" ? "0" : quantity ?? "0",
                         getSupportedToken(market.input_token_id as string)
                           .decimals
                       )

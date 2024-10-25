@@ -290,7 +290,7 @@ export const calculateVaultIPLimitOfferTokenData = ({
         // Get incentive token amount
         const incentive_token_amount = parseFloat(
           ethers.utils.formatUnits(
-            incentive_token_raw_amount,
+            incentive_token_raw_amount || "0",
             incentive_token_quote.decimals
           )
         );
@@ -423,7 +423,10 @@ export const getVaultIPLimitOfferTransactionOptions = ({
             ...token_data,
             raw_amount: token_amounts[i],
             token_amount: parseFloat(
-              ethers.utils.formatUnits(token_amounts[i], token_data.decimals)
+              ethers.utils.formatUnits(
+                token_amounts[i] || "0",
+                token_data.decimals
+              )
             ),
           },
         ],
