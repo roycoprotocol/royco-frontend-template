@@ -138,26 +138,26 @@ export const usePrepareMarketAction = ({
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
-  const propsVaultIPMarketOffer = useVaultIPMarketOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.vault.id,
-  });
+  // const propsVaultIPMarketOffer = useVaultIPMarketOffer({
+  //   chain_id,
+  //   market_id,
+  //   account,
+  //   quantity,
+  //   custom_token_data,
+  //   enabled: market_type === RoycoMarketType.vault.id,
+  // });
 
-  const propsVaultIPLimitOffer = useVaultIPLimitOffer({
-    chain_id,
-    market_id,
-    account,
-    token_ids,
-    token_amounts,
-    start_timestamps,
-    end_timestamps,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.vault.id,
-  });
+  // const propsVaultIPLimitOffer = useVaultIPLimitOffer({
+  //   chain_id,
+  //   market_id,
+  //   account,
+  //   token_ids,
+  //   token_amounts,
+  //   start_timestamps,
+  //   end_timestamps,
+  //   custom_token_data,
+  //   enabled: market_type === RoycoMarketType.vault.id,
+  // });
 
   switch (action_type) {
     case PrepareMarketActionType.RecipeAPMarketOffer:
@@ -173,10 +173,10 @@ export const usePrepareMarketAction = ({
       return propsVaultAPMarketOffer;
     case PrepareMarketActionType.VaultAPLimitOffer:
       return propsVaultAPLimitOffer;
-    case PrepareMarketActionType.VaultIPMarketOffer:
-      return propsVaultIPMarketOffer;
-    case PrepareMarketActionType.VaultIPLimitOffer:
-      return propsVaultIPLimitOffer;
+    // case PrepareMarketActionType.VaultIPMarketOffer:
+    //   return propsVaultIPMarketOffer;
+    // case PrepareMarketActionType.VaultIPLimitOffer:
+    //   return propsVaultIPLimitOffer;
     default:
       return propsRecipeAPMarketOffer;
   }

@@ -89,7 +89,10 @@ export const useMarketFormDetails = (
     user_type: userType,
     offer_type: marketForm.watch("offer_type"),
     account: address,
-    quantity: marketForm.watch("offer_raw_amount"),
+    quantity:
+      marketForm.watch("offer_raw_amount") === ""
+        ? undefined
+        : marketForm.watch("offer_raw_amount"),
     funding_vault: marketForm.watch("funding_vault").address,
 
     token_ids: marketForm.watch("incentive_tokens").map((token) => token.id),
@@ -171,6 +174,20 @@ export const useMarketFormDetails = (
               } => Object.keys(data).length > 1
             )
         : undefined,
+    start_timestamps: marketForm
+      .watch("incentive_tokens")
+      .map((incentive) =>
+        Math.floor(
+          new Date(incentive.start_timestamp ?? 0).getTime() / 1000
+        ).toString()
+      ),
+    end_timestamps: marketForm
+      .watch("incentive_tokens")
+      .map((incentive) =>
+        Math.floor(
+          new Date(incentive.end_timestamp ?? 0).getTime() / 1000
+        ).toString()
+      ),
   });
 
   return {
