@@ -287,7 +287,6 @@ export const getEnrichedMarketsQueryOptions = (
   },
   keepPreviousData: true,
   placeholderData: (previousData: any) => previousData,
-  staleTime: 1000 * 60 * 1, // 1 min
   refetchInterval: 1000 * 60 * 1, // 1 min
   refetchOnWindowFocus: false,
   refreshInBackground: true,

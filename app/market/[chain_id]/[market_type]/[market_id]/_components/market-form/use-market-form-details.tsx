@@ -101,22 +101,11 @@ export const useMarketFormDetails = (
 
       const tokenAmount = token.amount || "0";
 
-      // const rawAmount = ethers.utils.formatUnits(
-      //   tokenAmount.toString(),
-      //   token.decimals
-      // );
-
       // Convert tokenAmount to Wei (BigNumber) using the appropriate decimals
       const tokenAmountInWei = ethers.utils.parseUnits(
         parseFloat(tokenAmount).toFixed(token.decimals), // Format to the correct number of decimals
         token.decimals
       );
-
-      // console.log("tokenAmountInWei", tokenAmountInWei);
-
-      // if (isNaN(parseFloat(rawAmount))) {
-      //   return "0";
-      // }
 
       return tokenAmountInWei.toString() || "0";
     }),
