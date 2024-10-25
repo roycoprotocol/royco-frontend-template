@@ -74,8 +74,6 @@ export const useMarketFormDetails = (
 
   const { address, isConnected } = useAccount();
 
-  console.log(marketForm.watch("incentive_tokens"));
-
   const {
     isValid,
     isLoading,
@@ -98,9 +96,30 @@ export const useMarketFormDetails = (
     funding_vault: marketForm.watch("funding_vault").address,
 
     token_ids: marketForm.watch("incentive_tokens").map((token) => token.id),
-    token_amounts: marketForm
-      .watch("incentive_tokens")
-      .map((token) => token.raw_amount || "0"),
+    token_amounts: marketForm.watch("incentive_tokens").map((token) => {
+      // const rawAmount = token.raw_amount || "0";
+
+      const tokenAmount = token.amount || "0";
+
+      // const rawAmount = ethers.utils.formatUnits(
+      //   tokenAmount.toString(),
+      //   token.decimals
+      // );
+
+      // Convert tokenAmount to Wei (BigNumber) using the appropriate decimals
+      const tokenAmountInWei = ethers.utils.parseUnits(
+        parseFloat(tokenAmount).toFixed(token.decimals), // Format to the correct number of decimals
+        token.decimals
+      );
+
+      // console.log("tokenAmountInWei", tokenAmountInWei);
+
+      // if (isNaN(parseFloat(rawAmount))) {
+      //   return "0";
+      // }
+
+      return tokenAmountInWei.toString() || "0";
+    }),
     expiry: marketForm.watch("no_expiry")
       ? "0"
       : Math.floor(

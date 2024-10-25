@@ -147,57 +147,70 @@ export const FormIncentiveTokens = React.forwardRef<
       | "allocation";
     value: string | Date | undefined;
   }) => {
+    console.log("changeIncentiveValue", index, type, value);
+
     try {
       let newIncentives = marketForm.watch("incentive_tokens");
+      // @ts-ignore
+      newIncentives[index][type] = value;
+      marketForm.setValue("incentive_tokens", newIncentives);
+    } catch (err) {}
 
-      if (!!newIncentives && index < newIncentives.length) {
-        if (value === undefined && value === "") {
-          newIncentives[index][type] = undefined;
+    // try {
+    //   let newIncentives = marketForm.watch("incentive_tokens");
 
-          if (type === "amount") {
-            newIncentives[index]["raw_amount"] = undefined;
-            newIncentives[index]["amount"] = value;
-            newIncentives[index]["raw_amount"] = value;
-          }
+    //   if (!!newIncentives && index < newIncentives.length) {
+    //     if (value === undefined && value === "") {
+    //       newIncentives[index][type] = undefined;
 
-          marketForm.setValue("incentive_tokens", newIncentives);
-        } else {
-          if (type === "amount") {
-            try {
-              const decimals = newIncentives[index].decimals;
-              // @ts-ignore
-              const rawAmount = ethers.utils.formatUnits(
-                value.toString() || "0",
-                decimals
-              );
+    //       if (type === "amount") {
+    //         newIncentives[index]["raw_amount"] = undefined;
+    //         newIncentives[index]["amount"] = value;
+    //         newIncentives[index]["raw_amount"] = value;
+    //       }
 
-              // const rawAmount = BigNumber.from(value.toString())
-              //   .mul(BigNumber.from(10).pow(decimals))
-              //   .toString();
-              const amount = value;
+    //       marketForm.setValue("incentive_tokens", newIncentives);
+    //     } else {
+    //       if (type === "amount") {
+    //         try {
+    //           const decimals = newIncentives[index].decimals;
+    //           // @ts-ignore
+    //           const rawAmount = ethers.utils.formatUnits(
+    //             value?.toString() || "0",
+    //             decimals
+    //           );
 
-              if (isSolidityIntValid("uint256", rawAmount)) {
-                newIncentives[index]["raw_amount"] = rawAmount;
-                // @ts-ignore
-                newIncentives[index]["amount"] = amount;
-              }
-            } catch (e) {
-              // @ts-ignore
-              newIncentives[index]["raw_amount"] = value;
-              // @ts-ignore
-              newIncentives[index]["amount"] = value;
-            }
-          } else {
-            // @ts-ignore
-            newIncentives[index][type] = value;
-          }
+    //           // const rawAmount = BigNumber.from(value.toString())
+    //           //   .mul(BigNumber.from(10).pow(decimals))
+    //           //   .toString();
+    //           const amount = value;
 
-          marketForm.setValue("incentive_tokens", newIncentives);
-        }
-      }
-    } catch (e) {
-      console.log("e", e);
-    }
+    //           if (isSolidityIntValid("uint256", rawAmount)) {
+    //             newIncentives[index]["raw_amount"] = rawAmount;
+    //             // @ts-ignore
+    //             newIncentives[index]["amount"] = amount;
+    //           }
+    //         } catch (e) {
+    //           // @ts-ignore
+    //           newIncentives[index]["raw_amount"] = value;
+    //           // @ts-ignore
+    //           newIncentives[index]["amount"] = value;
+    //         }
+    //       } else {
+    //         // @ts-ignore
+    //         newIncentives[index][type] = value;
+    //       }
+
+    //       marketForm.setValue("incentive_tokens", newIncentives);
+    //     }
+    //   }
+    // } catch (e) {
+    //   let newIncentives = marketForm.watch("incentive_tokens");
+    //   newIncentives[index][type] = value;
+    //   marketForm.setValue("incentive_tokens", newIncentives);
+
+    //   // console.log("e", e);
+    // }
   };
 
   if (!!currentMarketData) {
