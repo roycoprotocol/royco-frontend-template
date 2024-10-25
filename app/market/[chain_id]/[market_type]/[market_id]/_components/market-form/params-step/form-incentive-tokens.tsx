@@ -166,9 +166,14 @@ export const FormIncentiveTokens = React.forwardRef<
             try {
               const decimals = newIncentives[index].decimals;
               // @ts-ignore
-              const rawAmount = BigNumber.from(value.toString())
-                .mul(BigNumber.from(10).pow(decimals))
-                .toString();
+              const rawAmount = ethers.utils.formatUnits(
+                value.toString() || "0",
+                decimals
+              );
+
+              // const rawAmount = BigNumber.from(value.toString())
+              //   .mul(BigNumber.from(10).pow(decimals))
+              //   .toString();
               const amount = value;
 
               if (isSolidityIntValid("uint256", rawAmount)) {

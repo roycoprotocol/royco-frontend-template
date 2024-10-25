@@ -160,7 +160,7 @@ export const FormIncentives = React.forwardRef<
   return (
     <FormField
       control={marketForm.control}
-      name="incentives"
+      name="incentive_tokens"
       render={({ field }) => (
         <FormItem className={cn("space-y-1", className)}>
           <FormLabel className="subtitle-2 text-sm text-black">
