@@ -425,6 +425,8 @@ export const MarketInfo = React.forwardRef<
                       )
                   )}
 
+                  {currentMarketData.lockup_time === "0" && "0 seconds"}
+
                   <InfoTip {...INFO_TIP_PROPS}>
                     Time duration for which assets must be deposited for
                   </InfoTip>
