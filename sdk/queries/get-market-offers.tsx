@@ -1,7 +1,4 @@
 import { type TypedRoycoClient } from "@/sdk/client";
-import { Database } from "../types";
-
-// export type MarketOffersDataType = Database["public"]["CompositeTypes"][""]
 
 export const getMarketOffersQueryOptions = (
   client: TypedRoycoClient,

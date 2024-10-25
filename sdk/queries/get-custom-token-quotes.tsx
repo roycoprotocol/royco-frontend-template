@@ -1,17 +1,10 @@
 import { type TypedRoycoClient } from "@/sdk/client";
+import { type TypedTokenQuote } from "./get-token-quotes";
 import { getSupportedToken } from "../constants";
 
-export type TypedTokenQuote = {
-  token_id: string;
-  price: number;
-  total_supply: number;
-  fdv: number;
-};
-
-export const getTokenQuotesQueryOptions = (
+export const getCustomTokenQuotesQueryOptions = (
   client: TypedRoycoClient,
-  token_ids: string[],
-  custom_token_data?: Array<{
+  custom_token_data: Array<{
     token_id: string;
     price?: string;
     fdv?: string;
@@ -19,28 +12,24 @@ export const getTokenQuotesQueryOptions = (
   }>
 ) => ({
   queryKey: [
-    "tokens-quote",
-    token_ids.map((id) => `${id}`).join(":"),
-    custom_token_data
-      ?.map(
-        (token) =>
-          `${token.token_id}:${token.price}:${token.fdv}:${token.total_supply}`
-      )
-      .join(":"),
+    "custom-token-quotes",
+    token_data.map((token) => `${token.token_id}`).join(":"),
   ],
   queryFn: async () => {
     const result = await client.rpc("get_token_quotes", {
-      token_ids,
-      custom_token_data,
+      token_ids: custom_token_data.map((token) => token.token_id),
+      custom_token_data: custom_token_data,
     });
 
     if (result.data) {
       const rows = result.data as TypedTokenQuote[];
 
-      const new_rows = token_ids.map((token_id) => {
+      const new_rows = token_data.map((token) => {
+        const token_id = token.token_id;
         const token_data = getSupportedToken(token_id);
+
         let quote_data = rows.find(
-          (r) => r.token_id.toLowerCase() === token_id
+          (r) => r.token_id.toLowerCase() === token_id.toLowerCase()
         );
 
         if (!quote_data) {

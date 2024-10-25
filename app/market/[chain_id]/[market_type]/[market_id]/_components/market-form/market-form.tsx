@@ -88,13 +88,12 @@ export const MarketForm = React.forwardRef<
   const {
     isLoading,
     isValid,
-    isValidMessage,
     isReady,
     writeContractOptions,
     canBePerformedCompletely,
     canBePerformedPartially,
-    simulationData,
-    incentivesData,
+    // simulationData,
+    incentiveData,
   } = useMarketFormDetails(marketForm);
 
   const handleNextStep = async () => {
@@ -111,10 +110,10 @@ export const MarketForm = React.forwardRef<
           });
         } catch (error) {}
       } else if (marketStep === MarketSteps.params.id) {
-        if (isValid) {
+        if (isValid.status) {
           onSubmit(marketForm.getValues());
         } else {
-          toast.custom(<ErrorAlert message={isValidMessage} />);
+          toast.custom(<ErrorAlert message={isValid.message} />);
         }
       } else if (
         marketStep === MarketSteps.preview.id &&
@@ -145,7 +144,7 @@ export const MarketForm = React.forwardRef<
   };
 
   const onSubmit = (data: any) => {
-    if (isValid === true) {
+    if (isValid.status) {
       setMarketStep(MarketSteps.preview.id);
     }
   };

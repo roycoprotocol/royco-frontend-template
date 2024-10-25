@@ -16,3 +16,5 @@ export * from "./get-enriched-positions-recipe";
 export * from "./get-enriched-markets";
 export * from "./get-market-offers";
 export * from "./get-enriched-royco-stats";
+export * from "./get-custom-token-quotes";
+export * from "./get-transaction-simulation";

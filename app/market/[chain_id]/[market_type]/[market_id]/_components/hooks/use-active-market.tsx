@@ -177,7 +177,8 @@ export const useActiveMarket = () => {
         // @ts-ignore
         parseInt(market_type) === 0
           ? MarketType.recipe.id
-          : MarketType.vault.id,
+          : // @ts-ignore
+            MarketType.vault.id,
       // @ts-ignore
       market_id: market_id as string,
     },

@@ -82,13 +82,15 @@ export const RoycoMarketOfferType: Record<
 export type TypedRoycoMarketUserType = "ap" | "ip";
 export const RoycoMarketUserType: Record<
   TypedRoycoMarketUserType,
-  { id: TypedRoycoMarketUserType }
+  { id: TypedRoycoMarketUserType; value: 0 | 1 }
 > = {
   ap: {
     id: "ap",
+    value: 0,
   },
   ip: {
     id: "ip",
+    value: 1,
   },
 };
 

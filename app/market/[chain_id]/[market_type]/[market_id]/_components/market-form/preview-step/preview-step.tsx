@@ -28,6 +28,7 @@ import { ethers } from "ethers";
 import { SupportedToken } from "@/sdk/constants";
 import { TriangleAlertIcon } from "lucide-react";
 import { useMarketFormDetails } from "../use-market-form-details";
+import { SimulationViewer } from "./simulation-viewer";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -55,13 +56,12 @@ export const PreviewStep = React.forwardRef<
   const {
     isLoading,
     isValid,
-    isValidMessage,
     isReady,
     writeContractOptions,
     canBePerformedCompletely,
     canBePerformedPartially,
-    simulationData,
-    incentivesData,
+    // simulationData,
+    incentiveData,
   } = useMarketFormDetails(marketForm);
 
   if (isLoading) {
@@ -79,74 +79,7 @@ export const PreviewStep = React.forwardRef<
   } else if (!!propsEnrichedMarket.data) {
     return (
       <div className={cn("grow overflow-y-scroll", className)} {...props}>
-        {/* <SecondaryLabel className={cn(BASE_LABEL_BORDER)}>
-          Simulation
-        </SecondaryLabel>
-        <div
-          className={cn(
-            BASE_MARGIN_TOP.SM,
-            "flex h-28 w-full flex-col place-content-center items-center bg-z2"
-          )}
-        ></div> */}
-
-        <SecondaryLabel className={cn(BASE_LABEL_BORDER, "font-normal")}>
-          Tenderly Simulation
-        </SecondaryLabel>
-
-        <ScrollArea
-          className={cn(BASE_MARGIN_TOP.SM, "flex h-fit w-full flex-row gap-2")}
-        >
-          <div className="flex h-fit w-full flex-row gap-2">
-            {!!simulationData &&
-              simulationData.map((tokenData, txIndex) => {
-                const key = `simulation-data:${tokenData.id}:${txIndex}`;
-
-                return (
-                  <div
-                    key={key}
-                    className={cn(
-                      "flex h-fit w-[49%] shrink-0 flex-col rounded-xl bg-z2 p-3"
-                    )}
-                  >
-                    <TokenDisplayer symbols={false} tokens={[tokenData]} />
-                    <SecondaryLabel className="mt-2 font-normal text-black">
-                      {`${tokenData.type === "in" ? "+" : "-"}${Intl.NumberFormat(
-                        "en-US",
-                        {
-                          style: "decimal",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }
-                      ).format(
-                        tokenData.token_amount
-                      )} ${tokenData.symbol.toUpperCase()}`}
-                    </SecondaryLabel>
-
-                    <TertiaryLabel className="text-xs">
-                      {Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(tokenData.token_amount_usd)}
-                    </TertiaryLabel>
-                  </div>
-                );
-              })}
-
-            {!!simulationData && simulationData.length === 0 && (
-              <AlertIndicator className="">
-                No asset changes detected
-              </AlertIndicator>
-            )}
-          </div>
-
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        <SimulationViewer marketForm={marketForm} />
 
         <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL, BASE_LABEL_BORDER)}>
           Incentives{" "}
@@ -163,8 +96,8 @@ export const PreviewStep = React.forwardRef<
          * Incentive Table
          */}
         <div className="flex h-fit shrink-0 flex-col">
-          {!!incentivesData &&
-            incentivesData.map((incentive, index) => {
+          {!!incentiveData &&
+            incentiveData.map((incentive, index) => {
               const key = `incentive-data:${incentive.id}:${index}`;
 
               return (
@@ -267,7 +200,7 @@ export const PreviewStep = React.forwardRef<
           {/**
            * Indicator for empty incentives
            */}
-          {incentivesData.length === 0 && (
+          {incentiveData.length === 0 && (
             <AlertIndicator className="border-b border-divider">
               No incentives available
             </AlertIndicator>
@@ -276,7 +209,7 @@ export const PreviewStep = React.forwardRef<
           {/**
            * Net/Total Indicator
            */}
-          {!!incentivesData && (
+          {!!incentiveData && (
             <div className="flex w-full flex-row items-center justify-between py-3">
               <SecondaryLabel className="text-success">
                 {`${userType === MarketUserType.ap.id ? "Net AIP" : "Net Incentives"}`}
@@ -296,7 +229,7 @@ export const PreviewStep = React.forwardRef<
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(
-                        incentivesData.reduce(
+                        incentiveData.reduce(
                           (acc, incentive) => acc + incentive.token_amount_usd,
                           0
                         )
@@ -308,7 +241,7 @@ export const PreviewStep = React.forwardRef<
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(
-                        incentivesData.reduce(
+                        incentiveData.reduce(
                           (acc, incentive) =>
                             acc + incentive.annual_change_ratio,
                           0
