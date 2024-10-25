@@ -14,7 +14,7 @@ import {
   MarketUserType,
   useMarketManager,
 } from "@/store";
-import { SupportedToken } from "@/sdk/constants";
+import { getSupportedToken, SupportedToken } from "@/sdk/constants";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { RoycoMarketOfferType } from "@/sdk/market";
@@ -102,31 +102,75 @@ export const useMarketFormDetails = (
           (marketForm.watch("expiry") ?? new Date()).getTime() / 1000
         ).toString(),
 
-    token_rates: marketForm.watch("incentive_tokens").map((token) => {
+    token_rates: marketForm.watch("incentive_tokens").map((incentiveData) => {
       try {
-        const aipPercentage = parseFloat(token.aip ?? "0");
+        const aipPercentage = parseFloat(incentiveData.aip ?? "0");
         const aip = aipPercentage / 100;
-        const fdv = parseFloat(token.fdv ?? "0");
-        const distribution = parseFloat(token.distribution ?? "0");
+        const fdv = parseFloat(incentiveData.fdv ?? "0");
+        const distribution = parseFloat(incentiveData.distribution ?? "0");
 
-        const offerAmount = parseFloat(marketForm.watch("offer_amount") ?? "0");
+        const offerAmount = parseFloat(
+          marketForm.watch("offer_raw_amount") ?? "0"
+        );
 
-        const inputTokenPrice = getTokenQuote({
+        const inputTokenData = getTokenQuote({
           token_id: currentMarketData?.input_token_id ?? "",
           token_quotes: propsTokenQuotes,
-        }).price;
+        });
 
+        const inputTokenPrice = inputTokenData.price;
         const incentiveTokenPrice = fdv / distribution;
 
         const rate =
           (aip * offerAmount * inputTokenPrice) /
           (incentiveTokenPrice * (365 * 24 * 60 * 60));
 
-        return token.raw_amount ?? "0";
+        if (isNaN(rate)) {
+          return "0";
+        }
+
+        const refinedRate = parseInt(rate.toFixed(incentiveData.decimals));
+
+        if (refinedRate === 0) {
+          return "0";
+        }
+
+        return refinedRate.toString();
       } catch (error) {
         return "0";
       }
     }),
+
+    custom_token_data:
+      marketMetadata.market_type === MarketType.vault.id &&
+      marketForm.watch("offer_type") === RoycoMarketOfferType.limit.id
+        ? marketForm
+            .watch("incentive_tokens")
+            .map((incentive) => {
+              const total_supply = parseFloat(incentive.distribution ?? "0");
+              const fdv = parseFloat(incentive.fdv ?? "0");
+              const price = fdv / total_supply;
+
+              return {
+                token_id: incentive.id,
+                ...(isFinite(price) && { price: price.toString() }),
+                ...(isFinite(total_supply) && {
+                  total_supply: total_supply.toString(),
+                }),
+                ...(isFinite(fdv) && { fdv: fdv.toString() }),
+              };
+            })
+            .filter(
+              (
+                data
+              ): data is {
+                token_id: string;
+                price?: string;
+                total_supply?: string;
+                fdv?: string;
+              } => Object.keys(data).length > 1
+            )
+        : undefined,
   });
 
   return {

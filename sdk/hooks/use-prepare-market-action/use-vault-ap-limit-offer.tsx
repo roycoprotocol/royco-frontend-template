@@ -214,8 +214,7 @@ export const calculateVaultAPLimitOfferTokenData = ({
           annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
         } else {
           annual_change_ratio =
-            (incentive_token_amount_usd / input_token_data.token_amount_usd) *
-            (365 * 24 * 60 * 60);
+            incentive_token_amount_usd / input_token_data.token_amount_usd;
         }
 
         // Get incentive token data
@@ -266,7 +265,7 @@ export const getVaultAPLimitOfferTransactionOptions = ({
 
   // Sort the tokens based on the address in ascending order
   const sortedTokens = (token_ids as string[]).map((id, index) => {
-    const address = token_ids[index];
+    const address = id.split("-")[1];
     const amount = token_rates[index];
 
     return {
@@ -372,10 +371,7 @@ export const useVaultAPLimitOffer = ({
   // Get token quotes
   const propsTokenQuotes = useTokenQuotes({
     token_ids: Array.from(
-      new Set([
-        enrichedMarket?.input_token_id ?? "",
-        ...propsReadVaultPreview.incentive_token_ids,
-      ])
+      new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
     enabled: isValid.status && enabled,

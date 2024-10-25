@@ -43,6 +43,7 @@ export const usePrepareMarketAction = ({
   token_amounts,
   token_rates,
   expiry,
+  custom_token_data,
 }: {
   chain_id: number;
   market_id: string;
@@ -56,6 +57,12 @@ export const usePrepareMarketAction = ({
   token_amounts: string[] | undefined;
   token_rates: string[] | undefined;
   expiry: string | undefined;
+  custom_token_data?: Array<{
+    token_id: string;
+    price?: string;
+    fdv?: string;
+    total_supply?: string;
+  }>;
 }) => {
   const action_type = `${market_type}-${user_type}-${offer_type}`;
 
@@ -65,6 +72,7 @@ export const usePrepareMarketAction = ({
     account,
     quantity,
     funding_vault,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
   });
 
@@ -73,6 +81,7 @@ export const usePrepareMarketAction = ({
     market_id,
     account,
     quantity,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
   });
 
@@ -85,6 +94,7 @@ export const usePrepareMarketAction = ({
     token_amounts,
     expiry,
     funding_vault,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
   });
 
@@ -96,6 +106,7 @@ export const usePrepareMarketAction = ({
     token_ids,
     token_amounts,
     expiry,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
   });
 
@@ -104,6 +115,7 @@ export const usePrepareMarketAction = ({
     market_id,
     account,
     quantity,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
@@ -116,6 +128,7 @@ export const usePrepareMarketAction = ({
     token_rates,
     expiry,
     funding_vault,
+    custom_token_data,
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
