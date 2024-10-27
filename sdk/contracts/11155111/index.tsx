@@ -36,4 +36,8 @@ export const Contracts = {
     address: NULL_ADDRESS,
     abi: erc4626Abi,
   },
+  WeirollWalletHelper: {
+    address: ContractAddresses.WeirollWalletHelper,
+    abi: ContractAbis.WeirollWalletHelper,
+  },
 };

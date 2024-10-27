@@ -24,6 +24,7 @@ export type ContractFilter = {
 };
 
 const constructFilterClauses = (filters: ContractFilter[]): string => {
+  let idFilter = "";
   let typeFilter = "";
   let sourceFilter = "";
   let chainIdFilter = "";
@@ -35,6 +36,10 @@ const constructFilterClauses = (filters: ContractFilter[]): string => {
    */
   filters.forEach((filter) => {
     switch (filter.id) {
+      case "id":
+        if (idFilter) idFilter += " OR ";
+        idFilter = `id = '${filter.value}'`;
+        break;
       case "type":
         if (typeFilter) typeFilter += " OR ";
         typeFilter = `type = '${filter.value}'`;
@@ -56,6 +61,7 @@ const constructFilterClauses = (filters: ContractFilter[]): string => {
 
   let filterClauses = "";
 
+  if (idFilter) filterClauses += `(${idFilter}) AND `;
   if (typeFilter) filterClauses += `(${typeFilter}) AND `;
   if (sourceFilter) filterClauses += `(${sourceFilter}) AND `;
   if (chainIdFilter) filterClauses += `(${chainIdFilter}) AND `;

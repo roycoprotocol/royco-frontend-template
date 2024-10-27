@@ -7,4 +7,5 @@ export const ContractAddresses = {
   RecipeMarketHub: "0xbf29db24d0b513deecf3915720abda5b94c46739",
   VaultMarketHub: "0xfc94ce989c77c6b388e302cd4ff31ca1faae8783",
   WeirollWallet: "0x593f45d6de842ad9ebaf2de4fd6e00aa2a41f436",
+  WeirollWalletHelper: "0x07899ac8be7462151d6515fcd4773dd9267c9911",
 } as Record<string, Address>;

@@ -6,11 +6,16 @@ import {
   SupportedChain,
   SupportedToken,
 } from "../constants";
-import { BigNumber, ethers } from "ethers";
 
-import { BaseSortingFilter, Database } from "../types";
-import { constructBaseSortingFilterClauses, getSupportedChain } from "../utils";
-import { getChain } from "@/sdk/utils";
+import { BaseSortingFilter, CustomTokenData, Database } from "../types";
+import {
+  constructBaseSortingFilterClauses,
+  getSupportedChain,
+  parseNumber,
+  parseRawAmount,
+  parseRawToTokenAmount,
+  parseTokenToTokenAmountUsd,
+} from "../utils";
 
 export type MarketFilter = {
   id: string;
@@ -125,7 +130,8 @@ export const getEnrichedMarketsQueryOptions = (
   page_index: number | undefined,
   filters: Array<MarketFilter> | undefined,
   sorting: Array<BaseSortingFilter> | undefined,
-  search_key: string | undefined
+  search_key: string | undefined,
+  custom_token_data: CustomTokenData | undefined
 ) => ({
   queryKey: [
     "enriched-markets",
@@ -143,14 +149,14 @@ export const getEnrichedMarketsQueryOptions = (
     const sortingClauses = constructBaseSortingFilterClauses(sorting);
 
     const result = await client.rpc("get_enriched_markets", {
-      in_chain_id: chain_id,
-      in_market_type: market_type,
-      in_market_id: market_id,
-      in_token_data: undefined, // to be updated
+      chain_id: chain_id,
+      market_type: market_type,
+      market_id: market_id,
       page_index: page_index,
       filters: filterClauses,
       sorting: sortingClauses,
       search_key: search_key,
+      custom_token_data: custom_token_data,
     });
 
     if (!!result.data && !!result.data.data && result.data.data.length > 0) {
@@ -171,38 +177,38 @@ export const getEnrichedMarketsQueryOptions = (
           const input_token_info: SupportedToken = getSupportedToken(
             row.input_token_id
           );
-          const input_token_price: number = row.input_token_price ?? 0;
-          const input_token_fdv: number = row.input_token_fdv ?? 0;
-          const input_token_total_supply: number =
-            row.input_token_total_supply ?? 0;
-          const input_token_raw_amount: string = BigNumber.from(
-            (row.quantity ?? 0).toLocaleString("fullwide", {
-              useGrouping: false,
-            })
-          ).toString();
-          const locked_input_token_raw_amount: string = BigNumber.from(
-            (row.locked_quantity ?? 0).toLocaleString("fullwide", {
-              useGrouping: false,
-            })
-          ).toString();
-
-          const input_token_token_amount: number = parseFloat(
-            ethers.utils.formatUnits(
-              BigNumber.from(input_token_raw_amount),
-              input_token_info.decimals
-            )
+          const input_token_price: number = parseNumber(row.input_token_price);
+          const input_token_fdv: number = parseNumber(row.input_token_fdv);
+          const input_token_total_supply: number = parseNumber(
+            row.input_token_total_supply
           );
-          const locked_input_token_token_amount: number = parseFloat(
-            ethers.utils.formatUnits(
-              BigNumber.from(locked_input_token_raw_amount),
-              input_token_info.decimals
-            )
+          const input_token_raw_amount: string = parseRawAmount(
+            row.quantity_ap
           );
 
-          const input_token_token_amount_usd =
-            input_token_token_amount * input_token_price;
+          const locked_input_token_raw_amount: string = parseRawAmount(
+            row.locked_quantity
+          );
+
+          const input_token_token_amount: number = parseRawToTokenAmount(
+            input_token_raw_amount,
+            input_token_info.decimals
+          );
+
+          const locked_input_token_token_amount: number = parseRawToTokenAmount(
+            locked_input_token_raw_amount,
+            input_token_info.decimals
+          );
+
+          const input_token_token_amount_usd = parseTokenToTokenAmountUsd(
+            input_token_token_amount,
+            input_token_price
+          );
           const locked_input_token_token_amount_usd =
-            input_token_token_amount * input_token_price;
+            parseTokenToTokenAmountUsd(
+              locked_input_token_token_amount,
+              input_token_price
+            );
 
           const input_token_data = {
             ...input_token_info,
@@ -218,35 +224,35 @@ export const getEnrichedMarketsQueryOptions = (
 
           const incentive_tokens_data = row.incentive_ids.map(
             (tokenId, tokenIndex) => {
-              const token_price: number = row.incentive_token_price_values
-                ? row.incentive_token_price_values[tokenIndex]
-                : 0;
-              const token_fdv: number = row.incentive_token_fdv_values
-                ? row.incentive_token_fdv_values[tokenIndex]
-                : 0;
-              const token_total_supply: number =
-                row.incentive_token_total_supply_values
-                  ? row.incentive_token_total_supply_values[tokenIndex]
-                  : 0;
+              const token_price: number = parseNumber(
+                row.incentive_token_price_values?.[tokenIndex]
+              );
+              const token_fdv: number = parseNumber(
+                row.incentive_token_fdv_values?.[tokenIndex]
+              );
+              const token_total_supply: number = parseNumber(
+                row.incentive_token_total_supply_values?.[tokenIndex]
+              );
 
               const token_info: SupportedToken = getSupportedToken(tokenId);
 
-              const raw_amount: string = BigNumber.from(
-                (row.incentive_amounts && row.incentive_amounts[tokenIndex]) ||
-                  "0"
-              ).toString();
-
-              const token_amount: number = parseFloat(
-                ethers.utils.formatUnits(
-                  BigNumber.from(raw_amount),
-                  token_info.decimals
-                )
+              const raw_amount: string = parseRawAmount(
+                row.incentive_amounts?.[tokenIndex]
               );
 
-              const token_amount_usd: number = token_amount * token_price;
+              const token_amount: number = parseRawToTokenAmount(
+                raw_amount,
+                token_info.decimals
+              );
 
-              const annual_change_ratio: number =
-                row.annual_change_ratios?.[tokenIndex] ?? 0;
+              const token_amount_usd: number = parseTokenToTokenAmountUsd(
+                token_amount,
+                token_price
+              );
+
+              const annual_change_ratio: number = parseNumber(
+                row.annual_change_ratios?.[tokenIndex]
+              );
 
               const per_input_token =
                 token_amount / input_token_data.token_amount;
@@ -291,3 +297,9 @@ export const getEnrichedMarketsQueryOptions = (
   refetchOnWindowFocus: false,
   refreshInBackground: true,
 });
+
+// const input_token_raw_amount: string = BigNumber.from(
+//   (row.quantity_ip ?? 0).toLocaleString("fullwide", {
+//     useGrouping: false,
+//   })
+// ).toString();

@@ -5,7 +5,7 @@ import {
   MarketFilter,
 } from "../queries";
 import { RoycoClient, useRoycoClient } from "../client";
-import { BaseSortingFilter } from "../types";
+import { BaseSortingFilter, CustomTokenData } from "../types";
 
 export const useEnrichedMarkets = ({
   chain_id,
@@ -15,6 +15,7 @@ export const useEnrichedMarkets = ({
   filters = [],
   sorting = [],
   search_key,
+  custom_token_data = undefined,
   enabled = true,
 }: {
   chain_id?: number;
@@ -25,6 +26,7 @@ export const useEnrichedMarkets = ({
   filters?: Array<MarketFilter>;
   sorting?: Array<BaseSortingFilter>;
   search_key?: string;
+  custom_token_data?: CustomTokenData;
   enabled?: boolean;
 }) => {
   const client: RoycoClient = useRoycoClient();
@@ -38,7 +40,8 @@ export const useEnrichedMarkets = ({
       page_index,
       filters,
       sorting,
-      search_key
+      search_key,
+      custom_token_data
     ),
     enabled,
   });
