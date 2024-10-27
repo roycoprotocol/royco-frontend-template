@@ -3,5 +3,5 @@ export * from "./table-menu";
 export * from "./mobile-menu";
 export { SearchBar } from "./search-bar";
 export { Pagination } from "./pagination";
-export { Stats } from "./stats";
+export { RoycoStats } from "./royco-stats";
 export * from "./data-table";

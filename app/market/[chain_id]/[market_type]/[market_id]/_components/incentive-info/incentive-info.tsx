@@ -8,17 +8,9 @@ import {
   TertiaryLabel,
 } from "../composables";
 import { useActiveMarket } from "../hooks";
-import { FallMotion } from "@/components/animations";
-import { MarketIncentiveType, useMarketManager } from "@/store";
+import { useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
-import { HorizontalTabs, SpringNumber } from "@/components/composables";
-import { AnimatePresence } from "framer-motion";
-
-const INPO_TIP_PROPS = {
-  size: "sm" as "sm",
-  type: "secondary" as "secondary",
-  className: cn("w-full max-w-60"),
-};
+import { SpringNumber } from "@/components/composables";
 
 const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
@@ -64,6 +56,7 @@ const InfoValueElementClone = React.forwardRef<
             : Intl.NumberFormat("en-US", {
                 style: "percent",
                 notation: "compact",
+                useGrouping: true,
                 minimumFractionDigits: 2, // Ensures at least 2 decimal places
                 maximumFractionDigits: 2, // Limits to exactly 2 decimal places
               }).format(token_data.annual_change_ratio)}{" "}
@@ -72,6 +65,7 @@ const InfoValueElementClone = React.forwardRef<
         <TertiaryLabel className={cn("", className)}>
           {Intl.NumberFormat("en-US", {
             notation: "compact",
+            useGrouping: true,
             minimumFractionDigits: 2, // Ensures at least 2 decimal places
             maximumFractionDigits: 2, // Limits to exactly 2 decimal places
           }).format(token_data.per_input_token)}{" "}
@@ -85,6 +79,7 @@ const InfoValueElementClone = React.forwardRef<
             style: "currency",
             currency: "USD",
             notation: "compact",
+            useGrouping: true,
             minimumFractionDigits: 2, // Ensures at least 2 decimal places
             maximumFractionDigits: 2, // Limits to exactly 2 decimal places
           }).format(token_data.fdv)}{" "}
@@ -201,6 +196,7 @@ export const IncentiveInfo = React.forwardRef<
                 numberFormatOptions={{
                   style: "percent",
                   notation: "compact",
+                  useGrouping: true,
                   minimumFractionDigits: 2, // Ensures at least 2 decimal places
                   maximumFractionDigits: 2, // Limits to exactly 2 decimal places
                 }}

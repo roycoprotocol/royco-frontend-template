@@ -8,7 +8,7 @@ import { isEqual } from "lodash";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
-export const Stats = () => {
+export const RoycoStats = () => {
   const { data, isLoading, isRefetching } = useEnrichedRoycoStats({
     testnet: process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? true : false,
   });

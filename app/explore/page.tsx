@@ -2,7 +2,7 @@ import {
   MobileMenu,
   MarketsTable,
   SearchBar,
-  Stats,
+  RoycoStats,
   TableMenu,
 } from "./_components";
 import "./local.css";
@@ -35,7 +35,7 @@ const Page = () => {
             </div>
           </div>
 
-          <Stats />
+          <RoycoStats />
         </div>
 
         <div

@@ -16,6 +16,43 @@ import { produce } from "immer";
 import { SpringNumber } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
 import { FallMotion } from "@/components/animations";
+import { RoycoMarketType } from "@/sdk/market";
+
+export const CentralBar = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "flex flex-none shrink-0 flex-row items-center justify-between border-y border-divider",
+        BASE_PADDING_LEFT,
+        BASE_PADDING_RIGHT,
+        "py-2",
+        className
+      )}
+      {...props}
+    >
+      <SecondaryLabel className="font-medium text-black">
+        {/**
+         * @TODO
+         * For Recipe, this should be currentMarketData.quantity_value_usd
+         * For Vault, this needs to be calculated
+         */}
+        {/* {Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      useGrouping: true,
+    }).format(
+     currentMarketData?.input_token_data.quantity_value_usd
+    )} */}
+      </SecondaryLabel>
+
+      <SecondaryLabel className="font-medium text-black">MARKET</SecondaryLabel>
+    </div>
+  );
+});
 
 const OfferListRow = React.forwardRef<
   HTMLDivElement,
@@ -65,8 +102,9 @@ const OfferListRow = React.forwardRef<
             currentValue={keyInfo.currentValue}
             numberFormatOptions={{
               style: "currency",
-              currency: "USD",
+              notation: "compact",
               useGrouping: true,
+              currency: "USD",
             }}
           />
         </SecondaryLabel>
@@ -76,6 +114,8 @@ const OfferListRow = React.forwardRef<
             currentValue={valueInfo.currentValue}
             numberFormatOptions={{
               style: "percent",
+              notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }}
@@ -91,6 +131,7 @@ export const OfferList = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const {
+    marketMetadata,
     currentMarketData,
     propsHighestOffers,
     currentHighestOffers,
@@ -102,7 +143,8 @@ export const OfferList = React.forwardRef<
       ref={ref}
       className={cn(
         "flex h-[18rem] w-full shrink-0 grow flex-col overflow-hidden",
-        "pb-5",
+        marketMetadata.market_type === RoycoMarketType.recipe.id && "pb-5",
+        // marketMetadata.market_type === RoycoMarketType.vault.id && "pb-2",
         className
       )}
       {...props}
@@ -122,88 +164,69 @@ export const OfferList = React.forwardRef<
         <TertiaryLabel className="text-tertiary">AIP</TertiaryLabel>
       </div>
 
-      <div
-        className={cn(
-          "flex flex-1 flex-col-reverse overflow-y-scroll",
-          "gap-2 py-2",
-          BASE_PADDING_LEFT,
-          BASE_PADDING_RIGHT,
-          BASE_MARGIN_TOP.SM
-        )}
-      >
-        {!!currentHighestOffers &&
-        !!currentHighestOffers.ip_offers &&
-        currentHighestOffers.ip_offers.length !== 0 ? (
-          currentHighestOffers?.ip_offers.map((offer, offerIndex) => {
-            const BASE_KEY = `market:offer:${offer.offer_id}-${offer.offer_side}`;
-            const INDEX_KEY = `market:offer:${offer.offer_side}:${offerIndex}`;
+      {/**
+       * Show IP offers only for recipe markets
+       */}
+      {marketMetadata.market_type === RoycoMarketType.recipe.id && (
+        <div
+          className={cn(
+            "flex flex-1 flex-col-reverse overflow-y-scroll",
+            "gap-2 py-2",
+            BASE_PADDING_LEFT,
+            BASE_PADDING_RIGHT,
+            BASE_MARGIN_TOP.SM
+          )}
+        >
+          {!!currentHighestOffers &&
+          !!currentHighestOffers.ip_offers &&
+          currentHighestOffers.ip_offers.length !== 0 ? (
+            currentHighestOffers?.ip_offers.map((offer, offerIndex) => {
+              const BASE_KEY = `market:offer:${offer.offer_id}-${offer.offer_side}`;
+              const INDEX_KEY = `market:offer:${offer.offer_side}:${offerIndex}`;
 
-            const keyInfo = {
-              previousValue:
-                !!previousHighestOffers &&
-                offerIndex < previousHighestOffers.ip_offers.length
-                  ? previousHighestOffers?.ip_offers[offerIndex]
-                      .quantity_value_usd ?? 0
-                  : 0,
+              const keyInfo = {
+                previousValue:
+                  !!previousHighestOffers &&
+                  offerIndex < previousHighestOffers.ip_offers.length
+                    ? previousHighestOffers?.ip_offers[offerIndex]
+                        .quantity_value_usd ?? 0
+                    : 0,
 
-              currentValue: offer.quantity_value_usd as number,
-            };
+                currentValue: offer.quantity_value_usd as number,
+              };
 
-            const valueInfo = {
-              previousValue:
-                !!previousHighestOffers &&
-                offerIndex < previousHighestOffers.ip_offers.length
-                  ? previousHighestOffers?.ip_offers[offerIndex]
-                      .annual_change_ratio ?? 0
-                  : 0,
-              currentValue: offer.annual_change_ratio as number,
-            };
+              const valueInfo = {
+                previousValue:
+                  !!previousHighestOffers &&
+                  offerIndex < previousHighestOffers.ip_offers.length
+                    ? previousHighestOffers?.ip_offers[offerIndex]
+                        .annual_change_ratio ?? 0
+                    : 0,
+                currentValue: offer.annual_change_ratio as number,
+              };
 
-            return (
-              <OfferListRow
-                type="ap"
-                customKey={`${BASE_KEY}:${keyInfo.previousValue}:${keyInfo.currentValue}:${valueInfo.previousValue}:${valueInfo.currentValue}`}
-                indexKey={INDEX_KEY}
-                keyInfo={keyInfo}
-                valueInfo={valueInfo}
-              />
-            );
-          })
-        ) : (
-          <AlertIndicator className="h-full">No offers yet</AlertIndicator>
-        )}
-      </div>
+              return (
+                <OfferListRow
+                  type="ap"
+                  customKey={`${BASE_KEY}:${keyInfo.previousValue}:${keyInfo.currentValue}:${valueInfo.previousValue}:${valueInfo.currentValue}`}
+                  indexKey={INDEX_KEY}
+                  keyInfo={keyInfo}
+                  valueInfo={valueInfo}
+                />
+              );
+            })
+          ) : (
+            <AlertIndicator className="h-full">No offers yet</AlertIndicator>
+          )}
+        </div>
+      )}
 
       {/**
        * Central Bar
        */}
-      <div
-        className={cn(
-          "flex flex-none flex-row items-center justify-between border-y border-divider",
-          BASE_PADDING_LEFT,
-          BASE_PADDING_RIGHT,
-          "py-2"
-        )}
-      >
-        <SecondaryLabel className="font-medium text-black">
-          {/**
-           * @TODO
-           * For Recipe, this should be currentMarketData.quantity_value_usd
-           * For Vault, this needs to be calculated
-           */}
-          {/* {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            useGrouping: true,
-          }).format(
-           currentMarketData?.input_token_data.quantity_value_usd
-          )} */}
-        </SecondaryLabel>
-
-        <SecondaryLabel className="font-medium text-black">
-          MARKET
-        </SecondaryLabel>
-      </div>
+      {marketMetadata.market_type === RoycoMarketType.recipe.id && (
+        <CentralBar />
+      )}
 
       <div
         className={cn(
@@ -255,6 +278,10 @@ export const OfferList = React.forwardRef<
           <AlertIndicator className="h-full">No offers yet</AlertIndicator>
         )}
       </div>
+
+      {marketMetadata.market_type === RoycoMarketType.vault.id && (
+        <CentralBar className="h-9 border-b-0" />
+      )}
     </div>
   );
 });

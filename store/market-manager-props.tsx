@@ -168,23 +168,22 @@ export const MarketRewardStyle: Record<
   upfront: {
     ...RoycoMarketRewardStyle.upfront,
     label: "Upfront",
-    tag: "$10/month",
-    description:
-      "Includes up to 10 users, 20GB individual data and access to all features.",
+    tag: "",
+    description: "Pay all incentives at the completion of action.",
   },
   arrear: {
     ...RoycoMarketRewardStyle.arrear,
     label: "Arrear",
-    tag: "$10/month",
+    tag: "",
     description:
-      "Includes up to 10 users, 20GB individual data and access to all features.",
+      "Lock Action Provider's assets and pay incentives once unlocked.",
   },
   forfeitable: {
     ...RoycoMarketRewardStyle.forfeitable,
     label: "Forfeitable",
-    tag: "$10/month",
+    tag: "",
     description:
-      "Includes up to 10 users, 20GB individual data and access to all features.",
+      "Lock Action Provider's assets and stream incentives, which are forfeited if withdrawn early.",
   },
 };
 

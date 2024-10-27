@@ -130,7 +130,7 @@ export const MarketManager = React.forwardRef<
               {/**
                * Temporarily disabled advanced mode on live networks
                */}
-              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && false && (
+              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && (
                 <div
                   className={cn(
                     "flex-0",

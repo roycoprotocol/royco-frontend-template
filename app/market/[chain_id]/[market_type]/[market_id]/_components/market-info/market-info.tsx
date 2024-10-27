@@ -3,7 +3,6 @@ import React from "react";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
-  BASE_UNDERLINE,
   INFO_ROW_CLASSES,
   PrimaryLabel,
   SecondaryLabel,
@@ -16,12 +15,7 @@ import {
   LoadingSpinner,
   SpringNumber,
 } from "@/components/composables";
-import {
-  MarketRewardStyle,
-  MarketScriptType,
-  MarketViewType,
-  useMarketManager,
-} from "@/store";
+import { MarketRewardStyle, MarketScriptType, useMarketManager } from "@/store";
 import {
   HoverCard,
   HoverCardContent,
@@ -37,15 +31,6 @@ import {
 import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useState, useCallback } from "react";
-import { WarningBox } from "@/components/composables";
-import { createPortal } from "react-dom";
-import { BadgeAlertIcon, BadgeCheckIcon } from "lucide-react";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -286,22 +271,34 @@ export const MarketInfo = React.forwardRef<
              * @info Reward Style
              * @condition Recipe Market
              */}
-            {marketMetadata.market_type === MarketType.recipe.id &&
-              propsReadMarket.data.reward_style && (
-                <InfoCard.Row className={INFO_ROW_CLASSES}>
-                  <InfoCard.Row.Key>Reward Style</InfoCard.Row.Key>
-                  <InfoCard.Row.Value>
-                    {MarketRewardStyle[propsReadMarket.data.reward_style].label}
+            {marketMetadata.market_type === MarketType.recipe.id && (
+              <InfoCard.Row className={INFO_ROW_CLASSES}>
+                <InfoCard.Row.Key>Reward Style</InfoCard.Row.Key>
+                <InfoCard.Row.Value>
+                  {
+                    MarketRewardStyle[
+                      currentMarketData.reward_style === 0
+                        ? "upfront"
+                        : currentMarketData.reward_style === 1
+                          ? "arrear"
+                          : "forfeitable"
+                    ].label
+                  }
 
-                    <InfoTip {...INFO_TIP_PROPS}>
-                      {
-                        MarketRewardStyle[propsReadMarket.data.reward_style]
-                          .description
-                      }
-                    </InfoTip>
-                  </InfoCard.Row.Value>
-                </InfoCard.Row>
-              )}
+                  <InfoTip {...INFO_TIP_PROPS}>
+                    {
+                      MarketRewardStyle[
+                        currentMarketData.reward_style === 0
+                          ? "upfront"
+                          : currentMarketData.reward_style === 1
+                            ? "arrear"
+                            : "forfeitable"
+                      ].description
+                    }
+                  </InfoTip>
+                </InfoCard.Row.Value>
+              </InfoCard.Row>
+            )}
 
             {/**
              * @info Input Token

@@ -221,30 +221,30 @@ export const MarketForm = React.forwardRef<
          * Currently enabled for both views
          * @todo Disable for simple view
          */}
-        {marketStep === MarketSteps.params.id && (
-          // && viewType === MarketViewType.advanced.id
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeIn" }}
-            className={cn(
-              "flex flex-col",
-              BASE_PADDING_LEFT,
-              BASE_PADDING_RIGHT
-            )}
-          >
-            <HorizontalTabs
-              className={cn("", "mt-3")}
-              size="sm"
-              key="market:user-type:container"
-              baseId="market:user-type"
-              tabs={Object.values(MarketUserType)}
-              activeTab={userType}
-              setter={setUserType}
-            />
-          </motion.div>
-        )}
+        {marketStep === MarketSteps.params.id &&
+          viewType === MarketViewType.advanced.id && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeIn" }}
+              className={cn(
+                "flex flex-col",
+                BASE_PADDING_LEFT,
+                BASE_PADDING_RIGHT
+              )}
+            >
+              <HorizontalTabs
+                className={cn("", "mt-3")}
+                size="sm"
+                key="market:user-type:container"
+                baseId="market:user-type"
+                tabs={Object.values(MarketUserType)}
+                activeTab={userType}
+                setter={setUserType}
+              />
+            </motion.div>
+          )}
 
         {/**
          * Action Type (Supply / Withdraw)
