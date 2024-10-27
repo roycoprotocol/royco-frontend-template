@@ -24,8 +24,6 @@ export const CentralBar = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
-  console.log("currentMarketData", currentMarketData);
-
   return (
     <div
       ref={ref}

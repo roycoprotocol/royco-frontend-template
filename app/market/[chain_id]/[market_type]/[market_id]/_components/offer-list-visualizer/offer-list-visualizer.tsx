@@ -65,13 +65,25 @@ export const OfferListVisualizer = React.forwardRef<
     previousMarketData,
   } = useActiveMarket();
 
-  const changeRatioDepth = currentHighestOffers
-    ? currentHighestOffers.ap_offers.length > 0 &&
-      currentHighestOffers.ip_offers.length > 0
-      ? (currentHighestOffers.ip_offers[0].annual_change_ratio ?? 0) -
-        (currentHighestOffers.ap_offers[0].annual_change_ratio ?? 0)
+  const currentChangeRatioDepth = Math.abs(
+    currentHighestOffers
+      ? currentHighestOffers.ap_offers.length > 0 &&
+        currentHighestOffers.ip_offers.length > 0
+        ? (currentHighestOffers.ip_offers[0].annual_change_ratio ?? 0) -
+          (currentHighestOffers.ap_offers[0].annual_change_ratio ?? 0)
+        : 0
       : 0
-    : 0;
+  );
+
+  const previousChangeRatioDepth = Math.abs(
+    previousHighestOffers
+      ? previousHighestOffers.ap_offers.length > 0 &&
+        previousHighestOffers.ip_offers.length > 0
+        ? (previousHighestOffers.ip_offers[0].annual_change_ratio ?? 0) -
+          (previousHighestOffers.ap_offers[0].annual_change_ratio ?? 0)
+        : 0
+      : 0
+  );
 
   const chartData = currentHighestOffers
     ? [
@@ -117,12 +129,8 @@ export const OfferListVisualizer = React.forwardRef<
         )}
       >
         <SpringNumber
-          previousValue={
-            previousMarketData && previousMarketData.change_ratio
-              ? previousMarketData.change_ratio
-              : 0
-          }
-          currentValue={changeRatioDepth}
+          previousValue={previousChangeRatioDepth}
+          currentValue={currentChangeRatioDepth}
           numberFormatOptions={{
             style: "percent",
             minimumFractionDigits: 2,
