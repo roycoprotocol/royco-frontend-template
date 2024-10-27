@@ -20,7 +20,7 @@ export const OfferTable = React.forwardRef<
 
   const { offerTablePage, setOfferTablePage } = useMarketManager();
 
-  const { isLoading, data, isError, error } = useEnrichedOffers({
+  const { isLoading, data } = useEnrichedOffers({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
     creator: (address?.toLowerCase() as string) ?? "",

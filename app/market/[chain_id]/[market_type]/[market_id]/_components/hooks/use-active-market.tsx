@@ -25,14 +25,6 @@ export const useActiveMarket = () => {
   /**
    * @notice Enriched Market
    */
-  // const propsEnrichedMarket = useEnrichedMarket({
-  //   // @ts-ignore
-  //   chain_id: parseInt(chain_id),
-  //   // @ts-ignore
-  //   market_type: parseInt(market_type),
-  //   // @ts-ignore
-  //   market_id: market_id,
-  // });
   const propsEnrichedMarket = useEnrichedMarkets({
     // @ts-ignore
     chain_id: parseInt(chain_id),

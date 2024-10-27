@@ -6,7 +6,7 @@ import {
 } from "../queries";
 import { RoycoClient, useRoycoClient } from "../client";
 import { getSupportedToken, SupportedToken } from "../constants";
-import { BaseQueryFilter, BaseSortingFilter } from "../types";
+import { BaseQueryFilter, BaseSortingFilter, CustomTokenData } from "../types";
 
 export const useEnrichedOffers = ({
   chain_id,
@@ -17,6 +17,7 @@ export const useEnrichedOffers = ({
   page_index = 0,
   filters = [],
   sorting = [],
+  custom_token_data = undefined,
   enabled = true,
 }: {
   chain_id: number;
@@ -27,6 +28,7 @@ export const useEnrichedOffers = ({
   page_index?: number;
   filters?: Array<BaseQueryFilter>;
   sorting?: Array<BaseSortingFilter>;
+  custom_token_data?: CustomTokenData;
   enabled?: boolean;
 }) => {
   const client: RoycoClient = useRoycoClient();
@@ -41,7 +43,8 @@ export const useEnrichedOffers = ({
       can_be_filled,
       page_index,
       filters,
-      sorting
+      sorting,
+      custom_token_data
     ),
     enabled,
   });

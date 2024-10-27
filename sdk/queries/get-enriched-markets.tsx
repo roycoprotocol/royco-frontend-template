@@ -14,7 +14,7 @@ import {
   parseNumber,
   parseRawAmount,
   parseRawToTokenAmount,
-  parseTokenToTokenAmountUsd,
+  parseTokenAmountToTokenAmountUsd,
 } from "../utils";
 
 export type MarketFilter = {
@@ -200,12 +200,12 @@ export const getEnrichedMarketsQueryOptions = (
             input_token_info.decimals
           );
 
-          const input_token_token_amount_usd = parseTokenToTokenAmountUsd(
+          const input_token_token_amount_usd = parseTokenAmountToTokenAmountUsd(
             input_token_token_amount,
             input_token_price
           );
           const locked_input_token_token_amount_usd =
-            parseTokenToTokenAmountUsd(
+            parseTokenAmountToTokenAmountUsd(
               locked_input_token_token_amount,
               input_token_price
             );
@@ -245,7 +245,7 @@ export const getEnrichedMarketsQueryOptions = (
                 token_info.decimals
               );
 
-              const token_amount_usd: number = parseTokenToTokenAmountUsd(
+              const token_amount_usd: number = parseTokenAmountToTokenAmountUsd(
                 token_amount,
                 token_price
               );

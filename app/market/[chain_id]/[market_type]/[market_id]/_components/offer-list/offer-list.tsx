@@ -22,6 +22,10 @@ export const CentralBar = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { currentMarketData, marketMetadata } = useActiveMarket();
+
+  console.log("currentMarketData", currentMarketData);
+
   return (
     <div
       ref={ref}
@@ -40,13 +44,19 @@ export const CentralBar = React.forwardRef<
          * For Recipe, this should be currentMarketData.quantity_value_usd
          * For Vault, this needs to be calculated
          */}
-        {/* {Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      useGrouping: true,
-    }).format(
-     currentMarketData?.input_token_data.quantity_value_usd
-    )} */}
+        {Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          notation: "compact",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: true,
+        }).format(
+          marketMetadata.market_type === RoycoMarketType.recipe.id
+            ? (currentMarketData?.quantity_ap_usd ?? 0) +
+                (currentMarketData?.quantity_ip_usd ?? 0)
+            : currentMarketData?.quantity_ap_usd ?? 0
+        )}
       </SecondaryLabel>
 
       <SecondaryLabel className="font-medium text-black">MARKET</SecondaryLabel>

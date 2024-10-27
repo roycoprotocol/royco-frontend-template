@@ -43,7 +43,7 @@ export const parseRawToTokenAmount = (
   }
 };
 
-export const parseTokenToTokenAmountUsd = (
+export const parseTokenAmountToTokenAmountUsd = (
   value: number | undefined | null,
   price: number
 ): number => {

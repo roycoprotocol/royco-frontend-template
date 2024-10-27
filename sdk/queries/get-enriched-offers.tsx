@@ -3,10 +3,18 @@ import { type TypedRoycoClient } from "@/sdk/client";
 import { getSupportedToken, SupportedToken } from "../constants";
 import { BigNumber } from "ethers";
 
-import { BaseQueryFilter, BaseSortingFilter, Database } from "../types";
+import {
+  BaseQueryFilter,
+  BaseSortingFilter,
+  CustomTokenData,
+  Database,
+} from "../types";
 import {
   constructBaseQueryFilterClauses,
   constructBaseSortingFilterClauses,
+  parseRawAmount,
+  parseRawToTokenAmount,
+  parseTokenAmountToTokenAmountUsd,
 } from "../utils";
 
 export type EnrichedOfferDataType =
@@ -40,11 +48,16 @@ export const getEnrichedOffersQueryOptions = (
   can_be_filled: boolean | undefined,
   page_index: number | undefined,
   filters: Array<BaseQueryFilter> | undefined,
-  sorting: Array<BaseSortingFilter> | undefined
+  sorting: Array<BaseSortingFilter> | undefined,
+  custom_token_data: CustomTokenData | undefined
 ) => ({
   queryKey: [
     "enriched-offers",
-    `${chain_id}-${market_type}-${market_id}-${creator}-${page_index}`,
+    `${chain_id}-${market_type}-${market_id}-${creator}-${can_be_filled}-${page_index}`,
+    ...(custom_token_data || []).map(
+      (token) =>
+        `${token.token_id}-${token.price}-${token.fdv}-${token.total_supply}`
+    ),
     ...(filters || []).map((filter) => `${filter.id}-${filter.value}`),
     ...(sorting || []).map(
       (sort) => `${sort.id}-${sort.desc ? "desc" : "asc"}`
@@ -55,15 +68,15 @@ export const getEnrichedOffersQueryOptions = (
     const sortingClauses = constructBaseSortingFilterClauses(sorting);
 
     const result = await client.rpc("get_enriched_offers", {
-      in_chain_id: chain_id,
-      in_market_type: market_type,
-      in_market_id: market_id,
-      in_creator: creator,
-      in_can_be_filled: can_be_filled,
-      in_token_data: [],
-      page_index: page_index,
+      chain_id,
+      market_type,
+      market_id,
+      creator,
+      can_be_filled,
+      page_index,
       filters: filterClauses,
       sorting: sortingClauses,
+      custom_token_data,
     });
 
     if (!!result.data && !!result.data.data && result.data.data.length > 0) {
@@ -90,21 +103,19 @@ export const getEnrichedOffersQueryOptions = (
 
             const token_info: SupportedToken = getSupportedToken(tokenId);
 
-            const raw_amount: string = BigNumber.from(
-              (row.token_amounts &&
-                row.token_amounts[tokenIndex]?.toLocaleString("fullwide", {
-                  useGrouping: false,
-                })) ||
-                "0"
-            ).toString();
-
-            const token_amount: number = parseFloat(
-              BigNumber.from(raw_amount)
-                .div(BigNumber.from(10).pow(token_info.decimals))
-                .toString()
+            const raw_amount: string = parseRawAmount(
+              row.token_amounts?.[tokenIndex]
             );
 
-            const token_amount_usd = token_amount * token_price;
+            const token_amount: number = parseRawToTokenAmount(
+              row.token_amounts?.[tokenIndex],
+              token_info.decimals
+            );
+
+            const token_amount_usd = parseTokenAmountToTokenAmountUsd(
+              token_amount,
+              token_price
+            );
 
             return {
               ...token_info,
