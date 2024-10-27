@@ -448,7 +448,10 @@ export const FormIncentiveTokens = React.forwardRef<
 
                       return (
                         <motion.div
-                          layout="position"
+                          /**
+                           * Temporarily disabled because it's causing layout shift
+                           */
+                          // layout="position"
                           key={BASE_KEY}
                           className={cn(
                             "flex w-full flex-col items-center gap-1",

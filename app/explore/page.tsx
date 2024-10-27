@@ -16,7 +16,7 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 const Page = () => {
   const Content = () => {
     return (
-      <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] p-3 md:p-12">
+      <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
         {/**
          * @title Header Bar
          * @description Header Tilte + Tagline + Stats
