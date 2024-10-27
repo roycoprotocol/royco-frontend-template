@@ -373,8 +373,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
 
       let currentValue = props.row.original.annual_change_ratio;
 
-      console.log("currentValue", props.row.original);
-
       return (
         <div
           key={`${props.view}:market:${props.row.original.id}:aip`}

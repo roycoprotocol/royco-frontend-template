@@ -438,7 +438,7 @@ export const FormIncentiveTokens = React.forwardRef<
               </Popover>
             </div>
 
-            <div className="mt-2 h-96 min-h-10 w-full overflow-y-scroll rounded-xl border border-divider bg-z2 p-1 text-sm font-300 text-secondary">
+            <div className="mt-2 h-fit min-h-10 w-full overflow-y-scroll rounded-xl border border-divider bg-z2 p-1 text-sm font-300 text-secondary">
               {marketForm.watch("incentive_tokens").length > 0 ? (
                 <div className="flex flex-row flex-wrap gap-1">
                   {marketForm

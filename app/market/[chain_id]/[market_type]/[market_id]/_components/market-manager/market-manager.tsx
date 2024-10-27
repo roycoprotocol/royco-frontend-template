@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { OfferTable } from "../stats-tables";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
+import { MAX_SCREEN_WIDTH } from "@/components/constants";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -54,7 +55,12 @@ export const MarketManager = React.forwardRef<
   ) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center">
-        <AlertIndicator className="h-96 w-full max-w-[83.625rem] rounded-2xl border border-divider bg-white">
+        <AlertIndicator
+          className={cn(
+            "h-96 w-full rounded-2xl border border-divider bg-white",
+            MAX_SCREEN_WIDTH
+          )}
+        >
           Market dashboard isn't live yet. Check back later.
         </AlertIndicator>
       </SlideUpWrapper>
@@ -65,9 +71,9 @@ export const MarketManager = React.forwardRef<
         {currentMarketData.is_verified === false && (
           <WarningBox
             className={cn(
-              "max-w-[83.625rem]",
+              MAX_SCREEN_WIDTH,
               viewType === MarketViewType.simple.id && "",
-              viewType === MarketViewType.advanced.id && "mb-10 w-full"
+              viewType === MarketViewType.advanced.id && "mb-10"
             )}
             text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
           />
@@ -75,8 +81,9 @@ export const MarketManager = React.forwardRef<
 
         <div
           className={cn(
-            "relative flex w-full max-w-[83.625rem] shrink-0 flex-row place-content-end items-center gap-3 pb-3",
-            viewType === MarketViewType.simple.id && "opacity-0"
+            "relative flex w-full shrink-0 flex-row place-content-end items-center gap-3 pb-3",
+            viewType === MarketViewType.simple.id && "opacity-0",
+            MAX_SCREEN_WIDTH
           )}
         >
           {viewType === MarketViewType.simple.id && (
@@ -107,7 +114,7 @@ export const MarketManager = React.forwardRef<
           className={cn(
             "flex items-center rounded-2xl border border-divider bg-white",
             "w-full overflow-hidden",
-            "max-w-[83.625rem]",
+            MAX_SCREEN_WIDTH,
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",
             viewType === MarketViewType.simple.id &&
@@ -183,7 +190,8 @@ export const MarketManager = React.forwardRef<
                   "border-t border-divider md:border-t-0",
                   "h-full shrink-0 flex-col divide-y divide-divider md:hidden xl:flex",
                   "w-full md:w-[40%] xl:w-[50%]",
-                  "flex h-full grow flex-col"
+                  "flex h-full grow flex-col",
+                  MAX_SCREEN_WIDTH
                 )}
               >
                 <OfferListVisualizer className="h-1/2 w-full" />

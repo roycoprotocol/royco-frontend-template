@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { ConnectWalletButton } from "./connect-wallet-button";
 import { GetUpdatesButton } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
+import { MAX_SCREEN_WIDTH } from "@/components/constants";
 
 const NavbarLinks = [
   {
@@ -52,10 +53,17 @@ export const ActualNavbar = React.forwardRef<
         "bg-opacity-0 px-5 py-3 md:px-12 md:py-[1.09rem] lg:px-[10.44rem] xl:px-[12.44rem]",
         "flex flex-col place-content-center items-center",
         "border-b border-t-0 border-divider",
+        pathname !== "/" && "px-3 sm:px-12 md:px-12 lg:px-12 xl:px-12",
         className
       )}
     >
-      <MaxWidthWrapper className="flex flex-row items-center justify-between self-center">
+      <MaxWidthWrapper
+        className={cn(
+          "flex flex-row items-center justify-between self-center",
+          pathname !== "/" ? MAX_SCREEN_WIDTH : ""
+          // pathname !== "/" && "px-3 sm:px-3 md:px-12 lg:px-12 xl:px-12 "
+        )}
+      >
         <motion.div
           layout="size"
           layoutId="navbar-mobile"

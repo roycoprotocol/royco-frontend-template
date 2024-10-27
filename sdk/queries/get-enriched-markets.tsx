@@ -254,8 +254,6 @@ export const getEnrichedMarketsQueryOptions = (
                 row.annual_change_ratios?.[tokenIndex]
               );
 
-              console.log("annual_change_ratio", annual_change_ratio);
-
               const per_input_token =
                 token_amount / input_token_data.token_amount;
 

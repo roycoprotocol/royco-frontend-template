@@ -38,7 +38,7 @@ export const FormMarketDescription = React.forwardRef<
             <Textarea
               rows={4}
               className=""
-              placeholder="i.e. When assets are supplied to the liquidity coordinator, they are sent to an escrow contract and locked for three months."
+              placeholder="i.e. When assets are supplied to the market, they are sent to an escrow contract and locked for three months."
               {...field}
             />
           </FormControl>
