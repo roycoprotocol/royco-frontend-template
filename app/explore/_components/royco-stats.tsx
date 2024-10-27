@@ -1,14 +1,18 @@
 "use client";
 
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { cn } from "@/lib/utils";
 import { useEnrichedRoycoStats, useRoycoStats } from "@/sdk/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { produce } from "immer";
 import { isEqual } from "lodash";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
 
-export const RoycoStats = () => {
+export const RoycoStats = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const { data, isLoading, isRefetching } = useEnrichedRoycoStats({
     testnet: process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? true : false,
   });
@@ -47,7 +51,15 @@ export const RoycoStats = () => {
   }, [data, isLoading, isRefetching, placeholderDatas]);
 
   return (
-    <div className="flex flex-row flex-wrap place-content-center items-center gap-3 md:w-1/2 lg:w-fit">
+    <div
+      ref={ref}
+      className={cn(
+        "flex flex-row flex-nowrap place-content-center items-center gap-3 lg:w-fit",
+        // "md:w-1/2",
+        className
+      )}
+      {...props}
+    >
       {[
         {
           key: "total_volume",
@@ -106,4 +118,4 @@ export const RoycoStats = () => {
       })}
     </div>
   );
-};
+});

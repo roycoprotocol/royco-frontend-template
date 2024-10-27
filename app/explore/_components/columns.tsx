@@ -313,8 +313,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   style: "currency",
                   currency: "USD",
                   notation: "compact",
-                  minimumFractionDigits: props.view === "list" ? 2 : 0,
-                  maximumFractionDigits: props.view === "list" ? 2 : 0,
+                  useGrouping: true,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  // minimumFractionDigits: props.view === "list" ? 2 : 0,
+                  // maximumFractionDigits: props.view === "list" ? 2 : 0,
                 }}
                 className={cn(
                   props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
@@ -358,13 +361,19 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
 
       if (
         props.placeholderDatas[0] !== null &&
-        rowIndex < props.placeholderDatas[0].length
+        rowIndex < props.placeholderDatas[0].length &&
+        props.placeholderDatas[0][rowIndex].annual_change_ratio !== undefined &&
+        props.placeholderDatas[0][rowIndex].annual_change_ratio !== null &&
+        props.placeholderDatas[0][rowIndex].annual_change_ratio !==
+          Math.pow(10, 18)
       ) {
         previousValue =
           props.placeholderDatas[0][rowIndex].annual_change_ratio || 0;
       }
 
       let currentValue = props.row.original.annual_change_ratio;
+
+      console.log("currentValue", props.row.original);
 
       return (
         <div
@@ -485,8 +494,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   notation: "compact",
                   useGrouping: true,
                   // notation: props.view === "grid" ? "compact" : "standard",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
                 }}
                 className={cn("h-5")}
                 spanClassName={cn("leading-5")}
