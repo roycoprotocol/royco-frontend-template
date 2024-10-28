@@ -111,7 +111,7 @@ export const MarketInfo = React.forwardRef<
             )}
           </PrimaryLabel>
           <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
-            Annual Incentive Percentage
+            Annual Percentage Yield
           </TertiaryLabel>
 
           <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL)}>

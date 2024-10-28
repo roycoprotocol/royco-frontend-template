@@ -180,7 +180,7 @@ export const IncentiveInfo = React.forwardRef<
             BASE_MARGIN_TOP.SM
           )}
         >
-          <SecondaryLabel className="text-success">Net AIP</SecondaryLabel>
+          <SecondaryLabel className="text-success">Net Yield</SecondaryLabel>
 
           <SecondaryLabel className="text-success">
             {currentMarketData.annual_change_ratio === Math.pow(10, 18) ? (

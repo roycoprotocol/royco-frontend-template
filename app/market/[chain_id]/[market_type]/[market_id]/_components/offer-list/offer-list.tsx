@@ -169,7 +169,7 @@ export const OfferList = React.forwardRef<
         )}
       >
         <TertiaryLabel className="text-tertiary">SIZE</TertiaryLabel>
-        <TertiaryLabel className="text-tertiary">AIP</TertiaryLabel>
+        <TertiaryLabel className="text-tertiary">Yield</TertiaryLabel>
       </div>
 
       {/**

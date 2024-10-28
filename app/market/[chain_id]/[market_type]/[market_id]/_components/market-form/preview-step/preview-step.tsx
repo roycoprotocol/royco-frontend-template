@@ -212,7 +212,7 @@ export const PreviewStep = React.forwardRef<
           {!!incentiveData && (
             <div className="flex w-full flex-row items-center justify-between py-3">
               <SecondaryLabel className="text-success">
-                {`${userType === MarketUserType.ap.id ? "Net AIP" : "Net Incentives"}`}
+                {`${userType === MarketUserType.ap.id ? "Net Yield" : "Net Incentives"}`}
               </SecondaryLabel>
 
               <div className="flex w-fit flex-col items-end text-right">
