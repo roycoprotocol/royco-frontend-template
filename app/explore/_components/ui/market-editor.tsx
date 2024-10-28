@@ -38,7 +38,7 @@ import { produce } from "immer";
 const FormSchema = z.object({
   id: z.string(),
   fdv: z.coerce.number({
-    message: "FDV is required to update AIP",
+    message: "FDV is required to update yield",
   }),
   dr: z.coerce.number().optional(),
 });
@@ -227,7 +227,7 @@ export const PoolEditor = ({
 
                     <div className="flex flex-row items-center justify-between space-x-3 pb-2 pt-2 font-medium text-success">
                       <div className="h-5">
-                        <span className="leading-5">Net AIP</span>
+                        <span className="leading-5">Net Yield</span>
                       </div>
 
                       <div className="h-5 tabular-nums">
@@ -277,7 +277,7 @@ export const PoolEditor = ({
                           className="caption p-0 text-secondary"
                         >
                           <div className="pt-3">
-                            Set the assumptions below to update the net AIP.
+                            Set the assumptions below to update the net yield.
                           </div>
 
                           {/**
@@ -354,7 +354,7 @@ export const PoolEditor = ({
                                 <PopoverClose asChild>
                                   <div className="body-2 h-5  text-white">
                                     <span className="leading-5">
-                                      Update AIP
+                                      Update Yield
                                     </span>
                                   </div>
                                 </PopoverClose>

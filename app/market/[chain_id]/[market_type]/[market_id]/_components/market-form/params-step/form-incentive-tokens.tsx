@@ -571,7 +571,7 @@ export const FormIncentiveTokens = React.forwardRef<
                                       "hidden"
                                   )}
                                   className=""
-                                  placeholder="AIP"
+                                  placeholder="Yield"
                                   defaultValue={undefined}
                                   value={
                                     marketForm.watch("incentive_tokens")[index]
