@@ -63,7 +63,24 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { offers }: { offers: OfferDataType[] } = body;
 
+    console.log("validate api called");
+    console.log("offers", offers);
+
     const invalidApOffers = await getInvalidApOffers(offers);
+
+    console.log("invalidApOffers", invalidApOffers);
+
+    // Mark all invalif offers inside raw_offers table in supabase as set is_valid = false
+
+    const client = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+      process.env.SUPABASE_SERVICE_ROLE_KEY as string
+    );
+
+    const { data, error } = await client
+      .from("raw_offers")
+      .update({ is_valid: false })
+      .eq("id", invalidApOffers);
 
     return Response.json(
       {
