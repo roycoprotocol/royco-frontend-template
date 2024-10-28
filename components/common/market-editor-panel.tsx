@@ -226,7 +226,7 @@ export const MarketEditorPanel = ({
                 <div className="mt-1 flex flex-col space-y-0 font-mono text-sm tabular-nums">
                   <div className="">Rewards: FDV * netowrk allocation (%)</div>
                   <div className="">Annualized Rewards: rewards * (12 / h)</div>
-                  <div className="">AIP: (rewards_annualized / z) * 100</div>
+                  <div className="">Yield: (rewards_annualized / z) * 100</div>
                 </div>
               </div>
             </motion.div>
