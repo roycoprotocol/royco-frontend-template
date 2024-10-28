@@ -2,6 +2,7 @@ import { MarketFilter } from "@/sdk/queries";
 import { BaseSortingFilter } from "@/sdk/types";
 import { sepolia } from "viem/chains";
 import { create } from "zustand";
+import { SupportedChainlist } from "../sdk/constants";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -73,6 +74,10 @@ export const useExplore = create<ExploreState>((set) => ({
           },
         ]
       : []),
+    ...SupportedChainlist.filter((chain) => !chain.testnet).map((chain) => ({
+      id: "chain_id",
+      value: chain.id,
+    })),
   ] as Array<MarketFilter>,
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
