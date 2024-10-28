@@ -155,6 +155,15 @@ export const MarketForm = React.forwardRef<
     }
   }, [viewType]);
 
+  useEffect(() => {
+    if (
+      userType === MarketUserType.ip.id &&
+      actionType === MarketActionType.withdraw.id
+    ) {
+      setActionType(MarketActionType.supply.id);
+    }
+  }, [userType]);
+
   if (!!currentMarketData) {
     return (
       <div
@@ -249,29 +258,30 @@ export const MarketForm = React.forwardRef<
         {/**
          * Action Type (Supply / Withdraw)
          */}
-        {marketStep === MarketSteps.params.id && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeIn" }}
-            className={cn(
-              "flex flex-col",
-              BASE_PADDING_LEFT,
-              BASE_PADDING_RIGHT
-            )}
-          >
-            <HorizontalTabs
-              className={cn("mb-5", "mt-3")}
-              size="sm"
-              key="market:action-type:container"
-              baseId="market:action-type"
-              tabs={Object.values(MarketActionType)}
-              activeTab={actionType}
-              setter={setActionType}
-            />
-          </motion.div>
-        )}
+        {marketStep === MarketSteps.params.id &&
+          userType === MarketUserType.ap.id && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeIn" }}
+              className={cn(
+                "flex flex-col",
+                BASE_PADDING_LEFT,
+                BASE_PADDING_RIGHT
+              )}
+            >
+              <HorizontalTabs
+                className={cn("mt-3")}
+                size="sm"
+                key="market:action-type:container"
+                baseId="market:action-type"
+                tabs={Object.values(MarketActionType)}
+                activeTab={actionType}
+                setter={setActionType}
+              />
+            </motion.div>
+          )}
 
         {/**
          * Withdraw Section (Input Token / Incentives)
@@ -309,7 +319,8 @@ export const MarketForm = React.forwardRef<
               className={cn(
                 "flex grow flex-col",
                 BASE_PADDING_LEFT,
-                BASE_PADDING_RIGHT
+                BASE_PADDING_RIGHT,
+                "mt-5"
               )}
             >
               <ParamsStep
