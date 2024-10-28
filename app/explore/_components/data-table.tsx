@@ -225,7 +225,7 @@ export function DataTable<TData, TValue>({
                                 <span
                                   className={InfoGrid.Content.Secondary.Span}
                                 >
-                                  AIP
+                                  Yield
                                 </span>
                               </div>
 

@@ -47,7 +47,7 @@ export const exploreColumnNames = {
   market_type: "Type",
   total_incentive_amounts_usd: "Incentives",
   locked_quantity_usd: "TVL",
-  annual_change_ratio: "AIP",
+  annual_change_ratio: "Yield",
   chain: "Chain",
 };
 

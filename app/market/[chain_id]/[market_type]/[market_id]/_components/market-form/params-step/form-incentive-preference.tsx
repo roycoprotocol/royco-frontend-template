@@ -481,7 +481,7 @@ export const FormIncentives = React.forwardRef<
 
                             <div className="mt-2 grid w-full grid-cols-2 items-center gap-2">
                               <div className="col-span-1 flex w-full flex-col items-start">
-                                <InputLabel label="AIP" className="mb-1" />
+                                <InputLabel label="Yield" className="mb-1" />
 
                                 <Input
                                   Suffix={() => {
