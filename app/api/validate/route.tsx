@@ -125,13 +125,14 @@ async function getInvalidApOffers(offers: OfferDataType[]): Promise<string[]> {
           continue;
         }
 
-        const allowedAddress = offer.market_type
-          ? ContractMap[offer.chain_id as keyof typeof ContractMap][
-              "VaultMarketHub"
-            ].address
-          : ContractMap[offer.chain_id as keyof typeof ContractMap][
-              "RecipeMarketHub"
-            ].address;
+        const allowedAddress =
+          offer.market_type === 1
+            ? ContractMap[offer.chain_id as keyof typeof ContractMap][
+                "VaultMarketHub"
+              ].address
+            : ContractMap[offer.chain_id as keyof typeof ContractMap][
+                "RecipeMarketHub"
+              ].address;
 
         const approvalData = await client.call({
           account: offer.creator as Address,
