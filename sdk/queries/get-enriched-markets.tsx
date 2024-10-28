@@ -13,7 +13,7 @@ import {
   getSupportedChain,
   parseNumber,
   parseRawAmount,
-  parseRawToTokenAmount,
+  parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
 
@@ -190,15 +190,16 @@ export const getEnrichedMarketsQueryOptions = (
             row.locked_quantity
           );
 
-          const input_token_token_amount: number = parseRawToTokenAmount(
+          const input_token_token_amount: number = parseRawAmountToTokenAmount(
             input_token_raw_amount,
             input_token_info.decimals
           );
 
-          const locked_input_token_token_amount: number = parseRawToTokenAmount(
-            locked_input_token_raw_amount,
-            input_token_info.decimals
-          );
+          const locked_input_token_token_amount: number =
+            parseRawAmountToTokenAmount(
+              locked_input_token_raw_amount,
+              input_token_info.decimals
+            );
 
           const input_token_token_amount_usd = parseTokenAmountToTokenAmountUsd(
             input_token_token_amount,
@@ -240,7 +241,7 @@ export const getEnrichedMarketsQueryOptions = (
                 row.incentive_amounts?.[tokenIndex]
               );
 
-              const token_amount: number = parseRawToTokenAmount(
+              const token_amount: number = parseRawAmountToTokenAmount(
                 raw_amount,
                 token_info.decimals
               );

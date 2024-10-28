@@ -13,7 +13,7 @@ import {
   constructBaseQueryFilterClauses,
   constructBaseSortingFilterClauses,
   parseRawAmount,
-  parseRawToTokenAmount,
+  parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
 
@@ -107,7 +107,7 @@ export const getEnrichedOffersQueryOptions = (
               row.token_amounts?.[tokenIndex]
             );
 
-            const token_amount: number = parseRawToTokenAmount(
+            const token_amount: number = parseRawAmountToTokenAmount(
               row.token_amounts?.[tokenIndex],
               token_info.decimals
             );

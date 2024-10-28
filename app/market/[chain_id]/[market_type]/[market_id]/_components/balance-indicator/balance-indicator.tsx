@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
-  useEnrichedAccountBalanceRecipe,
+  useEnrichedAccountBalancesRecipeInMarket,
   useEnrichedAccountBalanceVault,
 } from "@/sdk/hooks";
 import { useActiveMarket } from "../hooks";
@@ -27,7 +27,6 @@ import {
   InfoTip,
   TokenDisplayer,
 } from "@/components/common";
-import { BigNumber } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 
 export const BalanceIndicator = React.forwardRef<
@@ -43,10 +42,11 @@ export const BalanceIndicator = React.forwardRef<
     isLoading: isLoadingRecipe,
     isRefetching,
     data: dataRecipe,
-  } = useEnrichedAccountBalanceRecipe({
+  } = useEnrichedAccountBalancesRecipeInMarket({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
     account_address: address ? address.toLowerCase() : "",
+    custom_token_data: undefined,
   });
 
   const { isLoading: isLoadingVault, data: dataVault } =
@@ -121,7 +121,7 @@ export const BalanceIndicator = React.forwardRef<
        */}
       {marketMetadata.market_type === MarketType.recipe.id &&
         !!dataRecipe &&
-        dataRecipe["incentives_given_data"].length === 0 && (
+        dataRecipe["incentives_ip_data"].length !== 0 && (
           <HorizontalTabs
             className={cn(BASE_MARGIN_TOP.MD)}
             size="sm"
@@ -151,24 +151,24 @@ export const BalanceIndicator = React.forwardRef<
             previousValue={
               placeholderDataRecipe[0]
                 ? balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? placeholderDataRecipe[0].ap_balance_usd
-                  : placeholderDataRecipe[0].ip_balance_usd
+                  ? placeholderDataRecipe[0].balance_usd_ap
+                  : placeholderDataRecipe[0].balance_usd_ip
                 : 0
             }
             currentValue={
               placeholderDataRecipe[1]
                 ? balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? placeholderDataRecipe[1].ap_balance_usd
-                  : placeholderDataRecipe[1].ip_balance_usd
+                  ? placeholderDataRecipe[1].balance_usd_ap
+                  : placeholderDataRecipe[1].balance_usd_ip
                 : 0
             }
             numberFormatOptions={{
               style: "currency",
               currency: "USD",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-              // useGrouping: true,
             }}
           />
         </PrimaryLabel>
@@ -194,9 +194,9 @@ export const BalanceIndicator = React.forwardRef<
               style: "currency",
               currency: "USD",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-              // useGrouping: true,
             }}
           />
         </PrimaryLabel>
@@ -288,13 +288,13 @@ export const BalanceIndicator = React.forwardRef<
                       className="h-4"
                       spanClassName="leading-5"
                       previousValue={0}
-                      currentValue={BigNumber.from(incentive.token_amount)}
+                      currentValue={incentive.token_amount}
                       numberFormatOptions={{
-                        // style: "decimal",
+                        style: "decimal",
                         notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                        // useGrouping: true,
                       }}
                     />
 
@@ -337,17 +337,17 @@ export const BalanceIndicator = React.forwardRef<
                 className="h-4"
                 spanClassName="leading-5"
                 previousValue={0}
-                currentValue={BigNumber.from(
+                currentValue={
                   balanceIncentiveType === MarketIncentiveType.ap.id
-                    ? dataRecipe.input_token_data.quantity_received_amount_token
-                    : dataRecipe.input_token_data.quantity_given_amount_token
-                )}
+                    ? dataRecipe.input_token_data_ap.token_amount
+                    : dataRecipe.input_token_data_ip.token_amount
+                }
                 numberFormatOptions={{
                   style: "decimal",
                   notation: "compact",
+                  useGrouping: true,
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                  useGrouping: true,
                 }}
               />
 
@@ -356,7 +356,7 @@ export const BalanceIndicator = React.forwardRef<
                 size={4}
                 hover
                 bounce
-                tokens={[dataRecipe.input_token_data]}
+                tokens={[dataRecipe.input_token_data_ap]}
                 symbols={true}
               />
               <TokenDisplayer
@@ -364,22 +364,22 @@ export const BalanceIndicator = React.forwardRef<
                 size={4}
                 hover
                 bounce
-                tokens={[dataRecipe.input_token_data]}
+                tokens={[dataRecipe.input_token_data_ap]}
                 symbols={false}
               />
             </InfoCard.Row.Value>
           </InfoCard.Row>
 
           {/**
-           * @info Incentives Given/Received
+           * @info Incentives AP/IP
            */}
           <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
             <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
             <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
               {dataRecipe[
                 balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? "incentives_received_data"
-                  : "incentives_given_data"
+                  ? "incentives_ap_data"
+                  : "incentives_ip_data"
               ].length === 0 ? (
                 <InfoCard.Row.Value className="flex w-full flex-row place-content-end items-end gap-0">
                   0.00
@@ -388,8 +388,8 @@ export const BalanceIndicator = React.forwardRef<
 
               {dataRecipe[
                 balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? "incentives_received_data"
-                  : "incentives_given_data"
+                  ? "incentives_ap_data"
+                  : "incentives_ip_data"
               ].map((incentive, index) => {
                 const BASE_KEY = `market:balance-indicator:balance-incentice-type:${balanceIncentiveType}:incentive:${incentive.id}`;
 
@@ -402,13 +402,13 @@ export const BalanceIndicator = React.forwardRef<
                       className="h-4"
                       spanClassName="leading-5"
                       previousValue={0}
-                      currentValue={BigNumber.from(incentive.token_amount)}
+                      currentValue={incentive.token_amount}
                       numberFormatOptions={{
-                        // style: "decimal",
+                        style: "decimal",
                         notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                        // useGrouping: true,
                       }}
                     />
 

@@ -209,7 +209,7 @@ export const MarketManager = React.forwardRef<
                   "w-full md:w-[50%] xl:w-[25%]"
                 )}
               >
-                {/* <BalanceIndicator /> */}
+                <BalanceIndicator />
 
                 <MarketForm />
               </div>

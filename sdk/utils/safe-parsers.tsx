@@ -24,7 +24,7 @@ export const parseRawAmount = (value: string | undefined | null): string => {
   }
 };
 
-export const parseRawToTokenAmount = (
+export const parseRawAmountToTokenAmount = (
   value: string | undefined | null,
   decimals: number
 ): number => {
