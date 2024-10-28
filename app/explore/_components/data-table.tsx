@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import { InfoGrid, InfoTip } from "@/components/common";
 
 import { FallMotion } from "@/components/animations";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 /**
  * @description DataTable component props
@@ -164,37 +165,39 @@ export function DataTable<TData, TValue>({
                       contentClassName="flex flex-row items-center space-x-2 place-content-start overflow-x-scroll hide-scrollbar"
                       height="2.45rem"
                     >
-                      {!!chainId &&
-                        columnVisibility.chain_id &&
-                        flexRender(chainId.column.columnDef.cell, {
-                          ...chainId.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                      <ScrollArea className="flex gap-x-2">
+                        {!!chainId &&
+                          columnVisibility.chain_id &&
+                          flexRender(chainId.column.columnDef.cell, {
+                            ...chainId.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!inputTokenId &&
-                        columnVisibility.input_token_id &&
-                        flexRender(inputTokenId.column.columnDef.cell, {
-                          ...inputTokenId.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!inputTokenId &&
+                          columnVisibility.input_token_id &&
+                          flexRender(inputTokenId.column.columnDef.cell, {
+                            ...inputTokenId.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!marketType &&
-                        columnVisibility.market_type &&
-                        flexRender(marketType.column.columnDef.cell, {
-                          ...marketType.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!marketType &&
+                          columnVisibility.market_type &&
+                          flexRender(marketType.column.columnDef.cell, {
+                            ...marketType.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!lockedQuantityUsd &&
-                        columnVisibility.locked_quantity_usd &&
-                        flexRender(lockedQuantityUsd.column.columnDef.cell, {
-                          ...lockedQuantityUsd.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!lockedQuantityUsd &&
+                          columnVisibility.locked_quantity_usd &&
+                          flexRender(lockedQuantityUsd.column.columnDef.cell, {
+                            ...lockedQuantityUsd.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
+                      </ScrollArea>
                     </FallMotion>
                   )}
 
