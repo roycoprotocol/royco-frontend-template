@@ -50,6 +50,7 @@ export const MarketFormSchema = z
         image: z.string(),
         decimals: z.number(),
         amount: z.string().optional(),
+
         rate: z.string().optional(), // rate in wei per second (scaled up by 10^18)
         fdv: z.string().optional(), // fully diluted value of token
         aip: z.string().optional(), // annual incentive percentage
@@ -58,7 +59,6 @@ export const MarketFormSchema = z
         raw_amount: z.string().optional(),
         start_timestamp: z.date().optional(),
         end_timestamp: z.date().optional(),
-        // amount: BigNumberSchema,
       })
     ),
     expiry: z
@@ -69,19 +69,4 @@ export const MarketFormSchema = z
 
     no_expiry: z.boolean().default(false),
   })
-  .superRefine((data, ctx) => {
-    // if (data.order_type === "limit" && data.limit_price === undefined) {
-    //   ctx.addIssue({
-    //     code: z.ZodIssueCode.custom,
-    //     message: "Limit price is required for limit orders",
-    //     path: ["limit_price"],
-    //   });
-    // }
-    // if (data.amount === undefined || data.amount <= 0) {
-    //   ctx.addIssue({
-    //     code: z.ZodIssueCode.custom,
-    //     message: "Amount is required",
-    //     path: ["amount"],
-    //   });
-    // }
-  });
+  .superRefine((data, ctx) => {});
