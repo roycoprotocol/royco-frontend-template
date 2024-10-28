@@ -4,11 +4,13 @@ export const useSupportedTokens = ({
   chain_id,
   page = 1,
   search = "",
-}: { chain_id?: number; page?: number; search?: string } = {}): {
-  data: SupportedToken[];
-  totalPages: number;
-  currentPage: number;
-} => {
+  token_ids,
+}: {
+  chain_id?: number;
+  page?: number;
+  search?: string;
+  token_ids?: string[] | undefined | null;
+} = {}) => {
   const PAGE_SIZE = 20;
 
   let filteredTokens = SupportedTokenList.filter(
@@ -22,6 +24,12 @@ export const useSupportedTokens = ({
         token.symbol.toLowerCase().startsWith(searchTerm) ||
         token.name.toLowerCase().includes(searchTerm) ||
         token.contract_address.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  if (!!token_ids && token_ids.length > 0) {
+    filteredTokens = filteredTokens.filter((token) =>
+      token_ids.includes(token.id)
     );
   }
 

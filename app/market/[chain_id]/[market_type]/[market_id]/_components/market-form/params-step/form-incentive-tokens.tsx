@@ -75,6 +75,10 @@ export const FormIncentiveTokens = React.forwardRef<
     chain_id: marketMetadata.chain_id,
     page,
     search,
+    token_ids:
+      userType === MarketUserType.ap.id
+        ? currentMarketData?.incentive_ids
+        : undefined,
   });
 
   const canPrevPage = page > 1;
@@ -113,10 +117,6 @@ export const FormIncentiveTokens = React.forwardRef<
       setPlaceholderPage([page, page]);
       setPlaceholderTotalPages([totalPages, totalPages]);
     }
-  };
-
-  const resetPage = () => {
-    setPage(1);
   };
 
   useEffect(() => {

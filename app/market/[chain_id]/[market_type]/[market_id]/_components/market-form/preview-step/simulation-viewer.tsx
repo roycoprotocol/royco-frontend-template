@@ -30,7 +30,7 @@ export const SimulationViewer = React.forwardRef<
 
   const { writeContractOptions } = useMarketFormDetails(marketForm);
 
-  const { data, isLoading } = useTransactionSimulation({
+  const { data, isLoading, isError } = useTransactionSimulation({
     chainId: marketMetadata.chain_id,
     writeContractOptions,
     simulationUrl: process.env.NEXT_PUBLIC_SIMULATION_URL ?? "",
@@ -99,6 +99,10 @@ export const SimulationViewer = React.forwardRef<
             <AlertIndicator className="">
               No asset changes detected
             </AlertIndicator>
+          )}
+
+          {!isLoading && isError && (
+            <AlertIndicator className="">Simulation failed</AlertIndicator>
           )}
         </div>
 

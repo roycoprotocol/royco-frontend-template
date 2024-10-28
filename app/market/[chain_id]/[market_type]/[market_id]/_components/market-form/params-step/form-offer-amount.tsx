@@ -16,7 +16,11 @@ import { TokenDisplayer } from "@/components/common";
 import { useActiveMarket } from "../../hooks";
 import { FormInputLabel, TertiaryLabel } from "../../composables";
 import { useAccount } from "wagmi";
-import { isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityIntValid,
+  parseFormattedValueToText,
+  parseTextToFormattedValue,
+} from "@/sdk/utils";
 import { useAccountBalance } from "@/sdk/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { BigNumber, ethers } from "ethers";
@@ -81,13 +85,13 @@ export const FormOfferAmount = React.forwardRef<
             </FormInputLabel>
 
             <Input
-              type="number"
-              step="any"
+              type="text"
               containerClassName="h-9 text-sm mt-1"
               className=""
               placeholder="Enter Amount"
-              value={marketForm.watch("offer_amount")}
-              // {...field}
+              value={parseTextToFormattedValue(
+                marketForm.watch("offer_amount")
+              )}
               Prefix={() => {
                 if (
                   marketForm.watch("offer_type") === MarketOfferType.market.id
@@ -95,15 +99,6 @@ export const FormOfferAmount = React.forwardRef<
                   return (
                     <div
                       onClick={() => {
-                        // @todo Fix this
-
-                        // const quantityRawValue =
-                        //   userType === MarketUserType.ap.id
-                        //     ? currentMarketData.input_token_data
-                        //         .quantity_offered_token
-                        //     : currentMarketData.input_token_data
-                        //         .quantity_asked_token;
-
                         const quantityRawValue = "0";
 
                         const maxValue = quantityRawValue;
@@ -121,23 +116,7 @@ export const FormOfferAmount = React.forwardRef<
                 }
               }}
               onChange={(e) => {
-                field.onChange(e);
-
-                try {
-                  const floatAmount = parseFloat(e.target.value);
-
-                  const decimals = currentMarketData.input_token_data.decimals;
-
-                  const rawAmount = ethers.utils
-                    .parseUnits(floatAmount.toString(), decimals)
-                    .toString();
-
-                  if (isSolidityIntValid("uint256", rawAmount)) {
-                    marketForm.setValue("offer_raw_amount", rawAmount);
-                  }
-                } catch (error) {
-                  marketForm.setValue("offer_raw_amount", "");
-                }
+                field.onChange(parseFormattedValueToText(e.target.value));
               }}
               min="0"
               Suffix={() => {

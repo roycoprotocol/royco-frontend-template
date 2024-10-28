@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useEffect } from "react";
+import React from "react";
 import { useActiveMarket } from "../hooks";
 import {
   BASE_MARGIN_TOP,
@@ -9,10 +9,7 @@ import {
   SecondaryLabel,
   TertiaryLabel,
 } from "../composables";
-import { useHighestOffers } from "@/sdk/hooks";
-import { useImmer } from "use-immer";
-import { isEqual } from "lodash";
-import { produce } from "immer";
+
 import { SpringNumber } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
 import { FallMotion } from "@/components/animations";

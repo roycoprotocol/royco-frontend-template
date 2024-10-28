@@ -18,6 +18,7 @@ import { getSupportedToken, SupportedToken } from "@/sdk/constants";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { RoycoMarketOfferType } from "@/sdk/market";
+import { parseTokenAmountToRawAmount } from "@/sdk/utils";
 
 export const useMarketFormDetails = (
   marketForm: UseFormReturn<z.infer<typeof MarketFormSchema>>
@@ -89,25 +90,15 @@ export const useMarketFormDetails = (
     user_type: userType,
     offer_type: marketForm.watch("offer_type"),
     account: address,
-    quantity:
-      marketForm.watch("offer_raw_amount") === ""
-        ? undefined
-        : marketForm.watch("offer_raw_amount"),
+    quantity: parseTokenAmountToRawAmount(
+      marketForm.watch("offer_amount"),
+      currentMarketData?.input_token_data.decimals ?? 0
+    ),
     funding_vault: marketForm.watch("funding_vault").address,
 
     token_ids: marketForm.watch("incentive_tokens").map((token) => token.id),
     token_amounts: marketForm.watch("incentive_tokens").map((token) => {
-      // const rawAmount = token.raw_amount || "0";
-
-      const tokenAmount = token.amount || "0";
-
-      // Convert tokenAmount to Wei (BigNumber) using the appropriate decimals
-      const tokenAmountInWei = ethers.utils.parseUnits(
-        parseFloat(tokenAmount).toFixed(token.decimals), // Format to the correct number of decimals
-        token.decimals
-      );
-
-      return tokenAmountInWei.toString() || "0";
+      return parseTokenAmountToRawAmount(token.amount, token.decimals);
     }),
     expiry: marketForm.watch("no_expiry")
       ? "0"

@@ -1,8 +1,5 @@
 import { type TypedRoycoClient } from "@/sdk/client";
-
 import { getSupportedToken, SupportedToken } from "../constants";
-import { BigNumber } from "ethers";
-
 import {
   BaseQueryFilter,
   BaseSortingFilter,
@@ -135,20 +132,19 @@ export const getEnrichedOffersQueryOptions = (
           const input_token_fdv: number = row.input_token_fdv ?? 0;
           const input_token_total_supply: number =
             row.input_token_total_supply ?? 0;
-          const input_token_raw_amount: string = BigNumber.from(
-            (row.quantity_remaining ?? 0).toLocaleString("fullwide", {
-              useGrouping: false,
-            })
-          ).toString();
-
-          const input_token_token_amount: number = parseFloat(
-            BigNumber.from(input_token_raw_amount)
-              .div(BigNumber.from(10).pow(input_token_info.decimals))
-              .toString()
+          const input_token_raw_amount: string = parseRawAmount(
+            row.quantity_remaining ?? "0"
           );
 
-          const input_token_token_amount_usd =
-            input_token_token_amount * input_token_price;
+          const input_token_token_amount: number = parseRawAmountToTokenAmount(
+            row.quantity_remaining ?? "0",
+            input_token_info.decimals
+          );
+
+          const input_token_token_amount_usd = parseTokenAmountToTokenAmountUsd(
+            input_token_token_amount,
+            input_token_price
+          );
 
           const input_token_data = {
             ...input_token_info,
