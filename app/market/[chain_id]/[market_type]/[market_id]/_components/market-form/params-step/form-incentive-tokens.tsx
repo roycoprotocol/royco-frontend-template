@@ -1,23 +1,13 @@
 import React, { useEffect } from "react";
-
 import { cn } from "@/lib/utils";
-
 import { z } from "zod";
 import { FormField, FormItem } from "@/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
-
 import { Input } from "@/components/ui/input";
 import { MarketFormSchema } from ".././market-form-schema";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { useActiveMarket } from "../../hooks";
-import {
-  BASE_MARGIN_TOP,
-  FormInputLabel,
-  InputLabel,
-  SecondaryLabel,
-  TertiaryLabel,
-} from "../../composables";
-
+import { FormInputLabel, SecondaryLabel } from "../../composables";
 import { AnimatePresence } from "framer-motion";
 import { useSupportedTokens } from "@/sdk/hooks";
 import {
@@ -36,13 +26,12 @@ import {
 } from "@/components/ui/popover";
 import { FallMotion } from "@/components/animations";
 import {
-  MarketActionType,
+  MarketOfferType,
   MarketType,
   MarketUserType,
+  MarketVaultIncentiveAction,
   useMarketManager,
 } from "@/store";
-import { isSolidityIntValid } from "@/sdk/utils";
-import { BigNumber, ethers } from "ethers";
 
 import { motion } from "framer-motion";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
@@ -71,14 +60,32 @@ export const FormIncentiveTokens = React.forwardRef<
     Array<number>
   >([1, 1]);
 
+  let token_ids: Array<string> | undefined | null = undefined;
+
+  if (userType === MarketUserType.ap.id) {
+    token_ids = currentMarketData?.incentive_ids;
+  } else if (
+    userType === MarketUserType.ip.id &&
+    marketForm.watch("offer_type") === MarketOfferType.limit.id
+  ) {
+    if (
+      marketForm.watch("vault_incentive_action") ===
+      MarketVaultIncentiveAction.extend.id
+    ) {
+      token_ids = currentMarketData?.incentive_ids;
+    } else if (
+      marketForm.watch("vault_incentive_action") ===
+      MarketVaultIncentiveAction.refund.id
+    ) {
+      token_ids = currentMarketData?.incentive_ids;
+    }
+  }
+
   const { data, totalPages } = useSupportedTokens({
     chain_id: marketMetadata.chain_id,
     page,
     search,
-    token_ids:
-      userType === MarketUserType.ap.id
-        ? currentMarketData?.incentive_ids
-        : undefined,
+    token_ids,
   });
 
   const canPrevPage = page > 1;
@@ -628,7 +635,9 @@ export const FormIncentiveTokens = React.forwardRef<
                            * Start Timestamp
                            */}
                           {marketMetadata.market_type === MarketType.vault.id &&
-                            userType === MarketUserType.ip.id && (
+                            userType === MarketUserType.ip.id &&
+                            marketForm.watch("vault_incentive_action") ===
+                              MarketVaultIncentiveAction.add.id && (
                               <div className="flex w-full flex-row items-center gap-1">
                                 <SecondaryLabel className="flex h-full w-14 flex-col place-content-center items-center rounded-lg border border-divider bg-z2 font-normal leading-6">
                                   Start
@@ -658,7 +667,11 @@ export const FormIncentiveTokens = React.forwardRef<
                            * End Timestamp
                            */}
                           {marketMetadata.market_type === MarketType.vault.id &&
-                            userType === MarketUserType.ip.id && (
+                            userType === MarketUserType.ip.id &&
+                            marketForm.watch("vault_incentive_action") ===
+                              MarketVaultIncentiveAction.add.id &&
+                            marketForm.watch("vault_incentive_action") ===
+                              MarketVaultIncentiveAction.extend.id && (
                               <div className="flex w-full flex-row items-center gap-1">
                                 <SecondaryLabel className="flex h-full w-14 flex-col place-content-center items-center rounded-lg border border-divider bg-z2 font-normal leading-6">
                                   End
