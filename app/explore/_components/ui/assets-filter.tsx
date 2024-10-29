@@ -7,6 +7,7 @@ import { type TypedArrayDistinctAsset, useDistinctAssets } from "@/sdk/hooks";
 import { FilterWrapper } from "../composables";
 import { sepolia } from "viem/chains";
 import { AlertIndicator } from "@/components/common";
+import { getSupportedChain } from "@/sdk/utils";
 
 export const AssetsFilter = () => {
   const { data, isLoading, isError, isRefetching } = useDistinctAssets({
@@ -16,7 +17,11 @@ export const AssetsFilter = () => {
   const totalAssets = !!data
     ? (data as TypedArrayDistinctAsset[]).filter((token) => {
         if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
-          return !token.ids.some((id) => id.startsWith(`${sepolia.id}`));
+          return !token.ids.some((id) => {
+            const [chain_id, token_address] = id.split("-");
+            const chain = getSupportedChain(parseInt(chain_id));
+            return chain?.testnet === true;
+          });
         } else {
           return true;
         }

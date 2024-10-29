@@ -15,7 +15,7 @@ export const useEnrichedMarkets = ({
   filters = [],
   sorting = [],
   search_key,
-  custom_token_data = undefined,
+  custom_token_data,
   enabled = true,
 }: {
   chain_id?: number;
