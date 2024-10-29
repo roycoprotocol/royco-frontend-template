@@ -38,7 +38,7 @@ const Page = () => {
             </div>
           </div>
 
-          <RoycoStats />
+          <RoycoStats className="w-full" />
         </div>
 
         <div
@@ -61,6 +61,10 @@ const Page = () => {
 
           <div className="flex h-full w-full shrink-0 flex-col gap-3 md:h-[80vh] lg:w-9/12">
             <div className="flex w-full flex-col items-center justify-between md:flex-row">
+              <div className="mr-3 hidden md:flex lg:hidden">
+                <MobileMenu />
+              </div>
+
               <SearchBar />
 
               <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">

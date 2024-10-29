@@ -97,7 +97,7 @@ export function DataTable<TData, TValue>({
           "hide-scrollbar relative w-full overflow-y-scroll",
           view === "list" && "rounded-[1.25rem] border border-divider bg-white",
           view === "grid" &&
-            "grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3"
+            "grid grid-cols-1 gap-x-3 lg:grid-cols-2 xl:grid-cols-3"
         )}
       >
         {view === "grid" && (
@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({
                     );
                   }}
                   key={`grid:row:${row.id}`}
-                  className="relative w-full cursor-pointer rounded-[1.25rem] border border-divider bg-white p-5 transition-all duration-200 ease-in-out hover:shadow-md"
+                  className="relative mb-3 w-full cursor-pointer rounded-[1.25rem] border border-divider bg-white p-5 transition-all duration-200 ease-in-out hover:shadow-md"
                 >
                   {!!name && columnVisibility.name && (
                     <FallMotion
