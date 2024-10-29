@@ -2,6 +2,7 @@ import { z } from "zod";
 import { MarketOfferType, MarketUserType } from "@/store/market-manager-props";
 import { isSolidityAddressValid } from "@/sdk/utils";
 import { BigNumber } from "ethers";
+import { RoycoMarketVaultIncentiveAction } from "@/sdk/market";
 
 const BigNumberSchema = z
   .union([z.string(), z.number()]) // Accept string or number as input
@@ -40,6 +41,14 @@ export const MarketFormSchema = z
     offer_amount: z.string(),
     offer_raw_amount: z.string(),
 
+    vault_incentive_action: z
+      .enum([
+        RoycoMarketVaultIncentiveAction.add.id,
+        RoycoMarketVaultIncentiveAction.extend.id,
+        RoycoMarketVaultIncentiveAction.refund.id,
+      ])
+      .default(RoycoMarketVaultIncentiveAction.add.id),
+
     incentive_tokens: z.array(
       z.object({
         id: z.string(),
@@ -50,6 +59,7 @@ export const MarketFormSchema = z
         image: z.string(),
         decimals: z.number(),
         amount: z.string().optional(),
+
         rate: z.string().optional(), // rate in wei per second (scaled up by 10^18)
         fdv: z.string().optional(), // fully diluted value of token
         aip: z.string().optional(), // annual incentive percentage
@@ -58,7 +68,6 @@ export const MarketFormSchema = z
         raw_amount: z.string().optional(),
         start_timestamp: z.date().optional(),
         end_timestamp: z.date().optional(),
-        // amount: BigNumberSchema,
       })
     ),
     expiry: z
@@ -69,19 +78,4 @@ export const MarketFormSchema = z
 
     no_expiry: z.boolean().default(false),
   })
-  .superRefine((data, ctx) => {
-    // if (data.order_type === "limit" && data.limit_price === undefined) {
-    //   ctx.addIssue({
-    //     code: z.ZodIssueCode.custom,
-    //     message: "Limit price is required for limit orders",
-    //     path: ["limit_price"],
-    //   });
-    // }
-    // if (data.amount === undefined || data.amount <= 0) {
-    //   ctx.addIssue({
-    //     code: z.ZodIssueCode.custom,
-    //     message: "Amount is required",
-    //     path: ["amount"],
-    //   });
-    // }
-  });
+  .superRefine((data, ctx) => {});

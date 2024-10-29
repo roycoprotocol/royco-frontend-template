@@ -1,4 +1,4 @@
-import { HorizontalTabs, LoadingSpinner } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
 import { cn } from "@/lib/utils";
 import { MarketUserType, MarketWithdrawType, useMarketManager } from "@/store";
 import React, { Fragment } from "react";
@@ -41,6 +41,8 @@ export const WithdrawSection = React.forwardRef<
 
   const totalCount =
     data && "count" in data ? (data.count ? data.count : 0) : 0;
+
+  console.log("withdraw data", data);
 
   return (
     <div

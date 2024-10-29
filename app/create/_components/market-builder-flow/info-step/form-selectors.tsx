@@ -52,7 +52,7 @@ export const ActionTypeMap: Record<
     label: "Recipe Market",
     tag: "",
     description:
-      'Offer incentives to perform any onchain transaction or series of transactions-aka a "recipe."',
+      'Offer incentives to perform any onchain transaction or series of transactions. Best for actions with lump sum rewards and timelocks.',
     icon: ScrollTextIcon,
   },
   vault: {
@@ -61,7 +61,7 @@ export const ActionTypeMap: Record<
     label: "Vault Market",
     tag: "",
     description:
-      "Offer incentives to deposit into an underlying ERC4626 Vault.",
+      "Offer incentives to deposit into an underlying ERC4626 Vault. Best for streaming rewards pro-rated to depositors and for actions easily represented by a 4646 vault.",
     icon: VaultIcon,
   },
 };

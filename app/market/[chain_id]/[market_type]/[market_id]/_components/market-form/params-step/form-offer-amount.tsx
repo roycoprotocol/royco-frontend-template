@@ -19,11 +19,14 @@ import { useAccount } from "wagmi";
 import {
   isSolidityIntValid,
   parseFormattedValueToText,
+  parseRawAmountToTokenAmount,
   parseTextToFormattedValue,
+  parseTokenAmountToRawAmount,
 } from "@/sdk/utils";
 import { useAccountBalance } from "@/sdk/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { BigNumber, ethers } from "ethers";
+import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
 
 export const FormOfferAmount = React.forwardRef<
   HTMLDivElement,
@@ -69,7 +72,7 @@ export const FormOfferAmount = React.forwardRef<
                     numberFormatOptions={{
                       style: "decimal",
                       notation: "compact",
-                      minimumFractionDigits: 0,
+                      minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                       useGrouping: true,
                     }}
@@ -94,18 +97,31 @@ export const FormOfferAmount = React.forwardRef<
               )}
               Prefix={() => {
                 if (
-                  marketForm.watch("offer_type") === MarketOfferType.market.id
+                  marketForm.watch("offer_type") ===
+                    MarketOfferType.market.id &&
+                  (marketMetadata.market_type === RoycoMarketType.recipe.id ||
+                    userType === RoycoMarketUserType.ip.id)
                 ) {
                   return (
                     <div
                       onClick={() => {
-                        const quantityRawValue = "0";
-
-                        const maxValue = quantityRawValue;
+                        const quantityRawValue =
+                          userType === MarketUserType.ap.id
+                            ? currentMarketData.quantity_ap
+                            : currentMarketData.quantity_ip;
+                        const quantityTokenValue = parseRawAmountToTokenAmount(
+                          quantityRawValue,
+                          currentMarketData.input_token_data.decimals
+                        );
 
                         marketForm.setValue(
                           "offer_amount",
-                          maxValue.toString()
+                          quantityTokenValue.toString()
+                        );
+
+                        marketForm.setValue(
+                          "offer_raw_amount",
+                          quantityRawValue ?? "0"
                         );
                       }}
                       className="flex cursor-pointer items-center justify-center text-xs font-300 text-secondary underline decoration-tertiary decoration-dotted underline-offset-[3px] transition-opacity duration-200 ease-in-out hover:opacity-80"
@@ -117,6 +133,13 @@ export const FormOfferAmount = React.forwardRef<
               }}
               onChange={(e) => {
                 field.onChange(parseFormattedValueToText(e.target.value));
+                marketForm.setValue(
+                  "offer_raw_amount",
+                  parseTokenAmountToRawAmount(
+                    e.target.value,
+                    currentMarketData?.input_token_data.decimals ?? 0
+                  )
+                );
               }}
               min="0"
               Suffix={() => {
@@ -130,33 +153,38 @@ export const FormOfferAmount = React.forwardRef<
               }}
             />
 
-            {/**
-             * @note Currently hidden
-             * @todo Fix it
-             */}
-            {/* {marketForm.watch("offer_type") === MarketOfferType.market.id && (
-              <TertiaryLabel className="mt-1 flex flex-row items-center justify-between">
+            {marketForm.watch("offer_type") === MarketOfferType.market.id &&
+            (marketMetadata.market_type === RoycoMarketType.recipe.id ||
+              userType === RoycoMarketUserType.ip.id) ? (
+              <TertiaryLabel className="mt-2 flex flex-row items-center justify-between">
                 <div>
                   {userType === MarketUserType.ap.id
                     ? Intl.NumberFormat("en-US", {
-                        useGrouping: true, // Ensures grouping with commas
-                        minimumFractionDigits: 0,
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(
-                        currentMarketData.input_token_data
-                          .quantity_offered_token
+                        parseRawAmountToTokenAmount(
+                          currentMarketData.quantity_ap,
+                          currentMarketData.input_token_data.decimals
+                        )
                       )
                     : Intl.NumberFormat("en-US", {
-                        useGrouping: true, // Ensures grouping with commas
-                        minimumFractionDigits: 0,
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(
-                        currentMarketData.input_token_data.quantity_asked_token
+                        parseRawAmountToTokenAmount(
+                          currentMarketData.quantity_ip,
+                          currentMarketData.input_token_data.decimals
+                        )
                       )}{" "}
                   {currentMarketData.input_token_data.symbol} Remaining
                 </div>
               </TertiaryLabel>
-            )} */}
+            ) : null}
           </FormItem>
         )}
       />
