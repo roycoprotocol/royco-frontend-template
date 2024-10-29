@@ -48,7 +48,7 @@ export const ActualNavbar = React.forwardRef<
       ref={ref}
       className={cn(
         "safari-blur-fix",
-        "sticky left-0 right-0 top-0 z-[99] flex w-full flex-row items-center justify-between",
+        "sticky left-0 right-0 top-0 z-40 flex w-full flex-row items-center justify-between",
         "h-fit",
         "bg-opacity-0 px-5 py-3 md:px-12 md:py-[1.09rem] lg:px-[10.44rem] xl:px-[12.44rem]",
         "flex flex-col place-content-center items-center",
@@ -57,6 +57,63 @@ export const ActualNavbar = React.forwardRef<
         className
       )}
     >
+      <AnimatePresence mode="popLayout">
+        {isMobileOpen && (
+          <motion.div
+            layout="size"
+            layoutId="navbar-mobile"
+            className={cn(
+              "absolute left-0 right-0 top-0 flex items-center justify-center overflow-hidden bg-z2 font-ortica text-2xl drop-shadow-sm"
+              // "border-t-0 border-b border-divider"
+            )}
+            initial={{ height: 0 }}
+            animate={{ height: "100vh" }}
+            exit={{ height: 0 }}
+            transition={{
+              staggerChildren: 0.1,
+            }}
+          >
+            <div className="flex flex-col gap-3 overflow-hidden py-5 lg:hidden">
+              {NavbarLinks.map(({ id, label, link }, navIndex) => {
+                const BASE_KEY = `navbar-link:mobile:${id}`;
+                return (
+                  <motion.a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{
+                      opacity: 0,
+                      y: -10 * navIndex,
+                      filter: "blur(4px)",
+                    }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: 0, filter: "blur(4px)" }}
+                    transition={{
+                      delay: navIndex * 0.2,
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
+                    key={BASE_KEY}
+                    className="text-center text-primary"
+                  >
+                    {label}
+                  </motion.a>
+                );
+              })}
+
+              <div className="absolute right-5 top-5">
+                <div
+                  onClick={() => setIsMobileOpen(!isMobileOpen)}
+                  className="flex h-6 w-6 flex-col place-content-center items-center overflow-hidden rounded-full border border-divider bg-primary"
+                >
+                  <XIcon className="h-6 w-6 p-1 text-white" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <MaxWidthWrapper
         className={cn(
           "flex flex-row items-center justify-between self-center",
@@ -64,62 +121,6 @@ export const ActualNavbar = React.forwardRef<
           // pathname !== "/" && "px-3 sm:px-3 md:px-12 lg:px-12 xl:px-12 "
         )}
       >
-        <motion.div
-          layout="size"
-          layoutId="navbar-mobile"
-          className={cn(
-            "absolute left-0 top-0 flex h-fit max-h-screen w-full flex-col items-center overflow-hidden bg-z2 font-ortica text-2xl drop-shadow-sm"
-            // "border-t-0 border-b border-divider"
-          )}
-          transition={{
-            staggerChildren: 0.1,
-          }}
-        >
-          <AnimatePresence mode="popLayout">
-            {isMobileOpen && (
-              <div className="flex flex-col gap-3 overflow-hidden py-5 lg:hidden">
-                <AnimatePresence mode="sync">
-                  {NavbarLinks.map(({ id, label, link }, navIndex) => {
-                    const BASE_KEY = `navbar-link:mobile:${id}`;
-                    return (
-                      <motion.a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        initial={{
-                          opacity: 0,
-                          y: -10 * navIndex,
-                          filter: "blur(4px)",
-                        }}
-                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                        exit={{ opacity: 0, y: 0, filter: "blur(4px)" }}
-                        transition={{
-                          delay: navIndex * 0.2,
-                          duration: 0.3,
-                          ease: "easeInOut",
-                        }}
-                        key={BASE_KEY}
-                        className="text-center text-primary"
-                      >
-                        {label}
-                      </motion.a>
-                    );
-                  })}
-                </AnimatePresence>
-
-                <div className="absolute right-5 top-5">
-                  <div
-                    onClick={() => setIsMobileOpen(!isMobileOpen)}
-                    className="flex h-6 w-6 flex-col place-content-center items-center overflow-hidden rounded-full border border-divider bg-primary"
-                  >
-                    <XIcon className="h-6 w-6 p-1 text-white" />
-                  </div>
-                </div>
-              </div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
         {/**
          * @description Logo
          */}
