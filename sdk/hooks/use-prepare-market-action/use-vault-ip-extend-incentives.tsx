@@ -6,7 +6,7 @@ import { useMarketOffers } from "../use-market-offers";
 import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
 import { getSupportedToken, NULL_ADDRESS } from "@/sdk/constants";
 import { ContractMap } from "@/sdk/contracts";
-import { TransactionOptionsType } from "@/sdk/types";
+import { CustomTokenData, TransactionOptionsType } from "@/sdk/types";
 import { getApprovalContractOptions, refineTransactionOptions } from "./utils";
 import { useTokenAllowance } from "../use-token-allowance";
 import { Address } from "abitype";
@@ -17,19 +17,17 @@ import {
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
 
-export const isVaultIPAddIncentivesValid = ({
+export const isVaultIPExtendIncentivesValid = ({
   baseMarket,
   enrichedMarket,
   token_ids,
   token_amounts,
-  start_timestamps,
   end_timestamps,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
-  start_timestamps: string[] | undefined;
   end_timestamps: string[] | undefined;
 }) => {
   try {
@@ -83,133 +81,76 @@ export const isVaultIPAddIncentivesValid = ({
       const token_id = token_ids[i];
       const token_address = token_id.split("-")[1];
 
-      // Handle if incentive token is already added
-      if (enrichedMarket.incentive_ids?.includes(token_id)) {
-        const start_timestamp = BigNumber.from(start_timestamps?.[i] ?? "0");
-        const end_timestamp = BigNumber.from(end_timestamps?.[i] ?? "0");
-        const current_timestamp = BigNumber.from(
-          Math.floor(Date.now() / 1000).toString()
-        );
-
-        if (start_timestamp.gte(end_timestamp)) {
-          throw new Error("Start timestamp must be less than end timestamp");
-        }
-
-        if (end_timestamp.lte(current_timestamp)) {
-          throw new Error("Incentive end time must be in the future");
-        }
-
-        const existing_start_timestamp = BigNumber.from(
-          enrichedMarket.base_start_timestamps?.[i] ?? "0"
-        );
-        const existing_end_timestamp = BigNumber.from(
-          enrichedMarket.base_end_timestamps?.[i] ?? "0"
-        );
-
-        if (start_timestamp.lte(existing_start_timestamp)) {
-          throw new Error(
-            "Incentive start time must be greater than existing start time"
-          );
-        }
-
-        if (current_timestamp.lte(existing_end_timestamp)) {
-          throw new Error(
-            "Incentive interval is already in progress. Use extend incentives option."
-          );
-        }
-
-        if (existing_start_timestamp.gt(current_timestamp)) {
-          throw new Error(
-            "Interval is scheduled in the future. Use refund incentives option to cancel first."
-          );
-        }
-
-        const frontend_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .mul(BigNumber.from(baseMarket?.frontend_fee ?? "0"))
-          .div(BigNumber.from(10).pow(18));
-        const protocol_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .mul(BigNumber.from(baseMarket?.protocol_fee ?? "0"))
-          .div(BigNumber.from(10).pow(18));
-
-        const rewards_after_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .sub(frontend_fee)
-          .sub(protocol_fee);
-
-        const interval_seconds: BigNumber = end_timestamp.sub(start_timestamp);
-
-        const rate: BigNumber = rewards_after_fee.div(interval_seconds);
-
-        if (rate.lte(0)) {
-          throw new Error("Incentive rate must be greater than 0");
-        }
+      // Check if incentive token is added
+      if (!enrichedMarket.base_incentive_ids?.includes(token_id)) {
+        throw new Error("Incentive token is not added");
       }
-      // Handle if incentive token is not added
-      else {
-        // Check if vault has reached the maximum number of incentives
-        if (enrichedMarket.incentive_ids?.length === 20) {
-          throw new Error("Vault can only have 20 incentives");
-        }
 
-        // Check if start timestamps are provided
-        if (!start_timestamps) {
-          throw new Error("Start timestamps are missing");
-        }
+      const new_end_timestamp: BigNumber = BigNumber.from(
+        end_timestamps?.[i] ?? "0"
+      );
+      const existing_end_timestamp: BigNumber = BigNumber.from(
+        enrichedMarket.base_end_timestamps?.[i] ?? "0"
+      );
 
-        // Check if end timestamps are provided
-        if (!end_timestamps) {
-          throw new Error("End timestamps are missing");
-        }
+      // Check if new end timestamp is greater than the existing end timestamp
+      if (new_end_timestamp.lte(existing_end_timestamp)) {
+        throw new Error("New incentive end timestamp must be greater");
+      }
 
-        // Check if lengths match
-        if (
-          start_timestamps?.length !== end_timestamps?.length ||
-          start_timestamps?.length !== token_ids.length
-        ) {
-          throw new Error("Start and end timestamps do not match");
-        }
+      const current_timestamp: BigNumber = BigNumber.from(
+        Math.floor(Date.now() / 1000).toString()
+      );
 
-        // Check if end time is greater than start time
-        if (
-          BigNumber.from(end_timestamps?.[i] ?? 0).lt(
-            BigNumber.from(start_timestamps?.[i] ?? 0)
-          )
-        ) {
-          throw new Error("Incentive end time must be greater than start time");
-        }
+      // Check if new end timestamp is after the current timestamp
+      if (new_end_timestamp.lte(current_timestamp)) {
+        throw new Error("No interval in progress. Use add incentives option.");
+      }
 
-        // Check if end time is in the future
-        const current_time = Math.floor(Date.now() / 1000).toString();
-        if (BigNumber.from(current_time).gt(end_timestamps?.[i] ?? 0)) {
-          throw new Error("Incentive end time must be in the future");
-        }
+      const frontend_fee: BigNumber = BigNumber.from(token_amounts[i])
+        .mul(BigNumber.from(baseMarket?.frontend_fee ?? "0"))
+        .div(BigNumber.from(10).pow(18));
 
-        // Check if interval is greater than 1 week
-        const interval_seconds: BigNumber = BigNumber.from(
-          end_timestamps?.[i] ?? 0
-        ).sub(BigNumber.from(start_timestamps?.[i] ?? 0));
-        if (interval_seconds.lt(BigNumber.from(7 * 24 * 60 * 60))) {
-          throw new Error("Incentive must be at least 1 week long");
-        }
+      const protocol_fee: BigNumber = BigNumber.from(token_amounts[i])
+        .mul(BigNumber.from(baseMarket?.protocol_fee ?? "0"))
+        .div(BigNumber.from(10).pow(18));
 
-        // Check if rate is not 0
-        const reward_amount: BigNumber = BigNumber.from(
-          token_amounts?.[i] ?? 0
+      const rewards_after_fee: BigNumber = BigNumber.from(token_amounts[i])
+        .sub(frontend_fee)
+        .sub(protocol_fee);
+
+      const existing_start_timestamp: BigNumber = BigNumber.from(
+        enrichedMarket.base_start_timestamps?.[i] ?? "0"
+      );
+
+      const new_start_timestamp = current_timestamp.gt(existing_start_timestamp)
+        ? current_timestamp
+        : existing_start_timestamp;
+
+      const one_week = BigNumber.from(60 * 60 * 24 * 7);
+
+      // Check if new end timestamp is at least 1 week after the new start timestamp
+      if (new_end_timestamp.sub(new_start_timestamp).lt(one_week)) {
+        throw new Error("Incentive duration must be at least 1 week");
+      }
+
+      const existing_incentive_rate: BigNumber = BigNumber.from(
+        enrichedMarket.base_incentive_rates?.[i] ?? "0"
+      );
+
+      const remaining_rewards = existing_incentive_rate.mul(
+        existing_end_timestamp.sub(new_start_timestamp)
+      );
+
+      const new_rate = rewards_after_fee
+        .add(remaining_rewards)
+        .div(new_end_timestamp.sub(new_start_timestamp));
+
+      // Check if new incentive rate is greater than the existing incentive rate
+      if (new_rate.lt(existing_incentive_rate)) {
+        throw new Error(
+          "New incentive rate must be greater than the existing rate"
         );
-        const protocol_fee: BigNumber = reward_amount
-          .mul(BigNumber.from(baseMarket?.protocol_fee ?? 0))
-          .div(BigNumber.from(10).pow(18));
-        const frontend_fee: BigNumber = reward_amount
-          .mul(BigNumber.from(baseMarket?.frontend_fee ?? 0))
-          .div(BigNumber.from(10).pow(18));
-
-        const actual_reward_amount: BigNumber = reward_amount
-          .add(protocol_fee)
-          .add(frontend_fee);
-        const rate: BigNumber = actual_reward_amount.div(interval_seconds);
-
-        if (rate.lte(0)) {
-          throw new Error("Incentive rate must be greater than 0");
-        }
       }
     }
 
@@ -227,7 +168,7 @@ export const isVaultIPAddIncentivesValid = ({
   }
 };
 
-export const calculateVaultIPAddIncentivesTokenData = ({
+export const calculateVaultIPExtendIncentivesTokenData = ({
   baseMarket,
   enrichedMarket,
   propsTokenQuotes,
@@ -320,24 +261,20 @@ export const calculateVaultIPAddIncentivesTokenData = ({
   };
 };
 
-export const getVaultIPAddIncentivesTransactionOptions = ({
+export const getVaultIPExtendIncentivesTransactionOptions = ({
   baseMarket,
   enrichedMarket,
   chain_id,
-  market_id,
   token_ids,
   token_amounts,
-  start_timestamps,
   end_timestamps,
   frontend_fee_recipient,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   chain_id: number;
-  market_id: string;
   token_ids: string[];
   token_amounts: string[];
-  start_timestamps: string[];
   end_timestamps: string[];
   frontend_fee_recipient?: string;
 }) => {
@@ -346,100 +283,54 @@ export const getVaultIPAddIncentivesTransactionOptions = ({
   const abi =
     ContractMap[chain_id as keyof typeof ContractMap]["WrappedVault"].abi;
 
-  // Get add reward transaction options
-  let addRewardTxOptions: TransactionOptionsType[] = [];
+  // Get extend reward transaction options
+  let extendRewardTxOptions: TransactionOptionsType[] = [];
 
-  // Loop through the token IDs
+  // Extend Rewards
   for (let i = 0; i < token_ids.length; i++) {
     const token_id = token_ids[i];
     const token_address = token_id.split("-")[1];
-    const token_amount = token_amounts[i];
     const token_data = getSupportedToken(token_id);
 
     const existing_token_ids = enrichedMarket?.incentive_ids ?? [];
 
     if (existing_token_ids.includes(token_id)) {
-      continue;
-    } else {
       const newTxOptions: TransactionOptionsType = {
         contractId: "WrappedVault",
         chainId: chain_id,
-        id: `add_reward_${token_address}`,
-        label: `Add Reward ${token_data?.symbol.toUpperCase()}`,
+        id: `extend_reward_${token_address}`,
+        label: `Extend Reward ${token_data?.symbol.toUpperCase()}`,
         address,
         abi,
-        functionName: "addRewardsToken",
+        functionName: "extendRewardsInterval",
         marketType: RoycoMarketType.vault.id,
-        args: [token_address],
+        args: [
+          token_address,
+          token_amounts[i],
+          end_timestamps[i],
+          frontend_fee_recipient
+            ? frontend_fee_recipient
+            : baseMarket?.protocol_fee_recipient,
+        ],
         txStatus: "idle",
         txHash: null,
       };
 
-      addRewardTxOptions.push(newTxOptions);
+      extendRewardTxOptions.push(newTxOptions);
     }
   }
-
-  // Get set reward transaction options
-  let setRewardTxOptions: TransactionOptionsType[] = [];
-
-  // Set New Rewards
-  for (let i = 0; i < token_ids.length; i++) {
-    const token_id = token_ids[i];
-    const token_address = token_id.split("-")[1];
-    const token_data = getSupportedToken(token_id);
-
-    const existing_token_ids = enrichedMarket?.incentive_ids ?? [];
-
-    const newTxOptions: TransactionOptionsType = {
-      contractId: "WrappedVault",
-      chainId: chain_id,
-      id: `set_reward_${token_address}`,
-      label: `Set Reward ${token_data?.symbol.toUpperCase()}`,
-      address,
-      abi,
-      functionName: "setRewardsInterval",
-      marketType: RoycoMarketType.vault.id,
-      args: [
-        token_address,
-        start_timestamps[i],
-        end_timestamps[i],
-        token_amounts[i],
-        frontend_fee_recipient
-          ? frontend_fee_recipient
-          : baseMarket?.protocol_fee_recipient,
-      ],
-      txStatus: "idle",
-      txHash: null,
-      tokensOut: [
-        {
-          ...token_data,
-          raw_amount: token_amounts[i],
-          token_amount: parseFloat(
-            ethers.utils.formatUnits(
-              token_amounts[i] || "0",
-              token_data.decimals
-            )
-          ),
-        },
-      ],
-    };
-
-    setRewardTxOptions.push(newTxOptions);
-  }
-
   // Combine all transaction options
-  const txOptions = [...addRewardTxOptions, ...setRewardTxOptions];
+  const txOptions = [...extendRewardTxOptions];
 
   return txOptions;
 };
 
-export const useVaultIPAddIncentives = ({
+export const useVaultIPExtendIncentives = ({
   account,
   chain_id,
   market_id,
   token_ids,
   token_amounts,
-  start_timestamps,
   end_timestamps,
   custom_token_data,
   frontend_fee_recipient,
@@ -450,14 +341,8 @@ export const useVaultIPAddIncentives = ({
   market_id: string;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
-  start_timestamps: string[] | undefined;
   end_timestamps: string[] | undefined;
-  custom_token_data?: Array<{
-    token_id: string;
-    price?: string;
-    fdv?: string;
-    total_supply?: string;
-  }>;
+  custom_token_data?: CustomTokenData;
   frontend_fee_recipient?: string;
   enabled?: boolean;
 }) => {
@@ -479,12 +364,11 @@ export const useVaultIPAddIncentives = ({
   });
 
   // Check if market action is valid
-  const isValid = isVaultIPAddIncentivesValid({
+  const isValid = isVaultIPExtendIncentivesValid({
     baseMarket,
     enrichedMarket,
     token_ids,
     token_amounts,
-    start_timestamps,
     end_timestamps,
   });
 
@@ -499,7 +383,7 @@ export const useVaultIPAddIncentives = ({
 
   // Get incentive data
   const { incentiveData, inputTokenData } =
-    calculateVaultIPAddIncentivesTokenData({
+    calculateVaultIPExtendIncentivesTokenData({
       baseMarket,
       enrichedMarket,
       propsTokenQuotes,
@@ -517,14 +401,12 @@ export const useVaultIPAddIncentives = ({
   ) {
     // Get offer transaction options
     const offerTxOptions: TransactionOptionsType[] =
-      getVaultIPAddIncentivesTransactionOptions({
+      getVaultIPExtendIncentivesTransactionOptions({
         baseMarket,
         enrichedMarket,
         chain_id,
-        market_id,
         token_ids: token_ids ?? [],
         token_amounts: token_amounts ?? [],
-        start_timestamps: start_timestamps ?? [],
         end_timestamps: end_timestamps ?? [],
         frontend_fee_recipient:
           frontend_fee_recipient ?? baseMarket?.protocol_fee_recipient,

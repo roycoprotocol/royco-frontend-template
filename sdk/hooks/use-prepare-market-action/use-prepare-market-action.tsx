@@ -20,6 +20,8 @@ import { useVaultIPMarketOffer } from "./use-vault-ip-market-offer";
 import { useVaultIPLimitOffer } from "./use-vault-ip-limit-offer";
 import { useVaultIPAddIncentives } from "./use-vault-ip-add-incentives";
 import { MarketVaultIncentiveAction } from "@/store";
+import { useVaultIPExtendIncentives } from "./use-vault-ip-extend-incentives";
+import { useVaultIPRefundIncentives } from "./use-vault-ip-refund-incentives";
 
 export const PrepareMarketActionType = {
   RecipeAPMarketOffer: `${RoycoMarketType.recipe.id}-${RoycoMarketUserType.ap.id}-${RoycoMarketOfferType.market.id}`,
@@ -179,6 +181,32 @@ export const usePrepareMarketAction = ({
       vault_incentive_action === MarketVaultIncentiveAction.add.id,
   });
 
+  const propsVaultIPExtendIncentives = useVaultIPExtendIncentives({
+    chain_id,
+    market_id,
+    account,
+    token_ids,
+    token_amounts,
+    end_timestamps,
+    custom_token_data,
+    enabled:
+      market_type === RoycoMarketType.vault.id &&
+      !!vault_incentive_action &&
+      vault_incentive_action === MarketVaultIncentiveAction.extend.id,
+  });
+
+  const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
+    chain_id,
+    market_id,
+    account,
+    token_ids,
+    custom_token_data,
+    enabled:
+      market_type === RoycoMarketType.vault.id &&
+      !!vault_incentive_action &&
+      vault_incentive_action === MarketVaultIncentiveAction.refund.id,
+  });
+
   switch (action_type) {
     case PrepareMarketActionType.RecipeAPMarketOffer:
       return propsRecipeAPMarketOffer;
@@ -193,14 +221,25 @@ export const usePrepareMarketAction = ({
       return propsVaultAPMarketOffer;
     case PrepareMarketActionType.VaultAPLimitOffer:
       return propsVaultAPLimitOffer;
-    // case PrepareMarketActionType.VaultIPMarketOffer:
-    //   return propsVaultIPMarketOffer;
+
     case PrepareMarketActionType.VaultIPLimitOffer:
       if (
         !!vault_incentive_action &&
         vault_incentive_action === MarketVaultIncentiveAction.add.id
       ) {
         return propsVaultIPAddIncentives;
+      }
+      if (
+        !!vault_incentive_action &&
+        vault_incentive_action === MarketVaultIncentiveAction.extend.id
+      ) {
+        return propsVaultIPExtendIncentives;
+      }
+      if (
+        !!vault_incentive_action &&
+        vault_incentive_action === MarketVaultIncentiveAction.refund.id
+      ) {
+        return propsVaultIPRefundIncentives;
       }
       return propsVaultAPLimitOffer;
 
