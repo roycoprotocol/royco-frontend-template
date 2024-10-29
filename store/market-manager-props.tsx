@@ -8,6 +8,7 @@ import {
   RoycoMarketScriptType,
   RoycoMarketType,
   RoycoMarketUserType,
+  RoycoMarketVaultIncentiveAction,
   RoycoTransactionType,
   TypedRoycoMarketActionType,
   TypedRoycoMarketIncentiveType,
@@ -112,6 +113,24 @@ export const MarketIncentiveType = {
   [RoycoMarketIncentiveType.ip.id]: {
     ...RoycoMarketIncentiveType.ip,
     label: "Offered",
+  },
+};
+
+/**
+ * @info Market Vault Incentive Action
+ */
+export const MarketVaultIncentiveAction = {
+  [RoycoMarketVaultIncentiveAction.add.id]: {
+    ...RoycoMarketVaultIncentiveAction.add,
+    label: "Add Incentives",
+  },
+  [RoycoMarketVaultIncentiveAction.extend.id]: {
+    ...RoycoMarketVaultIncentiveAction.extend,
+    label: "Extend Incentives",
+  },
+  [RoycoMarketVaultIncentiveAction.refund.id]: {
+    ...RoycoMarketVaultIncentiveAction.refund,
+    label: "Refund Incentives",
   },
 };
 

@@ -186,6 +186,8 @@ export const useMarketFormDetails = (
           new Date(incentive.end_timestamp ?? 0).getTime() / 1000
         ).toString()
       ),
+
+    vault_incentive_action: marketForm.watch("vault_incentive_action"),
   });
 
   return {

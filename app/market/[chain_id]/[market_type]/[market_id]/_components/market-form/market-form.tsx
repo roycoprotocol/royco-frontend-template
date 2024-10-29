@@ -38,14 +38,8 @@ import { ChevronLeftIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { WithdrawSection } from "./withdraw-section"; // @todo fix it
 import { AlertIndicator } from "@/components/common";
-import { ethers } from "ethers";
-import { SupportedToken } from "@/sdk/constants";
-import {
-  RoycoMarketOfferType,
-  RoycoMarketType,
-  RoycoMarketUserType,
-} from "@/sdk/market";
 import { useMarketFormDetails } from "./use-market-form-details";
+import { RoycoMarketVaultIncentiveAction } from "@/sdk/market";
 
 export const MarketForm = React.forwardRef<
   HTMLDivElement,
@@ -75,6 +69,7 @@ export const MarketForm = React.forwardRef<
       funding_vault: BaseFundingVault,
       incentive_tokens: [],
       no_expiry: false,
+      vault_incentive_action: RoycoMarketVaultIncentiveAction.add.id,
     },
   });
 

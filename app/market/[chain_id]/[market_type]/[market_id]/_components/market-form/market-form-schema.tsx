@@ -2,6 +2,7 @@ import { z } from "zod";
 import { MarketOfferType, MarketUserType } from "@/store/market-manager-props";
 import { isSolidityAddressValid } from "@/sdk/utils";
 import { BigNumber } from "ethers";
+import { RoycoMarketVaultIncentiveAction } from "@/sdk/market";
 
 const BigNumberSchema = z
   .union([z.string(), z.number()]) // Accept string or number as input
@@ -39,6 +40,14 @@ export const MarketFormSchema = z
 
     offer_amount: z.string(),
     offer_raw_amount: z.string(),
+
+    vault_incentive_action: z
+      .enum([
+        RoycoMarketVaultIncentiveAction.add.id,
+        RoycoMarketVaultIncentiveAction.extend.id,
+        RoycoMarketVaultIncentiveAction.refund.id,
+      ])
+      .default(RoycoMarketVaultIncentiveAction.add.id),
 
     incentive_tokens: z.array(
       z.object({
