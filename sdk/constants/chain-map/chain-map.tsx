@@ -1,8 +1,10 @@
 import {
-  mainnet as ethereumMainnet,
   sepolia as ethereumSepolia,
-  arbitrum as arbitrumOne,
+  mainnet as ethereumMainnet,
   arbitrumSepolia,
+  arbitrum as arbitrumOne,
+  baseSepolia,
+  base,
 } from "viem/chains";
 import { type Chain } from "viem/chains";
 
@@ -11,16 +13,22 @@ export type SupportedChain = Chain & {
   symbol: string;
 };
 
+const EthereumSepolia = {
+  ...ethereumSepolia,
+  image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+  symbol: "SETH",
+};
+
 const EthereumMainnet = {
   ...ethereumMainnet,
   image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
   symbol: "ETH",
 };
 
-const EthereumSepolia = {
-  ...ethereumSepolia,
-  image: "https://chainlist.org/unknown-logo.png",
-  symbol: "SETH",
+const ArbitrumSepolia = {
+  ...arbitrumSepolia,
+  image: "https://icons.llamao.fi/icons/chains/rsz_arbitrum.jpg",
+  symbol: "ARBS",
 };
 
 const ArbitrumOne = {
@@ -29,17 +37,25 @@ const ArbitrumOne = {
   symbol: "ARB",
 };
 
-const ArbitrumSepolia = {
-  ...arbitrumSepolia,
-  image: "https://chainlist.org/unknown-logo.png",
-  symbol: "ARBS",
+const BaseSepolia = {
+  ...baseSepolia,
+  image: "https://icons.llamao.fi/icons/chains/rsz_base.jpg",
+  symbol: "BASE",
+};
+
+export const Base = {
+  ...base,
+  image: "https://icons.llamao.fi/icons/chains/rsz_base.jpg",
+  symbol: "BASE",
 };
 
 export const SupportedChainMap: Record<number, SupportedChain> = {
-  [ethereumMainnet.id]: EthereumMainnet,
   [ethereumSepolia.id]: EthereumSepolia,
-  // [arbitrumOne.id]: ArbitrumOne,
-  // [arbitrumSepolia.id]: ArbitrumSepolia,
+  [ethereumMainnet.id]: EthereumMainnet,
+  [arbitrumSepolia.id]: ArbitrumSepolia,
+  [arbitrumOne.id]: ArbitrumOne,
+  [baseSepolia.id]: BaseSepolia,
+  [base.id]: Base,
 };
 
 export const SupportedChainlist = Object.values(SupportedChainMap);
