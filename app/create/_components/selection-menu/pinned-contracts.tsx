@@ -56,8 +56,6 @@ export const PinnedContracts = React.forwardRef<
       pageIndex: 0,
     });
 
-    console.log("PinnedContracts", dataContractList);
-
     return <div ref={ref} className={cn("", className)} {...props} />;
   }
 );

@@ -9,11 +9,7 @@ import { useMarketBuilderManager } from "@/store";
 import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
 import { MotionWrapper } from "../market-builder-flow/animations";
-import {
-  ErrorAlert,
-  LoadingSpinner,
-  SimulationBox,
-} from "@/components/composables";
+import { ErrorAlert, LoadingSpinner } from "@/components/composables";
 import { useAccount, useConnectorClient, useSimulateContract } from "wagmi";
 import { config } from "@/components/web3-modal/modal-config";
 import { switchChain } from "@wagmi/core";

@@ -87,7 +87,6 @@ export const MarketForm = React.forwardRef<
     writeContractOptions,
     canBePerformedCompletely,
     canBePerformedPartially,
-    // simulationData,
     incentiveData,
   } = useMarketFormDetails(marketForm);
 
