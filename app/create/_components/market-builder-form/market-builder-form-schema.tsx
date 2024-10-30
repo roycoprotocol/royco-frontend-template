@@ -203,7 +203,7 @@ export const MarketBuilderFormSchema = z.object({
   chain: ZodChain,
 
   action_type: z.enum(["recipe", "vault"]),
-  incentive_schedule: z.enum(["upfront", "arrear", "forfeitable"]),
+  incentive_schedule: z.enum(["upfront", "arrear", "forfeitable", "streaming"]),
 
   vault_address: z
     .string()

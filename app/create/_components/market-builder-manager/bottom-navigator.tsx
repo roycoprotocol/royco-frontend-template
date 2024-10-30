@@ -207,6 +207,11 @@ export const BottomNavigator = React.forwardRef<
           return isValid;
         }
       } else if (activeStep === MarketBuilderSteps.actions.id) {
+        if (marketBuilderForm.watch("exit_actions").length <= 0) {
+          toast.custom((t) => (
+            <ErrorAlert message="Please define an Exit script so users may withdraw their positions. By default, Markets without an Exit script will be flagged and will not be listed." />
+          ));
+        }
         if (marketBuilderForm.watch("enter_actions").length <= 0) {
           toast.custom((t) => (
             <ErrorAlert message="Enter market script is empty" />
