@@ -1,6 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { http, createConfig } from "@wagmi/core";
-import { mainnet, sepolia } from "@wagmi/core/chains";
+import {
+  baseSepolia,
+  base,
+  arbitrumSepolia,
+  mainnet,
+  sepolia,
+  arbitrum,
+} from "@wagmi/core/chains";
 import { Address } from "abitype";
 import { getChain } from "@/sdk/utils";
 import { ContractMap } from "@/sdk/contracts";
@@ -15,8 +22,12 @@ export const dynamic = true;
 export const config = createConfig({
   chains: [mainnet, sepolia],
   transports: {
-    [mainnet.id]: http(),
     [sepolia.id]: http(),
+    [mainnet.id]: http(),
+    [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(),
+    [baseSepolia.id]: http(),
+    [base.id]: http(),
   },
 });
 

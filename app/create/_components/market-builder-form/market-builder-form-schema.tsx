@@ -19,11 +19,13 @@ import {
   isMarketActionScriptValid,
   isMarketActionValid,
 } from "@/sdk/market";
-import { mainnet, sepolia } from "viem/chains";
+import { arbitrum, base, mainnet, sepolia } from "viem/chains";
 import {
   SupportedChainMap,
   TokenMap1,
   TokenMap11155111,
+  TokenMap42161,
+  TokenMap8453,
 } from "@/sdk/constants";
 import { isSolidityStringValid } from "@/sdk/utils";
 
@@ -325,6 +327,34 @@ export const PoolFormDefaults = {
     market_description: "",
     chain: SupportedChainMap[mainnet.id],
     asset: TokenMap1["1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+  },
+  [arbitrum.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[arbitrum.id],
+    asset: TokenMap42161["42161-0xa0b862f60edef4452f25b4160f177db44deb6cf1"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+  },
+  [base.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[base.id],
+    asset: TokenMap8453["8453-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",

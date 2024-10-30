@@ -74,10 +74,11 @@ export const useExplore = create<ExploreState>((set) => ({
           },
         ]
       : []),
-    ...SupportedChainlist.filter((chain) => !chain.testnet).map((chain) => ({
-      id: "chain_id",
-      value: chain.id,
-    })),
+    // @note: we have a filter in .env, we want testnet to have all chains
+    // ...SupportedChainlist.filter((chain) => !chain.testnet).map((chain) => ({
+    //   id: "chain_id",
+    //   value: chain.id,
+    // })),
   ] as Array<MarketFilter>,
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
