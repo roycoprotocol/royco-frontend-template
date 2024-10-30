@@ -200,31 +200,82 @@ export const MarketForm = React.forwardRef<
           </motion.div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeIn" }}
-          key={`market-form:label:${marketStep}`}
-        >
-          <TertiaryLabel
-            className={cn(
-              "pt-1",
-              BASE_PADDING_TOP,
-              BASE_PADDING_LEFT,
-              BASE_PADDING_RIGHT
-            )}
+        {marketStep !== MarketSteps.params.id && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeIn" }}
+            key={`market-form:label:${marketStep}`}
           >
-            {MarketSteps[marketStep].label}
-          </TertiaryLabel>
-        </motion.div>
+            <TertiaryLabel
+              className={cn(
+                "pt-1",
+                BASE_PADDING_TOP,
+                BASE_PADDING_LEFT,
+                BASE_PADDING_RIGHT
+              )}
+            >
+              {MarketSteps[marketStep].label}
+            </TertiaryLabel>
+          </motion.div>
+        )}
 
         {/**
+         * @note: New version
+         * User Type (Simple / Advanced)
+         */}
+        {marketStep === MarketSteps.params.id && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeIn" }}
+            key={`market-form:label`}
+            className={cn("flex flex-row items-center justify-between")}
+          >
+            <TertiaryLabel
+              onClick={() => {
+                setUserType(MarketUserType.ap.id);
+              }}
+              className={cn(
+                "cursor-pointer",
+                "pt-1",
+                BASE_PADDING_TOP,
+                BASE_PADDING_LEFT,
+                BASE_PADDING_RIGHT,
+                userType === MarketUserType.ap.id && BASE_UNDERLINE.SM
+              )}
+            >
+              TRANSACT
+            </TertiaryLabel>
+
+            {viewType === MarketViewType.advanced.id && (
+              <TertiaryLabel
+                onClick={() => {
+                  setUserType(MarketUserType.ip.id);
+                }}
+                className={cn(
+                  "cursor-pointer",
+                  "pt-1",
+                  BASE_PADDING_TOP,
+                  BASE_PADDING_LEFT,
+                  BASE_PADDING_RIGHT,
+                  userType === MarketUserType.ip.id && BASE_UNDERLINE.SM
+                )}
+              >
+                INCENTIVIZE
+              </TertiaryLabel>
+            )}
+          </motion.div>
+        )}
+
+        {/**
+         * @note: Previous version
          * User Type (AP / IP)
          * Currently enabled for both views
-         * @todo Disable for simple view
          */}
-        {marketStep === MarketSteps.params.id &&
+        {/* {marketStep === MarketSteps.params.id &&
           viewType === MarketViewType.advanced.id && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -247,7 +298,7 @@ export const MarketForm = React.forwardRef<
                 setter={setUserType}
               />
             </motion.div>
-          )}
+          )} */}
 
         {/**
          * Action Type (Supply / Withdraw)

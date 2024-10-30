@@ -28,7 +28,7 @@ const EthereumMainnet = {
 const ArbitrumSepolia = {
   ...arbitrumSepolia,
   image: "https://icons.llamao.fi/icons/chains/rsz_arbitrum.jpg",
-  symbol: "ARBS",
+  symbol: "SARB",
 };
 
 const ArbitrumOne = {
@@ -40,7 +40,7 @@ const ArbitrumOne = {
 const BaseSepolia = {
   ...baseSepolia,
   image: "https://icons.llamao.fi/icons/chains/rsz_base.jpg",
-  symbol: "BASE",
+  symbol: "SBASE",
 };
 
 export const Base = {
