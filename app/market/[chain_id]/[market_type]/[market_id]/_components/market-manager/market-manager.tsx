@@ -61,7 +61,8 @@ export const MarketManager = React.forwardRef<
             MAX_SCREEN_WIDTH
           )}
         >
-          Market dashboard isn't live yet. Check back later.
+          Market dashboard isn't live yet. Check back later. This takes a few
+          minutes if you've just deployed your market.
         </AlertIndicator>
       </SlideUpWrapper>
     );
