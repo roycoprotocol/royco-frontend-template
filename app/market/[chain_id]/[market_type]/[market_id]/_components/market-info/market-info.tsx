@@ -252,8 +252,8 @@ export const MarketInfo = React.forwardRef<
                           size="sm"
                           actions={
                             scriptType === MarketScriptType.enter_actions.id
-                              ? propsActionsDecoderEnterMarket.data ?? []
-                              : propsActionsDecoderExitMarket.data ?? []
+                              ? (propsActionsDecoderEnterMarket.data ?? [])
+                              : (propsActionsDecoderExitMarket.data ?? [])
                           }
                         />
                       )}

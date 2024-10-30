@@ -128,7 +128,10 @@ export const SelectionMenu = React.forwardRef<
 
   return (
     <div ref={ref} id="selection-menu" className="contents">
-      <h2 className="heading-3 pb-5">Contracts</h2>
+      <h2 className="heading-3">Contracts</h2>
+      <p className="caption mt-2 pb-5 text-tertiary">
+        Select the contract of the function you want to incentivize.
+      </p>
 
       {/* {activeTab.id === "contracts" && <ContractTypeSelector />} */}
 

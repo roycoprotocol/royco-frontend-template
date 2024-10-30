@@ -25,6 +25,7 @@ import {
   ScrollTextIcon,
   VaultIcon,
   WifiIcon,
+  ActivityIcon,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,7 +53,7 @@ export const ActionTypeMap: Record<
     label: "Recipe Market",
     tag: "",
     description:
-      'Offer incentives to perform any onchain transaction or series of transactions. Best for actions with lump sum rewards and timelocks.',
+      "Offer incentives to perform any onchain transaction or series of transactions. Best for actions with lump sum rewards and timelocks.",
     icon: ScrollTextIcon,
   },
   vault: {
@@ -75,6 +76,7 @@ export const IncentiveScheduleMap: Record<
     tag: string;
     description: string;
     icon: LucideIcon;
+    type: "recipe" | "vault";
   }
 > = {
   upfront: {
@@ -84,6 +86,7 @@ export const IncentiveScheduleMap: Record<
     tag: "",
     description: "Pay all incentives at the completion of action.",
     icon: ArrowLeftRightIcon,
+    type: "recipe",
   },
   arrear: {
     index: 2,
@@ -93,6 +96,7 @@ export const IncentiveScheduleMap: Record<
     description:
       "Lock Action Provider's assets and pay incentives once unlocked.",
     icon: LockIcon,
+    type: "recipe",
   },
   forfeitable: {
     index: 3,
@@ -102,6 +106,17 @@ export const IncentiveScheduleMap: Record<
     description:
       "Lock Action Provider's assets and stream incentives, which are forfeited if withdrawn early.",
     icon: RssIcon,
+    type: "recipe",
+  },
+  streaming: {
+    index: 4,
+    id: "streaming",
+    label: "Streaming",
+    tag: "",
+    //TODO: change description
+    description: "Streaming Description",
+    icon: ActivityIcon,
+    type: "vault",
   },
 };
 
@@ -131,31 +146,33 @@ const OptionCard = React.forwardRef<
       onClick={onClick}
       {...props}
     >
-      <div className="duration-400 flex h-11 w-11 shrink-0 flex-col place-content-center items-center overflow-hidden rounded-full bg-z2/80 transition-all ease-in-out group-hover:drop-shadow-md">
-        <div className="flex h-9 w-9 flex-col place-content-center items-center overflow-hidden rounded-full bg-tertiary/10 transition-all duration-200 ease-in-out group-hover:drop-shadow-sm">
-          <Icon
-            strokeWidth={1.5}
-            className="h-5 w-5 text-secondary transition-all duration-500 ease-in-out group-hover:scale-125"
-          />
-        </div>
-      </div>
-
-      <div className="flex h-fit grow flex-col items-start gap-1">
-        <div className="flex flex-row items-center space-x-2 font-400">
-          <div className="h-5 text-wrap text-primary">
-            <span className="leading-5">{option.label}</span>
+      <div className="flex flex-col gap-y-3 md:flex-row md:gap-x-3 md:gap-y-0">
+        <div className="duration-400 flex h-11 w-11 shrink-0 flex-col place-content-center items-center overflow-hidden rounded-full bg-z2/80 transition-all ease-in-out group-hover:drop-shadow-md">
+          <div className="flex h-9 w-9 flex-col place-content-center items-center overflow-hidden rounded-full bg-tertiary/10 transition-all duration-200 ease-in-out group-hover:drop-shadow-sm">
+            <Icon
+              strokeWidth={1.5}
+              className="h-5 w-5 text-secondary transition-all duration-500 ease-in-out group-hover:scale-125"
+            />
           </div>
+        </div>
 
-          {/**
-           * Removed tag
-           */}
-          {/* <div className="h-5 text-secondary">
+        <div className="flex h-fit grow flex-col items-start gap-1">
+          <div className="flex flex-row items-center space-x-2 font-400">
+            <div className="h-5 text-wrap text-primary">
+              <span className="leading-5">{option.label}</span>
+            </div>
+
+            {/**
+             * Removed tag
+             */}
+            {/* <div className="h-5 text-secondary">
             <span className="leading-5">{option.tag}</span>
           </div> */}
-        </div>
+          </div>
 
-        <div className="flex h-fit flex-col text-wrap font-300 text-secondary">
-          <span className="leading-5">{option.description}</span>
+          <div className="flex h-fit flex-col text-wrap font-300 text-secondary">
+            <span className="leading-5">{option.description}</span>
+          </div>
         </div>
       </div>
 
@@ -229,12 +246,34 @@ export const FormActionType = React.forwardRef<
                         ...option,
                         isSelected: field.value === option.id,
                       }}
-                      onClick={() => field.onChange(option.id)}
+                      onClick={() => {
+                        field.onChange(option.id);
+                        if (option.id === "recipe") {
+                          marketBuilderForm.setValue(
+                            "incentive_schedule",
+                            "upfront"
+                          );
+                        } else {
+                          marketBuilderForm.setValue(
+                            "incentive_schedule",
+                            "streaming"
+                          );
+                        }
+                      }}
                     />
                   );
                 })}
             </div>
           </FormControl>
+
+          <div className="mt-2 flex justify-end text-sm text-[#4868dc]">
+            <a
+              target="_blank"
+              href="https://docs.royco.org/developers/recipes-vs.-vaults"
+            >
+              Read more...
+            </a>
+          </div>
           <FormMessage />
         </FormItem>
       )}
@@ -262,30 +301,6 @@ export const FormIncentiveSchedule = React.forwardRef<
 
           <FormControl>
             <div className={cn("relative flex flex-col gap-3")}>
-              <AnimatePresence mode="popLayout">
-                {marketBuilderForm.watch("action_type") !== "recipe" && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    exit={{
-                      opacity: 0,
-                    }}
-                    transition={{
-                      duration: 0.2,
-                      ease: "easeInOut",
-                      type: "spring",
-                      damping: 25,
-                      stiffness: 300,
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-not-allowed bg-white bg-opacity-50 backdrop-saturate-0"
-                  ></motion.div>
-                )}
-              </AnimatePresence>
-
               {Object.keys(IncentiveScheduleMap)
                 .sort((a, b) => {
                   return (
@@ -299,18 +314,66 @@ export const FormIncentiveSchedule = React.forwardRef<
                   const BASE_KEY = `info:option-card:incentive-schedule:${option.id}`;
 
                   return (
-                    <OptionCard
-                      key={BASE_KEY}
-                      option={{
-                        ...option,
-                        isSelected: field.value === option.id,
-                      }}
-                      onClick={() => field.onChange(option.id)}
-                    />
+                    <div className="relative flex flex-col gap-3">
+                      <AnimatePresence mode="popLayout">
+                        <Tooltip>
+                          <TooltipTrigger>
+                            {marketBuilderForm.watch("action_type") !==
+                              IncentiveScheduleMap[key].type && (
+                              <motion.div
+                                initial={{
+                                  opacity: 0,
+                                }}
+                                animate={{
+                                  opacity: 1,
+                                }}
+                                exit={{
+                                  opacity: 0,
+                                }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                  type: "spring",
+                                  damping: 25,
+                                  stiffness: 300,
+                                }}
+                                className="absolute left-0 top-0 h-full w-full bg-white bg-opacity-50 backdrop-saturate-0"
+                              ></motion.div>
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <div>
+                              {marketBuilderForm.watch("action_type") ===
+                              "recipe"
+                                ? "Only available for Vault Markets."
+                                : " Only available for Recipe Markets."}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </AnimatePresence>
+                      <OptionCard
+                        key={BASE_KEY}
+                        option={{
+                          ...option,
+                          isSelected: field.value === option.id,
+                        }}
+                        onClick={() => field.onChange(option.id)}
+                      />
+                    </div>
                   );
                 })}
             </div>
           </FormControl>
+
+          <div className="mt-2 flex justify-end text-sm text-[#4868dc]">
+            <a
+              target="_blank"
+              href="https://docs.royco.org/developers/creating-an-iam"
+            >
+              Read more...
+            </a>
+          </div>
+
           <FormMessage />
         </FormItem>
       )}

@@ -137,11 +137,7 @@ export const FormAsset = React.forwardRef<
       name="asset"
       render={({ field }) => (
         <FormItem>
-          <FormInputLabel
-            className="mb-2"
-            label="Input Asset"
-            info="Input asset will be auto-fetched for vault action"
-          />
+          <FormInputLabel className="mb-2" label="Input Asset" />
 
           <FormControl>
             <div className="relative h-10">

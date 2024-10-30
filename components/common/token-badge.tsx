@@ -34,14 +34,14 @@ export const TokenBadge = React.forwardRef<HTMLDivElement, TokenBadgeProps>(
 
         <div
           className={cn(
-            "body-2 text-primary",
+            "body-2 flex items-center text-primary",
             browser &&
               (browser.name === "safari" || browser.name === "ios-webview")
               ? ""
               : "h-5"
           )}
         >
-          <span className="">{token.symbol.toUpperCase()}</span>
+          <span className="mt-px flex">{token.symbol.toUpperCase()}</span>
 
           {/* <span className=""></span> */}
           {/* <span className="leading-5">{token.symbol.toUpperCase()}</span> */}

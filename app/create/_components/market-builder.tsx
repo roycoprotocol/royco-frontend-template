@@ -133,7 +133,7 @@ export const MarketBuilder = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex w-full flex-col overflow-hidden rounded-2xl border border-divider bg-white p-10",
+        "flex w-full flex-col overflow-hidden rounded-2xl border border-divider bg-white p-4 md:p-10",
         (activeStep === MarketBuilderSteps.info.id ||
           activeStep === MarketBuilderSteps.vault.id ||
           activeStep === MarketBuilderSteps.review.id) &&
@@ -146,7 +146,10 @@ export const MarketBuilder = React.forwardRef<
       )}
     >
       {activeStep !== MarketBuilderSteps.transaction.id && (
-        <TopNavigator className="pb-12" marketBuilderForm={marketBuilderForm} />
+        <TopNavigator
+          className="pb-8 md:pb-12"
+          marketBuilderForm={marketBuilderForm}
+        />
       )}
 
       <MarketBuilderManager marketBuilderForm={marketBuilderForm} />
