@@ -22,6 +22,7 @@ export const useHighestOffers = ({
     chain_id,
     market_id,
     market_type,
+    can_be_filled: true,
     filters: [
       {
         id: "offer_side",
@@ -40,6 +41,7 @@ export const useHighestOffers = ({
     chain_id,
     market_id,
     market_type,
+    can_be_filled: true,
     filters: [
       {
         id: "offer_side",

@@ -39,14 +39,14 @@ export type EnrichedOfferDataType =
 export const getEnrichedOffersQueryOptions = (
   client: TypedRoycoClient,
   chain_id: number,
-  market_type: number | undefined,
-  market_id: string | undefined,
-  creator: string | undefined,
-  can_be_filled: boolean | undefined,
-  page_index: number | undefined,
-  filters: Array<BaseQueryFilter> | undefined,
-  sorting: Array<BaseSortingFilter> | undefined,
-  custom_token_data: CustomTokenData | undefined
+  market_type?: number,
+  market_id?: string,
+  creator?: string,
+  can_be_filled?: boolean,
+  page_index?: number,
+  filters?: Array<BaseQueryFilter>,
+  sorting?: Array<BaseSortingFilter>,
+  custom_token_data?: CustomTokenData
 ) => ({
   queryKey: [
     "enriched-offers",

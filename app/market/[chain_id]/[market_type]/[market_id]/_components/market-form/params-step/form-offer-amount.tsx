@@ -166,7 +166,7 @@ export const FormOfferAmount = React.forwardRef<
                         maximumFractionDigits: 2,
                       }).format(
                         parseRawAmountToTokenAmount(
-                          currentMarketData.quantity_ap,
+                          currentMarketData.quantity_ip, // @note: AP fills IP quantity
                           currentMarketData.input_token_data.decimals
                         )
                       )
@@ -177,7 +177,7 @@ export const FormOfferAmount = React.forwardRef<
                         maximumFractionDigits: 2,
                       }).format(
                         parseRawAmountToTokenAmount(
-                          currentMarketData.quantity_ip,
+                          currentMarketData.quantity_ap, // @note: IP fills AP quantity
                           currentMarketData.input_token_data.decimals
                         )
                       )}{" "}

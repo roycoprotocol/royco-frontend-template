@@ -230,35 +230,64 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
 
                   const functionName =
                     props.row.original.offer_side === 0
-                      ? "cancelAPOffer"
+                      ? marketMetadata.market_type === MarketType.recipe.id
+                        ? "cancelAPOffer"
+                        : "cancelOffer"
                       : "cancelIPOffer";
 
                   const marketType = marketMetadata.market_type;
 
                   const args =
                     props.row.original.offer_side === 0
-                      ? [
-                          props.row.original.offer_id,
-                          marketMetadata.market_id,
-                          props.row.original.creator,
-                          props.row.original.funding_vault,
-                          props.row.original.quantity,
-                          props.row.original.expiry,
-                          props.row.original.token_ids.map(
-                            (tokenId: string, tokenIndex: number) => {
-                              const [chainId, contractAddress] =
-                                tokenId.split("-");
+                      ? marketMetadata.market_type === MarketType.recipe.id
+                        ? [
+                            {
+                              offerID: props.row.original.offer_id,
+                              targetMarketHash: marketMetadata.market_id,
+                              ap: props.row.original.creator,
+                              fundingVault: props.row.original.funding_vault,
+                              quantity: props.row.original.quantity,
+                              expiry: props.row.original.expiry,
+                              incentivesRequested:
+                                props.row.original.token_ids.map(
+                                  (tokenId: string, tokenIndex: number) => {
+                                    const [chainId, contractAddress] =
+                                      tokenId.split("-");
 
-                              return contractAddress;
-                            }
-                          ),
+                                    return contractAddress;
+                                  }
+                                ),
+                              incentiveAmountsRequested:
+                                props.row.original.token_amounts,
+                            },
+                          ]
+                        : [
+                            {
+                              offerID: props.row.original.offer_id,
+                              targetVault: marketMetadata.market_id,
+                              ap: props.row.original.creator,
+                              fundingVault: props.row.original.funding_vault,
+                              expiry: props.row.original.expiry,
+                              incentivesRequested:
+                                props.row.original.token_ids.map(
+                                  (tokenId: string, tokenIndex: number) => {
+                                    const [chainId, contractAddress] =
+                                      tokenId.split("-");
 
-                          props.row.original.token_amounts,
-                        ]
+                                    return contractAddress;
+                                  }
+                                ),
+                              incentivesRatesRequested:
+                                props.row.original.token_amounts,
+                            },
+                          ]
                       : [props.row.original.offer_id];
 
                   const txOptions: TransactionOptionsType = {
-                    contractId: "",
+                    contractId:
+                      marketMetadata.market_type === MarketType.recipe.id
+                        ? "RecipeMarketHub"
+                        : "VaultMarketHub",
                     chainId: props.row.original.chain_id,
                     id: `cancel_offer_${props.row.original.id}`,
                     label: `Cancel Limit Offer`,
