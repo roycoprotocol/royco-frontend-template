@@ -10,6 +10,7 @@ import {
 import { FilterWrapper } from "../composables";
 import { sepolia } from "viem/chains";
 import { AlertIndicator } from "@/components/common";
+import { getSupportedChain } from "@/sdk/utils";
 
 export const IncentivesFilter = () => {
   const { data, isLoading, isError } = useDistinctIncentives({
@@ -19,7 +20,11 @@ export const IncentivesFilter = () => {
   const totalIncentives = !!data
     ? (data as TypedArrayDistinctIncentive[]).filter((token) => {
         if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
-          return !token.ids.some((id) => id.startsWith(`${sepolia.id}`));
+          return !token.ids.some((id) => {
+            const [chain_id] = id.split("-");
+            const chain = getSupportedChain(parseInt(chain_id));
+            return chain?.testnet === true;
+          });
         } else {
           return true;
         }
@@ -43,7 +48,11 @@ export const IncentivesFilter = () => {
         {(data as Array<TypedArrayDistinctIncentive>).map((token, index) => {
           const shouldHide =
             process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET" &&
-            token.ids.some((id) => id.startsWith(`${sepolia.id}`));
+            token.ids.some((id) => {
+              const [chain_id] = id.split("-");
+              const chain = getSupportedChain(parseInt(chain_id));
+              return chain?.testnet === true;
+            });
 
           if (!!token.symbol && !!token.image && !!token.ids) {
             return (

@@ -1,4 +1,5 @@
 import { type TypedRoycoClient } from "@/sdk/client";
+import { CustomTokenData } from "../types";
 
 export const getMarketOffersQueryOptions = (
   client: TypedRoycoClient,
@@ -7,7 +8,9 @@ export const getMarketOffersQueryOptions = (
   market_id: string,
   offer_side: number,
   quantity: string,
-  incentive_ids?: string[]
+  custom_token_data?: CustomTokenData,
+  incentive_ids?: string[],
+  incentive_amounts?: string[]
 ) => ({
   queryKey: [
     "get-market-offers",
@@ -16,7 +19,12 @@ export const getMarketOffersQueryOptions = (
     market_id,
     offer_side,
     quantity,
+    ...(custom_token_data || []).map(
+      (token) =>
+        `${token.token_id}-${token.price}-${token.fdv}-${token.total_supply}`
+    ),
     incentive_ids?.join(","),
+    incentive_amounts?.join(","),
   ],
   queryFn: async () => {
     const result = await client.rpc("get_market_offers", {
@@ -25,7 +33,9 @@ export const getMarketOffersQueryOptions = (
       in_market_id: market_id,
       in_offer_side: offer_side,
       in_quantity: quantity,
+      custom_token_data: custom_token_data,
       in_incentive_ids: incentive_ids,
+      in_incentive_amounts: incentive_amounts,
     });
 
     return result.data;

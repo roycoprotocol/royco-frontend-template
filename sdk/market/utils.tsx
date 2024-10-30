@@ -79,6 +79,22 @@ export const RoycoMarketOfferType: Record<
   },
 };
 
+export type TypedRoycoMarketVaultIncentiveAction = "add" | "extend" | "refund";
+export const RoycoMarketVaultIncentiveAction: Record<
+  TypedRoycoMarketVaultIncentiveAction,
+  { id: TypedRoycoMarketVaultIncentiveAction }
+> = {
+  add: {
+    id: "add",
+  },
+  extend: {
+    id: "extend",
+  },
+  refund: {
+    id: "refund",
+  },
+};
+
 export type TypedRoycoMarketUserType = "ap" | "ip";
 export const RoycoMarketUserType: Record<
   TypedRoycoMarketUserType,

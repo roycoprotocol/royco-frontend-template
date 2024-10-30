@@ -95,7 +95,7 @@ const constructMarketFilterClauses = (
 };
 
 export type EnrichedMarketDataType =
-  Database["public"]["CompositeTypes"]["enriched_market_data_type"] & {
+  Database["public"]["CompositeTypes"]["enriched_markets_data_type"] & {
     incentive_tokens_data: Array<
       SupportedToken & {
         raw_amount: string;

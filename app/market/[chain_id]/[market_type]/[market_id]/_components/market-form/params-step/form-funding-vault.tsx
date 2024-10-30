@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketFormSchema } from ".././market-form-schema";
@@ -9,11 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import {
-  MarketActionType,
-  MarketOfferType,
-  MarketViewType,
-} from "@/store/market-manager-props";
+import { MarketViewType } from "@/store/market-manager-props";
 import { useMarketManager } from "@/store";
 import { FallMotion } from "@/components/animations";
 import { useActiveMarket } from "../../hooks";

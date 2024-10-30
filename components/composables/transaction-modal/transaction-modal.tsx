@@ -162,22 +162,58 @@ export const TransactionModal = React.forwardRef<
     }
   }, [transactions]);
 
+  // Add state to control dialog visibility
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  useEffect(() => {
+    // Update isOpen when transactions change
+    setIsOpen(transactions.length > 0);
+    // If transactions are cleared, ensure dialog is closed
+    if (transactions.length === 0) {
+      setIsOpen(false);
+    }
+  }, [transactions]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setTransactions([]);
+    resetTx();
+    setCurrentTransaction(null);
+    // Force a small delay before cleanup
+    setTimeout(() => {
+      document.body.style.pointerEvents = "auto";
+      document.body.style.overflow = "auto";
+    }, 100);
+  };
+
   return (
     <Dialog
-      open={transactions.length > 0}
-      onOpenChange={() => {
-        setTransactions([]);
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isTxPending && !isTxConfirming) {
+          handleClose();
+        }
       }}
     >
       <DialogTrigger asChild className="hidden">
         <Button variant="outline">Transaction Menu</Button>
       </DialogTrigger>
 
-      {transactions.length > 0 && (
+      {isOpen && (
         <DialogContent
           className={cn("z-[999] sm:max-w-[425px]", className)}
           ref={ref}
           {...otherProps}
+          onInteractOutside={(e) => {
+            if (isTxPending || isTxConfirming) {
+              e.preventDefault();
+            }
+          }}
+          onEscapeKeyDown={(e) => {
+            if (isTxPending || isTxConfirming) {
+              e.preventDefault();
+            }
+          }}
         >
           <DialogHeader>
             <DialogTitle>Transaction Progress</DialogTitle>
@@ -222,10 +258,8 @@ export const TransactionModal = React.forwardRef<
           <div className="flex flex-col space-y-2">
             <Button
               className="h-9 text-sm"
-              disabled={isTxPending || isTxConfirming ? true : false}
-              onClick={() => {
-                handleNextStep();
-              }}
+              disabled={isTxPending || isTxConfirming}
+              onClick={handleNextStep}
               type="submit"
             >
               {isTxPending || isTxConfirming ? (
@@ -239,8 +273,9 @@ export const TransactionModal = React.forwardRef<
               <DialogClose asChild>
                 <Button
                   className="h-9 bg-error text-sm"
-                  onClick={() => setTransactions([])}
+                  onClick={handleClose}
                   type="button"
+                  disabled={isTxPending || isTxConfirming}
                 >
                   <div className="h-5">Close</div>
                 </Button>

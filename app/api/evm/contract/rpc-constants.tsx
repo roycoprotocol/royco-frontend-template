@@ -5,6 +5,8 @@ export const RPC_API_KEYS: {
   11155111: process.env.RPC_API_KEY_11155111!,
   42161: process.env.RPC_API_KEY_42161!,
   421614: process.env.RPC_API_KEY_421614!,
+  8453: process.env.RPC_API_KEY_8453!,
+  84532: process.env.RPC_API_KEY_84532!,
 };
 
 export const ETHERSCAN_API_KEYS: {
@@ -14,4 +16,6 @@ export const ETHERSCAN_API_KEYS: {
   11155111: `https://api-sepolia.etherscan.io/api?apikey=${process.env.ETHERSCAN_API_KEY_1!}`,
   42161: `https://api.arbiscan.io/api?apikey=${process.env.ETHERSCAN_API_KEY_42161!}`,
   421614: `https://api-sepolia.arbiscan.io/api?apikey=${process.env.ETHERSCAN_API_KEY_421614!}`,
+  8453: `https://api.basescan.org/api?apikey=${process.env.ETHERSCAN_API_KEY_8453!}`,
+  84532: `https://api-sepolia.basescan.org/api?apikey=${process.env.ETHERSCAN_API_KEY_84532!}`,
 };

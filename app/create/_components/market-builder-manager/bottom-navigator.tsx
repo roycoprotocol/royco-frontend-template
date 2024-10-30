@@ -9,11 +9,7 @@ import { useMarketBuilderManager } from "@/store";
 import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
 import { MotionWrapper } from "../market-builder-flow/animations";
-import {
-  ErrorAlert,
-  LoadingSpinner,
-  SimulationBox,
-} from "@/components/composables";
+import { ErrorAlert, LoadingSpinner } from "@/components/composables";
 import { useAccount, useConnectorClient, useSimulateContract } from "wagmi";
 import { config } from "@/components/web3-modal/modal-config";
 import { switchChain } from "@wagmi/core";
@@ -211,6 +207,11 @@ export const BottomNavigator = React.forwardRef<
           return isValid;
         }
       } else if (activeStep === MarketBuilderSteps.actions.id) {
+        if (marketBuilderForm.watch("exit_actions").length <= 0) {
+          toast.custom((t) => (
+            <ErrorAlert message="Please define an Exit script so users may withdraw their positions. By default, Markets without an Exit script will be flagged and will not be listed." />
+          ));
+        }
         if (marketBuilderForm.watch("enter_actions").length <= 0) {
           toast.custom((t) => (
             <ErrorAlert message="Enter market script is empty" />

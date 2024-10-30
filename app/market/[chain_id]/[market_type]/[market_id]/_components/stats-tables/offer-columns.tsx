@@ -17,6 +17,7 @@ import { MarketType, useMarketManager } from "@/store";
 import { TransactionOptionsType } from "@/sdk/types";
 import { useActiveMarket } from "../hooks";
 import { ContractMap } from "@/sdk/contracts";
+import { BigNumber } from "ethers";
 
 /**
  * @description Column definitions for the table
@@ -86,8 +87,8 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
                         style: "decimal",
-                        useGrouping: true,
                         notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(token.token_amount)}
@@ -123,6 +124,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
               style: "currency",
               currency: "USD",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(props.row.original.input_token_data.token_amount_usd)}
@@ -130,9 +132,9 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
 
           <SecondaryLabel className="text-tertiary">
             {Intl.NumberFormat("en-US", {
-              useGrouping: true,
               style: "decimal",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(props.row.original.input_token_data.token_amount)}{" "}
@@ -153,7 +155,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
     cell: (props: any) => {
       return (
         <div className={cn("font-gt text-sm font-300")}>
-          {props.row.original.expiry === 0
+          {props.row.original.expiry === "0"
             ? "Never"
             : formatDistanceToNow(
                 new Date(parseInt(props.row.original.expiry) * 1000),
@@ -178,11 +180,15 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
 
       if (props.row.original.is_cancelled) {
         status = "Cancelled";
-      } else if (props.row.original.quantity_remaining === 0) {
+      } else if (
+        BigNumber.from(props.row.original.quantity_remaining).isZero()
+      ) {
         status = "Filled";
       } else if (
-        props.row.original.expiry !== 0 &&
-        new Date(parseInt(props.row.original.expiry) * 1000) < new Date()
+        !BigNumber.from(props.row.original.expiry).eq(0) &&
+        BigNumber.from(props.row.original.expiry).lt(
+          BigNumber.from(Math.floor(Date.now() / 1000))
+        )
       ) {
         status = "Expired";
       } else if (props.row.original.is_valid === false) {

@@ -5,7 +5,6 @@ import { z } from "zod";
 import { MarketFormSchema } from "../market-form-schema";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
-import { HorizontalTabs } from "@/components/composables";
 import { FormOfferType } from "./form-offer-type";
 import { FormOfferAmount } from "./form-offer-amount";
 import { FormIncentiveTokens } from "./form-incentive-tokens";
@@ -19,7 +18,7 @@ import {
   useMarketManager,
 } from "@/store";
 import { useActiveMarket } from "../../hooks";
-import { TypedRoycoMarketUserType } from "@/sdk/market";
+import { FormVaultIncentiveAction } from "./form-vault-incentive-action";
 
 export const ParamsStep = React.forwardRef<
   HTMLDivElement,
@@ -57,6 +56,15 @@ export const ParamsStep = React.forwardRef<
               // className={cn(BASE_MARGIN_TOP.LG)}
               marketForm={marketForm}
             />
+
+            {marketMetadata.market_type === MarketType.vault.id &&
+              userType === MarketUserType.ip.id &&
+              marketForm.watch("offer_type") === MarketOfferType.limit.id && (
+                <FormVaultIncentiveAction
+                  className={cn(BASE_MARGIN_TOP.MD)}
+                  marketForm={marketForm}
+                />
+              )}
 
             {marketForm.watch("offer_type") === MarketOfferType.limit.id &&
               userType === MarketUserType.ap.id && (

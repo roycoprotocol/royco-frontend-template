@@ -28,13 +28,11 @@ export const getEnrichedRoycoStatsQueryOptions = (
           const chain = getSupportedChain(item.chain_id);
 
           if (testnet === true) {
-            if (chain?.testnet === true) {
-              total_volume += item.total_volume ?? 0;
-              total_tvl += item.total_tvl ?? 0;
-              total_incentives += item.total_incentives ?? 0;
-            }
+            total_volume += item.total_volume ?? 0;
+            total_tvl += item.total_tvl ?? 0;
+            total_incentives += item.total_incentives ?? 0;
           } else {
-            if (chain?.testnet === false) {
+            if (chain?.testnet !== true) {
               total_volume += item.total_volume ?? 0;
               total_tvl += item.total_tvl ?? 0;
               total_incentives += item.total_incentives ?? 0;
