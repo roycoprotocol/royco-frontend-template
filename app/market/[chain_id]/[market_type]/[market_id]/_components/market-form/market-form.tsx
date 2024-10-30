@@ -185,7 +185,7 @@ export const MarketForm = React.forwardRef<
             <div
               onClick={() => setMarketStep(MarketSteps.params.id)}
               className={cn(
-                BASE_UNDERLINE.SM,
+                BASE_UNDERLINE.MD,
                 "flex flex-row place-content-start items-center space-x-1 text-left decoration-transparent hover:decoration-tertiary"
               )}
             >
@@ -244,7 +244,7 @@ export const MarketForm = React.forwardRef<
                 BASE_PADDING_TOP,
                 BASE_PADDING_LEFT,
                 BASE_PADDING_RIGHT,
-                userType === MarketUserType.ap.id && BASE_UNDERLINE.SM
+                userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
               )}
             >
               TRANSACT
@@ -261,7 +261,7 @@ export const MarketForm = React.forwardRef<
                   BASE_PADDING_TOP,
                   BASE_PADDING_LEFT,
                   BASE_PADDING_RIGHT,
-                  userType === MarketUserType.ip.id && BASE_UNDERLINE.SM
+                  userType === MarketUserType.ip.id && BASE_UNDERLINE.MD
                 )}
               >
                 INCENTIVIZE
@@ -311,7 +311,7 @@ export const MarketForm = React.forwardRef<
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeIn" }}
               className={cn(
-                "flex flex-col",
+                "mt-3 flex flex-col",
                 BASE_PADDING_LEFT,
                 BASE_PADDING_RIGHT
               )}

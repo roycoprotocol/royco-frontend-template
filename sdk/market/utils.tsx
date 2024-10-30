@@ -79,13 +79,20 @@ export const RoycoMarketOfferType: Record<
   },
 };
 
-export type TypedRoycoMarketVaultIncentiveAction = "add" | "extend" | "refund";
+export type TypedRoycoMarketVaultIncentiveAction =
+  | "add"
+  | "increase"
+  | "extend"
+  | "refund";
 export const RoycoMarketVaultIncentiveAction: Record<
   TypedRoycoMarketVaultIncentiveAction,
   { id: TypedRoycoMarketVaultIncentiveAction }
 > = {
   add: {
     id: "add",
+  },
+  increase: {
+    id: "increase",
   },
   extend: {
     id: "extend",

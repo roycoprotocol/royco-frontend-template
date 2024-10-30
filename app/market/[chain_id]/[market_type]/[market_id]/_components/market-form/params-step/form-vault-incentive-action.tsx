@@ -56,15 +56,7 @@ export const FormVaultIncentiveAction = React.forwardRef<
       />
 
       <Select
-        // open={
-        //   marketMetadata.market_type === MarketType.vault.id ? false : undefined
-        // }
         onOpenChange={(open) => {
-          // if (marketMetadata.market_type === MarketType.vault.id) {
-          //   return false;
-          // } else {
-          //   return open;
-          // }
           return open;
         }}
         onValueChange={(e) => {
