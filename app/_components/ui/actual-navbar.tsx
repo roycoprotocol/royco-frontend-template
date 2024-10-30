@@ -14,25 +14,41 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 
 const NavbarLinks = [
   {
+    id: "create",
+    label: "Create",
+    link: "/create",
+    target: "_self",
+  },
+  {
+    id: "explore",
+    label: "Explore",
+    link: "/explore",
+    target: "_self",
+  },
+  {
     id: "blog",
     label: "Blog",
     link: "https://paragraph.xyz/@royco",
+    target: "_blank",
   },
   {
     id: "docs",
     label: "Docs",
     link: "https://docs.royco.org/",
+    target: "_blank",
   },
 
   {
     id: "twitter",
     label: "Twitter",
     link: "https://x.com/roycoprotocol",
+    target: "_blank",
   },
   {
     id: "telegram",
     label: "Telegram",
     link: "https://t.me/roycopub",
+    target: "_blank",
   },
 ];
 
@@ -74,12 +90,12 @@ export const ActualNavbar = React.forwardRef<
             }}
           >
             <div className="flex flex-col gap-3 overflow-hidden py-5 lg:hidden">
-              {NavbarLinks.map(({ id, label, link }, navIndex) => {
+              {NavbarLinks.map(({ id, label, link, target }, navIndex) => {
                 const BASE_KEY = `navbar-link:mobile:${id}`;
                 return (
                   <motion.a
                     href={link}
-                    target="_blank"
+                    target={target}
                     rel="noopener noreferrer"
                     initial={{
                       opacity: 0,
@@ -134,12 +150,12 @@ export const ActualNavbar = React.forwardRef<
          * @description Links
          */}
         <div className="text-nav-link hidden shrink-0 flex-row items-center space-x-[2.88rem] text-secondary lg:flex">
-          {NavbarLinks.map(({ id, label, link }, navIndex) => {
+          {NavbarLinks.map(({ id, label, link, target }, navIndex) => {
             const BASE_KEY = `navbar-link:${id}`;
             return (
               <a
                 href={link}
-                target="_blank"
+                target={target}
                 rel="noopener noreferrer"
                 key={BASE_KEY}
                 {...(pathname === "/" && {

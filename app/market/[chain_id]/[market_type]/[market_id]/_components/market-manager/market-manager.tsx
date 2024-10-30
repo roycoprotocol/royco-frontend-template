@@ -21,7 +21,7 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "../composables";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronLeftIcon } from "lucide-react";
 import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
 import { motion, AnimatePresence } from "framer-motion";
@@ -72,7 +72,7 @@ export const MarketManager = React.forwardRef<
           <WarningBox
             className={cn(
               MAX_SCREEN_WIDTH,
-              viewType === MarketViewType.simple.id && "",
+              viewType === MarketViewType.simple.id && "mb-10",
               viewType === MarketViewType.advanced.id && "mb-10"
             )}
             text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
@@ -81,28 +81,53 @@ export const MarketManager = React.forwardRef<
 
         <div
           className={cn(
-            "relative flex w-full shrink-0 flex-row place-content-end items-center gap-3 pb-3",
-            viewType === MarketViewType.simple.id && "opacity-0",
-            MAX_SCREEN_WIDTH
+            "flex w-full max-w-lg flex-row items-center justify-between pb-3",
+            viewType === MarketViewType.advanced.id && MAX_SCREEN_WIDTH
           )}
         >
-          {viewType === MarketViewType.simple.id && (
-            <div className="absolute left-0 top-0 h-full w-full"></div>
-          )}
+          <div
+            onClick={() =>
+              window.open("/explore", "_self", "noopener noreferrer")
+            }
+            className={cn(
+              "flex cursor-pointer flex-row items-center gap-0 font-gt text-sm font-light text-secondary",
+              "transition-all duration-200 ease-in-out hover:opacity-80"
+            )}
+          >
+            <ChevronLeftIcon
+              strokeWidth={1.5}
+              className="h-6 w-6 text-secondary"
+            />
 
-          <div className="font-gt text-sm font-light text-secondary">
-            Advanced Mode
+            <div className="flex h-4">
+              <span className={cn("leading-5")}>Explore</span>
+            </div>
           </div>
-          <Switch
-            checked={viewType === MarketViewType.advanced.id}
-            onCheckedChange={() => {
-              setViewType(
-                viewType === MarketViewType.advanced.id
-                  ? MarketViewType.simple.id
-                  : MarketViewType.advanced.id
-              );
-            }}
-          />
+
+          <div
+            className={cn(
+              "relative flex w-fit shrink-0 flex-row items-center gap-3 ",
+              viewType === MarketViewType.simple.id && "opacity-0"
+            )}
+          >
+            {viewType === MarketViewType.simple.id && (
+              <div className="absolute left-0 top-0 h-full w-full"></div>
+            )}
+
+            <div className="font-gt text-sm font-light text-secondary">
+              Advanced Mode
+            </div>
+            <Switch
+              checked={viewType === MarketViewType.advanced.id}
+              onCheckedChange={() => {
+                setViewType(
+                  viewType === MarketViewType.advanced.id
+                    ? MarketViewType.simple.id
+                    : MarketViewType.advanced.id
+                );
+              }}
+            />
+          </div>
         </div>
 
         <motion.div
