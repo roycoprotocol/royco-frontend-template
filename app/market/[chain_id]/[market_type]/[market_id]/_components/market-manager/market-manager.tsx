@@ -49,10 +49,7 @@ export const MarketManager = React.forwardRef<
 
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
-  } else if (
-    !currentMarketData ||
-    process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET"
-  ) {
+  } else if (!currentMarketData) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center">
         <AlertIndicator
