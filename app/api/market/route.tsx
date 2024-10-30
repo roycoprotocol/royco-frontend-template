@@ -1,4 +1,4 @@
-import { baseWagmiClient, getChain } from "@/sdk/utils";
+import { getChain } from "@/sdk/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http, createConfig } from "@wagmi/core";
 import { Chain, mainnet, sepolia } from "@wagmi/core/chains";
