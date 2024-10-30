@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { useBaseChains } from "@/sdk/hooks";
 
 import { FilterWrapper } from "../composables";
-import { sepolia } from "viem/chains";
 
 export const ChainsFilter = () => {
   const { data } = useBaseChains();

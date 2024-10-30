@@ -48,7 +48,11 @@ export const IncentivesFilter = () => {
         {(data as Array<TypedArrayDistinctIncentive>).map((token, index) => {
           const shouldHide =
             process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET" &&
-            token.ids.some((id) => id.startsWith(`${sepolia.id}`));
+            token.ids.some((id) => {
+              const [chain_id] = id.split("-");
+              const chain = getSupportedChain(parseInt(chain_id));
+              return chain?.testnet === true;
+            });
 
           if (!!token.symbol && !!token.image && !!token.ids) {
             return (
