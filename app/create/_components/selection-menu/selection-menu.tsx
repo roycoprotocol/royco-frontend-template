@@ -155,31 +155,6 @@ export const SelectionMenu = React.forwardRef<
             }
           />
         )}
-
-        {(placeholderContractList[1] === null ||
-          placeholderContractList[1].length === 0) && (
-          <AlertIndicator className="h-full">
-            {searchKey.length > 0 && searchKey.length < 3
-              ? "Search must be >= 3 letters"
-              : "No contracts found"}
-          </AlertIndicator>
-          // <div className="flex h-full w-full flex-col place-content-center items-center">
-          //   <MotionWrapper>
-          //     <div className="h-12 w-12">
-          //       <BadgeAlertIcon
-          //         strokeWidth={1}
-          //         className="h-12 w-12 text-tertiary"
-          //       />
-          //     </div>
-          //   </MotionWrapper>
-
-          //   <MotionWrapper delay={0.2}>
-          //     <div className="mt-2 text-center font-ortica text-3xl text-tertiary">
-          //       No Contracts Found
-          //     </div>
-          //   </MotionWrapper>
-          // </div>
-        )}
       </div>
 
       <div className="mt-0 flex w-full flex-row items-center justify-between rounded-b-xl border border-divider bg-z2 px-3 py-2">

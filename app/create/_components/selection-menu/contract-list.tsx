@@ -21,6 +21,7 @@ import { ContractRow } from "./contract-row";
 import { PinnedContracts } from "./pinned-contracts";
 import { useContract, useSearchContracts } from "../../../../sdk/hooks";
 import { ContractMap } from "../../../../sdk/contracts";
+import { AlertIndicator } from "../../../../components/common";
 
 export function getStyle(style, snapshot) {
   if (!snapshot.isDragging) return {};
@@ -157,57 +158,66 @@ export const ContractList = React.forwardRef<
             <ul
               ref={droppableProvided.innerRef}
               {...droppableProvided.droppableProps}
+              className="overflow-x-hidden"
             >
-              <div className="sticky">
-                <PinnedContracts
-                  data={pinContractList}
-                  clickedKey={clickedKey}
-                  setClickedKey={setClickedKey}
-                  functionForm={functionForm}
-                  marketBuilderForm={marketBuilderForm}
-                />
-              </div>
+              <PinnedContracts
+                data={pinContractList}
+                clickedKey={clickedKey}
+                setClickedKey={setClickedKey}
+                functionForm={functionForm}
+                marketBuilderForm={marketBuilderForm}
+              />
             </ul>
           )}
         </Droppable>
       </AnimatePresence>
 
       <AnimatePresence>
-        <Droppable droppableId="contract-list" isDropDisabled={true}>
-          {(droppableProvided) => (
-            <ul
-              ref={droppableProvided.innerRef}
-              {...droppableProvided.droppableProps}
-              className="flex-1 overflow-x-hidden overflow-y-scroll"
-            >
-              {!!contractList &&
-                contractList.map(
-                  (
-                    // @ts-ignore
-                    contract,
-                    // @ts-ignore
-                    index
-                  ) => {
-                    const baseKey = `contract-list:${contract.id}`;
+        {((contractList === null || contractList.length === 0) &&
+          pinContractList.length === 0) ||
+        searchKey ? (
+          <AlertIndicator className="mt-5">
+            {searchKey.length > 0 && searchKey.length < 3
+              ? "Search must be >= 3 letters"
+              : "No contracts found"}
+          </AlertIndicator>
+        ) : (
+          <Droppable droppableId="contract-list" isDropDisabled={true}>
+            {(droppableProvided) => (
+              <ul
+                ref={droppableProvided.innerRef}
+                {...droppableProvided.droppableProps}
+                className="flex-1 overflow-x-hidden overflow-y-scroll"
+              >
+                {!!contractList &&
+                  contractList.map(
+                    (
+                      // @ts-ignore
+                      contract,
+                      // @ts-ignore
+                      index
+                    ) => {
+                      const baseKey = `contract-list:${contract.id}`;
 
-                    return (
-                      <ContractRow
-                        contract={contract}
-                        baseKey={baseKey}
-                        index={index}
-                        clickedKey={clickedKey}
-                        setClickedKey={setClickedKey}
-                        functionForm={functionForm}
-                        marketBuilderForm={marketBuilderForm}
-                      />
-                    );
-                  }
-                )}
+                      return (
+                        <ContractRow
+                          contract={contract}
+                          baseKey={baseKey}
+                          index={index}
+                          clickedKey={clickedKey}
+                          setClickedKey={setClickedKey}
+                          functionForm={functionForm}
+                          marketBuilderForm={marketBuilderForm}
+                        />
+                      );
+                    }
+                  )}
 
-              <div className="h-0">{droppableProvided.placeholder}</div>
-            </ul>
-          )}
-        </Droppable>
+                <div className="h-0">{droppableProvided.placeholder}</div>
+              </ul>
+            )}
+          </Droppable>
+        )}
       </AnimatePresence>
     </div>
   );
