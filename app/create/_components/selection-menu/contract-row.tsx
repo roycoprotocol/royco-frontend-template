@@ -5,7 +5,7 @@ import { z } from "zod";
 import { FunctionFormSchema } from "../function-form";
 import { MarketBuilderFormSchema } from "../market-builder-form";
 import { motion } from "framer-motion";
-import { GripVerticalIcon } from "lucide-react";
+import { GripVerticalIcon, PinIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContractDropdown } from "./contract-dropdown";
 
@@ -32,6 +32,7 @@ export const ContractRow = React.forwardRef<
     setClickedKey: React.Dispatch<React.SetStateAction<string | null>>;
     functionForm: UseFormReturn<z.infer<typeof FunctionFormSchema>>;
     marketBuilderForm: UseFormReturn<z.infer<typeof MarketBuilderFormSchema>>;
+    isPinned?: boolean;
   }
 >(
   (
@@ -43,6 +44,7 @@ export const ContractRow = React.forwardRef<
       setClickedKey,
       functionForm,
       marketBuilderForm,
+      isPinned,
       ...props
     },
     ref
@@ -170,6 +172,8 @@ export const ContractRow = React.forwardRef<
                   chainId={marketBuilderForm.watch("chain").id}
                   address={contract.address as string}
                 />
+
+                {isPinned && <PinIcon className="rotate-45 text-tertiary" />}
               </div>
             </motion.div>
           </li>
