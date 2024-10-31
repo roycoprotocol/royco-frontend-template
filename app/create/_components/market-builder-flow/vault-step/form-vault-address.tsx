@@ -97,7 +97,13 @@ export const FormVaultAddress = React.forwardRef<
             />
           </FormControl>
           <FormDescription className="mt-2">
-            The Address of the ERC4626 Vault
+            Address of the compliant 4626 Vault. Learn what vault are compatible{" "}
+            <a
+              href="https://docs.royco.org/developers/creating-an-iam"
+              className="text-tertiary"
+            >
+              here.
+            </a>
           </FormDescription>
           <FormMessage />
         </FormItem>

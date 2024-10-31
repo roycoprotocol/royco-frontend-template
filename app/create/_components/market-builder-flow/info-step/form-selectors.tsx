@@ -266,7 +266,7 @@ export const FormActionType = React.forwardRef<
             </div>
           </FormControl>
 
-          <div className="mt-2 flex justify-end text-sm text-[#4868dc]">
+          <div className="mt-2 flex justify-end text-sm text-tertiary">
             <a
               target="_blank"
               href="https://docs.royco.org/developers/recipes-vs.-vaults"
@@ -365,7 +365,7 @@ export const FormIncentiveSchedule = React.forwardRef<
             </div>
           </FormControl>
 
-          <div className="mt-2 flex justify-end text-sm text-[#4868dc]">
+          <div className="mt-2 flex justify-end text-sm text-tertiary">
             <a
               target="_blank"
               href="https://docs.royco.org/developers/creating-an-iam"

@@ -100,7 +100,7 @@ export const MarketBuilderSteps: MarketBuilderSteps = {
   vault: {
     id: "vault",
     label: "Vault",
-    title: "Step 2: Configure Market",
+    title: "Step 2: Configure 4626 Vault",
     index: 3,
   },
   review: {
