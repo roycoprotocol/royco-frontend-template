@@ -124,6 +124,10 @@ export const MarketVaultIncentiveAction = {
     ...RoycoMarketVaultIncentiveAction.add,
     label: "Add Incentives",
   },
+  [RoycoMarketVaultIncentiveAction.increase.id]: {
+    ...RoycoMarketVaultIncentiveAction.increase,
+    label: "Increase Incentives",
+  },
   [RoycoMarketVaultIncentiveAction.extend.id]: {
     ...RoycoMarketVaultIncentiveAction.extend,
     label: "Extend Incentives",
