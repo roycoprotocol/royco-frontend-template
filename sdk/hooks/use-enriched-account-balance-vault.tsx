@@ -58,7 +58,9 @@ export const useEnrichedAccountBalanceVault = ({
           functionName: "balanceOf",
           args: [account_address],
         },
-        ...market.incentive_tokens_data.map((incentive) => {
+        ...(market.base_incentive_ids ?? []).map((incentive) => {
+          const [chain_id, contract_address] = incentive.split("-");
+
           return {
             chainId: market.chain_id,
             address: market.market_id as Address,
@@ -66,7 +68,7 @@ export const useEnrichedAccountBalanceVault = ({
               "WrappedVault"
             ].abi as Abi,
             functionName: "currentUserRewards",
-            args: [incentive.contract_address, account_address],
+            args: [contract_address, account_address],
           };
         }),
       ]
@@ -124,8 +126,6 @@ export const useEnrichedAccountBalanceVault = ({
             token_quote.price
           );
 
-          balance_usd_ap += token_amount_usd;
-
           if (token_id === market.input_token_id) {
             input_token_data_ap = {
               ...token_data,
@@ -134,6 +134,8 @@ export const useEnrichedAccountBalanceVault = ({
               token_amount_usd,
             };
           } else {
+            balance_usd_ap += token_amount_usd;
+
             incentives_ap_data.push({
               ...token_data,
               raw_amount,
