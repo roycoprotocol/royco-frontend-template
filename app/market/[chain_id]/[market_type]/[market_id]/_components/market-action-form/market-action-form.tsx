@@ -146,23 +146,20 @@ export const MarketActionForm = React.forwardRef<
     }
   };
 
-  /**
-   * @TODO Uncomment this when UI is ready
-   */
-  // useEffect(() => {
-  //   if (viewType === MarketViewType.simple.id) {
-  //     setUserType(MarketUserType.ap.id);
-  //   }
-  // }, [viewType]);
+  useEffect(() => {
+    if (viewType === MarketViewType.simple.id) {
+      setUserType(MarketUserType.ap.id);
+    }
+  }, [viewType]);
 
-  // useEffect(() => {
-  //   if (
-  //     userType === MarketUserType.ip.id &&
-  //     actionType === MarketActionType.withdraw.id
-  //   ) {
-  //     setActionType(MarketActionType.supply.id);
-  //   }
-  // }, [userType]);
+  useEffect(() => {
+    if (
+      userType === MarketUserType.ip.id &&
+      actionType === MarketActionType.withdraw.id
+    ) {
+      setActionType(MarketActionType.supply.id);
+    }
+  }, [userType]);
 
   if (!!currentMarketData) {
     return (
@@ -238,21 +235,21 @@ export const MarketActionForm = React.forwardRef<
             {/**
              * @TODO Uncomment this when all UI is ready
              */}
-            {/* {viewType === MarketViewType.advanced.id && ( */}
-            <TertiaryLabel
-              onClick={() => {
-                setActionType(MarketActionType.supply.id);
-                setUserType(MarketUserType.ip.id);
-              }}
-              className={cn(
-                "cursor-pointer px-5 pt-5",
-                "transition-all duration-200 ease-in-out hover:text-primary",
-                userType === MarketUserType.ip.id && BASE_UNDERLINE.MD
-              )}
-            >
-              INCENTIVIZE
-            </TertiaryLabel>
-            {/* )} */}
+            {viewType === MarketViewType.advanced.id && (
+              <TertiaryLabel
+                onClick={() => {
+                  setActionType(MarketActionType.supply.id);
+                  setUserType(MarketUserType.ip.id);
+                }}
+                className={cn(
+                  "cursor-pointer px-5 pt-5",
+                  "transition-all duration-200 ease-in-out hover:text-primary",
+                  userType === MarketUserType.ip.id && BASE_UNDERLINE.MD
+                )}
+              >
+                INCENTIVIZE
+              </TertiaryLabel>
+            )}
           </SlideUpWrapper>
         )}
 

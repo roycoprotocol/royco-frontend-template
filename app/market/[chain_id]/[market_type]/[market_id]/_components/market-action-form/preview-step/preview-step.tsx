@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
   BASE_LABEL_BORDER,
   BASE_MARGIN_TOP,
@@ -9,7 +9,7 @@ import {
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../market-action-form-schema";
-import { useMarketAction, useTokenQuotes } from "@/sdk/hooks";
+import { useTokenQuotes } from "@/sdk/hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { TransactionOptionsType } from "@/sdk/types";
 import { useAccount } from "wagmi";
@@ -17,15 +17,11 @@ import { useActiveMarket } from "../../hooks";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import {
   MarketOfferType,
-  MarketSteps,
   MarketType,
   MarketUserType,
   useMarketManager,
 } from "@/store";
 import { TransactionRow } from "@/components/composables/transaction-modal/transaction-row";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ethers } from "ethers";
-import { SupportedToken } from "@/sdk/constants";
 import { TriangleAlertIcon } from "lucide-react";
 import { useMarketFormDetails } from "../use-market-form-details";
 import { SimulationViewer } from "./simulation-viewer";
