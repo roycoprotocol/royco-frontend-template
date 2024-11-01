@@ -60,9 +60,15 @@ export const StatsTables = React.forwardRef<
         statsView === MarketStatsView.positions.id ? (
           marketMetadata &&
           marketMetadata.market_type === MarketType.recipe.id ? (
-            <PositionsRecipeTable />
+            // <PositionsRecipeTable />
+            <AlertIndicator className="h-full w-full">
+              Coming Soon
+            </AlertIndicator>
           ) : (
-            <div>Vault positions table</div>
+            // <div>Vault positions table</div>
+            <AlertIndicator className="h-full w-full">
+              Coming Soon
+            </AlertIndicator>
           )
         ) : (
           <OfferTable />
