@@ -7,7 +7,8 @@ import { EnrichedOfferDataType } from "@/sdk/queries";
 
 import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
-import { RewardStyleMap } from "@/store";
+import { MarketUserType, RewardStyleMap } from "@/store";
+import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
 
 /**
  * @description Column definitions for the table
@@ -43,21 +44,25 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
         <div
           className={cn(
             "font-gt text-sm font-300",
-            props.row.original.offer_side === 0 ? "text-success" : "text-error"
+            props.row.original.offer_side === MarketUserType.ap.id
+              ? "text-success"
+              : "text-error"
           )}
         >
-          {props.row.original.offer_side === 0 ? "Supply" : "Withdraw"}
+          {props.row.original.offer_side === MarketUserType.ap.id
+            ? MarketUserType.ap.label
+            : MarketUserType.ip.label}
         </div>
       );
     },
   },
   {
-    accessorKey: "change_ratio",
+    accessorKey: "annual_change_ratio",
     enableResizing: false,
     enableSorting: false,
-    header: "Annual Incentive Percent",
+    header: "Yield",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-24",
     },
     cell: (props: any) => {
       return (
@@ -70,6 +75,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "percent",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(props.row.original.annual_change_ratio)}
@@ -84,7 +90,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Incentive Payout",
     meta: {
-      // className: "min-w-18",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -169,8 +175,8 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
                         style: "decimal",
-                        useGrouping: true,
                         notation: "compact",
+                        useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }).format(token.token_amount)}
@@ -192,7 +198,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Cost",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -222,6 +228,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
               style: "currency",
               currency: "USD",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(props.row.original.input_token_data.token_amount_usd)}
@@ -230,9 +237,9 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
           <div className="flex flex-row items-center space-x-2">
             <SecondaryLabel className="text-tertiary">
               {Intl.NumberFormat("en-US", {
-                useGrouping: true,
                 style: "decimal",
                 notation: "compact",
+                useGrouping: true,
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }).format(props.row.original.input_token_data.token_amount)}{" "}
@@ -257,7 +264,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Input Token",
     meta: {
-      // className: "min-w-18",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       let text = "";
@@ -292,7 +299,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             }
           )}`;
         } else {
-          text = `Payment ${formatDistanceToNow(
+          text = `Pay ${formatDistanceToNow(
             new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
             {
               addSuffix: true,
@@ -310,7 +317,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Unclaimed Incentives",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-48",
     },
     cell: (props: any) => {
       let unclaimed_incentives_usd = 0;
@@ -344,6 +351,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                 style: "currency",
                 currency: "USD",
                 notation: "compact",
+                useGrouping: true,
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }).format(unclaimed_incentives_usd)}
@@ -354,7 +362,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                 (token: any, tokenIndex: number) => {
                   const isClaimed = props.row.original.is_claimed[tokenIndex];
 
-                  let claimText = isClaimed ? "Claimed" : "Claim";
+                  let claimText = isClaimed ? "Claimed" : "Can Claim";
 
                   const unlockDate = new Date(
                     parseInt(props.row.original.unlock_timestamp) * 1000
@@ -368,9 +376,9 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                     <div className="flex flex-row items-center space-x-2">
                       <SecondaryLabel className="text-tertiary">
                         {Intl.NumberFormat("en-US", {
-                          useGrouping: true,
                           style: "decimal",
                           notation: "compact",
+                          useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }).format(token.token_amount)}{" "}
@@ -401,7 +409,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Market Value",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const input_token_value =
@@ -425,6 +433,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
               style: "currency",
               currency: "USD",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(market_value)}

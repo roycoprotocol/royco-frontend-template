@@ -205,7 +205,7 @@ export const useMarketFormDetails = (
       ),
 
     vault_incentive_action: vaultIncentiveActionType,
-    offer_validation_url: `${process.env.NEXT_PUBLIC_ROYCO_API_URL}/api/validate`,
+    offer_validation_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/validate`,
   });
 
   return {

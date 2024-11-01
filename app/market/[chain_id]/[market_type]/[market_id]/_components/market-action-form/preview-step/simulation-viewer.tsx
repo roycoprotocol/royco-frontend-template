@@ -34,7 +34,7 @@ export const SimulationViewer = React.forwardRef<
   const { data, isLoading, isError } = useTransactionSimulation({
     chainId: marketMetadata.chain_id,
     writeContractOptions,
-    simulationUrl: process.env.NEXT_PUBLIC_SIMULATION_URL ?? "",
+    simulationUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/simulate` ?? "",
     account: address as Address,
   });
 
