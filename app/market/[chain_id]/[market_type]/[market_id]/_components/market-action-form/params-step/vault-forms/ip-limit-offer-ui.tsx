@@ -1,12 +1,12 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { ActionTypeSelector } from "./action-type-selector";
 import { SlideUpWrapper } from "@/components/animations";
 import { MarketVaultIncentiveAction, useMarketManager } from "@/store";
 import { IPLimitOfferAddIncentivesUI } from "./ip-limit-offer-add-incentives-ui";
 import { UseFormReturn } from "react-hook-form";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
+import { ActionTypeSelector } from "../composables/action-type-selector";
 
 export const IPLimitOfferUI = React.forwardRef<
   HTMLDivElement,

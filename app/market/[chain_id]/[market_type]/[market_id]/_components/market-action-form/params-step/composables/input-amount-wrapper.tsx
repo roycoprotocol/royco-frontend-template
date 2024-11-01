@@ -68,16 +68,37 @@ export const InputAmountWrapper = React.forwardRef<
   const isLoading = isLoadingWallet || isLoadingVault;
 
   if (!isLoading) {
-    if (fundingType === RoycoMarketFundingType.wallet.id) {
-      balance = (dataWallet?.[0]?.raw_amount ?? "0").toString();
-    } else if (fundingType === RoycoMarketFundingType.vault.id) {
-      if (dataVault?.token_id === currentMarketData?.input_token_data.id) {
-        balance = parseRawAmount(dataVault?.raw_amount ?? "0");
+    if (marketMetadata.market_type === MarketType.recipe.id) {
+      if (fundingType === RoycoMarketFundingType.wallet.id) {
+        balance = (dataWallet?.[0]?.raw_amount ?? "0").toString();
+      } else if (fundingType === RoycoMarketFundingType.vault.id) {
+        if (dataVault?.token_id === currentMarketData?.input_token_data.id) {
+          balance = parseRawAmount(dataVault?.raw_amount ?? "0");
+        } else {
+          balance = "";
+        }
       } else {
         balance = "";
       }
     } else {
-      balance = "";
+      if (
+        userType === MarketUserType.ap.id &&
+        offerType === MarketOfferType.limit.id
+      ) {
+        if (fundingType === RoycoMarketFundingType.wallet.id) {
+          balance = (dataWallet?.[0]?.raw_amount ?? "0").toString();
+        } else if (fundingType === RoycoMarketFundingType.vault.id) {
+          if (dataVault?.token_id === currentMarketData?.input_token_data.id) {
+            balance = parseRawAmount(dataVault?.raw_amount ?? "0");
+          } else {
+            balance = "";
+          }
+        } else {
+          balance = "";
+        }
+      } else {
+        balance = (dataWallet?.[0]?.raw_amount ?? "0").toString();
+      }
     }
   }
 
@@ -233,6 +254,7 @@ export const InputAmountWrapper = React.forwardRef<
        * Insufficient balance indicator
        */}
       {isSolidityAddressValid("address", address) &&
+        offerType === MarketOfferType.market.id &&
         !isLoading &&
         userType === RoycoMarketUserType.ap.id &&
         (fundingType === RoycoMarketFundingType.wallet.id ||

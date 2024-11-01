@@ -27,7 +27,7 @@ export const InputAmountSelector = React.forwardRef<
           containerClassName
         )}
         className={cn("", className)}
-        placeholder="Enter Amount"
+        placeholder="Amount"
         value={parseTextToFormattedValue(currentValue)}
         onChange={(e) => {
           setCurrentValue(parseFormattedValueToText(e.target.value));
