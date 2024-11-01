@@ -153,34 +153,29 @@ export const MarketManager = React.forwardRef<
                 )}
               />
 
-              {/**
-               * Temporarily disabled advanced mode on live networks
-               */}
-              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && (
-                <div
-                  className={cn(
-                    "flex-0",
-                    "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
-                    BASE_PADDING_LEFT,
-                    BASE_PADDING_RIGHT,
-                    "py-3"
-                  )}
-                >
-                  <div className="font-gt text-sm font-light text-secondary">
-                    Advanced Mode
-                  </div>
-                  <Switch
-                    checked={viewType === MarketViewType.advanced.id}
-                    onCheckedChange={() => {
-                      setViewType(
-                        viewType === MarketViewType.advanced.id
-                          ? MarketViewType.simple.id
-                          : MarketViewType.advanced.id
-                      );
-                    }}
-                  />
+              <div
+                className={cn(
+                  "flex-0",
+                  "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
+                  BASE_PADDING_LEFT,
+                  BASE_PADDING_RIGHT,
+                  "py-3"
+                )}
+              >
+                <div className="font-gt text-sm font-light text-secondary">
+                  Advanced Mode
                 </div>
-              )}
+                <Switch
+                  checked={viewType === MarketViewType.advanced.id}
+                  onCheckedChange={() => {
+                    setViewType(
+                      viewType === MarketViewType.advanced.id
+                        ? MarketViewType.simple.id
+                        : MarketViewType.advanced.id
+                    );
+                  }}
+                />
+              </div>
             </Fragment>
           ) : (
             // <MarketForm />
