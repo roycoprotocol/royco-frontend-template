@@ -14,7 +14,11 @@ import { produce } from "immer";
 
 import { MarketType } from "@/store";
 import { EnrichedMarketDataType, EnrichedOfferDataType } from "@/sdk/queries";
-import { isVerifiedMarket } from "@/sdk/constants";
+import { isVerifiedMarket, NULL_ADDRESS } from "@/sdk/constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MarketFormSchema } from "../market-form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export const useActiveMarket = () => {
   const params = useParams();

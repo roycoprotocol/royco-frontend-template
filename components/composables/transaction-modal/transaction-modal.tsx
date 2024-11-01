@@ -53,6 +53,8 @@ export const TransactionModal = React.forwardRef<
     reset: resetTx,
   } = useWriteContract();
 
+  // console.log("txHash", txHash);
+
   // console.log("transactions", transactions);
 
   // console.log("txError", txError);
@@ -97,7 +99,10 @@ export const TransactionModal = React.forwardRef<
         if (!!currentTransaction) {
           resetTx();
           // @ts-ignore
-          writeContract(currentTransaction);
+          writeContract({
+            ...currentTransaction,
+            // __mode: "prepared",
+          });
         }
       } catch (error) {
         toast.custom(<ErrorAlert message="Error submitting transaction" />);
@@ -140,6 +145,8 @@ export const TransactionModal = React.forwardRef<
       toast.custom(<ErrorAlert message={errorMessage} />);
     }
   }, [isTxError]);
+
+  // console.log("transactions", transactions);
 
   // console.log("txStatus", txStatus);
   // console.log("txHash", txHash);

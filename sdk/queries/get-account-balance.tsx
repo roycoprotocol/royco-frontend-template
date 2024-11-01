@@ -1,6 +1,7 @@
 import { type Address } from "viem";
-import { createPublicClient, http, erc20Abi } from "viem";
+import { createPublicClient, http, erc20Abi, erc4626Abi } from "viem";
 import { getChain } from "@/sdk/utils";
+import { RoycoMarketFundingType } from "../market";
 
 export const getAccountBalance = async ({
   chain_id,

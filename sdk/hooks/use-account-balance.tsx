@@ -8,6 +8,7 @@ import {
 import { BigNumber } from "ethers";
 import { useTokenQuotes } from "./use-token-quotes";
 import { getSupportedToken } from "../constants";
+import { parseRawAmount, parseRawAmountToTokenAmount } from "../utils";
 
 export type AccountBalance = SupportedTokenInfo & {
   raw_amount: String;
@@ -56,18 +57,15 @@ export const useAccountBalance = ({
           ...getSupportedToken(token_ids[index]),
           token_id: token_ids[index],
           price: 0,
+          fdv: 0,
           total_supply: 0,
-          fdv: 1,
         };
       }
 
-      const raw_amount = res.result
-        ? BigNumber.from(res.result).toString()
-        : BigNumber.from(0).toString();
-      const token_amount = parseFloat(
-        BigNumber.from(raw_amount)
-          .div(BigNumber.from(10).pow(token_data.decimals))
-          .toString()
+      const raw_amount = parseRawAmount(res.result);
+      const token_amount = parseRawAmountToTokenAmount(
+        raw_amount,
+        token_data.decimals
       );
 
       const token_amount_usd = token_amount * token_data.price;
