@@ -7,7 +7,11 @@ import {
 } from "@/store";
 
 import React from "react";
-import { IncentivesAmountSelector, InputAmountWrapper } from "../composables";
+import {
+  IncentivesAmountSelector,
+  IncentivesRateSelector,
+  InputAmountWrapper,
+} from "../composables";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -25,24 +29,18 @@ export const APOfferUI = React.forwardRef<
       {/**
        * Quantity Selector for AP
        */}
-      {offerType === MarketOfferType.market.id && (
-        <InputAmountWrapper
-          marketActionForm={marketActionForm}
-          delay={fundingType === MarketFundingType.wallet.id ? 0.3 : 0.4}
-        />
-      )}
+      <InputAmountWrapper marketActionForm={marketActionForm} delay={0.3} />
 
       {/**
        * Incentives Amount Selector
        */}
-      {userType === MarketUserType.ap.id &&
-        offerType === MarketOfferType.limit.id && (
-          <IncentivesAmountSelector
-            marketActionForm={marketActionForm}
-            delayTitle={0.4}
-            delayContent={0.5}
-          />
-        )}
+      {offerType === MarketOfferType.limit.id && (
+        <IncentivesRateSelector
+          marketActionForm={marketActionForm}
+          delayTitle={0.4}
+          delayContent={0.5}
+        />
+      )}
     </div>
   );
 });

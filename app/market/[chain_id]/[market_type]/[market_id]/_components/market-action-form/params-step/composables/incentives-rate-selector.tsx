@@ -11,6 +11,7 @@ import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "@/sdk/utils";
 import { useMarketManager } from "@/store";
+import { SecondaryLabel } from "../../../composables";
 
 export const IncentivesRateSelector = React.forwardRef<
   HTMLDivElement,
@@ -83,11 +84,11 @@ export const IncentivesRateSelector = React.forwardRef<
                     className="flex flex-col items-center gap-1 rounded-xl border border-divider bg-white p-1"
                   >
                     {/**
-                     * Amount Selector
+                     * Market Cap Selector
                      */}
                     <div className="flex w-full flex-row items-center gap-1">
                       <InputAmountSelector
-                        currentValue={token.amount ?? ""}
+                        currentValue={token.fdv ?? ""}
                         setCurrentValue={(value) => {
                           /**
                            * Set the amount of the token
@@ -97,27 +98,7 @@ export const IncentivesRateSelector = React.forwardRef<
                             marketActionForm
                               .watch("incentive_tokens")
                               .map((t) =>
-                                t.id === token.id ? { ...t, amount: value } : t
-                              )
-                          );
-
-                          /**
-                           * Set the raw amount of the token
-                           */
-                          marketActionForm.setValue(
-                            "incentive_tokens",
-                            marketActionForm
-                              .watch("incentive_tokens")
-                              .map((t) =>
-                                t.id === token.id
-                                  ? {
-                                      ...t,
-                                      raw_amount: parseTokenAmountToRawAmount(
-                                        value,
-                                        token.decimals
-                                      ),
-                                    }
-                                  : t
+                                t.id === token.id ? { ...t, fdv: value } : t
                               )
                           );
                         }}
@@ -130,6 +111,8 @@ export const IncentivesRateSelector = React.forwardRef<
                             />
                           );
                         }}
+                        // @ts-ignore
+                        placeholder="Market Cap"
                       />
 
                       {/**
@@ -144,6 +127,68 @@ export const IncentivesRateSelector = React.forwardRef<
                               .filter((t) => t.id !== token.id)
                           );
                         }}
+                      />
+                    </div>
+
+                    {/**
+                     * aip and distribution selector
+                     */}
+                    <div className="grid w-full grid-cols-2 items-center gap-1">
+                      <InputAmountSelector
+                        currentValue={token.aip ?? ""}
+                        setCurrentValue={(value) => {
+                          /**
+                           * Set the amount of the token
+                           */
+                          marketActionForm.setValue(
+                            "incentive_tokens",
+                            marketActionForm
+                              .watch("incentive_tokens")
+                              .map((t) =>
+                                t.id === token.id ? { ...t, aip: value } : t
+                              )
+                          );
+                        }}
+                        Suffix={() => {
+                          return (
+                            <SecondaryLabel className="font-light text-black">
+                              %
+                            </SecondaryLabel>
+                          );
+                        }}
+                        // @ts-ignore
+                        placeholder="Yield"
+                      />
+
+                      {/**
+                       * Total Supply Selector
+                       */}
+                      <InputAmountSelector
+                        currentValue={token.total_supply ?? ""}
+                        setCurrentValue={(value) => {
+                          /**
+                           * Set the amount of the token
+                           */
+                          marketActionForm.setValue(
+                            "incentive_tokens",
+                            marketActionForm
+                              .watch("incentive_tokens")
+                              .map((t) =>
+                                t.id === token.id
+                                  ? { ...t, total_supply: value }
+                                  : t
+                              )
+                          );
+                        }}
+                        Suffix={() => {
+                          return (
+                            <SecondaryLabel className="font-light text-black">
+                              {`${token.symbol.toUpperCase()}/year`}
+                            </SecondaryLabel>
+                          );
+                        }}
+                        // @ts-ignore
+                        placeholder="Distribution"
                       />
                     </div>
                   </div>
