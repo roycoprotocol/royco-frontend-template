@@ -11,6 +11,12 @@ import { ConnectWalletButton } from "./connect-wallet-button";
 import { GetUpdatesButton } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { DropdownMenu } from "../../../components/ui/dropdown-menu";
+import {
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 
 const NavbarLinks = [
   {
@@ -26,29 +32,35 @@ const NavbarLinks = [
     target: "_self",
   },
   {
-    id: "blog",
-    label: "Blog",
-    link: "https://paragraph.xyz/@royco",
-    target: "_blank",
-  },
-  {
-    id: "docs",
-    label: "Docs",
-    link: "https://docs.royco.org/",
-    target: "_blank",
-  },
-
-  {
-    id: "twitter",
-    label: "Twitter",
-    link: "https://x.com/roycoprotocol",
-    target: "_blank",
-  },
-  {
-    id: "telegram",
-    label: "Telegram",
-    link: "https://t.me/roycopub",
-    target: "_blank",
+    id: "learn",
+    label: "Learn",
+    link: null,
+    items: [
+      {
+        id: "blog",
+        label: "Blog",
+        link: "https://paragraph.xyz/@royco",
+        target: "_blank",
+      },
+      {
+        id: "docs",
+        label: "Docs",
+        link: "https://docs.royco.org/",
+        target: "_blank",
+      },
+      {
+        id: "twitter",
+        label: "Twitter",
+        link: "https://x.com/roycoprotocol",
+        target: "_blank",
+      },
+      {
+        id: "telegram",
+        label: "Telegram",
+        link: "https://t.me/roycopub",
+        target: "_blank",
+      },
+    ],
   },
 ];
 
@@ -150,9 +162,9 @@ export const ActualNavbar = React.forwardRef<
          * @description Links
          */}
         <div className="text-nav-link hidden shrink-0 flex-row items-center space-x-[2.88rem] text-secondary lg:flex">
-          {NavbarLinks.map(({ id, label, link, target }, navIndex) => {
+          {NavbarLinks.map(({ id, label, link, target, items }, navIndex) => {
             const BASE_KEY = `navbar-link:${id}`;
-            return (
+            return link ? (
               <a
                 href={link}
                 target={target}
@@ -184,6 +196,23 @@ export const ActualNavbar = React.forwardRef<
               >
                 {label}
               </a>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger>Learn</DropdownMenuTrigger>
+                <DropdownMenuContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
+                  {items?.map((item) => (
+                    <a
+                      href={item.link}
+                      target={item.target}
+                      rel="noopener noreferrer"
+                    >
+                      <DropdownMenuLabel className="rounded px-4 py-2 transition-all hover:bg-gray-200">
+                        {item.label}
+                      </DropdownMenuLabel>
+                    </a>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             );
           })}
         </div>

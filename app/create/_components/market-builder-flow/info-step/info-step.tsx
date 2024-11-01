@@ -13,6 +13,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormAsset } from "./form-asset";
 import { FormActionType, FormIncentiveSchedule } from "./form-selectors";
 import { FormLockupTime } from "./form-lockup-time";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const InfoStep = React.forwardRef<
   HTMLDivElement,
@@ -45,6 +46,13 @@ export const InfoStep = React.forwardRef<
         />
       </MotionWrapper>
 
+      <MotionWrapper delay={0.3}>
+        <FormActionType
+          className="mt-9"
+          marketBuilderForm={marketBuilderForm}
+        />
+      </MotionWrapper>
+
       <div className="mt-9 grid grid-cols-2 gap-3">
         <MotionWrapper delay={0.2}>
           <FormChain className="" marketBuilderForm={marketBuilderForm} />
@@ -55,13 +63,6 @@ export const InfoStep = React.forwardRef<
         </MotionWrapper>
       </div>
 
-      <MotionWrapper delay={0.3}>
-        <FormActionType
-          className="mt-9"
-          marketBuilderForm={marketBuilderForm}
-        />
-      </MotionWrapper>
-
       <MotionWrapper delay={0.4}>
         <FormIncentiveSchedule
           className="mt-9"
@@ -70,10 +71,21 @@ export const InfoStep = React.forwardRef<
       </MotionWrapper>
 
       <MotionWrapper delay={0.5}>
-        <FormLockupTime
-          className="mt-9"
-          marketBuilderForm={marketBuilderForm}
-        />
+        <AnimatePresence>
+          {marketBuilderForm.watch("action_type") === "recipe" && (
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ duration: 0.5 }}
+            >
+              <FormLockupTime
+                className="mt-9"
+                marketBuilderForm={marketBuilderForm}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* <FormExpiry className="mt-9" marketBuilderForm={marketBuilderForm} /> */}
       </MotionWrapper>
     </div>

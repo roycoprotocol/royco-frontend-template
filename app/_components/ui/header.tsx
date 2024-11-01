@@ -74,43 +74,36 @@ export const Header = React.forwardRef<
         <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" />
       </div>
 
-      <div className="px-5 md:px-12 lg:px-[10.44rem] xl:px-[12.44rem]">
-        <MaxWidthWrapper>
-          {/**
-           * @descriptioon Banner
-           */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{
-              opacity: 1,
-            }}
-            viewport={{
-              once: true,
-            }}
-            transition={{
-              delay: 0,
-              duration: 1,
-              ease: "easeOut",
-            }}
-            className={cn(
-              "overflow-hidden",
-              "rounded-t-lg md:rounded-t-xl lg:rounded-t-[1.25675rem]",
-              "border border-b-0 border-divider",
-              "aspect-[63.1875/26.9375]",
-              "mt-10 md:mt-[3.41rem]",
-              "-z-10"
-            )}
-          >
+      <MaxWidthWrapper>
+        {/**
+         * @descriptioon Banner
+         */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{
+            opacity: 1,
+          }}
+          viewport={{
+            once: true,
+          }}
+          transition={{
+            delay: 0,
+            duration: 1,
+            ease: "easeOut",
+          }}
+          className={cn("mt-10 md:mt-[3.41rem]", "-z-10")}
+        >
+          <div className="-mx-20 md:-mx-20 lg:mx-[-12.94rem] xl:mx-[-14.94rem]">
             <img
-              src="/home/banner.png"
+              src="/home/banner2.png"
               alt="home:banner"
               className={cn(
-                "h-full w-full object-cover object-top transition-all duration-500 ease-in-out"
+                "object-cover object-top transition-all duration-500 ease-in-out"
               )}
             />
-          </motion.div>
-        </MaxWidthWrapper>
-      </div>
+          </div>
+        </motion.div>
+      </MaxWidthWrapper>
     </div>
   );
 });
