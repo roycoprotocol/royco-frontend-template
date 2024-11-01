@@ -68,7 +68,7 @@ export const getVaultApprovalContractOptions = ({
       chainId: token.chain_id,
       id: `approve_vault_${token.id}`,
       label: `Approve ${token.symbol.toUpperCase()}`,
-      address: token.contract_address,
+      address: funding_vault,
       abi: erc4626Abi,
       functionName: "approve",
       marketType: market_type,

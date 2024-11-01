@@ -29,7 +29,7 @@ export const getVaultAllowance = async ({
     },
     {
       address: vault_address as Address,
-      abi: erc20Abi,
+      abi: erc4626Abi,
       functionName: "allowance",
       args: [account, spender],
     },
@@ -60,11 +60,6 @@ export const getVaultAllowanceQueryOptions = (
         spender,
         vault_address,
       });
-
-      console.log("vault_address", vault_address);
-      console.log("account", account);
-      console.log("spender", spender);
-      console.log("getVaultAllowance result", result);
 
       // Extract asset and allowance from multicall result
       const [assetResult, allowanceResult] = result;

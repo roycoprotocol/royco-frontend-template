@@ -155,7 +155,7 @@ export const TransactionModal = React.forwardRef<
 
   // console.log("txError", txError);
 
-  // console.log("transactions", transactions);
+  console.log("transactions", transactions);
 
   // console.log("currentTransaction", currentTransaction);
 

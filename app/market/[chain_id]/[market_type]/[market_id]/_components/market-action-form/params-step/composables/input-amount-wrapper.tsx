@@ -151,35 +151,31 @@ export const InputAmountWrapper = React.forwardRef<
           if (offerType === MarketOfferType.limit.id) return null;
 
           return (
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                layout="position"
-                layoutId={`motion:market:amount-selector:${userType}:max`}
-                onClick={() => {
-                  const quantityRawValue =
-                    userType === MarketUserType.ip.id
-                      ? currentMarketData?.quantity_ap
-                      : currentMarketData?.quantity_ip;
-                  const quantityTokenValue = parseRawAmountToTokenAmount(
-                    quantityRawValue,
-                    currentMarketData?.input_token_data.decimals ?? 0
-                  );
+            <div
+              onClick={() => {
+                const quantityRawValue =
+                  userType === MarketUserType.ip.id
+                    ? currentMarketData?.quantity_ap
+                    : currentMarketData?.quantity_ip;
+                const quantityTokenValue = parseRawAmountToTokenAmount(
+                  quantityRawValue,
+                  currentMarketData?.input_token_data.decimals ?? 0
+                );
 
-                  marketActionForm.setValue(
-                    "quantity.amount",
-                    quantityTokenValue.toString()
-                  );
+                marketActionForm.setValue(
+                  "quantity.amount",
+                  quantityTokenValue.toString()
+                );
 
-                  marketActionForm.setValue(
-                    "quantity.raw_amount",
-                    quantityRawValue ?? "0"
-                  );
-                }}
-                className="flex cursor-pointer items-center justify-center text-xs font-300 text-secondary underline decoration-tertiary decoration-dotted underline-offset-[3px] transition-all duration-200 ease-in-out hover:opacity-80"
-              >
-                Max
-              </motion.div>
-            </AnimatePresence>
+                marketActionForm.setValue(
+                  "quantity.raw_amount",
+                  quantityRawValue ?? "0"
+                );
+              }}
+              className="flex cursor-pointer items-center justify-center text-xs font-300 text-secondary underline decoration-tertiary decoration-dotted underline-offset-[3px] transition-all duration-200 ease-in-out hover:opacity-80"
+            >
+              Max
+            </div>
           );
         }}
         Suffix={() => {
@@ -236,7 +232,8 @@ export const InputAmountWrapper = React.forwardRef<
       {/**
        * Insufficient balance indicator
        */}
-      {!isLoading &&
+      {isSolidityAddressValid("address", address) &&
+        !isLoading &&
         userType === RoycoMarketUserType.ap.id &&
         (fundingType === RoycoMarketFundingType.wallet.id ||
           (fundingType === RoycoMarketFundingType.vault.id &&
