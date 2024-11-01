@@ -4,7 +4,7 @@ import { z } from "zod";
 import { FormField, FormItem } from "@/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { MarketFormSchema } from ".././market-form-schema";
+import { MarketFormSchema } from "../market-form-schema";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { useActiveMarket } from "../../hooks";
 import { FormInputLabel, SecondaryLabel } from "../../composables";

@@ -117,6 +117,19 @@ export const RoycoMarketUserType: Record<
   },
 };
 
+export type TypedRoycoMarketFundingType = "wallet" | "vault";
+export const RoycoMarketFundingType: Record<
+  TypedRoycoMarketFundingType,
+  { id: TypedRoycoMarketFundingType }
+> = {
+  wallet: {
+    id: "wallet",
+  },
+  vault: {
+    id: "vault",
+  },
+};
+
 export type TypedRoycoMarketActionType = "supply" | "withdraw";
 export const RoycoMarketActionType: Record<
   TypedRoycoMarketActionType,

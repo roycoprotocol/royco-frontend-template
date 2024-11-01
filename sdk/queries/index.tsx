@@ -18,3 +18,6 @@ export * from "./get-enriched-royco-stats";
 export * from "./get-custom-token-quotes";
 export * from "./get-transaction-simulation";
 export * from "./get-enriched-account-balances-in-market";
+export * from "./get-vault-balance";
+export * from "./get-vault-allowance";
+export * from "./get-market-offers-validator";

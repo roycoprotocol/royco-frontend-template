@@ -32,3 +32,5 @@ export * from "./use-custom-token-quotes";
 export * from "./use-prepare-market-action";
 export * from "./use-transaction-simulation";
 export * from "./use-enriched-account-balances-recipe-in-market";
+export * from "./use-vault-balance";
+export * from "./use-market-offers-validator";

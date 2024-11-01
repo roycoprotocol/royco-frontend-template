@@ -12,7 +12,9 @@ export const parseNumber = (value: number | undefined | null): number => {
   }
 };
 
-export const parseRawAmount = (value: string | undefined | null): string => {
+export const parseRawAmount = (
+  value: string | number | bigint | undefined | null
+): string => {
   try {
     if (!value) throw new Error("Value is undefined");
 

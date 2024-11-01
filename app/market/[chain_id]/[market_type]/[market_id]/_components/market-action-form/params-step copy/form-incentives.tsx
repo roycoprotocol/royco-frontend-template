@@ -18,7 +18,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { TokenDisplayer } from "@/components/common";
 
 import { useSupportedTokens } from "@/sdk/hooks";
-import { MarketFormSchema } from ".././market-form-schema";
+import { MarketFormSchema } from "../market-form-schema";
 import { Input } from "@/components/ui/input";
 import {
   BadgeAlertIcon,

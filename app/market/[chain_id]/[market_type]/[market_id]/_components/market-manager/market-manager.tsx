@@ -4,7 +4,7 @@ import React, { Fragment, useEffect } from "react";
 import { useMarketManager } from "@/store";
 import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { MarketForm, MarketFormSchema } from "../market-form";
+import { MarketActionForm } from "../market-action-form";
 import { useActiveMarket } from "../hooks";
 import { LoadingSpinner, TransactionModal } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
@@ -13,14 +13,7 @@ import { IncentiveInfo } from "../incentive-info";
 import { AlertIndicator } from "@/components/common";
 import { OfferList } from "../offer-list";
 import { SlideUpWrapper } from "@/components/animations";
-import {
-  BASE_PADDING,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  BASE_UNDERLINE,
-  PrimaryLabel,
-  SecondaryLabel,
-} from "../composables";
+import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
 import { ChevronLeft, ChevronLeftIcon } from "lucide-react";
 import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
@@ -147,9 +140,12 @@ export const MarketManager = React.forwardRef<
         >
           {viewType === MarketViewType.simple.id ? (
             <Fragment>
+              {/**
+               * @TODO Uncomment this when all UI is ready
+               */}
               {marketStep === MarketSteps.params.id && <MarketInfo />}
 
-              <MarketForm
+              <MarketActionForm
                 key={`market-form:simple`}
                 className={cn(
                   marketStep === MarketSteps.params.id &&
@@ -234,7 +230,7 @@ export const MarketManager = React.forwardRef<
               >
                 <BalanceIndicator />
 
-                <MarketForm />
+                <MarketActionForm />
               </div>
             </Fragment>
           )}

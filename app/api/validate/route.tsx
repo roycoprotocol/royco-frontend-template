@@ -31,7 +31,7 @@ export const config = createConfig({
   },
 });
 
-type ValidationOfferDataType = {
+export type OfferValidationDataType = {
   id: string; // Global offer ID [ <CHAIN_ID>_<MARKET_TYPE>_<OFFER_SIDE>_<OFFER_ID> ]
   chain_id: number;
   market_type: 0 | 1;
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 }
 
 async function getInvalidApOffers(
-  offers: ValidationOfferDataType[]
+  offers: OfferValidationDataType[]
 ): Promise<string[]> {
   let invalidApOffers: string[] = [];
   if (offers?.length) {
