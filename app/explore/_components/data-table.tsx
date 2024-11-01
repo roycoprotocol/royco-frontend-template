@@ -166,6 +166,14 @@ export function DataTable<TData, TValue>({
                       height="2.45rem"
                     >
                       <ScrollArea className="flex gap-x-2">
+                        {!!lockedQuantityUsd &&
+                          columnVisibility.locked_quantity_usd &&
+                          flexRender(lockedQuantityUsd.column.columnDef.cell, {
+                            ...lockedQuantityUsd.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
+
                         {!!chainId &&
                           columnVisibility.chain_id &&
                           flexRender(chainId.column.columnDef.cell, {
@@ -186,14 +194,6 @@ export function DataTable<TData, TValue>({
                           columnVisibility.market_type &&
                           flexRender(marketType.column.columnDef.cell, {
                             ...marketType.getContext(),
-                            placeholderDatas,
-                            view,
-                          })}
-
-                        {!!lockedQuantityUsd &&
-                          columnVisibility.locked_quantity_usd &&
-                          flexRender(lockedQuantityUsd.column.columnDef.cell, {
-                            ...lockedQuantityUsd.getContext(),
                             placeholderDatas,
                             view,
                           })}

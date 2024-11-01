@@ -29,9 +29,9 @@ const Card = React.forwardRef<
         "w-full ",
         "px-5 md:px-12 lg:px-[10.44rem]",
         "xl:max-w-[54.2525rem]",
-        type === "left"
-          ? " items-end xl:pl-[12.44rem] xl:pr-[4.42rem]"
-          : " items-start xl:pl-[4.42rem] xl:pr-[12.44rem]",
+        // type === "left"
+        //   ? " items-end xl:pl-[12.44rem] xl:pr-[4.42rem]"
+        //   : " items-start xl:pl-[4.42rem] xl:pr-[12.44rem]",
         className
       )}
       {...props}
@@ -215,15 +215,8 @@ export const Partners = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "grid items-center font-gt text-black",
-        "grid-cols-2",
-        className
-      )}
-    >
-      <Container type="left">
+    <div ref={ref} className={cn("font-gt text-black", className)}>
+      {/* <Container type="left">
         <Card type="left">
           <SectionTitle>Backed by giants.</SectionTitle>
 
@@ -318,13 +311,13 @@ export const Partners = React.forwardRef<
             ]}
           />
         </Card>
-      </Container>
+      </Container> */}
 
-      <Container type="right">
+      <Container type="right" className="flex items-center">
         <Card type="right">
-          <SectionTitle>Serious security.</SectionTitle>
+          <SectionTitle className="text-center">Serious security.</SectionTitle>
 
-          <SectionSubtitle className="xl:w-[27.70131rem]">
+          <SectionSubtitle className="self-center text-center xl:w-[27.70131rem]">
             Peace of mind supported by audits from the world's leading security
             firms.
           </SectionSubtitle>

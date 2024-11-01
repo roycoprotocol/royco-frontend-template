@@ -14,7 +14,7 @@ export const Blocks = () => {
   return (
     <Fragment>
       <Header />
-      <Funding />
+      {/* <Funding /> */}
       <Working />
       <Benefits />
       <Markets />

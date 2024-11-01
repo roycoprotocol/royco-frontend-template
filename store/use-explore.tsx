@@ -84,7 +84,7 @@ export const useExplore = create<ExploreState>((set) => ({
     set({ exploreFilters }),
   exploreSort: [
     {
-      id: "total_incentive_amounts_usd",
+      id: "locked_quantity_usd",
       desc: true,
     },
   ],

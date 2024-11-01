@@ -28,27 +28,27 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const gt = localFont({
   src: [
     {
-      path: "../public/fonts/GT-America-Standard-Ultra-Light-Trial.otf",
+      path: "../public/fonts/Inter-ExtraLight.otf",
       weight: "200",
       style: "extralight",
     },
     {
-      path: "../public/fonts/GT-America-Standard-Light-Trial.otf",
+      path: "../public/fonts/Inter-Light.otf",
       weight: "300",
       style: "light",
     },
     {
-      path: "../public/fonts/GT-America-Standard-Regular-Trial.otf",
+      path: "../public/fonts/Inter-Regular.otf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/GT-America-Standard-Medium-Trial.otf",
+      path: "../public/fonts/Inter-Medium.otf",
       weight: "500",
       style: "medium",
     },
     {
-      path: "../public/fonts/GT-America-Standard-Bold-Trial.otf",
+      path: "../public/fonts/Inter-Bold.otf",
       weight: "700",
       style: "bold",
     },

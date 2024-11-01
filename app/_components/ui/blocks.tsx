@@ -7,6 +7,7 @@ import { Funding } from "./funding";
 import { Header } from "./header";
 import { Markets } from "./markets";
 import { Partners } from "./partners";
+import { AccessProtocol } from "./access-protocol";
 import { Working } from "./working";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -22,7 +23,7 @@ export const Blocks = () => {
       </motion.div>
 
       <motion.div>
-        <Funding />
+        {/* <Funding /> */}
 
         <FadeInMotionWrapper>
           <Working />
@@ -34,6 +35,10 @@ export const Blocks = () => {
 
         <FadeInMotionWrapper>
           <Markets />
+        </FadeInMotionWrapper>
+
+        <FadeInMotionWrapper>
+          <AccessProtocol />
         </FadeInMotionWrapper>
 
         <FadeInMotionWrapper>

@@ -81,8 +81,8 @@ export const TopNavigator = React.forwardRef<
         {activeStep === MarketBuilderSteps.review.id && (
           <MotionWrapper>
             <div className="body-1 mt-3 text-secondary">
-              Please review the following details as Royco markets are
-              immutable.
+              Review your Incentivized Action script. Users will execute these
+              functions and earn rewards.
             </div>
           </MotionWrapper>
         )}
