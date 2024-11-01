@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   useEnrichedAccountBalancesRecipeInMarket,
-  useEnrichedAccountBalanceVault,
+  useEnrichedAccountBalancesVaultInMarket,
 } from "@/sdk/hooks";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
@@ -13,21 +13,13 @@ import { produce } from "immer";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
   INFO_ROW_CLASSES,
   PrimaryLabel,
   TertiaryLabel,
 } from "../composables";
 import { MarketIncentiveType, MarketType, useMarketManager } from "@/store";
 import { HorizontalTabs, SpringNumber } from "@/components/composables";
-import {
-  AlertIndicator,
-  InfoCard,
-  InfoTip,
-  TokenDisplayer,
-} from "@/components/common";
-import { EnrichedMarketDataType } from "@/sdk/queries";
+import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 
 export const BalanceIndicator = React.forwardRef<
   HTMLDivElement,
@@ -38,9 +30,12 @@ export const BalanceIndicator = React.forwardRef<
   const { marketMetadata, currentMarketData } = useActiveMarket();
   const { balanceIncentiveType, setBalanceIncentiveType } = useMarketManager();
 
+  /**
+   * Recipe balances for AP & IP
+   */
   const {
     isLoading: isLoadingRecipe,
-    isRefetching,
+    isRefetching: isRefetchingRecipe,
     data: dataRecipe,
   } = useEnrichedAccountBalancesRecipeInMarket({
     chain_id: marketMetadata.chain_id,
@@ -49,18 +44,25 @@ export const BalanceIndicator = React.forwardRef<
     custom_token_data: undefined,
   });
 
-  const { isLoading: isLoadingVault, data: dataVault } =
-    useEnrichedAccountBalanceVault({
-      market: currentMarketData as EnrichedMarketDataType,
-      account_address: address ? address.toLowerCase() : "",
-    });
+  /**
+   * Vault balances for IP
+   */
+  const {
+    isLoading: isLoadingVault,
+    isRefetching: isRefetchingVault,
+    data: dataVault,
+  } = useEnrichedAccountBalancesVaultInMarket({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    account_address: address ? address.toLowerCase() : "",
+    custom_token_data: undefined,
+  });
 
-  const [placeholderDataRecipe, setPlaceholderDataRecipe] = React.useState<
-    Array<typeof dataRecipe>
-  >([undefined, undefined]);
-
-  const [placeholderDataVault, setPlaceholderDataVault] = React.useState<
-    Array<typeof dataVault | undefined>
+  /**
+   * Placeholder data
+   */
+  const [placeholderData, setPlaceholderData] = React.useState<
+    Array<typeof dataRecipe | typeof dataVault | undefined>
   >([undefined, undefined]);
 
   /**
@@ -68,11 +70,12 @@ export const BalanceIndicator = React.forwardRef<
    */
   useEffect(() => {
     if (
+      marketMetadata.market_type === MarketType.recipe.id &&
       isLoadingRecipe === false &&
-      isRefetching === false &&
-      !isEqual(dataRecipe, placeholderDataRecipe[1])
+      isRefetchingRecipe === false &&
+      !isEqual(dataRecipe, placeholderData[1])
     ) {
-      setPlaceholderDataRecipe((prevDatas) => {
+      setPlaceholderData((prevDatas) => {
         return produce(prevDatas, (draft) => {
           if (!isEqual(draft[1], dataRecipe)) {
             draft[0] = draft[1] as typeof dataRecipe;
@@ -81,17 +84,19 @@ export const BalanceIndicator = React.forwardRef<
         });
       });
     }
-  }, [isLoadingRecipe, isRefetching, dataRecipe]);
+  }, [isLoadingRecipe, isRefetchingRecipe, dataRecipe]);
 
   /**
    * @effect Update placeholder data for vault
    */
   useEffect(() => {
     if (
+      marketMetadata.market_type === MarketType.vault.id &&
       isLoadingVault === false &&
-      !isEqual(dataVault, placeholderDataVault[1])
+      isRefetchingVault === false &&
+      !isEqual(dataVault, placeholderData[1])
     ) {
-      setPlaceholderDataVault((prevDatas) => {
+      setPlaceholderData((prevDatas) => {
         return produce(prevDatas, (draft) => {
           if (!isEqual(draft[1], dataVault)) {
             draft[0] = draft[1] as typeof dataVault;
@@ -100,7 +105,7 @@ export const BalanceIndicator = React.forwardRef<
         });
       });
     }
-  }, [isLoadingVault, dataVault]);
+  }, [isLoadingVault, isRefetchingVault, dataVault]);
 
   if (!currentMarketData) return null;
 
@@ -119,75 +124,48 @@ export const BalanceIndicator = React.forwardRef<
       {/**
        * Show distinction between AP and IP
        */}
-      {marketMetadata.market_type === MarketType.recipe.id &&
-        !!dataRecipe &&
-        dataRecipe["incentives_ip_data"].length !== 0 && (
-          <HorizontalTabs
-            className={cn(BASE_MARGIN_TOP.MD)}
-            size="sm"
-            key="market:balance-incentive-type:container"
-            baseId="market:balance-incentive-type"
-            tabs={[
-              {
-                label: "AP",
-                id: MarketIncentiveType.ap.id,
-              },
-              {
-                label: "IP",
-                id: MarketIncentiveType.ip.id,
-              },
-            ]}
-            activeTab={balanceIncentiveType}
-            setter={setBalanceIncentiveType}
-          />
-        )}
+      {(placeholderData[1]?.incentives_ip_data.length !== 0 ||
+        placeholderData[1]?.incentives_ap_data.length !== 0 ||
+        placeholderData[1]?.input_token_data_ap.token_amount !== 0 ||
+        placeholderData[1]?.input_token_data_ip.token_amount !== 0) && (
+        <HorizontalTabs
+          className={cn(BASE_MARGIN_TOP.MD)}
+          size="sm"
+          key="market:balance-incentive-type:container"
+          baseId="market:balance-incentive-type"
+          tabs={[
+            {
+              label: "AP",
+              id: MarketIncentiveType.ap.id,
+            },
+            {
+              label: "IP",
+              id: MarketIncentiveType.ip.id,
+            },
+          ]}
+          activeTab={balanceIncentiveType}
+          setter={setBalanceIncentiveType}
+        />
+      )}
 
       {/**
        * Total balance for recipe
        */}
-      {marketMetadata.market_type === MarketType.recipe.id && !!dataRecipe && (
+      {placeholderData[1] && (
         <PrimaryLabel className={cn("text-3xl font-light", BASE_MARGIN_TOP.XL)}>
           <SpringNumber
             previousValue={
-              placeholderDataRecipe[0]
+              placeholderData[0]
                 ? balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? placeholderDataRecipe[0].balance_usd_ap
-                  : placeholderDataRecipe[0].balance_usd_ip
+                  ? placeholderData[0].balance_usd_ap
+                  : placeholderData[0].balance_usd_ip
                 : 0
             }
             currentValue={
-              placeholderDataRecipe[1]
+              placeholderData[1]
                 ? balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? placeholderDataRecipe[1].balance_usd_ap
-                  : placeholderDataRecipe[1].balance_usd_ip
-                : 0
-            }
-            numberFormatOptions={{
-              style: "currency",
-              currency: "USD",
-              notation: "compact",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }}
-          />
-        </PrimaryLabel>
-      )}
-
-      {/**
-       * Total balance for vault
-       */}
-      {marketMetadata.market_type === MarketType.vault.id && !!dataVault && (
-        <PrimaryLabel className={cn("text-3xl font-light", BASE_MARGIN_TOP.XL)}>
-          <SpringNumber
-            previousValue={
-              placeholderDataVault[0]
-                ? placeholderDataVault[0].total_balance_usd
-                : 0
-            }
-            currentValue={
-              placeholderDataVault[1]
-                ? placeholderDataVault[1].total_balance_usd
+                  ? placeholderData[1].balance_usd_ap
+                  : placeholderData[1].balance_usd_ip
                 : 0
             }
             numberFormatOptions={{
@@ -211,121 +189,17 @@ export const BalanceIndicator = React.forwardRef<
       {isConnected === true &&
         isLoadingRecipe === false &&
         isLoadingVault === false &&
-        marketMetadata.market_type === MarketType.recipe.id &&
-        (dataRecipe === undefined || dataRecipe === null) && (
+        (placeholderData[1] === undefined || placeholderData[1] === null) && (
           <AlertIndicator className="pb-2 pt-7">
             No activity found
           </AlertIndicator>
         )}
 
       {/**
-       * Show vault balance
+       * Show total balance
        */}
-      {marketMetadata.market_type === MarketType.vault.id && !!dataVault && (
-        <InfoCard className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.XL)}>
-          {/**
-           * @info Input Token
-           */}
-          <InfoCard.Row className={cn(INFO_ROW_CLASSES, "gap-0")}>
-            <InfoCard.Row.Key>Deposits</InfoCard.Row.Key>
 
-            <InfoCard.Row.Value className={cn(INFO_ROW_CLASSES, "gap-0")}>
-              <SpringNumber
-                className="h-4"
-                spanClassName="leading-5"
-                previousValue={0}
-                currentValue={dataVault.deposit_token_data.token_amount_usd}
-                numberFormatOptions={{
-                  style: "decimal",
-                  notation: "compact",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  useGrouping: true,
-                }}
-              />
-
-              <TokenDisplayer
-                imageClassName="hidden"
-                size={4}
-                hover
-                bounce
-                tokens={[dataVault.deposit_token_data]}
-                symbols={true}
-              />
-              <TokenDisplayer
-                className="ml-2"
-                size={4}
-                hover
-                bounce
-                tokens={[dataVault.deposit_token_data]}
-                symbols={false}
-              />
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-
-          {/**
-           * @info Incentives Received
-           */}
-          <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-            <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
-
-            <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
-              {dataVault["incentive_token_data"].length === 0 ? (
-                <InfoCard.Row.Value className="flex w-full flex-row place-content-end items-end gap-0">
-                  0.00
-                </InfoCard.Row.Value>
-              ) : null}
-
-              {dataVault["incentive_token_data"].map((incentive, index) => {
-                const BASE_KEY = `market:balance-indicator:balance-incentice-type:${balanceIncentiveType}:incentive:${incentive.id}`;
-
-                return (
-                  <InfoCard.Row.Value
-                    key={BASE_KEY}
-                    className="flex w-full flex-row place-content-end items-end gap-1"
-                  >
-                    <SpringNumber
-                      className="h-4"
-                      spanClassName="leading-5"
-                      previousValue={0}
-                      currentValue={incentive.token_amount}
-                      numberFormatOptions={{
-                        style: "decimal",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-
-                    <TokenDisplayer
-                      imageClassName="hidden"
-                      size={4}
-                      hover
-                      bounce
-                      tokens={[incentive]}
-                      symbols={true}
-                    />
-                    <TokenDisplayer
-                      className="ml-2"
-                      size={4}
-                      hover
-                      bounce
-                      tokens={[incentive]}
-                      symbols={false}
-                    />
-                  </InfoCard.Row.Value>
-                );
-              })}
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-        </InfoCard>
-      )}
-
-      {/**
-       * Show recipe balance
-       */}
-      {marketMetadata.market_type === MarketType.recipe.id && !!dataRecipe && (
+      {isConnected && (
         <InfoCard className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.XL)}>
           {/**
            * @info Input Token
@@ -339,8 +213,8 @@ export const BalanceIndicator = React.forwardRef<
                 previousValue={0}
                 currentValue={
                   balanceIncentiveType === MarketIncentiveType.ap.id
-                    ? dataRecipe.input_token_data_ap.token_amount
-                    : dataRecipe.input_token_data_ip.token_amount
+                    ? placeholderData[1]?.input_token_data_ap?.token_amount ?? 0
+                    : placeholderData[1]?.input_token_data_ip?.token_amount ?? 0
                 }
                 numberFormatOptions={{
                   style: "decimal",
@@ -356,7 +230,11 @@ export const BalanceIndicator = React.forwardRef<
                 size={4}
                 hover
                 bounce
-                tokens={[dataRecipe.input_token_data_ap]}
+                tokens={
+                  placeholderData[1]?.input_token_data_ap
+                    ? [placeholderData[1].input_token_data_ap]
+                    : []
+                }
                 symbols={true}
               />
               <TokenDisplayer
@@ -364,7 +242,11 @@ export const BalanceIndicator = React.forwardRef<
                 size={4}
                 hover
                 bounce
-                tokens={[dataRecipe.input_token_data_ap]}
+                tokens={
+                  placeholderData[1]?.input_token_data_ip
+                    ? [placeholderData[1].input_token_data_ip]
+                    : []
+                }
                 symbols={false}
               />
             </InfoCard.Row.Value>
@@ -376,7 +258,7 @@ export const BalanceIndicator = React.forwardRef<
           <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
             <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
             <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
-              {dataRecipe[
+              {placeholderData[1]?.[
                 balanceIncentiveType === MarketIncentiveType.ap.id
                   ? "incentives_ap_data"
                   : "incentives_ip_data"
@@ -386,7 +268,7 @@ export const BalanceIndicator = React.forwardRef<
                 </InfoCard.Row.Value>
               ) : null}
 
-              {dataRecipe[
+              {placeholderData[1]?.[
                 balanceIncentiveType === MarketIncentiveType.ap.id
                   ? "incentives_ap_data"
                   : "incentives_ip_data"
