@@ -1,12 +1,12 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import { useMarketManager } from "@/store";
 import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
 import { MarketActionForm } from "../market-action-form";
 import { useActiveMarket } from "../hooks";
-import { LoadingSpinner, TransactionModal } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { MarketInfo } from "../market-info";
 import { IncentiveInfo } from "../incentive-info";
@@ -14,11 +14,10 @@ import { AlertIndicator } from "@/components/common";
 import { OfferList } from "../offer-list";
 import { SlideUpWrapper } from "@/components/animations";
 import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
-import { ChevronLeft, ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
-import { motion, AnimatePresence } from "framer-motion";
-import { OfferTable } from "../stats-tables";
+import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";

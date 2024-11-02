@@ -11,6 +11,7 @@ import {
   IncentivesAmountSelector,
   IncentivesRateSelector,
   InputAmountWrapper,
+  InputExpirySelector,
 } from "../composables";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { UseFormReturn } from "react-hook-form";
@@ -40,6 +41,10 @@ export const APOfferUI = React.forwardRef<
           delayTitle={0.4}
           delayContent={0.5}
         />
+      )}
+
+      {offerType === MarketOfferType.limit.id && (
+        <InputExpirySelector delay={0.6} marketActionForm={marketActionForm} />
       )}
     </div>
   );

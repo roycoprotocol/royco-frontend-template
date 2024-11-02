@@ -219,7 +219,8 @@ export const usePrepareMarketAction = ({
     enabled:
       market_type === RoycoMarketType.vault.id &&
       !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.extend.id,
+      (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+        vault_incentive_action === MarketVaultIncentiveAction.extend.id),
   });
 
   const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
@@ -263,12 +264,15 @@ export const usePrepareMarketAction = ({
       ) {
         return propsVaultIPAddIncentives;
       }
+
       if (
         !!vault_incentive_action &&
-        vault_incentive_action === MarketVaultIncentiveAction.extend.id
+        (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+          vault_incentive_action === MarketVaultIncentiveAction.extend.id)
       ) {
         return propsVaultIPExtendIncentives;
       }
+
       if (
         !!vault_incentive_action &&
         vault_incentive_action === MarketVaultIncentiveAction.refund.id

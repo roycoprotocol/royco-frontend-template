@@ -15,6 +15,7 @@ import {
   FundingVaultSelector,
   IncentivesAmountSelector,
   InputAmountWrapper,
+  InputExpirySelector,
 } from "../composables";
 
 export const RecipeForms = React.forwardRef<
@@ -29,7 +30,7 @@ export const RecipeForms = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <div className="h-12 grow overflow-x-hidden overflow-y-scroll">
+      <div className="h-12 grow overflow-x-hidden overflow-y-scroll pb-2">
         {/**
          * Funding Vault Selector
          */}
@@ -87,6 +88,13 @@ export const RecipeForms = React.forwardRef<
               delayContent={0.4}
             />
           )}
+
+        {offerType === MarketOfferType.limit.id && (
+          <InputExpirySelector
+            delay={0.5}
+            marketActionForm={marketActionForm}
+          />
+        )}
       </div>
     </div>
   );

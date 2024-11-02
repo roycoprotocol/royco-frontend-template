@@ -171,6 +171,13 @@ export const InputAmountWrapper = React.forwardRef<
         Prefix={() => {
           if (offerType === MarketOfferType.limit.id) return null;
 
+          if (
+            marketMetadata.market_type === MarketType.vault.id &&
+            userType === MarketUserType.ap.id &&
+            offerType === MarketOfferType.limit.id
+          )
+            return null;
+
           return (
             <div
               onClick={() => {
