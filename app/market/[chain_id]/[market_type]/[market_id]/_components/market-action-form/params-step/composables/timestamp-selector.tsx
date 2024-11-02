@@ -27,21 +27,28 @@ export const TimestampSelector = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     currentValue: Date | undefined;
     setCurrentValue: (date: Date | undefined) => void;
+    customValue?: string;
   }
->(({ className, currentValue, setCurrentValue, ...props }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn("flex grow flex-row items-center gap-1", className)}
-      {...props}
-    >
-      <DateTimePicker
-        className="text-sm font-300 text-black"
-        date={currentValue}
-        setDate={(date: Date | undefined) => {
-          setCurrentValue(date);
-        }}
-      />
-    </div>
-  );
-});
+>(
+  (
+    { className, currentValue, setCurrentValue, customValue, ...props },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn("flex grow flex-row items-center gap-1", className)}
+        {...props}
+      >
+        <DateTimePicker
+          customValue={customValue}
+          className="text-sm font-300 text-black"
+          date={currentValue}
+          setDate={(date: Date | undefined) => {
+            setCurrentValue(date);
+          }}
+        />
+      </div>
+    );
+  }
+);

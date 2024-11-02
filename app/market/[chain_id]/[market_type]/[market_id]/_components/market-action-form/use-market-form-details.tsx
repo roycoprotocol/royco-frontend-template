@@ -13,12 +13,14 @@ import {
   MarketSteps,
   MarketType,
   MarketUserType,
+  MarketVaultIncentiveAction,
   useMarketManager,
 } from "@/store";
 import { useAccount } from "wagmi";
 import { RoycoMarketOfferType } from "@/sdk/market";
 import { parseRawAmount, parseTokenAmountToRawAmount } from "@/sdk/utils";
 import { NULL_ADDRESS } from "@/sdk/constants";
+import { BigNumber } from "ethers";
 
 export const useMarketFormDetails = (
   marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>
@@ -126,7 +128,7 @@ export const useMarketFormDetails = (
           const total_supply = parseFloat(incentiveData.total_supply ?? "0");
 
           const offerAmount = parseFloat(
-            marketActionForm.watch("quantity")?.raw_amount ?? ""
+            marketActionForm.watch("quantity")?.amount ?? ""
           );
 
           const inputTokenData = getTokenQuote({
@@ -137,21 +139,20 @@ export const useMarketFormDetails = (
           const inputTokenPrice = inputTokenData.price;
           const incentiveTokenPrice = fdv / total_supply;
 
-          const rate =
+          const rateInToken =
             (aip * offerAmount * inputTokenPrice) /
             (incentiveTokenPrice * (365 * 24 * 60 * 60));
 
-          if (isNaN(rate)) {
+          if (isNaN(rateInToken)) {
             return "0";
           }
 
-          const refinedRate = parseInt(rate.toFixed(incentiveData.decimals));
+          const rateInWei = parseTokenAmountToRawAmount(
+            rateInToken.toString(),
+            incentiveData.decimals
+          );
 
-          if (refinedRate === 0) {
-            return "0";
-          }
-
-          return refinedRate.toString() || "0";
+          return rateInWei === "" ? "0" : rateInWei;
         } catch (error) {
           return "0";
         }
@@ -198,11 +199,34 @@ export const useMarketFormDetails = (
 
     end_timestamps: marketActionForm
       .watch("incentive_tokens")
-      .map((incentive) =>
-        Math.floor(
+      .map((incentive) => {
+        let endTimestamp = Math.floor(
           new Date(incentive.end_timestamp ?? 0).getTime() / 1000
-        ).toString()
-      ),
+        ).toString();
+
+        if (
+          vaultIncentiveActionType === MarketVaultIncentiveAction.increase.id
+        ) {
+          const existingRewardIndex =
+            currentMarketData?.base_incentive_ids?.findIndex(
+              (reward) => reward === incentive.id
+            ) ?? -1;
+
+          if (existingRewardIndex !== -1) {
+            endTimestamp =
+              currentMarketData?.base_end_timestamps?.[existingRewardIndex] ??
+              "0";
+          } else {
+            endTimestamp = "0";
+          }
+
+          endTimestamp = BigNumber.from(parseRawAmount(endTimestamp))
+            .add(1)
+            .toString();
+        }
+
+        return endTimestamp;
+      }),
 
     vault_incentive_action: vaultIncentiveActionType,
     offer_validation_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/validate`,
