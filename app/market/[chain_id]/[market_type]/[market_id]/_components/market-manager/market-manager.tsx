@@ -128,7 +128,7 @@ export const MarketManager = React.forwardRef<
           key={`market-manager:${viewType}`}
           className={cn(
             "flex items-center rounded-2xl border border-divider bg-white",
-            "w-full overflow-hidden",
+            "w-full overflow-hidden md:overflow-y-scroll",
             MAX_SCREEN_WIDTH,
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",
@@ -179,52 +179,73 @@ export const MarketManager = React.forwardRef<
           ) : (
             // <MarketForm />
             <Fragment>
-              {/**
-               * @info Left section
-               */}
-              <div
-                className={cn(
-                  "flex h-full shrink-0 flex-col divide-y divide-divider",
-                  "w-full md:w-[50%] xl:w-[25%]"
-                )}
-              >
-                <MarketInfo />
+              <div className="h-full w-full divide-y md:flex md:flex-col">
+                <div className="flex h-full w-full flex-col divide-x md:flex-row">
+                  {/**
+                   * @info Left section
+                   */}
+                  <div
+                    className={cn(
+                      "flex h-full shrink-0 flex-col divide-y divide-divider",
+                      "w-full md:w-[50%] xl:w-[25%]"
+                    )}
+                  >
+                    <MarketInfo />
 
-                <IncentiveInfo />
+                    <IncentiveInfo />
 
-                <OfferList />
-              </div>
+                    <OfferList />
+                  </div>
 
-              {/**
-               * @info Middle section
-               */}
-              <div
-                className={cn(
-                  "border-t border-divider md:border-t-0",
-                  "h-full shrink-0 flex-col divide-y divide-divider md:hidden xl:flex",
-                  "w-full md:w-[40%] xl:w-[50%]",
-                  "flex h-full grow flex-col",
-                  MAX_SCREEN_WIDTH
-                )}
-              >
-                <OfferListVisualizer className="h-1/2 w-full" />
+                  {/**
+                   * @info Middle section
+                   */}
+                  <div
+                    className={cn(
+                      "border-t border-divider md:border-t-0",
+                      "h-full shrink-0 flex-col divide-y divide-divider md:hidden xl:flex",
+                      "w-full md:w-[40%] xl:w-[50%]",
+                      "flex h-full grow flex-col",
+                      MAX_SCREEN_WIDTH
+                    )}
+                  >
+                    <OfferListVisualizer className="h-1/2 w-full" />
 
-                <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
-              </div>
+                    <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
+                  </div>
 
-              {/**
-               * @info Right section
-               */}
-              <div
-                className={cn(
-                  "border-t border-divider md:border-t-0",
-                  "flex h-full shrink-0 flex-col divide-y divide-divider",
-                  "w-full md:w-[50%] xl:w-[25%]"
-                )}
-              >
-                <BalanceIndicator />
+                  {/**
+                   * @info Right section
+                   */}
+                  <div
+                    className={cn(
+                      "border-t border-divider md:border-t-0",
+                      "flex h-full shrink-0 flex-col divide-y divide-divider",
+                      "w-full md:w-[50%] xl:w-[25%]"
+                    )}
+                  >
+                    <BalanceIndicator />
 
-                <MarketActionForm />
+                    <MarketActionForm />
+                  </div>
+                </div>
+
+                {/**
+                 * @info Middle section
+                 */}
+                <div
+                  className={cn(
+                    "border-t border-divider md:border-t-0",
+                    "divide-y divide-divider ",
+                    "h-full w-full",
+                    "hidden shrink-0 grow flex-col md:flex xl:hidden",
+                    MAX_SCREEN_WIDTH
+                  )}
+                >
+                  <OfferListVisualizer className="w-full flex-1" />
+
+                  <StatsTables className="flex w-full flex-col overflow-hidden" />
+                </div>
               </div>
             </Fragment>
           )}
