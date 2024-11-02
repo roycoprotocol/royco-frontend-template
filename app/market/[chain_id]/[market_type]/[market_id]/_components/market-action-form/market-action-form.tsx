@@ -67,6 +67,8 @@ export const MarketActionForm = React.forwardRef<
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
+  // console.log("currentMarketData", currentMarketData);
+
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
     defaultValues: {

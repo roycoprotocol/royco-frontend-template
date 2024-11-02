@@ -293,32 +293,28 @@ export const getVaultIPExtendIncentivesTransactionOptions = ({
     const token_address = token_id.split("-")[1];
     const token_data = getSupportedToken(token_id);
 
-    const existing_token_ids = enrichedMarket?.incentive_ids ?? [];
+    const newTxOptions: TransactionOptionsType = {
+      contractId: "WrappedVault",
+      chainId: chain_id,
+      id: `extend_reward_${token_address}`,
+      label: `Extend Reward ${token_data?.symbol.toUpperCase()}`,
+      address,
+      abi,
+      functionName: "extendRewardsInterval",
+      marketType: RoycoMarketType.vault.id,
+      args: [
+        token_address,
+        token_amounts[i],
+        end_timestamps[i],
+        frontend_fee_recipient
+          ? frontend_fee_recipient
+          : baseMarket?.protocol_fee_recipient,
+      ],
+      txStatus: "idle",
+      txHash: null,
+    };
 
-    if (existing_token_ids.includes(token_id)) {
-      const newTxOptions: TransactionOptionsType = {
-        contractId: "WrappedVault",
-        chainId: chain_id,
-        id: `extend_reward_${token_address}`,
-        label: `Extend Reward ${token_data?.symbol.toUpperCase()}`,
-        address,
-        abi,
-        functionName: "extendRewardsInterval",
-        marketType: RoycoMarketType.vault.id,
-        args: [
-          token_address,
-          token_amounts[i],
-          end_timestamps[i],
-          frontend_fee_recipient
-            ? frontend_fee_recipient
-            : baseMarket?.protocol_fee_recipient,
-        ],
-        txStatus: "idle",
-        txHash: null,
-      };
-
-      extendRewardTxOptions.push(newTxOptions);
-    }
+    extendRewardTxOptions.push(newTxOptions);
   }
   // Combine all transaction options
   const txOptions = [...extendRewardTxOptions];
