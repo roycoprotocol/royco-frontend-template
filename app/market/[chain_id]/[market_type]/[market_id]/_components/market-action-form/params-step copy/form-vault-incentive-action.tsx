@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { MarketFormSchema } from ".././market-form-schema";
+import { MarketFormSchema } from "../market-form-schema";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -27,8 +27,42 @@ import {
   TypedRoycoMarketOfferType,
   TypedRoycoMarketVaultIncentiveAction,
 } from "@/sdk/market";
+import { EnrichedMarketDataType } from "@/sdk/queries";
 
 const options = [MarketOfferType.market, MarketOfferType.limit];
+
+export const canAddIncentives = ({
+  enrichedMarket,
+}: {
+  enrichedMarket: EnrichedMarketDataType | undefined;
+}) => {
+  if (!enrichedMarket) return false;
+  return (enrichedMarket.base_incentive_ids || []).length <= 20;
+};
+
+export const canIncreaseIncentives = ({
+  enrichedMarket,
+}: {
+  enrichedMarket: EnrichedMarketDataType | undefined;
+}) => {
+  if (!enrichedMarket) return false;
+
+  const incentive_ids = enrichedMarket.base_incentive_ids || [];
+  const incentive_amounts = enrichedMarket.base_incentive_amounts || [];
+  const incentive_rates = enrichedMarket.base_incentive_rates || [];
+  const incentive_start_timestamps = enrichedMarket.base_start_timestamps || [];
+  const incentive_end_timestamps = enrichedMarket.base_end_timestamps || [];
+
+  for (let i = 0; i < incentive_ids.length; i++) {
+    if (incentive_start_timestamps[i] && incentive_end_timestamps[i]) {
+      return false;
+    }
+  }
+  return (
+    incentive_ids.length >= 20 &&
+    incentive_start_timestamps.length === incentive_end_timestamps.length
+  );
+};
 
 export const FormVaultIncentiveAction = React.forwardRef<
   HTMLDivElement,

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { FormField, FormItem } from "@/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { MarketFormSchema } from ".././market-form-schema";
+import { MarketFormSchema } from "../market-form-schema";
 import {
   MarketActionType,
   MarketOfferType,

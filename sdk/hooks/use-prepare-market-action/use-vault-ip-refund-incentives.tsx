@@ -51,28 +51,32 @@ export const isVaultIPRefundIncentivesValid = ({
       }
     }
 
-    // Check if incentive token is already added
+    /**
+     * @note Below code is adapted directly from the smart contract source code
+     */
     for (let i = 0; i < token_ids.length; i++) {
       const token_id = token_ids[i];
-      const token_address = token_id.split("-")[1];
+      const reward = token_id.split("-")[1];
 
-      // Check if incentive token is added
-      if (!enrichedMarket.base_incentive_ids?.includes(token_id)) {
-        throw new Error("Incentive token is not added");
+      const existing_reward_index =
+        enrichedMarket.base_incentive_ids?.findIndex((id) => id === token_id) ??
+        -1;
+
+      if (existing_reward_index === -1) {
+        throw new Error("Invalid reward token");
       }
 
-      const current_timestamp: BigNumber = BigNumber.from(
+      const rewardsInterval = {
+        start: BigNumber.from(enrichedMarket.base_start_timestamps?.[i] ?? "0"),
+        end: BigNumber.from(enrichedMarket.base_end_timestamps?.[i] ?? "0"),
+      };
+
+      const blockTimestamp = BigNumber.from(
         Math.floor(Date.now() / 1000).toString()
       );
 
-      const existing_start_timestamp: BigNumber = BigNumber.from(
-        enrichedMarket.base_start_timestamps?.[i] ?? "0"
-      );
-
-      if (current_timestamp.gte(existing_start_timestamp)) {
-        throw new Error(
-          "Interval is already in progress. Incentives cannot be refunded."
-        );
+      if (blockTimestamp.gte(rewardsInterval.start)) {
+        throw new Error("Interval in progress");
       }
     }
 
@@ -202,21 +206,54 @@ export const getVaultIPRefundIncentivesTransactionOptions = ({
     const token_address = token_id.split("-")[1];
     const token_data = getSupportedToken(token_id);
 
-    const newTxOptions: TransactionOptionsType = {
-      contractId: "WrappedVault",
-      chainId: chain_id,
-      id: `refund_reward_${token_address}`,
-      label: `Refund Reward ${token_data?.symbol.toUpperCase()}`,
-      address,
-      abi,
-      functionName: "refundRewardsInterval",
-      marketType: RoycoMarketType.vault.id,
-      args: [token_address],
-      txStatus: "idle",
-      txHash: null,
-    };
+    const existing_reward_index =
+      enrichedMarket?.base_incentive_ids?.findIndex((id) => id === token_id) ??
+      -1;
 
-    refundRewardTxOptions.push(newTxOptions);
+    if (token_data.type !== "point" && existing_reward_index !== -1) {
+      const rewardsOwed = BigNumber.from(
+        enrichedMarket?.base_incentive_rates?.[existing_reward_index] ?? "0"
+      )
+        .mul(
+          BigNumber.from(
+            enrichedMarket?.base_end_timestamps?.[existing_reward_index] ?? "0"
+          ).sub(
+            BigNumber.from(
+              enrichedMarket?.base_start_timestamps?.[existing_reward_index] ??
+                "0"
+            )
+          )
+        )
+        .sub(BigNumber.from(1));
+
+      const rewardsOwedInToken = parseRawAmountToTokenAmount(
+        rewardsOwed.toString(),
+        token_data.decimals
+      );
+
+      const newTxOptions: TransactionOptionsType = {
+        contractId: "WrappedVault",
+        chainId: chain_id,
+        id: `refund_reward_${token_address}`,
+        label: `Refund Reward ${token_data?.symbol.toUpperCase()}`,
+        address,
+        abi,
+        functionName: "refundRewardsInterval",
+        marketType: RoycoMarketType.vault.id,
+        args: [token_address],
+        txStatus: "idle",
+        txHash: null,
+        tokensOut: [
+          {
+            ...token_data,
+            raw_amount: rewardsOwedInToken.toString(),
+            token_amount: rewardsOwedInToken,
+          },
+        ],
+      };
+
+      refundRewardTxOptions.push(newTxOptions);
+    }
   }
   // Combine all transaction options
   const txOptions = [...refundRewardTxOptions];

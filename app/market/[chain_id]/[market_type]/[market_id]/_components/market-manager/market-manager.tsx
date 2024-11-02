@@ -1,31 +1,23 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import { useMarketManager } from "@/store";
 import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { MarketForm, MarketFormSchema } from "../market-form";
+import { MarketActionForm } from "../market-action-form";
 import { useActiveMarket } from "../hooks";
-import { LoadingSpinner, TransactionModal } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { MarketInfo } from "../market-info";
 import { IncentiveInfo } from "../incentive-info";
 import { AlertIndicator } from "@/components/common";
 import { OfferList } from "../offer-list";
 import { SlideUpWrapper } from "@/components/animations";
-import {
-  BASE_PADDING,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  BASE_UNDERLINE,
-  PrimaryLabel,
-  SecondaryLabel,
-} from "../composables";
-import { ChevronLeft, ChevronLeftIcon } from "lucide-react";
+import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
+import { ChevronLeftIcon } from "lucide-react";
 import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
-import { motion, AnimatePresence } from "framer-motion";
-import { OfferTable } from "../stats-tables";
+import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
@@ -147,9 +139,12 @@ export const MarketManager = React.forwardRef<
         >
           {viewType === MarketViewType.simple.id ? (
             <Fragment>
+              {/**
+               * @TODO Uncomment this when all UI is ready
+               */}
               {marketStep === MarketSteps.params.id && <MarketInfo />}
 
-              <MarketForm
+              <MarketActionForm
                 key={`market-form:simple`}
                 className={cn(
                   marketStep === MarketSteps.params.id &&
@@ -157,34 +152,29 @@ export const MarketManager = React.forwardRef<
                 )}
               />
 
-              {/**
-               * Temporarily disabled advanced mode on live networks
-               */}
-              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && (
-                <div
-                  className={cn(
-                    "flex-0",
-                    "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
-                    BASE_PADDING_LEFT,
-                    BASE_PADDING_RIGHT,
-                    "py-3"
-                  )}
-                >
-                  <div className="font-gt text-sm font-light text-secondary">
-                    Advanced Mode
-                  </div>
-                  <Switch
-                    checked={viewType === MarketViewType.advanced.id}
-                    onCheckedChange={() => {
-                      setViewType(
-                        viewType === MarketViewType.advanced.id
-                          ? MarketViewType.simple.id
-                          : MarketViewType.advanced.id
-                      );
-                    }}
-                  />
+              <div
+                className={cn(
+                  "flex-0",
+                  "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
+                  BASE_PADDING_LEFT,
+                  BASE_PADDING_RIGHT,
+                  "py-3"
+                )}
+              >
+                <div className="font-gt text-sm font-light text-secondary">
+                  Advanced Mode
                 </div>
-              )}
+                <Switch
+                  checked={viewType === MarketViewType.advanced.id}
+                  onCheckedChange={() => {
+                    setViewType(
+                      viewType === MarketViewType.advanced.id
+                        ? MarketViewType.simple.id
+                        : MarketViewType.advanced.id
+                    );
+                  }}
+                />
+              </div>
             </Fragment>
           ) : (
             // <MarketForm />
@@ -234,7 +224,7 @@ export const MarketManager = React.forwardRef<
               >
                 <BalanceIndicator />
 
-                <MarketForm />
+                <MarketActionForm />
               </div>
             </Fragment>
           )}

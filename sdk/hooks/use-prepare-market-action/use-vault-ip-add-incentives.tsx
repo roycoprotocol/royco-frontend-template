@@ -78,137 +78,108 @@ export const isVaultIPAddIncentivesValid = ({
       throw new Error("Incentive ids and amounts do not match");
     }
 
-    // Check if incentive token is already added
+    /**
+     * @note Below code is adapted directly from the smart contract source code
+     */
     for (let i = 0; i < token_ids.length; i++) {
       const token_id = token_ids[i];
-      const token_address = token_id.split("-")[1];
+      const reward = token_id.split("-")[1];
 
-      // Handle if incentive token is already added
-      if (enrichedMarket.incentive_ids?.includes(token_id)) {
-        const start_timestamp = BigNumber.from(start_timestamps?.[i] ?? "0");
-        const end_timestamp = BigNumber.from(end_timestamps?.[i] ?? "0");
-        const current_timestamp = BigNumber.from(
-          Math.floor(Date.now() / 1000).toString()
-        );
+      const start = BigNumber.from(start_timestamps?.[i] ?? "0");
+      const end = BigNumber.from(end_timestamps?.[i] ?? "0");
+      const blockTimestamp = BigNumber.from(
+        Math.floor(Date.now() / 1000).toString()
+      );
+      const totalRewards = BigNumber.from(token_amounts[i]);
 
-        if (start_timestamp.gte(end_timestamp)) {
-          throw new Error("Start timestamp must be less than end timestamp");
-        }
-
-        if (end_timestamp.lte(current_timestamp)) {
-          throw new Error("Incentive end time must be in the future");
-        }
-
-        const existing_start_timestamp = BigNumber.from(
-          enrichedMarket.base_start_timestamps?.[i] ?? "0"
-        );
-        const existing_end_timestamp = BigNumber.from(
-          enrichedMarket.base_end_timestamps?.[i] ?? "0"
-        );
-
-        if (start_timestamp.lte(existing_start_timestamp)) {
-          throw new Error(
-            "Incentive start time must be greater than existing start time"
-          );
-        }
-
-        if (current_timestamp.lte(existing_end_timestamp)) {
-          throw new Error(
-            "Incentive interval is already in progress. Use extend incentives option."
-          );
-        }
-
-        if (existing_start_timestamp.gt(current_timestamp)) {
-          throw new Error(
-            "Interval is scheduled in the future. Use refund incentives option to cancel first."
-          );
-        }
-
-        const frontend_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .mul(BigNumber.from(baseMarket?.frontend_fee ?? "0"))
-          .div(BigNumber.from(10).pow(18));
-        const protocol_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .mul(BigNumber.from(baseMarket?.protocol_fee ?? "0"))
-          .div(BigNumber.from(10).pow(18));
-
-        const rewards_after_fee: BigNumber = BigNumber.from(token_amounts[i])
-          .sub(frontend_fee)
-          .sub(protocol_fee);
-
-        const interval_seconds: BigNumber = end_timestamp.sub(start_timestamp);
-
-        const rate: BigNumber = rewards_after_fee.div(interval_seconds);
-
-        if (rate.lte(0)) {
-          throw new Error("Incentive rate must be greater than 0");
-        }
+      if (start.gte(end) || end.lte(blockTimestamp)) {
+        throw new Error("Invalid Interval");
       }
-      // Handle if incentive token is not added
-      else {
-        // Check if vault has reached the maximum number of incentives
-        if (enrichedMarket.incentive_ids?.length === 20) {
+
+      const MIN_CAMPAIGN_DURATION = 7 * 24 * 60 * 60; // 1 week
+
+      if (end.sub(start).lt(MIN_CAMPAIGN_DURATION)) {
+        throw new Error("Invalid campaign duration");
+      }
+
+      let rewardsInterval = {
+        start: BigNumber.from("0"),
+        end: BigNumber.from("0"),
+        rate: BigNumber.from("0"),
+      };
+
+      const existing_reward_index =
+        enrichedMarket.base_incentive_ids?.findIndex((id) => id === token_id) ??
+        -1;
+
+      if (
+        existing_reward_index !== -1 &&
+        enrichedMarket.base_start_timestamps &&
+        enrichedMarket.base_end_timestamps
+      ) {
+        rewardsInterval = {
+          start: BigNumber.from(
+            enrichedMarket.base_start_timestamps[existing_reward_index] ?? "0"
+          ),
+          end: BigNumber.from(
+            enrichedMarket.base_end_timestamps[existing_reward_index] ?? "0"
+          ),
+          rate: BigNumber.from(
+            enrichedMarket.base_incentive_rates?.[existing_reward_index] ?? "0"
+          ),
+        };
+      }
+
+      if (
+        blockTimestamp.gte(rewardsInterval.start) &&
+        blockTimestamp.lte(rewardsInterval.end)
+      ) {
+        throw new Error("Interval in progress");
+      }
+
+      if (rewardsInterval.start.gt(blockTimestamp)) {
+        throw new Error("Interval scheduled in the future");
+      }
+
+      const frontendFeeTaken: BigNumber = totalRewards
+        .mul(BigNumber.from(baseMarket?.frontend_fee ?? "0"))
+        .div(BigNumber.from(10).pow(18));
+
+      const protocolFeeTaken: BigNumber = totalRewards
+        .mul(BigNumber.from(baseMarket?.protocol_fee ?? "0"))
+        .div(BigNumber.from(10).pow(18));
+
+      const rewardsAfterFee: BigNumber = totalRewards
+        .sub(frontendFeeTaken)
+        .sub(protocolFeeTaken);
+
+      const rate: BigNumber = rewardsAfterFee.div(end.sub(start));
+
+      if (rate.lte(0)) {
+        throw new Error("Incentive rate must be greater than 0");
+      }
+
+      // extra check for new incentives
+      if (existing_reward_index === -1) {
+        const rewards = enrichedMarket.base_incentive_ids ?? [];
+
+        const MAX_REWARDS = 20;
+
+        if (rewards.length === MAX_REWARDS) {
           throw new Error("Vault can only have 20 incentives");
         }
 
-        // Check if start timestamps are provided
-        if (!start_timestamps) {
-          throw new Error("Start timestamps are missing");
+        const rewardsTokenData = getSupportedToken(token_id);
+        const rewardsToken = rewardsTokenData.contract_address;
+
+        if (rewardsToken === enrichedMarket.input_token_id) {
+          throw new Error(
+            "Incentive token cannot be the same as the input token"
+          );
         }
 
-        // Check if end timestamps are provided
-        if (!end_timestamps) {
-          throw new Error("End timestamps are missing");
-        }
-
-        // Check if lengths match
-        if (
-          start_timestamps?.length !== end_timestamps?.length ||
-          start_timestamps?.length !== token_ids.length
-        ) {
-          throw new Error("Start and end timestamps do not match");
-        }
-
-        // Check if end time is greater than start time
-        if (
-          BigNumber.from(end_timestamps?.[i] ?? 0).lt(
-            BigNumber.from(start_timestamps?.[i] ?? 0)
-          )
-        ) {
-          throw new Error("Incentive end time must be greater than start time");
-        }
-
-        // Check if end time is in the future
-        const current_time = Math.floor(Date.now() / 1000).toString();
-        if (BigNumber.from(current_time).gt(end_timestamps?.[i] ?? 0)) {
-          throw new Error("Incentive end time must be in the future");
-        }
-
-        // Check if interval is greater than 1 week
-        const interval_seconds: BigNumber = BigNumber.from(
-          end_timestamps?.[i] ?? 0
-        ).sub(BigNumber.from(start_timestamps?.[i] ?? 0));
-        if (interval_seconds.lt(BigNumber.from(7 * 24 * 60 * 60))) {
-          throw new Error("Incentive must be at least 1 week long");
-        }
-
-        // Check if rate is not 0
-        const reward_amount: BigNumber = BigNumber.from(
-          token_amounts?.[i] ?? 0
-        );
-        const protocol_fee: BigNumber = reward_amount
-          .mul(BigNumber.from(baseMarket?.protocol_fee ?? 0))
-          .div(BigNumber.from(10).pow(18));
-        const frontend_fee: BigNumber = reward_amount
-          .mul(BigNumber.from(baseMarket?.frontend_fee ?? 0))
-          .div(BigNumber.from(10).pow(18));
-
-        const actual_reward_amount: BigNumber = reward_amount
-          .add(protocol_fee)
-          .add(frontend_fee);
-        const rate: BigNumber = actual_reward_amount.div(interval_seconds);
-
-        if (rate.lte(0)) {
-          throw new Error("Incentive rate must be greater than 0");
+        if (rewardsToken === enrichedMarket.market_id) {
+          throw new Error("Invalid reward token");
         }
       }
     }
@@ -356,7 +327,7 @@ export const getVaultIPAddIncentivesTransactionOptions = ({
     const token_amount = token_amounts[i];
     const token_data = getSupportedToken(token_id);
 
-    const existing_token_ids = enrichedMarket?.incentive_ids ?? [];
+    const existing_token_ids = enrichedMarket?.base_incentive_ids ?? [];
 
     if (existing_token_ids.includes(token_id)) {
       continue;
@@ -388,7 +359,11 @@ export const getVaultIPAddIncentivesTransactionOptions = ({
     const token_address = token_id.split("-")[1];
     const token_data = getSupportedToken(token_id);
 
-    const existing_token_ids = enrichedMarket?.incentive_ids ?? [];
+    // const existing_token_ids = enrichedMarket?.base_incentive_ids ?? [];
+
+    // if (existing_token_ids.includes(token_id)) {
+    //   continue;
+    // }
 
     const newTxOptions: TransactionOptionsType = {
       contractId: "WrappedVault",

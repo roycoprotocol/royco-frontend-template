@@ -16,6 +16,8 @@ import {
 } from "./types";
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
+import { useMarketOffersValidator } from "../use-market-offers-validator";
+import React from "react";
 
 export const isRecipeIPMarketOfferValid = ({
   quantity,
@@ -242,6 +244,7 @@ export const useRecipeIPMarketOffer = ({
   quantity,
   custom_token_data,
   frontend_fee_recipient,
+  offer_validation_url,
   enabled,
 }: {
   account: string | undefined;
@@ -255,6 +258,7 @@ export const useRecipeIPMarketOffer = ({
     total_supply?: string;
   }>;
   frontend_fee_recipient?: string;
+  offer_validation_url: string;
   enabled?: boolean;
 }) => {
   let preContractOptions: TransactionOptionsType[] = [];
@@ -289,6 +293,23 @@ export const useRecipeIPMarketOffer = ({
     enabled: isValid.status && enabled,
   });
 
+  // Get market offers validator
+  const propsMarketOffersValidator = useMarketOffersValidator({
+    offer_ids: propsMarketOffers.data?.map((offer) => offer.offer_id) ?? [],
+    offerValidationUrl: offer_validation_url,
+  });
+
+  // Trigger refetch when validator returns non-empty array
+  React.useEffect(() => {
+    if (
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data &&
+      propsMarketOffersValidator.data.length > 0
+    ) {
+      propsMarketOffers.refetch();
+    }
+  }, [propsMarketOffersValidator.isLoading, propsMarketOffersValidator.data]);
+
   // Get token quotes
   const propsTokenQuotes = useTokenQuotes({
     token_ids: Array.from(
@@ -298,7 +319,12 @@ export const useRecipeIPMarketOffer = ({
       ])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled:
+      isValid.status &&
+      enabled &&
+      // Only proceed if validation is complete and returned empty array (all offers valid)
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data?.length === 0,
   });
 
   // Get incentive data
@@ -316,7 +342,10 @@ export const useRecipeIPMarketOffer = ({
     !!baseMarket &&
     !!enrichedMarket &&
     !!incentiveData &&
-    !!inputTokenData
+    !!inputTokenData &&
+    // Only proceed if validation is complete and returned empty array (all offers valid)
+    !propsMarketOffersValidator.isLoading &&
+    propsMarketOffersValidator.data?.length === 0
   ) {
     // Get incentive data with fees
     const incentiveDataWithFees = incentiveData.map((incentive, index) => {
@@ -433,10 +462,15 @@ export const useRecipeIPMarketOffer = ({
     isLoadingDefaultMarketData ||
     propsMarketOffers.isLoading ||
     propsTokenAllowance.isLoading ||
-    propsTokenQuotes.isLoading;
+    propsTokenQuotes.isLoading ||
+    propsMarketOffersValidator.isLoading;
 
   // Check if ready
-  const isReady = writeContractOptions.length > 0;
+  const isReady =
+    writeContractOptions.length > 0 &&
+    // Only proceed if validation is complete and returned empty array (all offers valid)
+    !propsMarketOffersValidator.isLoading &&
+    propsMarketOffersValidator.data?.length === 0;
 
   // Check if offer can be performed completely or partially
   if (isReady) {

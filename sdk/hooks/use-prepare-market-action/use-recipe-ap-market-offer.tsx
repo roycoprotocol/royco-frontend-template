@@ -7,7 +7,12 @@ import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
 import { NULL_ADDRESS } from "@/sdk/constants";
 import { ContractMap } from "@/sdk/contracts";
 import { TransactionOptionsType } from "@/sdk/types";
-import { getApprovalContractOptions, refineTransactionOptions } from "./utils";
+import {
+  getApprovalContractOptions,
+  getVaultApprovalContractOptions,
+  refineTransactionOptions,
+  refineVaultTransactionOptions,
+} from "./utils";
 import { useTokenAllowance } from "../use-token-allowance";
 import { Address } from "abitype";
 import {
@@ -16,6 +21,9 @@ import {
 } from "./types";
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
+import { useVaultAllowance } from "../use-vault-allowance";
+import { useMarketOffersValidator } from "../use-market-offers-validator";
+import React from "react";
 
 export const isRecipeAPMarketOfferValid = ({
   quantity,
@@ -248,6 +256,7 @@ export const useRecipeAPMarketOffer = ({
   funding_vault,
   custom_token_data,
   frontend_fee_recipient,
+  offer_validation_url,
   enabled,
 }: {
   account: string | undefined;
@@ -262,6 +271,7 @@ export const useRecipeAPMarketOffer = ({
     total_supply?: string;
   }>;
   frontend_fee_recipient?: string;
+  offer_validation_url: string;
   enabled?: boolean;
 }) => {
   let preContractOptions: TransactionOptionsType[] = [];
@@ -297,7 +307,24 @@ export const useRecipeAPMarketOffer = ({
     enabled: isValid.status && enabled,
   });
 
-  // Get token quotes
+  // Get market offers validator
+  const propsMarketOffersValidator = useMarketOffersValidator({
+    offer_ids: propsMarketOffers.data?.map((offer) => offer.offer_id) ?? [],
+    offerValidationUrl: offer_validation_url,
+  });
+
+  // Trigger refetch when validator returns non-empty array
+  React.useEffect(() => {
+    if (
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data &&
+      propsMarketOffersValidator.data.length > 0
+    ) {
+      propsMarketOffers.refetch();
+    }
+  }, [propsMarketOffersValidator.isLoading, propsMarketOffersValidator.data]);
+
+  // Get token quotes - Only proceed if offers are valid
   const propsTokenQuotes = useTokenQuotes({
     token_ids: Array.from(
       new Set([
@@ -306,7 +333,12 @@ export const useRecipeAPMarketOffer = ({
       ])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled:
+      isValid.status &&
+      enabled &&
+      // Only proceed if validation is complete and returned empty array (all offers valid)
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data?.length === 0,
   });
 
   // Get incentive data
@@ -324,7 +356,10 @@ export const useRecipeAPMarketOffer = ({
     !!baseMarket &&
     !!enrichedMarket &&
     !!incentiveData &&
-    !!inputTokenData
+    !!inputTokenData &&
+    // Only proceed if validation is complete and returned empty array (all offers valid)
+    !propsMarketOffersValidator.isLoading &&
+    propsMarketOffersValidator.data?.length === 0
   ) {
     // Get offer transaction options
     const offerTxOptions: TransactionOptionsType =
@@ -358,8 +393,24 @@ export const useRecipeAPMarketOffer = ({
             .address,
       });
 
-    // Set approval transaction options
-    preContractOptions = approvalTxOptions;
+    // Get vault approval transaction options
+    const vaultApprovalTxOptions: TransactionOptionsType[] =
+      getVaultApprovalContractOptions({
+        market_type: RoycoMarketType.recipe.id,
+        token_ids: [inputTokenData.id],
+        required_approval_amounts: [inputTokenData.raw_amount],
+        funding_vault: funding_vault ?? NULL_ADDRESS,
+        spender:
+          ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+            .address,
+      });
+
+    // Set pre contract options
+    if (funding_vault !== NULL_ADDRESS) {
+      preContractOptions = [...vaultApprovalTxOptions];
+    } else {
+      preContractOptions = [...approvalTxOptions];
+    }
   }
 
   // Get token allowance
@@ -374,24 +425,48 @@ export const useRecipeAPMarketOffer = ({
     }),
   });
 
-  if (!propsTokenAllowance.isLoading) {
-    // Refine transaction options
-    writeContractOptions = refineTransactionOptions({
-      propsTokenAllowance,
-      preContractOptions,
-      postContractOptions,
-    });
+  // Get vault allowance
+  const propsVaultAllowance = useVaultAllowance({
+    chain_id,
+    account: account ?? "",
+    vault_address: funding_vault ?? "",
+    spender:
+      ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+        .address,
+  });
+
+  // Refine transaction options
+  if (!propsTokenAllowance.isLoading && !propsVaultAllowance.isLoading) {
+    if (funding_vault !== NULL_ADDRESS) {
+      // Refine vault transaction options
+      writeContractOptions = refineVaultTransactionOptions({
+        propsVaultAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    } else {
+      // Refine wallet transaction options
+      writeContractOptions = refineTransactionOptions({
+        propsTokenAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    }
   }
 
-  // Check if loading
+  // Update isLoading check to include validator
   const isLoading =
     isLoadingDefaultMarketData ||
     propsMarketOffers.isLoading ||
+    propsMarketOffersValidator.isLoading ||
     propsTokenAllowance.isLoading ||
     propsTokenQuotes.isLoading;
 
-  // Check if ready
-  const isReady = writeContractOptions.length > 0;
+  // Update isReady check to ensure offers are valid
+  const isReady =
+    writeContractOptions.length > 0 &&
+    !propsMarketOffersValidator.isLoading &&
+    propsMarketOffersValidator.data?.length === 0;
 
   // Check if offer can be performed completely or partially
   if (isReady) {

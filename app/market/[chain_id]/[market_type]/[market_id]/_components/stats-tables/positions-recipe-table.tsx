@@ -3,11 +3,7 @@
 import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
-import {
-  useEnrichedAccountBalanceRecipe,
-  useEnrichedOffers,
-  useEnrichedPositionsRecipe,
-} from "@/sdk/hooks";
+import { useEnrichedPositionsRecipe } from "@/sdk/hooks";
 import { MarketType, useMarketManager } from "@/store";
 import { offerColumns } from "./offer-columns";
 import { StatsDataTable } from "./stats-data-table";

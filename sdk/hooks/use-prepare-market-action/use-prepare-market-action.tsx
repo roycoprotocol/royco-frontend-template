@@ -37,6 +37,29 @@ export const PrepareMarketActionType = {
   VaultIPLimitOffer: `${RoycoMarketType.vault.id}-${RoycoMarketUserType.ip.id}-${RoycoMarketOfferType.limit.id}`,
 } as const;
 
+const useInvalidMarketAction = () => {
+  const isValid = {
+    status: false,
+    message: "Invalid market action",
+  };
+  const isLoading = false;
+  const isReady = false;
+  const incentiveData: any[] = [];
+  const writeContractOptions: any[] = [];
+  const canBePerformedCompletely = false;
+  const canBePerformedPartially = false;
+
+  return {
+    isValid,
+    isLoading,
+    isReady,
+    incentiveData,
+    writeContractOptions,
+    canBePerformedCompletely,
+    canBePerformedPartially,
+  };
+};
+
 export const usePrepareMarketAction = ({
   chain_id,
   market_id,
@@ -54,6 +77,7 @@ export const usePrepareMarketAction = ({
   end_timestamps,
   custom_token_data,
   vault_incentive_action,
+  offer_validation_url,
 }: {
   chain_id: number;
   market_id: string;
@@ -76,6 +100,7 @@ export const usePrepareMarketAction = ({
     total_supply?: string;
   }>;
   vault_incentive_action?: TypedRoycoMarketVaultIncentiveAction;
+  offer_validation_url: string;
 }) => {
   const action_type = `${market_type}-${user_type}-${offer_type}`;
 
@@ -87,6 +112,7 @@ export const usePrepareMarketAction = ({
     funding_vault,
     custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
+    offer_validation_url,
   });
 
   const propsRecipeIPMarketOffer = useRecipeIPMarketOffer({
@@ -96,6 +122,7 @@ export const usePrepareMarketAction = ({
     quantity,
     custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
+    offer_validation_url,
   });
 
   const propsRecipeAPLimitOffer = useRecipeAPLimitOffer({
@@ -132,6 +159,15 @@ export const usePrepareMarketAction = ({
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
+  const propsVaultIPMarketOffer = useVaultIPMarketOffer({
+    chain_id,
+    market_id,
+    account,
+    quantity,
+    custom_token_data,
+    enabled: market_type === RoycoMarketType.vault.id,
+  });
+
   const propsVaultAPLimitOffer = useVaultAPLimitOffer({
     chain_id,
     market_id,
@@ -144,27 +180,6 @@ export const usePrepareMarketAction = ({
     custom_token_data,
     enabled: market_type === RoycoMarketType.vault.id,
   });
-
-  // const propsVaultIPMarketOffer = useVaultIPMarketOffer({
-  //   chain_id,
-  //   market_id,
-  //   account,
-  //   quantity,
-  //   custom_token_data,
-  //   enabled: market_type === RoycoMarketType.vault.id,
-  // });
-
-  // const propsVaultIPLimitOffer = useVaultIPLimitOffer({
-  //   chain_id,
-  //   market_id,
-  //   account,
-  //   token_ids,
-  //   token_amounts,
-  //   start_timestamps,
-  //   end_timestamps,
-  //   custom_token_data,
-  //   enabled: market_type === RoycoMarketType.vault.id,
-  // });
 
   const propsVaultIPAddIncentives = useVaultIPAddIncentives({
     chain_id,
@@ -192,7 +207,8 @@ export const usePrepareMarketAction = ({
     enabled:
       market_type === RoycoMarketType.vault.id &&
       !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.extend.id,
+      (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+        vault_incentive_action === MarketVaultIncentiveAction.extend.id),
   });
 
   const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
@@ -207,21 +223,30 @@ export const usePrepareMarketAction = ({
       vault_incentive_action === MarketVaultIncentiveAction.refund.id,
   });
 
+  const propsInvalidMarketAction = useInvalidMarketAction();
+
   switch (action_type) {
+    // Recipe AP Actions
     case PrepareMarketActionType.RecipeAPMarketOffer:
       return propsRecipeAPMarketOffer;
-    case PrepareMarketActionType.RecipeIPMarketOffer:
-      return propsRecipeIPMarketOffer;
     case PrepareMarketActionType.RecipeAPLimitOffer:
       return propsRecipeAPLimitOffer;
+
+    // Recipe IP Actions
+    case PrepareMarketActionType.RecipeIPMarketOffer:
+      return propsRecipeIPMarketOffer;
     case PrepareMarketActionType.RecipeIPLimitOffer:
       return propsRecipeIPLimitOffer;
 
+    // Vault AP Actions
     case PrepareMarketActionType.VaultAPMarketOffer:
       return propsVaultAPMarketOffer;
     case PrepareMarketActionType.VaultAPLimitOffer:
       return propsVaultAPLimitOffer;
 
+    // Vault IP Actions
+    case PrepareMarketActionType.VaultIPMarketOffer:
+      return propsVaultIPMarketOffer;
     case PrepareMarketActionType.VaultIPLimitOffer:
       if (
         !!vault_incentive_action &&
@@ -229,21 +254,24 @@ export const usePrepareMarketAction = ({
       ) {
         return propsVaultIPAddIncentives;
       }
+
       if (
         !!vault_incentive_action &&
-        vault_incentive_action === MarketVaultIncentiveAction.extend.id
+        (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+          vault_incentive_action === MarketVaultIncentiveAction.extend.id)
       ) {
         return propsVaultIPExtendIncentives;
       }
+
       if (
         !!vault_incentive_action &&
         vault_incentive_action === MarketVaultIncentiveAction.refund.id
       ) {
         return propsVaultIPRefundIncentives;
       }
-      return propsVaultAPLimitOffer;
+      return propsInvalidMarketAction;
 
     default:
-      return propsRecipeAPMarketOffer;
+      return propsInvalidMarketAction;
   }
 };

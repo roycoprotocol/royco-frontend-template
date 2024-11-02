@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { MarketFormSchema } from ".././market-form-schema";
+import { MarketFormSchema } from "../market-form-schema";
 import { cn } from "@/lib/utils";
 import {
   Select,

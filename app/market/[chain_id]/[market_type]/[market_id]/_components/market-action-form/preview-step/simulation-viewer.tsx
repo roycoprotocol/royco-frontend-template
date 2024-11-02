@@ -9,7 +9,6 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useTransactionSimulation } from "@/sdk/hooks";
 import { useMarketFormDetails } from "../use-market-form-details";
-import { MarketFormSchema } from "../market-form-schema";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { useAccount } from "wagmi";
@@ -17,31 +16,39 @@ import { useActiveMarket } from "../../hooks";
 import { Address } from "abitype";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { LoadingSpinner } from "@/components/composables";
+import { MarketActionFormSchema } from "../market-action-form-schema";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const SimulationViewer = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    marketForm: UseFormReturn<z.infer<typeof MarketFormSchema>>;
+    marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
->(({ marketForm, className, ...props }, ref) => {
+>(({ marketActionForm, className, ...props }, ref) => {
   const { address } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
 
-  const { writeContractOptions } = useMarketFormDetails(marketForm);
+  const { writeContractOptions } = useMarketFormDetails(marketActionForm);
 
   const { data, isLoading, isError } = useTransactionSimulation({
     chainId: marketMetadata.chain_id,
     writeContractOptions,
-    simulationUrl: process.env.NEXT_PUBLIC_SIMULATION_URL ?? "",
+    simulationUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/simulate` ?? "",
     account: address as Address,
   });
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <SecondaryLabel className={cn(BASE_LABEL_BORDER, "font-normal")}>
-        Tenderly Simulation
-      </SecondaryLabel>
+      <SlideUpWrapper
+        layout="position"
+        layoutId="motion:market:preview-step:simulation-viewer:title"
+        delay={0.2}
+      >
+        <SecondaryLabel className={cn(BASE_LABEL_BORDER, "font-normal")}>
+          Tenderly Simulation
+        </SecondaryLabel>
+      </SlideUpWrapper>
 
       <ScrollArea
         className={cn(BASE_MARGIN_TOP.SM, "flex h-fit w-full flex-row gap-2")}
@@ -59,8 +66,11 @@ export const SimulationViewer = React.forwardRef<
               const key = `simulation-data:${tokenData.id}:${txIndex}`;
 
               return (
-                <div
+                <SlideUpWrapper
                   key={key}
+                  layout="position"
+                  layoutId={`motion:market:preview-step:simulation-viewer:token-displayer:${key}`}
+                  delay={0.3 + txIndex * 0.1}
                   className={cn(
                     "flex h-fit w-[49%] shrink-0 flex-col rounded-xl bg-z2 p-3"
                   )}
@@ -91,7 +101,7 @@ export const SimulationViewer = React.forwardRef<
                       maximumFractionDigits: 2,
                     }).format(tokenData.token_amount_usd)}
                   </TertiaryLabel>
-                </div>
+                </SlideUpWrapper>
               );
             })}
 

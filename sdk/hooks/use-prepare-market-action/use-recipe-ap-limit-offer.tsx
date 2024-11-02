@@ -1,12 +1,22 @@
 import { RoycoMarketType } from "@/sdk/market";
-import { isSolidityAddressValid, isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityAddressValid,
+  isSolidityIntValid,
+  parseRawAmountToTokenAmount,
+  parseTokenAmountToTokenAmountUsd,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
 import { NULL_ADDRESS } from "@/sdk/constants";
 import { ContractMap } from "@/sdk/contracts";
 import { TransactionOptionsType } from "@/sdk/types";
-import { getApprovalContractOptions, refineTransactionOptions } from "./utils";
+import {
+  getApprovalContractOptions,
+  getVaultApprovalContractOptions,
+  refineTransactionOptions,
+  refineVaultTransactionOptions,
+} from "./utils";
 import { useTokenAllowance } from "../use-token-allowance";
 import { Address } from "abitype";
 import {
@@ -15,6 +25,7 @@ import {
 } from "./types";
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
+import { useVaultAllowance } from "../use-vault-allowance";
 
 export const isRecipeAPLimitOfferValid = ({
   quantity,
@@ -157,14 +168,14 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
     raw_amount: quantity === "" ? "0" : quantity ?? "0",
-    token_amount: parseFloat(
-      ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
+    token_amount: parseRawAmountToTokenAmount(
+      quantity ?? "0",
+      input_token_quote.decimals
     ),
-    token_amount_usd:
-      input_token_quote.price *
-      parseFloat(
-        ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
-      ),
+    token_amount_usd: parseTokenAmountToTokenAmountUsd(
+      parseRawAmountToTokenAmount(quantity ?? "0", input_token_quote.decimals),
+      input_token_quote.price
+    ),
   };
 
   if (!!enrichedMarket) {
@@ -407,8 +418,24 @@ export const useRecipeAPLimitOffer = ({
             .address,
       });
 
-    // Set approval transaction options
-    preContractOptions = approvalTxOptions;
+    // Get vault approval transaction options
+    const vaultApprovalTxOptions: TransactionOptionsType[] =
+      getVaultApprovalContractOptions({
+        market_type: RoycoMarketType.recipe.id,
+        token_ids: [inputTokenData.id],
+        required_approval_amounts: [inputTokenData.raw_amount],
+        funding_vault: funding_vault ?? NULL_ADDRESS,
+        spender:
+          ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+            .address,
+      });
+
+    // Set pre contract options
+    if (funding_vault !== NULL_ADDRESS) {
+      preContractOptions = [...vaultApprovalTxOptions];
+    } else {
+      preContractOptions = [...approvalTxOptions];
+    }
   }
 
   // Get token allowance
@@ -423,19 +450,39 @@ export const useRecipeAPLimitOffer = ({
     }),
   });
 
-  if (!propsTokenAllowance.isLoading) {
-    // Refine transaction options
-    writeContractOptions = refineTransactionOptions({
-      propsTokenAllowance,
-      preContractOptions,
-      postContractOptions,
-    });
+  // Get vault allowance
+  const propsVaultAllowance = useVaultAllowance({
+    chain_id,
+    account: account ?? "",
+    vault_address: funding_vault ?? "",
+    spender:
+      ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+        .address,
+  });
+
+  if (!propsTokenAllowance.isLoading && !propsVaultAllowance.isLoading) {
+    if (funding_vault !== NULL_ADDRESS) {
+      // Refine vault transaction options
+      writeContractOptions = refineVaultTransactionOptions({
+        propsVaultAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    } else {
+      // Refine wallet transaction options
+      writeContractOptions = refineTransactionOptions({
+        propsTokenAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    }
   }
 
   // Check if loading
   const isLoading =
     isLoadingDefaultMarketData ||
     propsTokenAllowance.isLoading ||
+    propsVaultAllowance.isLoading ||
     propsTokenQuotes.isLoading;
 
   // Check if ready
