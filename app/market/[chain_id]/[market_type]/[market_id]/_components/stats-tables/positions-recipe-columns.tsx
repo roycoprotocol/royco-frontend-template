@@ -40,8 +40,6 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
       className: "min-w-24",
     },
     cell: (props: any) => {
-      console.log("offer_side", props.row.original.offer_side);
-
       return (
         <div
           className={cn(
