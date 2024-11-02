@@ -7,6 +7,7 @@ import { UseFormReturn } from "react-hook-form";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { z } from "zod";
 import { APOfferUI } from "./ap-offer-ui";
+import { IPMarketOfferUI } from "./ip-market-offer-ui";
 
 export const VaultForms = React.forwardRef<
   HTMLDivElement,
@@ -24,6 +25,11 @@ export const VaultForms = React.forwardRef<
         {userType === MarketUserType.ap.id && (
           <APOfferUI marketActionForm={marketActionForm} />
         )}
+
+        {userType === MarketUserType.ip.id &&
+          offerType === MarketOfferType.market.id && (
+            <IPMarketOfferUI marketActionForm={marketActionForm} />
+          )}
 
         {userType === MarketUserType.ip.id &&
           offerType === MarketOfferType.limit.id && (

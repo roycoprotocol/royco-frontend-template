@@ -7,6 +7,7 @@ import { IPLimitOfferAddIncentivesUI } from "./ip-limit-offer-add-incentives-ui"
 import { UseFormReturn } from "react-hook-form";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { ActionTypeSelector } from "../composables/action-type-selector";
+import { IPLimitOfferIncentivesUI } from "./ip-limit-offer-incentives-ui";
 
 export const IPLimitOfferUI = React.forwardRef<
   HTMLDivElement,
@@ -26,9 +27,7 @@ export const IPLimitOfferUI = React.forwardRef<
         <ActionTypeSelector />
       </SlideUpWrapper>
 
-      {vaultIncentiveActionType === MarketVaultIncentiveAction.add.id && (
-        <IPLimitOfferAddIncentivesUI marketActionForm={marketActionForm} />
-      )}
+      <IPLimitOfferIncentivesUI marketActionForm={marketActionForm} />
     </div>
   );
 });
