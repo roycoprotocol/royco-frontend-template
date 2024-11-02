@@ -102,32 +102,58 @@ export const ActualNavbar = React.forwardRef<
             }}
           >
             <div className="flex flex-col gap-3 overflow-hidden py-5 lg:hidden">
-              {NavbarLinks.map(({ id, label, link, target }, navIndex) => {
-                const BASE_KEY = `navbar-link:mobile:${id}`;
-                return (
-                  <motion.a
-                    href={link}
-                    target={target}
-                    rel="noopener noreferrer"
-                    initial={{
-                      opacity: 0,
-                      y: -10 * navIndex,
-                      filter: "blur(4px)",
-                    }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: 0, filter: "blur(4px)" }}
-                    transition={{
-                      delay: navIndex * 0.2,
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                    key={BASE_KEY}
-                    className="text-center text-primary"
-                  >
-                    {label}
-                  </motion.a>
-                );
-              })}
+              {NavbarLinks.map(
+                ({ id, label, link, target, items }, navIndex) => {
+                  const BASE_KEY = `navbar-link:mobile:${id}`;
+                  return link ? (
+                    <motion.a
+                      href={link}
+                      target={target}
+                      rel="noopener noreferrer"
+                      initial={{
+                        opacity: 0,
+                        y: -10 * navIndex,
+                        filter: "blur(4px)",
+                      }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, y: 0, filter: "blur(4px)" }}
+                      transition={{
+                        delay: navIndex * 0.2,
+                        duration: 0.3,
+                        ease: "easeInOut",
+                      }}
+                      key={BASE_KEY}
+                      className="text-center text-primary"
+                    >
+                      {label}
+                    </motion.a>
+                  ) : (
+                    items?.map((item, index) => (
+                      <motion.a
+                        href={item.link}
+                        target={item.target}
+                        rel="noopener noreferrer"
+                        initial={{
+                          opacity: 0,
+                          y: -10 * navIndex,
+                          filter: "blur(4px)",
+                        }}
+                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, y: 0, filter: "blur(4px)" }}
+                        transition={{
+                          delay: (navIndex + index) * 0.2,
+                          duration: 0.3,
+                          ease: "easeInOut",
+                        }}
+                        key={BASE_KEY}
+                        className="text-center text-primary"
+                      >
+                        {item.label}
+                      </motion.a>
+                    ))
+                  );
+                }
+              )}
 
               <div className="absolute right-5 top-5">
                 <div

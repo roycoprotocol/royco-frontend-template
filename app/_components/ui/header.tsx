@@ -74,36 +74,82 @@ export const Header = React.forwardRef<
         <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" />
       </div>
 
-      <MaxWidthWrapper>
-        {/**
-         * @descriptioon Banner
-         */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{
-            opacity: 1,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            delay: 0,
-            duration: 1,
-            ease: "easeOut",
-          }}
-          className={cn("mt-10 md:mt-[3.41rem]", "-z-10")}
-        >
-          <div className="-mx-20 md:-mx-20 lg:mx-[-12.94rem] xl:mx-[-14.94rem]">
-            <img
-              src="/home/banner2.png"
-              alt="home:banner"
-              className={cn(
-                "object-cover object-top transition-all duration-500 ease-in-out"
-              )}
-            />
-          </div>
-        </motion.div>
-      </MaxWidthWrapper>
+      {/**
+       * @descriptioon Banner
+       */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{
+          opacity: 1,
+        }}
+        viewport={{
+          once: true,
+        }}
+        transition={{
+          delay: 0,
+          duration: 1,
+          ease: "easeOut",
+        }}
+        className={cn("mt-10 w-full overflow-hidden md:mt-[3.41rem]", "-z-10")}
+      >
+        <div className="-mx-20 flex h-[250px] space-x-[-62px] md:h-[320px] md:space-x-[-80px] lg:h-[400px] lg:space-x-[-100px]">
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "object-cover object-top transition-all duration-500 ease-in-out"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "object-cover object-top transition-all duration-500 ease-in-out"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "object-cover object-top transition-all duration-500 ease-in-out"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+        </div>
+      </motion.div>
     </div>
   );
 });

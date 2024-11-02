@@ -26,6 +26,10 @@ export const Blocks = () => {
         {/* <Funding /> */}
 
         <FadeInMotionWrapper>
+          <AccessProtocol />
+        </FadeInMotionWrapper>
+
+        <FadeInMotionWrapper>
           <Working />
         </FadeInMotionWrapper>
 
@@ -35,10 +39,6 @@ export const Blocks = () => {
 
         <FadeInMotionWrapper>
           <Markets />
-        </FadeInMotionWrapper>
-
-        <FadeInMotionWrapper>
-          <AccessProtocol />
         </FadeInMotionWrapper>
 
         <FadeInMotionWrapper>

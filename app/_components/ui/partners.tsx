@@ -18,45 +18,30 @@ const centerClasses = "flex flex-col items-center justify-center";
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    type: "left" | "right";
-  }
->(({ className, children, type, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {}
+>(({ className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
-      className={cn(
-        "w-full ",
-        "px-5 md:px-12 lg:px-[10.44rem]",
-        "xl:max-w-[54.2525rem]",
-        // type === "left"
-        //   ? " items-end xl:pl-[12.44rem] xl:pr-[4.42rem]"
-        //   : " items-start xl:pl-[4.42rem] xl:pr-[12.44rem]",
-        className
-      )}
+      className={cn("w-full max-w-[83.625rem]", className)}
       {...props}
     >
-      <div className={cn("flex w-full flex-col ")}>{children}</div>
+      <div className={cn("flex w-full flex-col")}>{children}</div>
     </div>
   );
 });
 
 const Grid = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    columns: number;
-    initial?: boolean;
-  }
->(({ className, children, columns, initial, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {}
+>(({ className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
       className={cn(
         "grid w-full items-center",
-        columns === 1 && "grid-cols-1",
-        columns === 2 && "grid-cols-2",
-        columns === 3 && "grid-cols-3",
-        initial === true ? "mt-8 md:mt-12 lg:mt-[4.17rem]" : "mt-2 lg:mt-3",
+        "grid-cols-1 md:grid-cols-2",
+        "mt-8 md:mt-12 lg:mt-[4.17rem]",
         "gap-4 lg:gap-5",
         className
       )}
@@ -108,22 +93,22 @@ const Block = React.forwardRef<
 
 const Container = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    type: "left" | "right";
-  }
->(({ className, type, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {}
+>(({ className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
       className={cn(
-        "flex h-full w-full shrink-0 flex-col",
+        "flex flex-col items-center justify-center",
         "py-20 md:py-24 lg:py-28 xl:py-[8.25rem]",
-        "col-span-2 xl:col-span-1",
-        type === "left" ? "items-end bg-[#FDFDFA]" : "items-start bg-[#F5F5F5]",
+        "px-5 md:px-12 lg:px-[10.44rem]",
+        "bg-[#F5F5F5]",
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 });
 
@@ -137,18 +122,15 @@ const PartnerList = React.forwardRef<
       nameLink?: string;
       associationLink?: string;
     }[];
-    listIndex: number;
   }
->(({ className, listIndex, children, labels, ...props }, ref) => {
+>(({ className, children, labels, ...props }, ref) => {
   return (
     <div
       ref={ref}
       className={cn(
         "grid w-full gap-[1.25rem]",
-        labels.length === 2 && "grid-cols-2",
-        labels.length === 3 && "grid-cols-3",
+        "grid-cols-4",
         "mt-8 lg:mt-[3.69rem]",
-
         className
       )}
       {...props}
@@ -313,16 +295,31 @@ export const Partners = React.forwardRef<
         </Card>
       </Container> */}
 
-      <Container type="right" className="flex items-center">
-        <Card type="right">
-          <SectionTitle className="text-center">Serious security.</SectionTitle>
+      <Container>
+        <Card>
+          <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 ">
+            <div>
+              <SectionTitle>Serious security.</SectionTitle>
 
-          <SectionSubtitle className="self-center text-center xl:w-[27.70131rem]">
-            Peace of mind supported by audits from the world's leading security
-            firms.
-          </SectionSubtitle>
+              <SectionSubtitle>
+                Peace of mind supported by audits from the world's leading
+                security firms.
+              </SectionSubtitle>
+            </div>
 
-          <Grid columns={1} initial={true}>
+            <div>
+              <SectionTitle className="md:text-right">$250,000</SectionTitle>
+
+              <SectionSubtitle className="md:text-right">
+                Report bugs for a reward.
+              </SectionSubtitle>
+              <SectionSubtitle className="mt-0 md:text-right">
+                <a href="#">Learn more</a>
+              </SectionSubtitle>
+            </div>
+          </div>
+
+          <Grid>
             <Block
               name="spearbit"
               blockLink="https://spearbit.com/"
@@ -352,15 +349,22 @@ export const Partners = React.forwardRef<
           </Grid>
 
           <PartnerList
-            listIndex={3}
             labels={[
+              {
+                id: "0xweiss",
+                name: "0xWeiss",
+              },
               {
                 id: "alcueca",
                 name: "Alcueca",
               },
               {
-                id: "0xweiss",
-                name: "0xWeiss",
+                id: "0xLeastwood",
+                name: "0xLeastwood",
+              },
+              {
+                id: "more",
+                name: "And more.",
               },
             ]}
           />
