@@ -44,12 +44,14 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
         <div
           className={cn(
             "font-gt text-sm font-300",
-            props.row.original.offer_side === MarketUserType.ap.id
+            props.row.original.offer_side ===
+              RoycoMarketUserType.ap.value.toString()
               ? "text-success"
               : "text-error"
           )}
         >
-          {props.row.original.offer_side === MarketUserType.ap.id
+          {props.row.original.offer_side ===
+          RoycoMarketUserType.ap.value.toString()
             ? MarketUserType.ap.label
             : MarketUserType.ip.label}
         </div>
@@ -312,7 +314,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "tokens_data",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
