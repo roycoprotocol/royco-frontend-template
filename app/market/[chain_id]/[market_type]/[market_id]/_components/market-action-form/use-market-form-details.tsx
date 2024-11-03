@@ -1,6 +1,5 @@
 import {
   getTokenQuote,
-  useMarketAction,
   usePrepareMarketAction,
   useTokenQuotes,
 } from "@/sdk/hooks";
