@@ -239,6 +239,7 @@ export const useVaultIPMarketOffer = ({
   market_id,
   quantity,
   custom_token_data,
+  frontend_fee_recipient,
   enabled,
 }: {
   account: string | undefined;
@@ -251,6 +252,7 @@ export const useVaultIPMarketOffer = ({
     fdv?: string;
     total_supply?: string;
   }>;
+  frontend_fee_recipient?: string;
   enabled?: boolean;
 }) => {
   let preContractOptions: TransactionOptionsType[] = [];
