@@ -78,6 +78,7 @@ export const usePrepareMarketAction = ({
   custom_token_data,
   vault_incentive_action,
   offer_validation_url,
+  frontend_fee_recipient,
 }: {
   chain_id: number;
   market_id: string;
@@ -101,6 +102,7 @@ export const usePrepareMarketAction = ({
   }>;
   vault_incentive_action?: TypedRoycoMarketVaultIncentiveAction;
   offer_validation_url: string;
+  frontend_fee_recipient?: string;
 }) => {
   const action_type = `${market_type}-${user_type}-${offer_type}`;
 
@@ -156,6 +158,7 @@ export const usePrepareMarketAction = ({
     account,
     quantity,
     custom_token_data,
+    frontend_fee_recipient,
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
@@ -165,6 +168,7 @@ export const usePrepareMarketAction = ({
     account,
     quantity,
     custom_token_data,
+    frontend_fee_recipient,
     enabled: market_type === RoycoMarketType.vault.id,
   });
 
