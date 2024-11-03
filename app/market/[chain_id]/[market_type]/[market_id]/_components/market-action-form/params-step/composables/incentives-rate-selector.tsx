@@ -12,6 +12,7 @@ import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "@/sdk/utils";
 import { useMarketManager } from "@/store";
 import { SecondaryLabel } from "../../../composables";
+import { useActiveMarket } from "../../../hooks";
 
 export const IncentivesRateSelector = React.forwardRef<
   HTMLDivElement,
@@ -26,6 +27,7 @@ export const IncentivesRateSelector = React.forwardRef<
     ref
   ) => {
     const { userType } = useMarketManager();
+    const { currentMarketData } = useActiveMarket();
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -50,14 +52,23 @@ export const IncentivesRateSelector = React.forwardRef<
                 marketActionForm.watch("incentive_tokens");
 
               if (incentiveTokens.some((t) => t.id === token.id)) {
+                /**
+                 * Remove the token from the list
+                 */
                 marketActionForm.setValue(
                   "incentive_tokens",
                   incentiveTokens.filter((t) => t.id !== token.id)
                 );
               } else {
+                /**
+                 * Add the token to the list
+                 */
                 marketActionForm.setValue("incentive_tokens", [
                   ...incentiveTokens,
-                  token,
+                  {
+                    ...token,
+                    fdv: token.fdv?.toString() ?? "0",
+                  },
                 ]);
               }
             }}
@@ -87,33 +98,157 @@ export const IncentivesRateSelector = React.forwardRef<
                      * Market Cap Selector
                      */}
                     <div className="flex w-full flex-row items-center gap-1">
-                      <InputAmountSelector
-                        currentValue={token.fdv ?? ""}
-                        setCurrentValue={(value) => {
-                          /**
-                           * Set the amount of the token
-                           */
-                          marketActionForm.setValue(
-                            "incentive_tokens",
-                            marketActionForm
-                              .watch("incentive_tokens")
-                              .map((t) =>
-                                t.id === token.id ? { ...t, fdv: value } : t
-                              )
-                          );
-                        }}
-                        Suffix={() => {
-                          return (
-                            <TokenDisplayer
-                              size={4}
-                              tokens={[token]}
-                              symbols={true}
-                            />
-                          );
-                        }}
-                        // @ts-ignore
-                        placeholder="Market Cap"
-                      />
+                      <div className="grid grow  grid-cols-3 items-center gap-1 ">
+                        <InputAmountSelector
+                          containerClassName="col-span-2"
+                          currentValue={token.fdv ?? ""}
+                          setCurrentValue={(value) => {
+                            /**
+                             * Set the fdv of the token
+                             */
+                            marketActionForm.setValue(
+                              "incentive_tokens",
+                              marketActionForm
+                                .watch("incentive_tokens")
+                                .map((t) =>
+                                  t.id === token.id ? { ...t, fdv: value } : t
+                                )
+                            );
+
+                            /**
+                             * Update distribution
+                             */
+
+                            let distribution = 0;
+
+                            try {
+                              let aip = parseFloat(token.aip ?? "0") / 100;
+                              let incentive_token_fdv = parseFloat(value);
+                              let input_token_amount = parseFloat(
+                                marketActionForm.watch("quantity.amount") ?? "0"
+                              );
+                              let input_token_price =
+                                currentMarketData?.input_token_price ?? 0;
+                              let incentive_token_total_supply = parseFloat(
+                                token.total_supply ?? "0"
+                              );
+
+                              distribution =
+                                (aip *
+                                  input_token_amount *
+                                  input_token_price *
+                                  incentive_token_total_supply) /
+                                incentive_token_fdv;
+                            } catch (err) {}
+
+                            /**
+                             * Set new distribution
+                             */
+                            if (!isNaN(distribution)) {
+                              marketActionForm.setValue(
+                                "incentive_tokens",
+                                marketActionForm
+                                  .watch("incentive_tokens")
+                                  .map((t) =>
+                                    t.id === token.id
+                                      ? {
+                                          ...t,
+                                          distribution: distribution.toString(),
+                                        }
+                                      : t
+                                  )
+                              );
+                            }
+                          }}
+                          Suffix={() => {
+                            return (
+                              <TokenDisplayer
+                                size={4}
+                                tokens={[token]}
+                                symbols={true}
+                              />
+                            );
+                          }}
+                          // @ts-ignore
+                          placeholder="Market Cap"
+                        />
+
+                        {/**
+                         * aip selector
+                         */}
+                        <InputAmountSelector
+                          containerClassName="col-span-1"
+                          currentValue={token.aip ?? ""}
+                          setCurrentValue={(value) => {
+                            /**
+                             * Set the aip of the token
+                             */
+                            marketActionForm.setValue(
+                              "incentive_tokens",
+                              marketActionForm
+                                .watch("incentive_tokens")
+                                .map((t) =>
+                                  t.id === token.id ? { ...t, aip: value } : t
+                                )
+                            );
+
+                            /**
+                             * Update distribution
+                             */
+                            let distribution = 0;
+
+                            try {
+                              let aip = parseFloat(value) / 100;
+                              let incentive_token_fdv = parseFloat(
+                                token.fdv ?? "0"
+                              );
+                              let input_token_amount = parseFloat(
+                                marketActionForm.watch("quantity.amount") ?? "0"
+                              );
+                              let input_token_price =
+                                currentMarketData?.input_token_price ?? 0;
+                              let incentive_token_total_supply = parseFloat(
+                                token.total_supply ?? "0"
+                              );
+
+                              distribution =
+                                (aip *
+                                  input_token_amount *
+                                  input_token_price *
+                                  incentive_token_total_supply) /
+                                incentive_token_fdv;
+                            } catch (err) {}
+
+                            /**
+                             * Set new distribution
+                             */
+                            if (!isNaN(distribution)) {
+                              marketActionForm.setValue(
+                                "incentive_tokens",
+                                marketActionForm
+                                  .watch("incentive_tokens")
+                                  .map((t) =>
+                                    t.id === token.id
+                                      ? {
+                                          ...t,
+                                          distribution: distribution.toString(),
+                                        }
+                                      : t
+                                  )
+                              );
+                            }
+                          }}
+                          Suffix={() => {
+                            return (
+                              <SecondaryLabel className="font-light text-black">
+                                %
+                              </SecondaryLabel>
+                            );
+                          }}
+                          // @ts-ignore
+                          placeholder="APR"
+                        />
+                      </div>
 
                       {/**
                        * Delete Token
@@ -131,43 +266,14 @@ export const IncentivesRateSelector = React.forwardRef<
                     </div>
 
                     {/**
-                     * aip and distribution selector
+                     * distribution selector
                      */}
-                    <div className="grid w-full grid-cols-2 items-center gap-1">
+                    <div className="grid w-full grid-cols-1 items-center gap-1">
                       <InputAmountSelector
-                        currentValue={token.aip ?? ""}
+                        currentValue={token.distribution ?? ""}
                         setCurrentValue={(value) => {
                           /**
-                           * Set the amount of the token
-                           */
-                          marketActionForm.setValue(
-                            "incentive_tokens",
-                            marketActionForm
-                              .watch("incentive_tokens")
-                              .map((t) =>
-                                t.id === token.id ? { ...t, aip: value } : t
-                              )
-                          );
-                        }}
-                        Suffix={() => {
-                          return (
-                            <SecondaryLabel className="font-light text-black">
-                              %
-                            </SecondaryLabel>
-                          );
-                        }}
-                        // @ts-ignore
-                        placeholder="Yield"
-                      />
-
-                      {/**
-                       * Total Supply Selector
-                       */}
-                      <InputAmountSelector
-                        currentValue={token.total_supply ?? ""}
-                        setCurrentValue={(value) => {
-                          /**
-                           * Set the amount of the token
+                           * Set the distribution of the token
                            */
                           marketActionForm.setValue(
                             "incentive_tokens",
@@ -175,10 +281,65 @@ export const IncentivesRateSelector = React.forwardRef<
                               .watch("incentive_tokens")
                               .map((t) =>
                                 t.id === token.id
-                                  ? { ...t, total_supply: value }
+                                  ? { ...t, distribution: value }
                                   : t
                               )
                           );
+
+                          /**
+                           * Update aip
+                           */
+
+                          let aip = 0;
+
+                          try {
+                            let incentive_token_distribution =
+                              parseFloat(value);
+                            let incentive_token_fdv = parseFloat(
+                              token.fdv ?? "0"
+                            );
+                            let input_token_amount = parseFloat(
+                              marketActionForm.watch("quantity.amount") ?? "0"
+                            );
+                            let input_token_price =
+                              currentMarketData?.input_token_price ?? 0;
+                            let incentive_token_total_supply = parseFloat(
+                              token.total_supply ?? "0"
+                            );
+
+                            aip =
+                              ((incentive_token_distribution *
+                                incentive_token_fdv) /
+                                (input_token_amount *
+                                  input_token_price *
+                                  incentive_token_total_supply)) *
+                              100;
+                          } catch (err) {}
+
+                          /**
+                           * Set new aip
+                           */
+                          if (!isNaN(aip)) {
+                            marketActionForm.setValue(
+                              "incentive_tokens",
+                              marketActionForm
+                                .watch("incentive_tokens")
+                                .map((t) =>
+                                  t.id === token.id
+                                    ? { ...t, aip: aip.toString() }
+                                    : t
+                                )
+                            );
+                          } else {
+                            marketActionForm.setValue(
+                              "incentive_tokens",
+                              marketActionForm
+                                .watch("incentive_tokens")
+                                .map((t) =>
+                                  t.id === token.id ? { ...t, aip: "0" } : t
+                                )
+                            );
+                          }
                         }}
                         Suffix={() => {
                           return (
@@ -188,7 +349,7 @@ export const IncentivesRateSelector = React.forwardRef<
                           );
                         }}
                         // @ts-ignore
-                        placeholder="Distribution"
+                        placeholder="Incentive/Year"
                       />
                     </div>
                   </div>

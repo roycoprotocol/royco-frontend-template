@@ -20,7 +20,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-anon-key": "tsx scripts/generate-anon-key/index.tsx"
   },
   "dependencies": {
     "@blockaid/client": "^0.21.0",
@@ -77,6 +78,8 @@
     "immer": "^10.1.1",
     "input-otp": "^1.2.4",
     "jsonwebtoken": "^9.0.2",
+    "jsrsasign": "^11.1.0",
+    "jsrsasign-util": "^1.0.5",
     "lenis": "^1.1.9",
     "lodash": "^4.17.21",
     "lucide-react": "^0.378.0",
