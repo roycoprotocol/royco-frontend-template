@@ -38,6 +38,13 @@ export const GetUpdatesButton = React.forwardRef<
     },
   });
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const onSubmit = (data: z.infer<typeof subscribeFormSchema>) => {
     window.open(
       `https://paragraph.xyz/@royco/subscribe?email=${encodeURIComponent(
@@ -52,6 +59,7 @@ export const GetUpdatesButton = React.forwardRef<
       {/* <PopoverTrigger> */}
       {/* <MotionWrapper> */}
       <Button
+        onClick={() => scrollToSection("access-protocol")}
         className={cn(
           "flex w-fit flex-col items-center justify-center font-gt font-400 hover:opacity-100",
           "text-xs md:text-sm",
@@ -61,9 +69,9 @@ export const GetUpdatesButton = React.forwardRef<
         )}
         // {...props}
       >
-        <a href="#access-protocol" className="h-5 md:h-5">
+        <div className="h-5 md:h-5">
           <span className="leading-5 md:leading-5">Access Royco Protocol</span>
-        </a>
+        </div>
       </Button>
       {/* </MotionWrapper> */}
       {/* </PopoverTrigger> */}
