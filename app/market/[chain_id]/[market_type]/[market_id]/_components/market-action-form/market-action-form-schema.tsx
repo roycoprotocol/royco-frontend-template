@@ -26,8 +26,11 @@ export const MarketActionFormSchema = z.object({
       end_timestamp: z.date().optional(),
 
       fdv: z.string().optional(), // refers to market cap of token
+      total_supply: z.string().optional(), // refers to total supply of token
       aip: z.string().optional(), // refers to yield of token
-      total_supply: z.string().optional(), // refers to distribution of token
+      distribution: z.string().optional(), // refers to distribution of token
+
+      annual_incentive_rate: z.string().optional(),
     })
   ),
 

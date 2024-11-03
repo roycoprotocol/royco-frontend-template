@@ -11,7 +11,7 @@ import { FallMotion } from "@/components/animations";
 import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
-import { useSupportedTokens } from "@/sdk/hooks";
+import { getTokenQuote, useSupportedTokens, useTokenQuotes } from "@/sdk/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { AnimatePresence } from "framer-motion";
 import { SpringNumber } from "@/components/composables";
@@ -40,6 +40,10 @@ export const IncentiveTokenSelector = React.forwardRef<
       page,
       search,
       token_ids,
+    });
+
+    const propsTokenQuotes = useTokenQuotes({
+      token_ids: data.map((token) => token.id),
     });
 
     const canPrevPage = page > 1;
@@ -186,7 +190,14 @@ export const IncentiveTokenSelector = React.forwardRef<
                     >
                       <FallMotion height="1.75rem" customKey={baseKey}>
                         <div
-                          onClick={() => onSelect?.(token)}
+                          onClick={() => {
+                            const token_quote = getTokenQuote({
+                              token_id: token.id,
+                              token_quotes: propsTokenQuotes,
+                            });
+
+                            onSelect?.(token_quote);
+                          }}
                           key={`fall-motion:${baseKey}`}
                           tabIndex={0}
                           className="relative h-7 w-full cursor-pointer rounded-md px-1 py-1 text-center text-primary transition-all duration-200 ease-in-out hover:bg-focus hover:text-black"

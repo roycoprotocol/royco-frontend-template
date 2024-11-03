@@ -58,7 +58,7 @@ export const InputAmountWrapper = React.forwardRef<
             "address",
             marketActionForm.watch("funding_vault")
           )
-          ? marketActionForm.watch("funding_vault") ?? NULL_ADDRESS
+          ? (marketActionForm.watch("funding_vault") ?? NULL_ADDRESS)
           : NULL_ADDRESS
         : NULL_ADDRESS,
   });

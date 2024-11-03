@@ -1,6 +1,5 @@
 import {
   getTokenQuote,
-  useMarketAction,
   usePrepareMarketAction,
   useTokenQuotes,
 } from "@/sdk/hooks";
@@ -122,35 +121,23 @@ export const useMarketFormDetails = (
       .watch("incentive_tokens")
       .map((incentiveData) => {
         try {
-          const aipPercentage = parseFloat(incentiveData.aip ?? "0");
-          const aip = aipPercentage / 100;
-          const fdv = parseFloat(incentiveData.fdv ?? "0");
-          const total_supply = parseFloat(incentiveData.total_supply ?? "0");
+          const distribution = parseFloat(incentiveData.distribution ?? "0");
 
-          const offerAmount = parseFloat(
-            marketActionForm.watch("quantity")?.amount ?? ""
-          );
+          const distributionInWei = BigNumber.from(
+            parseTokenAmountToRawAmount(
+              distribution.toString(),
+              incentiveData.decimals
+            )
+          )
+            .mul(BigNumber.from(10).pow(incentiveData.decimals))
+            .div(
+              BigNumber.from(10).pow(
+                currentMarketData?.input_token_data.decimals ?? 0
+              )
+            )
+            .div(365 * 24 * 60 * 60);
 
-          const inputTokenData = getTokenQuote({
-            token_id: currentMarketData?.input_token_id ?? "",
-            token_quotes: propsTokenQuotes,
-          });
-
-          const inputTokenPrice = inputTokenData.price;
-          const incentiveTokenPrice = fdv / total_supply;
-
-          const rateInToken =
-            (aip * offerAmount * inputTokenPrice) /
-            (incentiveTokenPrice * (365 * 24 * 60 * 60));
-
-          if (isNaN(rateInToken)) {
-            return "0";
-          }
-
-          const rateInWei = parseTokenAmountToRawAmount(
-            rateInToken.toString(),
-            incentiveData.decimals
-          );
+          const rateInWei = distributionInWei.toString();
 
           return rateInWei === "" ? "0" : rateInWei;
         } catch (error) {

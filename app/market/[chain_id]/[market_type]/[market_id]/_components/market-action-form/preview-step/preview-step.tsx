@@ -220,7 +220,7 @@ export const PreviewStep = React.forwardRef<
             {!!incentiveData && (
               <div className="flex w-full flex-row items-center justify-between py-3">
                 <SecondaryLabel className="text-success">
-                  {`${userType === MarketUserType.ap.id ? "Net Yield" : "Net Incentives"}`}
+                  {`${userType === MarketUserType.ap.id ? "Net APR" : "Net Incentives"}`}
                 </SecondaryLabel>
 
                 <div className="flex w-fit flex-col items-end text-right">
@@ -243,19 +243,25 @@ export const PreviewStep = React.forwardRef<
                             0
                           )
                         )
-                      : Intl.NumberFormat("en-US", {
-                          style: "percent",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(
-                          incentiveData.reduce(
+                      : incentiveData.reduce(
                             (acc, incentive) =>
                               acc + incentive.annual_change_ratio,
                             0
-                          )
-                        )}
+                          ) >= Math.pow(10, 18)
+                        ? "N/D"
+                        : Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            notation: "compact",
+                            useGrouping: true,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(
+                            incentiveData.reduce(
+                              (acc, incentive) =>
+                                acc + incentive.annual_change_ratio,
+                              0
+                            )
+                          )}
                   </SecondaryLabel>
                   <TertiaryLabel>Estimated (May Change)</TertiaryLabel>
                 </div>

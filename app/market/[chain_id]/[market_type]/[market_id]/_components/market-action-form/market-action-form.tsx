@@ -13,7 +13,7 @@ import {
 import { useActiveMarket } from "../hooks";
 import { MarketActionType, MarketOfferType, MarketType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BaseFundingVault, useMarketAction, useTokenQuotes } from "@/sdk/hooks";
+import { BaseFundingVault, useTokenQuotes } from "@/sdk/hooks";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING_BOTTOM,
