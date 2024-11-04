@@ -37,8 +37,6 @@ export const MarketManager = React.forwardRef<
     marketMetadata,
   } = useActiveMarket();
 
-  // console.log("currentMarketData", currentMarketData);
-
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
   } else if (!currentMarketData) {

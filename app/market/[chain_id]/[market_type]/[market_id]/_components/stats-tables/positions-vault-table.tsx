@@ -3,13 +3,11 @@
 import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
-import { useEnrichedPositionsRecipe } from "@/sdk/hooks";
-import { MarketType, useMarketManager } from "@/store";
-import { offerColumns } from "./offer-columns";
+import { useEnrichedPositionsVault } from "@/sdk/hooks";
 import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
-import { positionsRecipeColumns } from "./positions-recipe-columns";
+import { positionsVaultColumns } from "./positions-vault-columns";
 
 export const PositionsVaultTable = React.forwardRef<
   HTMLDivElement,
@@ -19,14 +17,13 @@ export const PositionsVaultTable = React.forwardRef<
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
-  const { isLoading, data, isError, error } = useEnrichedPositionsVault({
+  const { isLoading, data, isError } = useEnrichedPositionsVault({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
     account_address: (address?.toLowerCase() as string) ?? "",
-    page_index: positionsRecipeTablePage,
   });
 
-  let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;
+  let totalCount = data ? data.length : 0;
 
   if (isLoading) {
     return (
@@ -44,12 +41,12 @@ export const PositionsVaultTable = React.forwardRef<
     return (
       <StatsDataTable
         pagination={{
-          currentPage: positionsRecipeTablePage,
-          totalPages: Math.ceil(totalCount / 20),
-          setPage: setPositionsRecipeTablePage,
+          currentPage: 0,
+          totalPages: 1,
+          setPage: () => {},
         }}
-        columns={positionsRecipeColumns}
-        data={data && data.data ? data.data : []}
+        columns={positionsVaultColumns}
+        data={data ?? []}
       />
     );
   }
