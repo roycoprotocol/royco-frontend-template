@@ -15,15 +15,17 @@ export const ActionFlow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     actions: decodeActionsReturnType["actions"];
-    size?: "sm" | "md" | "lg";
+    size?: "xs" | "sm" | "md" | "lg";
+    alert?: boolean;
   }
->(({ className, size, actions, ...props }, ref) => {
+>(({ className, size, actions, alert = true, ...props }, ref) => {
   return (
     <div
       ref={ref}
       className={cn(
         "flex w-full flex-col gap-3 font-gt text-base font-light text-black",
         size === "sm" && "text-sm",
+        size === "xs" && "text-xs",
         className
       )}
       {...props}
@@ -37,19 +39,31 @@ export const ActionFlow = React.forwardRef<
               key={BASE_KEY}
               className={cn(
                 "flex flex-row rounded-xl border border-divider bg-white p-3",
-                size === "sm" && "rounded-lg p-2"
+                size === "sm" && "rounded-lg p-2",
+                size === "xs" && " rounded-md p-1"
               )}
               delay={0.1 * actionIndex}
             >
               <div
                 className={cn(
                   "flex h-6 w-6 shrink-0 flex-col place-content-center items-center rounded-md border border-divider",
-                  size === "sm" && "h-5 w-5"
+                  size === "sm" && "h-5 w-5",
+                  size === "xs" && "h-5 w-5"
                 )}
               >
-                <div className={cn("flex h-5", size === "sm" && "h-4")}>
+                <div
+                  className={cn(
+                    "flex h-5",
+                    size === "sm" && "h-4",
+                    size === "xs" && "h-3"
+                  )}
+                >
                   <span
-                    className={cn("leading-5", size === "sm" && "leading-5")}
+                    className={cn(
+                      "leading-5",
+                      size === "sm" && "leading-5",
+                      size === "xs" && "leading-3"
+                    )}
                   >
                     {actionIndex + 1}
                   </span>
@@ -58,7 +72,8 @@ export const ActionFlow = React.forwardRef<
 
               <div
                 className={cn(
-                  "ml-3 mt-[0.1rem] flex grow text-wrap font-light"
+                  "ml-3 mt-[0.1rem] flex grow text-wrap font-light",
+                  size === "xs" && "ml-2"
                 )}
               >
                 <span className={cn("leading-5", size === "sm" && "leading-5")}>
@@ -108,7 +123,9 @@ export const ActionFlow = React.forwardRef<
           );
         })
       ) : (
-        <AlertIndicator className="p-3">No actions added</AlertIndicator>
+        <AlertIndicator className="p-3">
+          {alert ? "No actions added" : null}
+        </AlertIndicator>
       )}
     </div>
   );

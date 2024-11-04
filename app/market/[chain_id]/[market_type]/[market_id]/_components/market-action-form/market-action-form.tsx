@@ -263,7 +263,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:action-type"
-              className={cn("mt-5 flex flex-col px-5")}
+              className={cn("mb-5 mt-5 flex flex-col px-5")}
             >
               <HorizontalTabs
                 className={cn("")}
@@ -282,7 +282,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:offer-type-selector"
-              className={cn("mt-5 px-5")}
+              className={cn("px-5")}
             >
               <OfferTypeSelector />
             </SlideUpWrapper>

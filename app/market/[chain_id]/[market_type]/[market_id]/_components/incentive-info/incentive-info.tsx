@@ -11,6 +11,7 @@ import { useActiveMarket } from "../hooks";
 import { useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { SpringNumber } from "@/components/composables";
+import { format } from "date-fns";
 
 const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
@@ -133,6 +134,13 @@ export const IncentiveInfo = React.forwardRef<
               (token_data, token_data_index) => {
                 const BASE_KEY = `market:incentive-info:${incentiveType}:${token_data.id}`;
 
+                const start_date = Number(
+                  currentMarketData.base_start_timestamps?.[token_data_index]
+                );
+                const end_date = Number(
+                  currentMarketData.base_end_timestamps?.[token_data_index]
+                );
+
                 return (
                   <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
                     <InfoCard.Row.Key className="relative h-fit w-fit">
@@ -150,9 +158,15 @@ export const IncentiveInfo = React.forwardRef<
                        * @notice Invisible
                        */}
                       <InfoKeyElementClone
-                        className=""
+                        className="mb-1"
                         token_data={token_data}
                       />
+
+                      {start_date && end_date ? (
+                        <TertiaryLabel className={cn("", className)}>
+                          {`${format(start_date * 1000, "dd MMM yyyy")} - ${format(end_date * 1000, "dd MMM yyyy")}`}
+                        </TertiaryLabel>
+                      ) : null}
                     </InfoCard.Row.Key>
 
                     <InfoCard.Row.Value className="relative flex h-fit w-fit flex-col items-end gap-0">

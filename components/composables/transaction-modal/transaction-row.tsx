@@ -63,7 +63,7 @@ export const TransactionRow = React.forwardRef<
                             notation: "compact",
                             useGrouping: true,
                             minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
+                            maximumFractionDigits: 8,
                           }).format(
                             token.token_amount
                           )} ${token.symbol.toUpperCase()}`}

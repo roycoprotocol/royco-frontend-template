@@ -199,124 +199,128 @@ export const BalanceIndicator = React.forwardRef<
        * Show total balance
        */}
 
-      {isConnected && (
-        <InfoCard className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.XL)}>
-          {/**
-           * @info Input Token
-           */}
-          <InfoCard.Row className={cn(INFO_ROW_CLASSES, "gap-0")}>
-            <InfoCard.Row.Key>Input Token</InfoCard.Row.Key>
-            <InfoCard.Row.Value className="gap-0">
-              <SpringNumber
-                className="h-4"
-                spanClassName="leading-5"
-                previousValue={0}
-                currentValue={
+      {isConnected &&
+        placeholderData[1] !== undefined &&
+        placeholderData[1] !== null && (
+          <InfoCard className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.XL)}>
+            {/**
+             * @info Input Token
+             */}
+            <InfoCard.Row className={cn(INFO_ROW_CLASSES, "gap-0")}>
+              <InfoCard.Row.Key>Input Token</InfoCard.Row.Key>
+              <InfoCard.Row.Value className="gap-0">
+                <SpringNumber
+                  className="h-4"
+                  spanClassName="leading-5"
+                  previousValue={0}
+                  currentValue={
+                    balanceIncentiveType === MarketIncentiveType.ap.id
+                      ? (placeholderData[1]?.input_token_data_ap
+                          ?.token_amount ?? 0)
+                      : (placeholderData[1]?.input_token_data_ip
+                          ?.token_amount ?? 0)
+                  }
+                  numberFormatOptions={{
+                    style: "decimal",
+                    notation: "compact",
+                    useGrouping: true,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }}
+                />
+
+                <TokenDisplayer
+                  imageClassName="hidden"
+                  size={4}
+                  hover
+                  bounce
+                  tokens={
+                    placeholderData[1]?.input_token_data_ap
+                      ? [placeholderData[1].input_token_data_ap]
+                      : []
+                  }
+                  symbols={true}
+                />
+                <TokenDisplayer
+                  className="ml-2"
+                  size={4}
+                  hover
+                  bounce
+                  tokens={
+                    placeholderData[1]?.input_token_data_ip
+                      ? [placeholderData[1].input_token_data_ip]
+                      : []
+                  }
+                  symbols={false}
+                />
+              </InfoCard.Row.Value>
+            </InfoCard.Row>
+
+            {/**
+             * @info Incentives AP/IP
+             */}
+            <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+              <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
+              <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
+                {placeholderData[1]?.[
                   balanceIncentiveType === MarketIncentiveType.ap.id
-                    ? placeholderData[1]?.input_token_data_ap?.token_amount ?? 0
-                    : placeholderData[1]?.input_token_data_ip?.token_amount ?? 0
-                }
-                numberFormatOptions={{
-                  style: "decimal",
-                  notation: "compact",
-                  useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }}
-              />
-
-              <TokenDisplayer
-                imageClassName="hidden"
-                size={4}
-                hover
-                bounce
-                tokens={
-                  placeholderData[1]?.input_token_data_ap
-                    ? [placeholderData[1].input_token_data_ap]
-                    : []
-                }
-                symbols={true}
-              />
-              <TokenDisplayer
-                className="ml-2"
-                size={4}
-                hover
-                bounce
-                tokens={
-                  placeholderData[1]?.input_token_data_ip
-                    ? [placeholderData[1].input_token_data_ip]
-                    : []
-                }
-                symbols={false}
-              />
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-
-          {/**
-           * @info Incentives AP/IP
-           */}
-          <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-            <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
-            <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
-              {placeholderData[1]?.[
-                balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? "incentives_ap_data"
-                  : "incentives_ip_data"
-              ].length === 0 ? (
-                <InfoCard.Row.Value className="flex w-full flex-row place-content-end items-end gap-0">
-                  0.00
-                </InfoCard.Row.Value>
-              ) : null}
-
-              {placeholderData[1]?.[
-                balanceIncentiveType === MarketIncentiveType.ap.id
-                  ? "incentives_ap_data"
-                  : "incentives_ip_data"
-              ].map((incentive, index) => {
-                const BASE_KEY = `market:balance-indicator:balance-incentice-type:${balanceIncentiveType}:incentive:${incentive.id}`;
-
-                return (
-                  <InfoCard.Row.Value
-                    key={BASE_KEY}
-                    className="flex w-full flex-row place-content-end items-end gap-1"
-                  >
-                    <SpringNumber
-                      className="h-4"
-                      spanClassName="leading-5"
-                      previousValue={0}
-                      currentValue={incentive.token_amount}
-                      numberFormatOptions={{
-                        style: "decimal",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-
-                    <TokenDisplayer
-                      imageClassName="hidden"
-                      size={4}
-                      hover
-                      bounce
-                      tokens={[incentive]}
-                      symbols={true}
-                    />
-                    <TokenDisplayer
-                      className="ml-2"
-                      size={4}
-                      hover
-                      bounce
-                      tokens={[incentive]}
-                      symbols={false}
-                    />
+                    ? "incentives_ap_data"
+                    : "incentives_ip_data"
+                ].length === 0 ? (
+                  <InfoCard.Row.Value className="flex w-full flex-row place-content-end items-end gap-0">
+                    0.00
                   </InfoCard.Row.Value>
-                );
-              })}
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-        </InfoCard>
-      )}
+                ) : null}
+
+                {placeholderData[1]?.[
+                  balanceIncentiveType === MarketIncentiveType.ap.id
+                    ? "incentives_ap_data"
+                    : "incentives_ip_data"
+                ].map((incentive, index) => {
+                  const BASE_KEY = `market:balance-indicator:balance-incentice-type:${balanceIncentiveType}:incentive:${incentive.id}`;
+
+                  return (
+                    <InfoCard.Row.Value
+                      key={BASE_KEY}
+                      className="flex w-full flex-row place-content-end items-end gap-1"
+                    >
+                      <SpringNumber
+                        className="h-4"
+                        spanClassName="leading-5"
+                        previousValue={0}
+                        currentValue={incentive.token_amount}
+                        numberFormatOptions={{
+                          style: "decimal",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+
+                      <TokenDisplayer
+                        imageClassName="hidden"
+                        size={4}
+                        hover
+                        bounce
+                        tokens={[incentive]}
+                        symbols={true}
+                      />
+                      <TokenDisplayer
+                        className="ml-2"
+                        size={4}
+                        hover
+                        bounce
+                        tokens={[incentive]}
+                        symbols={false}
+                      />
+                    </InfoCard.Row.Value>
+                  );
+                })}
+              </InfoCard.Row.Value>
+            </InfoCard.Row>
+          </InfoCard>
+        )}
     </div>
   );
 });
