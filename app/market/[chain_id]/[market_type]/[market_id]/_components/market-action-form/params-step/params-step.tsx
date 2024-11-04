@@ -17,11 +17,7 @@ export const ParamsStep = React.forwardRef<
   const { marketMetadata } = useActiveMarket();
 
   return (
-    <div
-      ref={ref}
-      className={cn("flex min-h-[200px] grow flex-col", className)}
-      {...props}
-    >
+    <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       {marketMetadata.market_type === MarketType.recipe.id && (
         <RecipeForms marketActionForm={marketActionForm} />
       )}
