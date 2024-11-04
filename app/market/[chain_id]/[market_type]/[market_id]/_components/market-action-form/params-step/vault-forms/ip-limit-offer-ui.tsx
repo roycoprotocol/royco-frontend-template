@@ -18,6 +18,9 @@ export const IPLimitOfferUI = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
+      {/**
+       * Vault Incentive Action Type Selector
+       */}
       <SlideUpWrapper
         layout="position"
         layoutId="motion:market:vault-incentive-action-type"
@@ -26,6 +29,9 @@ export const IPLimitOfferUI = React.forwardRef<
         <ActionTypeSelector />
       </SlideUpWrapper>
 
+      {/**
+       * Incentives UI
+       */}
       <IPLimitOfferIncentivesUI marketActionForm={marketActionForm} />
     </div>
   );
