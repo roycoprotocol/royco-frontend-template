@@ -195,7 +195,7 @@ export const WithdrawSection = React.forwardRef<
                     <SlideUpWrapper
                       delay={positionIndex * 0.1}
                       className="w-full"
-                      key={`withdraw-position:${position?.id}:${withdrawType}`}
+                      key={`withdraw-position:${positionIndex}-${withdrawType}`}
                     >
                       <div className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl border border-divider p-3">
                         <div className="flex w-full grow flex-col items-start space-y-1">
