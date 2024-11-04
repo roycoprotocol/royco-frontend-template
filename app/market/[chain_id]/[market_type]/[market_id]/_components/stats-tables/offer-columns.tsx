@@ -53,10 +53,12 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
         <div
           className={cn(
             "font-gt text-sm font-300",
-            props.row.original.offer_side === 0 ? "text-success" : "text-error"
+            props.row.original.offer_side === "0"
+              ? "text-success"
+              : "text-error"
           )}
         >
-          {props.row.original.offer_side === 0 ? "AP" : "IP"}
+          {props.row.original.offer_side === "0" ? "AP" : "IP"}
         </div>
       );
     },

@@ -291,25 +291,11 @@ export const MarketActionForm = React.forwardRef<
         {/**
          * Withdraw Section (Input Token / Incentives)
          */}
-        {/* {actionType === MarketActionType.withdraw.id && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeIn" }}
-            className={cn(
-              "flex grow flex-col",
-              BASE_PADDING_LEFT,
-              BASE_PADDING_RIGHT,
-              BASE_PADDING_BOTTOM
-            )}
-          >
-            <AlertIndicator className={cn("h-full")}>
-              Withdrawal section is coming soon.
-            </AlertIndicator>
-         
-          </motion.div>
-        )} */}
+        {actionType === MarketActionType.withdraw.id && (
+          <SlideUpWrapper className="mt-5 grow px-5">
+            <WithdrawSection />
+          </SlideUpWrapper>
+        )}
 
         {/* <WithdrawSection /> */}
 
