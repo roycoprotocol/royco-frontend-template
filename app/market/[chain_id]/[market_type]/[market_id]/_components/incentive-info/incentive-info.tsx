@@ -180,16 +180,17 @@ export const IncentiveInfo = React.forwardRef<
             BASE_MARGIN_TOP.SM
           )}
         >
-          <SecondaryLabel className="text-success">Net Yield</SecondaryLabel>
+          <SecondaryLabel className="text-success">Net APR</SecondaryLabel>
 
           <SecondaryLabel className="text-success">
-            {currentMarketData.annual_change_ratio === Math.pow(10, 18) ? (
+            {(currentMarketData.annual_change_ratio ?? 0) >=
+            Math.pow(10, 18) ? (
               `N/D`
             ) : (
               <SpringNumber
                 previousValue={
                   previousMarketData
-                    ? previousMarketData.annual_change_ratio ?? 0
+                    ? (previousMarketData.annual_change_ratio ?? 0)
                     : 0
                 }
                 currentValue={currentMarketData.annual_change_ratio ?? 0}
