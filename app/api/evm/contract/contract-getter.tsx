@@ -8,7 +8,7 @@ import {
   getMetadataFromEtherscan,
   getMetadataReturnType,
 } from "./abi-functions";
-import { RPC_API_KEYS } from "./rpc-constants";
+import { RPC_API_KEYS } from "@/components/constants";
 import { isProxy } from "./proxy-checker";
 
 export type getContractReturnType = Array<{

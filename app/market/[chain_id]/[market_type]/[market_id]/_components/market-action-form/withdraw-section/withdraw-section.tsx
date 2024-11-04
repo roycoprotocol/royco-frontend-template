@@ -110,7 +110,7 @@ export const WithdrawSection = React.forwardRef<
   } = useMarketManager();
 
   const {
-    isLoading: isLaodingPositionsRecipe,
+    isLoading: isLoadingPositionsRecipe,
     data: postionsRecipe,
     isError,
     error,
@@ -155,6 +155,8 @@ export const WithdrawSection = React.forwardRef<
           (position) => position.offer_side === RoycoMarketUserType.ap.value
         );
 
+  console.log("positions", positions);
+
   return (
     <div
       ref={ref}
@@ -166,8 +168,8 @@ export const WithdrawSection = React.forwardRef<
           <SelectWithdrawType />
 
           <div className="mt-5 flex w-full grow flex-col">
-            <div className="flex grow flex-col place-content-start items-center">
-              {(isLaodingPositionsRecipe || isLoadingPositionsVault) && (
+            <div className="flex grow flex-col place-content-start items-center gap-2">
+              {(isLoadingPositionsRecipe || isLoadingPositionsVault) && (
                 <LoadingSpinner className="h-5 w-5" />
               )}
 
@@ -177,16 +179,13 @@ export const WithdrawSection = React.forwardRef<
                 </div>
               )}
 
-              {(!isLaodingPositionsRecipe && totalCount === 0 && isConnected) ||
-                (!isLoadingPositionsVault &&
-                  totalCount === 0 &&
-                  isConnected && (
-                    <div className="h-full w-full place-content-center items-start">
-                      <AlertIndicator>
-                        No withdrawable positions found
-                      </AlertIndicator>
-                    </div>
-                  ))}
+              {!!positions && positions.length === 0 && (
+                <div className="h-full w-full place-content-center items-start">
+                  <AlertIndicator>
+                    No withdrawable positions found
+                  </AlertIndicator>
+                </div>
+              )}
 
               {!!positions &&
                 totalCount > 0 &&

@@ -18,6 +18,7 @@ import {
   SolidityArray as ZodSolidityArray,
 } from "abitype/zod";
 import { getChain } from "./get-chain-all";
+import { RPC_API_KEYS } from "@/components/constants";
 
 export const isAbiValid = (value: string) => {
   try {
@@ -458,7 +459,7 @@ export const isERC4626VaultAddressValid = async (
 
     const publicClient = createPublicClient({
       chain,
-      transport: http(),
+      transport: http(RPC_API_KEYS[chain_id]),
     });
 
     const contract = getContract({

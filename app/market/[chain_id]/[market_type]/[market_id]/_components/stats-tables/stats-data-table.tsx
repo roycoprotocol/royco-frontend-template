@@ -170,7 +170,7 @@ export function StatsDataTable<TData, TValue>({
                       // @TODO strict type this
                       (cell, index) => (
                         <TableCell
-                          key={`list:cell:${cell.id}`}
+                          key={`stats-row:${row.index}:${cell.id}`}
                           className={cn(
                             "min-w-fit truncate text-ellipsis whitespace-nowrap font-gt text-sm font-light text-black",
                             index === 0 && "pl-5",

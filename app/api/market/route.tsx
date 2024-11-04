@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { http, createConfig } from "@wagmi/core";
 import { Chain, mainnet, sepolia } from "@wagmi/core/chains";
 import { createPublicClient } from "viem";
-import { RPC_API_KEYS } from "../evm/contract/rpc-constants";
+import { RPC_API_KEYS } from "@/components/constants";
 import { getMarketIdFromEventLog } from "@/sdk/market";
 
 export const dynamic = true;

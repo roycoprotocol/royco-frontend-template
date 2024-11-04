@@ -5,5 +5,4 @@ export * from "./get-supported-chain";
 export * from "./get-chain-all";
 export * from "./clause-constructors";
 export * from "./formatters";
-export * from "./base-wagmi-client";
 export * from "./safe-parsers";

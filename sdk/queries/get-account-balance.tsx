@@ -2,6 +2,7 @@ import { type Address } from "viem";
 import { createPublicClient, http, erc20Abi, erc4626Abi } from "viem";
 import { getChain } from "@/sdk/utils";
 import { RoycoMarketFundingType } from "../market";
+import { RPC_API_KEYS } from "@/components/constants";
 
 export const getAccountBalance = async ({
   chain_id,
@@ -16,7 +17,7 @@ export const getAccountBalance = async ({
 
   const publicClient = createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_API_KEYS[chain_id]),
   });
 
   const contractsBalance = tokens.map((token_address) => ({

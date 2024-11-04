@@ -2,7 +2,7 @@ import { erc4626Abi, type Address } from "viem";
 import { createPublicClient, http, erc20Abi } from "viem";
 import { getChain } from "@/sdk/utils";
 import { NULL_ADDRESS } from "../constants";
-
+import { RPC_API_KEYS } from "@/components/constants";
 export const getVaultAllowance = async ({
   chain_id,
   account,
@@ -18,7 +18,7 @@ export const getVaultAllowance = async ({
 
   const publicClient = createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_API_KEYS[chain_id]),
   });
 
   const contracts = [
@@ -76,7 +76,7 @@ export const getVaultAllowanceQueryOptions = (
       // Handle invalid allowance
       const raw_amount =
         allowanceResult.status === "success"
-          ? allowanceResult.result?.toString() ?? "0"
+          ? (allowanceResult.result?.toString() ?? "0")
           : "0";
 
       return {
