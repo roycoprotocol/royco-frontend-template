@@ -21,7 +21,7 @@ export const VaultForms = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <div className="h-12 grow overflow-x-hidden overflow-y-scroll">
+      <div className="grow overflow-x-hidden overflow-y-scroll">
         {userType === MarketUserType.ap.id && (
           <APOfferUI marketActionForm={marketActionForm} />
         )}
