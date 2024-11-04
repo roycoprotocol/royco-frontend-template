@@ -17,7 +17,6 @@ import { useRecipeIPLimitOffer } from "./use-recipe-ip-limit-offer";
 import { useVaultAPMarketOffer } from "./use-vault-ap-market-offer";
 import { useVaultAPLimitOffer } from "./use-vault-ap-limit-offer";
 import { useVaultIPMarketOffer } from "./use-vault-ip-market-offer";
-import { useVaultIPLimitOffer } from "./use-vault-ip-limit-offer";
 import { useVaultIPAddIncentives } from "./use-vault-ip-add-incentives";
 import { MarketVaultIncentiveAction } from "@/store";
 import { useVaultIPExtendIncentives } from "./use-vault-ip-extend-incentives";
@@ -106,126 +105,144 @@ export const usePrepareMarketAction = ({
 }) => {
   const action_type = `${market_type}-${user_type}-${offer_type}`;
 
-  const propsRecipeAPMarketOffer = useRecipeAPMarketOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    funding_vault,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
-    offer_validation_url,
-  });
+  const propsRecipeAPMarketOffer =
+    action_type === PrepareMarketActionType.RecipeAPMarketOffer
+      ? useRecipeAPMarketOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          funding_vault,
+          custom_token_data,
+          frontend_fee_recipient,
+          offer_validation_url,
+        })
+      : useInvalidMarketAction();
 
-  const propsRecipeIPMarketOffer = useRecipeIPMarketOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
-    offer_validation_url,
-  });
+  const propsRecipeIPMarketOffer =
+    action_type === PrepareMarketActionType.RecipeIPMarketOffer
+      ? useRecipeIPMarketOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          custom_token_data,
+          offer_validation_url,
+        })
+      : useInvalidMarketAction();
 
-  const propsRecipeAPLimitOffer = useRecipeAPLimitOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    token_ids,
-    token_amounts,
-    expiry,
-    funding_vault,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
-  });
+  const propsRecipeAPLimitOffer =
+    action_type === PrepareMarketActionType.RecipeAPLimitOffer
+      ? useRecipeAPLimitOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          token_ids,
+          token_amounts,
+          expiry,
+          funding_vault,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
-  const propsRecipeIPLimitOffer = useRecipeIPLimitOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    token_ids,
-    token_amounts,
-    expiry,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
-  });
+  const propsRecipeIPLimitOffer =
+    action_type === PrepareMarketActionType.RecipeIPLimitOffer
+      ? useRecipeIPLimitOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          token_ids,
+          token_amounts,
+          expiry,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultAPMarketOffer = useVaultAPMarketOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    custom_token_data,
-    frontend_fee_recipient,
-    enabled: market_type === RoycoMarketType.vault.id,
-  });
+  const propsVaultAPMarketOffer =
+    action_type === PrepareMarketActionType.VaultAPMarketOffer
+      ? useVaultAPMarketOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          custom_token_data,
+          frontend_fee_recipient,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultIPMarketOffer = useVaultIPMarketOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    custom_token_data,
-    frontend_fee_recipient,
-    enabled: market_type === RoycoMarketType.vault.id,
-  });
+  const propsVaultIPMarketOffer =
+    action_type === PrepareMarketActionType.VaultIPMarketOffer
+      ? useVaultIPMarketOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          custom_token_data,
+          frontend_fee_recipient,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultAPLimitOffer = useVaultAPLimitOffer({
-    chain_id,
-    market_id,
-    account,
-    quantity,
-    token_ids,
-    token_rates,
-    expiry,
-    funding_vault,
-    custom_token_data,
-    enabled: market_type === RoycoMarketType.vault.id,
-  });
+  const propsVaultAPLimitOffer =
+    action_type === PrepareMarketActionType.VaultAPLimitOffer
+      ? useVaultAPLimitOffer({
+          chain_id,
+          market_id,
+          account,
+          quantity,
+          token_ids,
+          token_rates,
+          expiry,
+          funding_vault,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultIPAddIncentives = useVaultIPAddIncentives({
-    chain_id,
-    market_id,
-    account,
-    token_ids,
-    token_amounts,
-    start_timestamps,
-    end_timestamps,
-    custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.add.id,
-  });
+  const propsVaultIPAddIncentives =
+    action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+    !!vault_incentive_action &&
+    vault_incentive_action === MarketVaultIncentiveAction.add.id
+      ? useVaultIPAddIncentives({
+          chain_id,
+          market_id,
+          account,
+          token_ids,
+          token_amounts,
+          start_timestamps,
+          end_timestamps,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultIPExtendIncentives = useVaultIPExtendIncentives({
-    chain_id,
-    market_id,
-    account,
-    token_ids,
-    token_amounts,
-    end_timestamps,
-    custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
-        vault_incentive_action === MarketVaultIncentiveAction.extend.id),
-  });
+  const propsVaultIPExtendIncentives =
+    action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+    !!vault_incentive_action &&
+    (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+      vault_incentive_action === MarketVaultIncentiveAction.extend.id)
+      ? useVaultIPExtendIncentives({
+          chain_id,
+          market_id,
+          account,
+          token_ids,
+          token_amounts,
+          end_timestamps,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
-  const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
-    chain_id,
-    market_id,
-    account,
-    token_ids,
-    custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.refund.id,
-  });
+  const propsVaultIPRefundIncentives =
+    action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+    !!vault_incentive_action &&
+    vault_incentive_action === MarketVaultIncentiveAction.refund.id
+      ? useVaultIPRefundIncentives({
+          chain_id,
+          market_id,
+          account,
+          token_ids,
+          custom_token_data,
+        })
+      : useInvalidMarketAction();
 
   const propsInvalidMarketAction = useInvalidMarketAction();
 
