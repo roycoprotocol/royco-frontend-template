@@ -50,7 +50,7 @@ export const CentralBar = React.forwardRef<
           marketMetadata.market_type === RoycoMarketType.recipe.id
             ? (currentMarketData?.quantity_ap_usd ?? 0) +
                 (currentMarketData?.quantity_ip_usd ?? 0)
-            : currentMarketData?.quantity_ap_usd ?? 0
+            : (currentMarketData?.quantity_ap_usd ?? 0)
         )}
       </SecondaryLabel>
 
@@ -166,7 +166,7 @@ export const OfferList = React.forwardRef<
         )}
       >
         <TertiaryLabel className="text-tertiary">SIZE</TertiaryLabel>
-        <TertiaryLabel className="text-tertiary">Yield</TertiaryLabel>
+        <TertiaryLabel className="text-tertiary">APR</TertiaryLabel>
       </div>
 
       {/**
@@ -193,8 +193,8 @@ export const OfferList = React.forwardRef<
                 previousValue:
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
-                    ? previousHighestOffers?.ip_offers[offerIndex]
-                        .quantity_value_usd ?? 0
+                    ? (previousHighestOffers?.ip_offers[offerIndex]
+                        .quantity_value_usd ?? 0)
                     : 0,
 
                 currentValue: offer.quantity_value_usd as number,
@@ -204,8 +204,8 @@ export const OfferList = React.forwardRef<
                 previousValue:
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
-                    ? previousHighestOffers?.ip_offers[offerIndex]
-                        .annual_change_ratio ?? 0
+                    ? (previousHighestOffers?.ip_offers[offerIndex]
+                        .annual_change_ratio ?? 0)
                     : 0,
                 currentValue: offer.annual_change_ratio as number,
               };
@@ -252,8 +252,8 @@ export const OfferList = React.forwardRef<
               previousValue:
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
-                  ? previousHighestOffers?.ap_offers[offerIndex]
-                      .quantity_value_usd ?? 0
+                  ? (previousHighestOffers?.ap_offers[offerIndex]
+                      .quantity_value_usd ?? 0)
                   : 0,
 
               currentValue: offer.quantity_value_usd as number,
@@ -263,8 +263,8 @@ export const OfferList = React.forwardRef<
               previousValue:
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
-                  ? previousHighestOffers?.ap_offers[offerIndex].change_ratio ??
-                    0
+                  ? (previousHighestOffers?.ap_offers[offerIndex]
+                      .change_ratio ?? 0)
                   : 0,
               currentValue: offer.annual_change_ratio as number,
             };
