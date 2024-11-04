@@ -1,5 +1,5 @@
 import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
-import { isSolidityIntValid } from "@/sdk/utils";
+import { isSolidityIntValid, parseRawAmount } from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { useMarketOffers } from "../use-market-offers";
@@ -295,7 +295,7 @@ export const useRecipeIPMarketOffer = ({
 
   // Get market offers validator
   const propsMarketOffersValidator = useMarketOffersValidator({
-    offer_ids: propsMarketOffers.data?.map((offer) => offer.offer_id) ?? [],
+    offer_ids: propsMarketOffers.data?.map((offer) => offer.id) ?? [],
     offerValidationUrl: offer_validation_url,
   });
 
@@ -474,13 +474,20 @@ export const useRecipeIPMarketOffer = ({
 
   // Check if offer can be performed completely or partially
   if (isReady) {
-    if (BigNumber.from(inputTokenData.raw_amount).lte(0)) {
+    const fillRequested = parseRawAmount(quantity ?? "0");
+    const fillAvailable = parseRawAmount(
+      propsMarketOffers.data?.reduce((acc, offer) => {
+        return BigNumber.from(acc)
+          .add(BigNumber.from(offer.fill_quantity))
+          .toString();
+      }, "0") ?? "0"
+    );
+
+    if (BigNumber.from(fillAvailable).lte(0)) {
       canBePerformedCompletely = false;
       canBePerformedPartially = false;
     } else if (
-      BigNumber.from(inputTokenData.raw_amount).eq(
-        BigNumber.from(quantity ?? 0)
-      )
+      BigNumber.from(fillAvailable).eq(BigNumber.from(fillRequested))
     ) {
       canBePerformedCompletely = true;
       canBePerformedPartially = true;
