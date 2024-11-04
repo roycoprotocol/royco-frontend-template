@@ -107,7 +107,9 @@ export const isVaultIPExtendIncentivesValid = ({
       const rewardsAdded = BigNumber.from(token_amounts[i]);
 
       if (newEnd.lte(rewardsInterval.end)) {
-        throw new Error("Invalid interval");
+        throw new Error(
+          "New end time must be greater than the existing end time"
+        );
       }
 
       const blockTimestamp = BigNumber.from(

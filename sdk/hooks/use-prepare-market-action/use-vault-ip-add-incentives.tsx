@@ -93,13 +93,17 @@ export const isVaultIPAddIncentivesValid = ({
       const totalRewards = BigNumber.from(token_amounts[i]);
 
       if (start.gte(end) || end.lte(blockTimestamp)) {
-        throw new Error("Invalid Interval");
+        if (start.gte(end)) {
+          throw new Error("Start time must be before end time");
+        } else if (end.lte(blockTimestamp)) {
+          throw new Error("End time must be in the future");
+        }
       }
 
       const MIN_CAMPAIGN_DURATION = 7 * 24 * 60 * 60; // 1 week
 
       if (end.sub(start).lt(MIN_CAMPAIGN_DURATION)) {
-        throw new Error("Invalid campaign duration");
+        throw new Error("Campaign duration must be at least 1 week");
       }
 
       let rewardsInterval = {

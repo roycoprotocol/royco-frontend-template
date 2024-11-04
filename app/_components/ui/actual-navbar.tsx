@@ -107,6 +107,7 @@ export const ActualNavbar = React.forwardRef<
                   const BASE_KEY = `navbar-link:mobile:${id}`;
                   return link ? (
                     <motion.a
+                      key={`navbar-link:mobile:${BASE_KEY}-${id}`}
                       href={link}
                       target={target}
                       rel="noopener noreferrer"
@@ -122,7 +123,6 @@ export const ActualNavbar = React.forwardRef<
                         duration: 0.3,
                         ease: "easeInOut",
                       }}
-                      key={BASE_KEY}
                       className="text-center text-primary"
                     >
                       {label}
@@ -130,6 +130,7 @@ export const ActualNavbar = React.forwardRef<
                   ) : (
                     items?.map((item, index) => (
                       <motion.a
+                        key={`navbar-link:mobile:${BASE_KEY}-${item.id}`}
                         href={item.link}
                         target={item.target}
                         rel="noopener noreferrer"
@@ -145,7 +146,6 @@ export const ActualNavbar = React.forwardRef<
                           duration: 0.3,
                           ease: "easeInOut",
                         }}
-                        key={BASE_KEY}
                         className="text-center text-primary"
                       >
                         {item.label}
@@ -195,7 +195,7 @@ export const ActualNavbar = React.forwardRef<
                 href={link}
                 target={target}
                 rel="noopener noreferrer"
-                key={BASE_KEY}
+                key={`navbar-link:${BASE_KEY}`}
                 {...(pathname === "/" && {
                   initial: {
                     x: -40,
@@ -223,11 +223,12 @@ export const ActualNavbar = React.forwardRef<
                 {label}
               </a>
             ) : (
-              <DropdownMenu>
+              <DropdownMenu key={`navbar-link:learn:${BASE_KEY}`}>
                 <DropdownMenuTrigger>Learn</DropdownMenuTrigger>
                 <DropdownMenuContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
                   {items?.map((item) => (
                     <a
+                      key={`navbar-link:learn:${BASE_KEY}-${item.id}`}
                       href={item.link}
                       target={item.target}
                       rel="noopener noreferrer"

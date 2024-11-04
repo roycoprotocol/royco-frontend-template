@@ -220,7 +220,7 @@ export const PreviewStep = React.forwardRef<
             {!!incentiveData && (
               <div className="flex w-full flex-row items-center justify-between py-3">
                 <SecondaryLabel className="text-success">
-                  {`${userType === MarketUserType.ap.id ? "Net APR" : "Net Incentives"}`}
+                  {`${userType === MarketUserType.ap.id ? "Net APR" : "Net APR"}`}
                 </SecondaryLabel>
 
                 <div className="flex w-fit flex-col items-end text-right">
@@ -284,10 +284,11 @@ export const PreviewStep = React.forwardRef<
           {!!writeContractOptions &&
             writeContractOptions.map((txOptions, txIndex) => {
               if (!!txOptions) {
-                const key = `transaction-row:${txIndex}`;
+                const BASE_KEY = `transaction-row:${txIndex}`;
 
                 return (
                   <SlideUpWrapper
+                    key={`preview-step:transaction-row:${BASE_KEY}`}
                     layout="position"
                     layoutId={`motion:market:preview-step:transaction-row:${txIndex}`}
                     delay={0.5 + txIndex * 0.05}
@@ -324,8 +325,8 @@ export const PreviewStep = React.forwardRef<
                   </div>
                 </div>
                 <div className="mt-2">
-                  Complete offer cannot be filled completely, but partial fill
-                  is available.
+                  The offer cannot be filled completely, but partial fill is
+                  available.
                 </div>
               </div>
             </SlideUpWrapper>

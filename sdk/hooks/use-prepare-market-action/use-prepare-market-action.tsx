@@ -17,7 +17,6 @@ import { useRecipeIPLimitOffer } from "./use-recipe-ip-limit-offer";
 import { useVaultAPMarketOffer } from "./use-vault-ap-market-offer";
 import { useVaultAPLimitOffer } from "./use-vault-ap-limit-offer";
 import { useVaultIPMarketOffer } from "./use-vault-ip-market-offer";
-import { useVaultIPLimitOffer } from "./use-vault-ip-limit-offer";
 import { useVaultIPAddIncentives } from "./use-vault-ip-add-incentives";
 import { MarketVaultIncentiveAction } from "@/store";
 import { useVaultIPExtendIncentives } from "./use-vault-ip-extend-incentives";
@@ -114,6 +113,7 @@ export const usePrepareMarketAction = ({
     funding_vault,
     custom_token_data,
     enabled: market_type === RoycoMarketType.recipe.id,
+    frontend_fee_recipient,
     offer_validation_url,
   });
 
@@ -182,7 +182,6 @@ export const usePrepareMarketAction = ({
     expiry,
     funding_vault,
     custom_token_data,
-    enabled: market_type === RoycoMarketType.vault.id,
   });
 
   const propsVaultIPAddIncentives = useVaultIPAddIncentives({
@@ -194,10 +193,6 @@ export const usePrepareMarketAction = ({
     start_timestamps,
     end_timestamps,
     custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.add.id,
   });
 
   const propsVaultIPExtendIncentives = useVaultIPExtendIncentives({
@@ -208,11 +203,6 @@ export const usePrepareMarketAction = ({
     token_amounts,
     end_timestamps,
     custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
-        vault_incentive_action === MarketVaultIncentiveAction.extend.id),
   });
 
   const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
@@ -221,10 +211,6 @@ export const usePrepareMarketAction = ({
     account,
     token_ids,
     custom_token_data,
-    enabled:
-      market_type === RoycoMarketType.vault.id &&
-      !!vault_incentive_action &&
-      vault_incentive_action === MarketVaultIncentiveAction.refund.id,
   });
 
   const propsInvalidMarketAction = useInvalidMarketAction();

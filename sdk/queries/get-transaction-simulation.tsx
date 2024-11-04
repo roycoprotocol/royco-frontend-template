@@ -105,27 +105,29 @@ export const getTransactionSimulationQueryOptions = ({
         const existingToken = acc[token_id];
 
         const token_data = getSupportedToken(token_id);
+        const currentRawAmount = BigNumber.from(d.raw_amount ?? "0");
 
         if (existingToken) {
           // If token already exists, add up the amounts
-          existingToken.raw_amount = BigNumber.from(existingToken.raw_amount)
-            .add(BigNumber.from(d.raw_amount ?? "0") ?? "0")
+          const newRawAmount = BigNumber.from(existingToken.raw_amount)
+            .add(currentRawAmount)
             .toString();
 
-          existingToken.token_amount = (
-            parseFloat(existingToken.token_amount) +
-            parseFloat(
-              ethers.utils.formatUnits(d.raw_amount ?? "0", token_data.decimals)
-            )
-          ).toString();
-
+          existingToken.raw_amount = newRawAmount;
+          existingToken.token_amount = ethers.utils.formatUnits(
+            newRawAmount,
+            token_data.decimals
+          );
           existingToken.token_amount_usd += d.dollar_value ?? 0;
         } else {
           // If token doesn't exist, add it to the accumulator
           acc[token_id] = {
             ...token_data,
-            raw_amount: d.raw_amount ?? "0",
-            token_amount: d.amount ?? "0",
+            raw_amount: currentRawAmount.toString(),
+            token_amount: ethers.utils.formatUnits(
+              currentRawAmount,
+              token_data.decimals
+            ),
             token_amount_usd: d.dollar_value ?? 0,
             type: "in",
           };
@@ -142,23 +144,28 @@ export const getTransactionSimulationQueryOptions = ({
         const existingToken = acc[token_id];
 
         const token_data = getSupportedToken(token_id);
+        const currentRawAmount = BigNumber.from(d.raw_amount ?? "0");
 
         if (existingToken) {
           // If token already exists, add up the amounts
-          existingToken.raw_amount = BigNumber.from(existingToken.raw_amount)
-            .add(BigNumber.from(d.raw_amount) ?? "0")
+          const newRawAmount = BigNumber.from(existingToken.raw_amount)
+            .add(currentRawAmount)
             .toString();
-          existingToken.token_amount = (
-            parseFloat(existingToken.token_amount) + parseFloat(d.amount ?? "0")
-          ).toString();
+
+          existingToken.raw_amount = newRawAmount;
+          existingToken.token_amount = ethers.utils.formatUnits(
+            newRawAmount,
+            token_data.decimals
+          );
           existingToken.token_amount_usd += d.dollar_value ?? 0;
         } else {
           // If token doesn't exist, add it to the accumulator
           acc[token_id] = {
             ...token_data,
-            raw_amount: d.raw_amount ?? "0",
-            token_amount: parseFloat(
-              ethers.utils.formatUnits(d.raw_amount ?? "0", token_data.decimals)
+            raw_amount: currentRawAmount.toString(),
+            token_amount: ethers.utils.formatUnits(
+              currentRawAmount,
+              token_data.decimals
             ),
             token_amount_usd: d.dollar_value ?? 0,
             type: "out",
