@@ -1,6 +1,7 @@
 import { type Address } from "viem";
 import { createPublicClient, http, erc20Abi } from "viem";
 import { getChain } from "@/sdk/utils";
+import { RPC_API_KEYS } from "@/components/constants";
 
 export const getAccountAllowance = async ({
   chain_id,
@@ -20,7 +21,7 @@ export const getAccountAllowance = async ({
       multicall: true,
     },
     chain,
-    transport: http(),
+    transport: http(RPC_API_KEYS[chain_id]),
   });
 
   const contractsBalance = tokens.map((token_address) => ({

@@ -2,7 +2,7 @@ import { type Address } from "viem";
 import { createPublicClient, http, erc4626Abi } from "viem";
 import { getChain } from "@/sdk/utils";
 import { NULL_ADDRESS } from "../constants";
-
+import { RPC_API_KEYS } from "@/components/constants";
 export const getVaultBalance = async ({
   chain_id,
   account,
@@ -16,7 +16,7 @@ export const getVaultBalance = async ({
 
   const publicClient = createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_API_KEYS[chain_id]),
   });
 
   const contracts = [
@@ -72,7 +72,7 @@ export const getVaultBalanceQueryOptions = (
       // Handle invalid balance
       const raw_amount =
         balanceResult.status === "success"
-          ? balanceResult.result?.toString() ?? "0"
+          ? (balanceResult.result?.toString() ?? "0")
           : "0";
 
       return {
