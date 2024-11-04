@@ -11,19 +11,11 @@ export const useEnrichedPositionsVault = ({
   chain_id,
   market_id,
   custom_token_data,
-  page_index = 0,
-  filters = [],
-  sorting,
-  enabled = true,
 }: {
   account_address: string;
   chain_id: number;
   market_id: string;
   custom_token_data?: CustomTokenData;
-  page_index?: number;
-  filters?: Array<BaseQueryFilter>;
-  sorting?: Array<BaseSortingFilter>;
-  enabled?: boolean;
 }) => {
   let data = null;
 
@@ -93,6 +85,7 @@ export const useEnrichedPositionsVault = ({
     propsEnrichedAccountBalancesVaultInMarket.isSuccess;
 
   return {
+    data,
     isLoading,
     isRefetching,
     isError,

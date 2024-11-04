@@ -14,6 +14,7 @@ import {
 } from "../composables";
 import { PositionsRecipeTable } from "./positions-recipe-table";
 import { useActiveMarket } from "../hooks";
+import { PositionsVaultTable } from "./positions-vault-table";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,
@@ -62,10 +63,7 @@ export const StatsTables = React.forwardRef<
           marketMetadata.market_type === MarketType.recipe.id ? (
             <PositionsRecipeTable />
           ) : (
-            // <div>Vault positions table</div>
-            <AlertIndicator className="h-full w-full">
-              Coming Soon
-            </AlertIndicator>
+            <PositionsVaultTable />
           )
         ) : (
           <OfferTable />
