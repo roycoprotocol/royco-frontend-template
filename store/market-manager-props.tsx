@@ -373,7 +373,7 @@ export const createMarketManagerStore = () => {
       balanceIncentiveType: TypedRoycoMarketIncentiveType
     ) => set({ balanceIncentiveType }),
 
-    statsView: MarketStatsView.offers.id,
+    statsView: MarketStatsView.positions.id,
     setStatsView: (statsView: MarketStatsViewType) => set({ statsView }),
 
     offerTablePage: 0,

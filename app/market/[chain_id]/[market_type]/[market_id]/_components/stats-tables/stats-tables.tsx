@@ -35,25 +35,27 @@ export const StatsTables = React.forwardRef<
         )}
       >
         <TertiaryLabel
-          onClick={() => setStatsView(MarketStatsView.offers.id)}
-          className={cn(
-            BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent",
-            statsView === MarketStatsView.offers.id && "decoration-tertiary"
-          )}
-        >
-          OFFERS
-        </TertiaryLabel>
-        <TertiaryLabel>/</TertiaryLabel>
-        <TertiaryLabel
           onClick={() => setStatsView(MarketStatsView.positions.id)}
           className={cn(
             BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent",
+            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
             statsView === MarketStatsView.positions.id && "decoration-tertiary"
           )}
         >
           POSITIONS
+        </TertiaryLabel>
+
+        <TertiaryLabel>/</TertiaryLabel>
+
+        <TertiaryLabel
+          onClick={() => setStatsView(MarketStatsView.offers.id)}
+          className={cn(
+            BASE_UNDERLINE.MD,
+            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
+            statsView === MarketStatsView.offers.id && "decoration-tertiary"
+          )}
+        >
+          OFFERS
         </TertiaryLabel>
       </div>
 

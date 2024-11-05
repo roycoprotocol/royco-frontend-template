@@ -166,7 +166,7 @@ export const MarketActionForm = React.forwardRef<
   if (!!currentMarketData) {
     return (
       <div
-        key={`market-action-form:container:${viewType}`}
+        key={`market-action-form:container:${marketStep}:${viewType}`}
         ref={ref}
         className={cn(
           "flex w-full shrink-0 grow flex-col",
@@ -178,7 +178,7 @@ export const MarketActionForm = React.forwardRef<
         {marketStep !== MarketSteps.params.id && (
           <SlideUpWrapper
             layout="position"
-            layoutId="motion:market:back-button"
+            layoutId={`motion:market:back-button:${marketStep}`}
             className={cn(
               "mt-5 flex w-full flex-row place-content-start items-center px-5 pb-3 text-left"
             )}

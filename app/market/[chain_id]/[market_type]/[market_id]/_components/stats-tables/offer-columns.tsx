@@ -40,29 +40,33 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
   //     return <div>{props.row.original.name}</div>;
   //   },
   // },
-  {
-    accessorKey: "offer_side",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Side",
-    meta: {
-      className: "min-w-24",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "font-gt text-sm font-300",
-            props.row.original.offer_side === "0"
-              ? "text-success"
-              : "text-error"
-          )}
-        >
-          {props.row.original.offer_side === "0" ? "AP" : "IP"}
-        </div>
-      );
-    },
-  },
+
+  /**
+   * @note Commented out for now because we are filtering offers by user type
+   */
+  // {
+  //   accessorKey: "offer_side",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Side",
+  //   meta: {
+  //     className: "min-w-24",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "font-gt text-sm font-300",
+  //           props.row.original.offer_side === "0"
+  //             ? "text-success"
+  //             : "text-error"
+  //         )}
+  //       >
+  //         {props.row.original.offer_side === "0" ? "AP" : "IP"}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "tokens_data",
     enableResizing: false,
