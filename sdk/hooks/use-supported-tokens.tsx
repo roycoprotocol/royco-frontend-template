@@ -27,7 +27,7 @@ export const useSupportedTokens = ({
     );
   }
 
-  if (!!token_ids && token_ids.length > 0) {
+  if (!!token_ids) {
     filteredTokens = filteredTokens.filter((token) =>
       token_ids.includes(token.id)
     );

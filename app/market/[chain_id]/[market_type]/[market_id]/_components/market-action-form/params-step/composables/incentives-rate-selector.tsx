@@ -44,6 +44,7 @@ export const IncentivesRateSelector = React.forwardRef<
           />
 
           <IncentiveTokenSelector
+            token_ids={currentMarketData?.base_incentive_ids ?? []}
             selected_token_ids={marketActionForm
               .watch("incentive_tokens")
               .map((token) => token.id)}
