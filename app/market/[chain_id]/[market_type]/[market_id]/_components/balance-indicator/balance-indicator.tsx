@@ -122,33 +122,6 @@ export const BalanceIndicator = React.forwardRef<
       <TertiaryLabel>BALANCES</TertiaryLabel>
 
       {/**
-       * Show distinction between AP and IP
-       */}
-      {(placeholderData[1]?.incentives_ip_data.length !== 0 ||
-        placeholderData[1]?.incentives_ap_data.length !== 0 ||
-        placeholderData[1]?.input_token_data_ap.token_amount !== 0 ||
-        placeholderData[1]?.input_token_data_ip.token_amount !== 0) && (
-        <HorizontalTabs
-          className={cn(BASE_MARGIN_TOP.MD)}
-          size="sm"
-          key="market:balance-incentive-type:container"
-          baseId="market:balance-incentive-type"
-          tabs={[
-            {
-              label: "AP",
-              id: MarketIncentiveType.ap.id,
-            },
-            {
-              label: "IP",
-              id: MarketIncentiveType.ip.id,
-            },
-          ]}
-          activeTab={balanceIncentiveType}
-          setter={setBalanceIncentiveType}
-        />
-      )}
-
-      {/**
        * Total balance for recipe
        */}
       {placeholderData[1] && (
