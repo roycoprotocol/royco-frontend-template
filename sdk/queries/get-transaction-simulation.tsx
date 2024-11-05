@@ -23,20 +23,12 @@ export const getTransactionSimulationQueryOptions = ({
   simulationUrl: string;
   account: string;
 }) => ({
-  queryKey: [
-    "simulate",
-    createHash("sha256")
-      .update(
-        writeContractOptions
-          .map(
-            (option) =>
-              `${option.contractId}${option.chainId}${option.address}${option.functionName}${JSON.stringify(option.args)}`
-          )
-          .join("")
-      )
-      .digest("hex"),
-  ],
+  queryKey: ["simulate", JSON.stringify(writeContractOptions)],
   queryFn: async () => {
+    if (!writeContractOptions) {
+      return [];
+    }
+
     const response = await fetch(simulationUrl ?? "", {
       method: "POST",
       headers: {
