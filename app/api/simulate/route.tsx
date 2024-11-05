@@ -97,6 +97,7 @@ export const simulateTransaction = async ({
 
     return {
       status: "success",
+      // data: simulations,
       data: response,
     };
   } catch (error) {

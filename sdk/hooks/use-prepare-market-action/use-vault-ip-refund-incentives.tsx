@@ -21,12 +21,19 @@ export const isVaultIPRefundIncentivesValid = ({
   baseMarket,
   enrichedMarket,
   token_ids,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   token_ids: string[] | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check market
     if (!enrichedMarket || !baseMarket) {
       throw new Error("Market is missing");
@@ -98,11 +105,21 @@ export const calculateVaultIPRefundIncentivesTokenData = ({
   enrichedMarket,
   propsTokenQuotes,
   tokenIds,
+  enabled,
 }: {
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   tokenIds: string[];
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -297,6 +314,7 @@ export const useVaultIPRefundIncentives = ({
     baseMarket,
     enrichedMarket,
     token_ids,
+    enabled,
   });
 
   // Get token quotes
@@ -305,7 +323,7 @@ export const useVaultIPRefundIncentives = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -314,6 +332,7 @@ export const useVaultIPRefundIncentives = ({
       enrichedMarket,
       propsTokenQuotes,
       tokenIds: token_ids ?? [],
+      enabled: isValid.status,
     });
 
   // Create transaction options

@@ -17,7 +17,7 @@ export const AssetsFilter = () => {
   const tokens = !!data
     ? (data as TypedArrayDistinctAsset[]).filter((token) => {
         if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
-          return !token.ids.some((id) => {
+          return !token.ids.every((id) => {
             const [chain_id, token_address] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));
             return chain?.testnet === true;

@@ -121,6 +121,7 @@ export const useReadMarket = ({
   const propsReadContracts = useReadContracts({
     // @ts-ignore
     contracts: enabled ? contractsToRead : [],
+    enabled,
   });
 
   if (

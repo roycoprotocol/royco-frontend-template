@@ -216,7 +216,7 @@ export const useMarketFormDetails = (
       }),
 
     vault_incentive_action: vaultIncentiveActionType,
-    offer_validation_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/validate`,
+    offer_validation_url: `/api/validate`,
     frontend_fee_recipient: process.env.NEXT_PUBLIC_FRONTEND_FEE_RECIPIENT,
   });
 

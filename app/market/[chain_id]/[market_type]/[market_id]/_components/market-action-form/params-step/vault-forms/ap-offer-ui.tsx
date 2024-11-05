@@ -33,7 +33,7 @@ export const APOfferUI = React.forwardRef<
       <InputAmountWrapper marketActionForm={marketActionForm} delay={0.3} />
 
       {/**
-       * Incentives Amount Selector
+       * Incentives Rate Selector
        */}
       {offerType === MarketOfferType.limit.id && (
         <IncentivesRateSelector
@@ -43,6 +43,9 @@ export const APOfferUI = React.forwardRef<
         />
       )}
 
+      {/**
+       * Expiry Selector
+       */}
       {offerType === MarketOfferType.limit.id && (
         <InputExpirySelector delay={0.6} marketActionForm={marketActionForm} />
       )}

@@ -72,7 +72,7 @@ export const useReadVaultPreview = ({
         );
 
         const incentive_end_timestamp =
-          market.end_timestamps?.[incentive_index];
+          market.base_end_timestamps?.[incentive_index];
         const current_time = Math.floor(Date.now() / 1000).toString();
 
         const time_left: BigNumber = BigNumber.from(

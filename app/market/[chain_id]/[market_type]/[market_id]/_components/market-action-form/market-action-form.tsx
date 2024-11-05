@@ -166,6 +166,7 @@ export const MarketActionForm = React.forwardRef<
   if (!!currentMarketData) {
     return (
       <div
+        key={`market-action-form:container:${viewType}`}
         ref={ref}
         className={cn(
           "flex w-full shrink-0 grow flex-col",
@@ -263,7 +264,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:action-type"
-              className={cn("mb-5 mt-5 flex flex-col px-5")}
+              className={cn("mt-5 flex flex-col px-5")}
             >
               <HorizontalTabs
                 className={cn("")}
@@ -282,7 +283,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:offer-type-selector"
-              className={cn("px-5")}
+              className={cn("mt-5 px-5")}
             >
               <OfferTypeSelector />
             </SlideUpWrapper>
