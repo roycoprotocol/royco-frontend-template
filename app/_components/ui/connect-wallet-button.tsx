@@ -44,7 +44,7 @@ export const ConnectWalletButton = React.forwardRef<
       )}
 
       {isConnected && !isChainSupported && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           Unsupported Chain
         </div>
       )}
@@ -57,13 +57,13 @@ export const ConnectWalletButton = React.forwardRef<
       )}
 
       {isConnected && isChainSupported && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           {address && address.slice(0, 6) + "..." + address.slice(-4)}
         </div>
       )}
 
       {(isDisconnected || isConnecting) && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           Connect Wallet
         </div>
       )}
