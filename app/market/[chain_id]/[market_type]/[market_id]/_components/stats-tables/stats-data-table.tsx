@@ -158,7 +158,7 @@ export function StatsDataTable<TData, TValue>({
 
                 return (
                   <TableRow
-                    key={`list:row:${row.index}`}
+                    key={row.original.id}
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
                       "cursor-pointer px-5 hover:bg-focus",
@@ -170,7 +170,7 @@ export function StatsDataTable<TData, TValue>({
                       // @TODO strict type this
                       (cell, index) => (
                         <TableCell
-                          key={`stats-row:${row.index}:${cell.id}`}
+                          key={`stats-row:${row.original.id}:${cell.id}`}
                           className={cn(
                             "min-w-fit truncate text-ellipsis whitespace-nowrap font-gt text-sm font-light text-black",
                             index === 0 && "pl-5",

@@ -324,7 +324,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                 window.open(explorerUrl, "_blank", "noopener,noreferrer");
               }}
             >
-              View on explorer
+              Creation Transaction
             </DropdownMenuItem>
 
             {/* <DropdownMenuSeparator /> */}
