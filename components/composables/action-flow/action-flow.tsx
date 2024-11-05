@@ -16,9 +16,9 @@ export const ActionFlow = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     actions: decodeActionsReturnType["actions"];
     size?: "xs" | "sm" | "md" | "lg";
-    alert?: boolean;
+    showAlertIcon?: boolean;
   }
->(({ className, size, actions, alert = true, ...props }, ref) => {
+>(({ className, size, actions, showAlertIcon = true, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -123,8 +123,10 @@ export const ActionFlow = React.forwardRef<
           );
         })
       ) : (
-        <AlertIndicator className="p-3">
-          {alert ? "No actions added" : null}
+        <AlertIndicator className="p-3" showIcon={showAlertIcon}>
+          <span className={cn(size === "xs" && "text-xs")}>
+            No actions added
+          </span>
         </AlertIndicator>
       )}
     </div>

@@ -75,17 +75,27 @@ export const MarketInfo = React.forwardRef<
         )}
         {...props}
       >
-        <div className={cn(BASE_PADDING, "pb-4")}>
-          <TertiaryLabel>MARKET</TertiaryLabel>
+        <div
+          className={cn(BASE_PADDING, "flex items-start justify-between pb-4")}
+        >
+          <div>
+            <TertiaryLabel>MARKET</TertiaryLabel>
 
-          <PrimaryLabel
-            className={cn(BASE_MARGIN_TOP.XS)}
-            isVerified={currentMarketData.is_verified ? true : false}
-          >
-            {currentMarketData.name && currentMarketData.name.trim() !== ""
-              ? currentMarketData.name.trim()
-              : "Unknown Market"}
-          </PrimaryLabel>
+            <PrimaryLabel
+              className={cn(BASE_MARGIN_TOP.XS)}
+              isVerified={currentMarketData.is_verified ? true : false}
+            >
+              {currentMarketData.name && currentMarketData.name.trim() !== ""
+                ? currentMarketData.name.trim()
+                : "Unknown Market"}
+            </PrimaryLabel>
+          </div>
+
+          <img
+            src={getSupportedChain(marketMetadata.chain_id)?.image}
+            alt={String(marketMetadata.chain_id)}
+            className="h-6 w-6 rounded-md border"
+          />
         </div>
 
         <div className={cn(BASE_PADDING)}>
@@ -222,27 +232,39 @@ export const MarketInfo = React.forwardRef<
                   className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.LG)}
                 >
                   {marketMetadata.market_type === MarketType.recipe.id && (
-                    <div className="mb-2 grid grid-cols-2 gap-x-4">
+                    <div className="mb-2 grid grid-cols-2 gap-x-1 md:gap-x-3">
                       <div>
                         <SecondaryLabel>Deposit Script</SecondaryLabel>
 
-                        <ActionFlow
-                          className={cn(BASE_MARGIN_TOP.SM)}
-                          size="xs"
-                          actions={propsActionsDecoderEnterMarket.data ?? []}
-                          alert={false}
-                        />
+                        <div
+                          className={cn(
+                            BASE_MARGIN_TOP.SM,
+                            "max-h-[200px] overflow-y-scroll rounded-lg border p-1"
+                          )}
+                        >
+                          <ActionFlow
+                            size="xs"
+                            actions={propsActionsDecoderEnterMarket.data ?? []}
+                            showAlertIcon={false}
+                          />
+                        </div>
                       </div>
 
                       <div>
                         <SecondaryLabel>Withdrawal Script</SecondaryLabel>
 
-                        <ActionFlow
-                          className={cn(BASE_MARGIN_TOP.SM)}
-                          size="xs"
-                          actions={propsActionsDecoderExitMarket.data ?? []}
-                          alert={false}
-                        />
+                        <div
+                          className={cn(
+                            BASE_MARGIN_TOP.SM,
+                            "rounded-lg border p-1"
+                          )}
+                        >
+                          <ActionFlow
+                            size="xs"
+                            actions={propsActionsDecoderExitMarket.data ?? []}
+                            showAlertIcon={false}
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
