@@ -128,7 +128,7 @@ export const MarketManager = React.forwardRef<
           key={`market-manager:${viewType}`}
           className={cn(
             "flex items-center rounded-2xl border border-divider bg-white",
-            "w-full overflow-hidden md:overflow-y-scroll",
+            "w-full overflow-hidden md:h-[70rem] md:overflow-y-scroll",
             MAX_SCREEN_WIDTH,
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",

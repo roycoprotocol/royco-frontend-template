@@ -315,7 +315,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   notation: "compact",
                   useGrouping: true,
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 8,
+                  maximumFractionDigits: 2,
                   // minimumFractionDigits: props.view === "list" ? 2 : 0,
                   // maximumFractionDigits: props.view === "list" ? 2 : 0,
                 }}

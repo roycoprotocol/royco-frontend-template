@@ -30,7 +30,7 @@ export const RecipeForms = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <div className="grow overflow-x-hidden overflow-y-scroll pb-2">
+      <div className="h-12 grow overflow-x-hidden overflow-y-scroll pb-2">
         {/**
          * Funding Vault Selector
          */}
