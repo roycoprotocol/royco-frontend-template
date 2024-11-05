@@ -180,7 +180,12 @@ export const ActualNavbar = React.forwardRef<
          */}
         <div className="w-fit shrink-0 cursor-pointer">
           <a target="_self" href="/" className="contents">
-            <RoycoLogo className="h-[1.53125rem] w-[3.99219rem]" />
+            <img
+              src="/royco-beta.png"
+              alt="Royco Logo"
+              className="h-[1.53125rem]"
+            />
+            {/* <RoycoLogo className="h-[1.53125rem] w-[3.99219rem]" /> */}
           </a>
         </div>
 

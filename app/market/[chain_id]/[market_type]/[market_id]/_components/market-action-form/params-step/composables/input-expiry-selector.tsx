@@ -25,17 +25,6 @@ export const InputExpirySelector = React.forwardRef<
       >
         <FormInputLabel label="Expiry" info="The expiry of the offer" />
 
-        <TimestampSelector
-          className="mt-3"
-          customValue={
-            marketActionForm.watch("no_expiry") ? "Never Expire" : undefined
-          }
-          currentValue={marketActionForm.watch("expiry")}
-          setCurrentValue={(date) => {
-            marketActionForm.setValue("expiry", date);
-          }}
-        />
-
         <div className={cn("mt-2 flex flex-row items-center justify-between")}>
           <SecondaryLabel>Never Expire?</SecondaryLabel>
 
@@ -50,6 +39,17 @@ export const InputExpirySelector = React.forwardRef<
             checked={marketActionForm.watch("no_expiry")}
           />
         </div>
+
+        <TimestampSelector
+          className="mt-3"
+          customValue={
+            marketActionForm.watch("no_expiry") ? "Never Expire" : undefined
+          }
+          currentValue={marketActionForm.watch("expiry")}
+          setCurrentValue={(date) => {
+            marketActionForm.setValue("expiry", date);
+          }}
+        />
       </SlideUpWrapper>
     </div>
   );

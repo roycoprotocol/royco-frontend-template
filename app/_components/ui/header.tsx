@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { GetUpdatesStrip } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
+import { Button } from "../../../components/ui/button";
 
 export const Header = React.forwardRef<
   HTMLDivElement,
@@ -15,6 +16,13 @@ export const Header = React.forwardRef<
   const { scrollYProgress } = useScroll();
 
   const scaleBanner = useTransform(scrollYProgress, [0, 1], [1, 1]);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <div
@@ -70,8 +78,21 @@ export const Header = React.forwardRef<
        * @description Cta Button
        */}
 
-      <div className="mt-1 xl:mt-4">
-        <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" />
+      <div className="mt-5 xl:mt-10">
+        <Button
+          onClick={() => scrollToSection("access-protocol")}
+          className={cn(
+            "flex w-fit flex-col items-center justify-center font-gt font-400 hover:opacity-100",
+            "text-sm md:text-base",
+            "rounded-md md:rounded-[0.4375rem]",
+            "px-4 py-2 md:px-5 md:py-3",
+            className
+          )}
+          // {...props}
+        >
+          <span className="leading-5 md:leading-5">Access Royco Protocol</span>
+        </Button>
+        {/* <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" /> */}
       </div>
 
       {/**
