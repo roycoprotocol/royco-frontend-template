@@ -166,6 +166,7 @@ export const MarketActionForm = React.forwardRef<
   if (!!currentMarketData) {
     return (
       <div
+        key={`market-action-form:container:${viewType}`}
         ref={ref}
         className={cn(
           "flex w-full shrink-0 grow flex-col",

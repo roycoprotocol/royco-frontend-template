@@ -33,14 +33,21 @@ export const isRecipeAPLimitOfferValid = ({
   token_ids,
   token_amounts,
   expiry,
+  enabled,
 }: {
   quantity: string | undefined;
   funding_vault: string | undefined;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
   expiry: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -145,6 +152,7 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   tokenIds,
   tokenAmounts,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
@@ -152,7 +160,16 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   tokenIds: string[];
   tokenAmounts: string[];
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -167,7 +184,7 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   // Get input token data
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
-    raw_amount: quantity === "" ? "0" : quantity ?? "0",
+    raw_amount: quantity === "" ? "0" : (quantity ?? "0"),
     token_amount: parseRawAmountToTokenAmount(
       quantity ?? "0",
       input_token_quote.decimals
@@ -366,7 +383,7 @@ export const useRecipeAPLimitOffer = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -378,6 +395,7 @@ export const useRecipeAPLimitOffer = ({
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -448,6 +466,7 @@ export const useRecipeAPLimitOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   // Get vault allowance
@@ -458,6 +477,7 @@ export const useRecipeAPLimitOffer = ({
     spender:
       ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
         .address,
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading && !propsVaultAllowance.isLoading) {

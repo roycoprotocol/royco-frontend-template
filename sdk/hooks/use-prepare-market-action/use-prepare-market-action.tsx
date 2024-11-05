@@ -112,9 +112,9 @@ export const usePrepareMarketAction = ({
     quantity,
     funding_vault,
     custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
     frontend_fee_recipient,
     offer_validation_url,
+    enabled: action_type === PrepareMarketActionType.RecipeAPMarketOffer,
   });
 
   const propsRecipeIPMarketOffer = useRecipeIPMarketOffer({
@@ -123,8 +123,8 @@ export const usePrepareMarketAction = ({
     account,
     quantity,
     custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
     offer_validation_url,
+    enabled: action_type === PrepareMarketActionType.RecipeIPMarketOffer,
   });
 
   const propsRecipeAPLimitOffer = useRecipeAPLimitOffer({
@@ -137,7 +137,7 @@ export const usePrepareMarketAction = ({
     expiry,
     funding_vault,
     custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
+    enabled: action_type === PrepareMarketActionType.RecipeAPLimitOffer,
   });
 
   const propsRecipeIPLimitOffer = useRecipeIPLimitOffer({
@@ -149,7 +149,7 @@ export const usePrepareMarketAction = ({
     token_amounts,
     expiry,
     custom_token_data,
-    enabled: market_type === RoycoMarketType.recipe.id,
+    enabled: action_type === PrepareMarketActionType.RecipeIPLimitOffer,
   });
 
   const propsVaultAPMarketOffer = useVaultAPMarketOffer({
@@ -159,7 +159,7 @@ export const usePrepareMarketAction = ({
     quantity,
     custom_token_data,
     frontend_fee_recipient,
-    enabled: market_type === RoycoMarketType.vault.id,
+    enabled: action_type === PrepareMarketActionType.VaultAPMarketOffer,
   });
 
   const propsVaultIPMarketOffer = useVaultIPMarketOffer({
@@ -169,7 +169,7 @@ export const usePrepareMarketAction = ({
     quantity,
     custom_token_data,
     frontend_fee_recipient,
-    enabled: market_type === RoycoMarketType.vault.id,
+    enabled: action_type === PrepareMarketActionType.VaultIPMarketOffer,
   });
 
   const propsVaultAPLimitOffer = useVaultAPLimitOffer({
@@ -182,6 +182,7 @@ export const usePrepareMarketAction = ({
     expiry,
     funding_vault,
     custom_token_data,
+    enabled: action_type === PrepareMarketActionType.VaultAPLimitOffer,
   });
 
   const propsVaultIPAddIncentives = useVaultIPAddIncentives({
@@ -193,6 +194,9 @@ export const usePrepareMarketAction = ({
     start_timestamps,
     end_timestamps,
     custom_token_data,
+    enabled:
+      action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+      vault_incentive_action === MarketVaultIncentiveAction.add.id,
   });
 
   const propsVaultIPExtendIncentives = useVaultIPExtendIncentives({
@@ -203,6 +207,10 @@ export const usePrepareMarketAction = ({
     token_amounts,
     end_timestamps,
     custom_token_data,
+    enabled:
+      action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+      (vault_incentive_action === MarketVaultIncentiveAction.increase.id ||
+        vault_incentive_action === MarketVaultIncentiveAction.extend.id),
   });
 
   const propsVaultIPRefundIncentives = useVaultIPRefundIncentives({
@@ -211,6 +219,9 @@ export const usePrepareMarketAction = ({
     account,
     token_ids,
     custom_token_data,
+    enabled:
+      action_type === PrepareMarketActionType.VaultIPLimitOffer &&
+      vault_incentive_action === MarketVaultIncentiveAction.refund.id,
   });
 
   const propsInvalidMarketAction = useInvalidMarketAction();

@@ -57,14 +57,16 @@ export const MarketManager = React.forwardRef<
     return (
       <Fragment>
         {currentMarketData.is_verified === false && (
-          <WarningBox
-            className={cn(
-              MAX_SCREEN_WIDTH,
-              viewType === MarketViewType.simple.id && "mb-10",
-              viewType === MarketViewType.advanced.id && "mb-10"
-            )}
-            text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
-          />
+          <SlideUpWrapper className="w-fit">
+            <WarningBox
+              className={cn(
+                MAX_SCREEN_WIDTH,
+                viewType === MarketViewType.simple.id && "mb-10",
+                viewType === MarketViewType.advanced.id && "mb-10"
+              )}
+              text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
+            />
+          </SlideUpWrapper>
         )}
 
         <div

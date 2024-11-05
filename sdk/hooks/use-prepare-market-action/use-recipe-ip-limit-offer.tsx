@@ -21,13 +21,20 @@ export const isRecipeIPLimitOfferValid = ({
   token_ids,
   token_amounts,
   expiry,
+  enabled,
 }: {
   quantity: string | undefined;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
   expiry: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -122,6 +129,7 @@ export const calculateRecipeIPLimitOfferTokenData = ({
   tokenIds,
   tokenAmounts,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
@@ -129,7 +137,16 @@ export const calculateRecipeIPLimitOfferTokenData = ({
   tokenIds: string[];
   tokenAmounts: string[];
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -347,6 +364,7 @@ export const useRecipeIPLimitOffer = ({
     token_ids,
     token_amounts,
     expiry,
+    enabled,
   });
 
   // Get token quotes
@@ -355,7 +373,7 @@ export const useRecipeIPLimitOffer = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -367,6 +385,7 @@ export const useRecipeIPLimitOffer = ({
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -449,6 +468,7 @@ export const useRecipeIPLimitOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {

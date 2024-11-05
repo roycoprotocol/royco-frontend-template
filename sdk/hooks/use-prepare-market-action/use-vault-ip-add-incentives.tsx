@@ -24,6 +24,7 @@ export const isVaultIPAddIncentivesValid = ({
   token_amounts,
   start_timestamps,
   end_timestamps,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
@@ -31,8 +32,14 @@ export const isVaultIPAddIncentivesValid = ({
   token_amounts: string[] | undefined;
   start_timestamps: string[] | undefined;
   end_timestamps: string[] | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check market
     if (!enrichedMarket || !baseMarket) {
       throw new Error("Market is missing");
@@ -208,13 +215,23 @@ export const calculateVaultIPAddIncentivesTokenData = ({
   propsTokenQuotes,
   tokenIds,
   tokenAmounts,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   tokenIds: string[];
   tokenAmounts: string[];
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
