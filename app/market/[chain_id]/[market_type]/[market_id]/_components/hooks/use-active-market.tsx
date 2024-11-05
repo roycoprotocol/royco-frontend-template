@@ -13,12 +13,7 @@ import { isEqual } from "lodash";
 import { produce } from "immer";
 
 import { MarketType } from "@/store";
-import { EnrichedMarketDataType, EnrichedOfferDataType } from "@/sdk/queries";
-import { isVerifiedMarket, NULL_ADDRESS } from "@/sdk/constants";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { MarketFormSchema } from "../market-form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { EnrichedMarketDataType } from "@/sdk/queries";
 
 export const useActiveMarket = () => {
   const params = useParams();
