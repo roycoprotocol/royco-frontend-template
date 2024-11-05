@@ -63,7 +63,7 @@ export const PreviewStep = React.forwardRef<
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full flex-col place-content-center items-center">
+      <div className="flex h-full w-full flex-1 flex-col place-content-center items-center">
         <LoadingSpinner className="h-5 w-5" />
       </div>
     );

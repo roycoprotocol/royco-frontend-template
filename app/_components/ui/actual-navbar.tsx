@@ -91,7 +91,7 @@ export const ActualNavbar = React.forwardRef<
             layout="size"
             layoutId="navbar-mobile"
             className={cn(
-              "absolute left-0 right-0 top-0 flex items-center justify-center overflow-hidden bg-z2 font-ortica text-2xl drop-shadow-sm"
+              "absolute left-0 right-0 top-0 z-10 flex items-center justify-center overflow-hidden bg-z2 font-ortica text-2xl drop-shadow-sm"
               // "border-t-0 border-b border-divider"
             )}
             initial={{ height: 0 }}
