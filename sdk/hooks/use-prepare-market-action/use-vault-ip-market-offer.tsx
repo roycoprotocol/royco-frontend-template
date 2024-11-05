@@ -23,10 +23,17 @@ import { ReadMarketDataType } from "../use-read-market";
 
 export const isVaultIPMarketOfferValid = ({
   quantity,
+  enabled,
 }: {
   quantity: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -61,12 +68,22 @@ export const calculateVaultIPMarketOfferTokenData = ({
   enrichedMarket,
   propsMarketOffers,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsMarketOffers: ReturnType<typeof useMarketOffers>;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   const total_quantity_filled: string =
     propsMarketOffers.data
       ?.reduce(
@@ -275,6 +292,7 @@ export const useVaultIPMarketOffer = ({
   // Check if market action is valid
   const isValid = isVaultIPMarketOfferValid({
     quantity,
+    enabled,
   });
 
   // Get market offers
@@ -284,7 +302,7 @@ export const useVaultIPMarketOffer = ({
     market_id,
     offer_side: RoycoMarketUserType.ap.value,
     quantity: quantity ?? "0",
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get token quotes
@@ -296,7 +314,7 @@ export const useVaultIPMarketOffer = ({
       ])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -306,6 +324,7 @@ export const useVaultIPMarketOffer = ({
       enrichedMarket,
       propsMarketOffers,
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -359,21 +378,18 @@ export const useVaultIPMarketOffer = ({
         offers:
           propsMarketOffers.data?.map((offer) => ({
             offerID: offer.offer_id,
-            targetMarketHash: offer.market_id,
+            targetVault: offer.market_id,
             ap: offer.creator,
             fundingVault: offer.funding_vault,
-            quantity: offer.quantity,
             expiry: offer.expiry,
             incentivesRequested: offer.token_ids.map((token_id) => {
               const token_address = token_id.split("-")[1];
               return token_address;
             }),
-            incentiveAmountsRequested: offer.token_amounts,
+            incentivesRatesRequested: offer.token_amounts,
           })) ?? [],
         fill_amounts:
           propsMarketOffers.data?.map((offer) => offer.fill_quantity) ?? [],
-        frontend_fee_recipient:
-          frontend_fee_recipient ?? baseMarket.protocol_fee_recipient,
       });
 
     // Set offer transaction options
@@ -412,6 +428,7 @@ export const useVaultIPMarketOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {
@@ -435,11 +452,11 @@ export const useVaultIPMarketOffer = ({
 
   // Check if offer can be performed completely or partially
   if (isReady) {
-    if (BigNumber.from(inputTokenData.raw_amount).lte(0)) {
+    if (BigNumber.from(inputTokenData?.raw_amount ?? 0).lte(0)) {
       canBePerformedCompletely = false;
       canBePerformedPartially = false;
     } else if (
-      BigNumber.from(inputTokenData.raw_amount).eq(
+      BigNumber.from(inputTokenData?.raw_amount ?? 0).eq(
         BigNumber.from(quantity ?? 0)
       )
     ) {

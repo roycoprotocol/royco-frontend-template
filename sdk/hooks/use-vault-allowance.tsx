@@ -6,13 +6,16 @@ export const useVaultAllowance = ({
   account,
   vault_address,
   spender,
+  enabled = true,
 }: {
   chain_id: number;
   account: string;
   vault_address: string;
   spender: string;
+  enabled?: boolean;
 }) => {
-  return useQuery(
-    getVaultAllowanceQueryOptions(chain_id, account, vault_address, spender)
-  );
+  return useQuery({
+    ...getVaultAllowanceQueryOptions(chain_id, account, vault_address, spender),
+    enabled,
+  });
 };

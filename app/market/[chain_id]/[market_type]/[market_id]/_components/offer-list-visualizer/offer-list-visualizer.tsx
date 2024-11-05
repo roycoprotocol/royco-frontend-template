@@ -161,6 +161,7 @@ export const OfferListVisualizer = React.forwardRef<
                   const formattedValue = Intl.NumberFormat("en-US", {
                     style: "percent",
                     notation: "compact",
+                    useGrouping: true,
                     compactDisplay: "short",
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -173,14 +174,15 @@ export const OfferListVisualizer = React.forwardRef<
                 orientation="right"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
+                tickMargin={0}
                 tickFormatter={(value) => {
                   const formattedValue = Intl.NumberFormat("en-US", {
-                    style: "decimal",
-                    // currency: "USD",
+                    style: "currency",
+                    currency: "USD",
                     useGrouping: true,
                     notation: "compact",
-                    compactDisplay: "short",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                   }).format(value as number);
 
                   return formattedValue;

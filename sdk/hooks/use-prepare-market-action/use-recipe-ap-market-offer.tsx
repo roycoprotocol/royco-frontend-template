@@ -32,11 +32,18 @@ import React from "react";
 export const isRecipeAPMarketOfferValid = ({
   quantity,
   funding_vault,
+  enabled,
 }: {
   quantity: string | undefined;
   funding_vault: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -81,12 +88,22 @@ export const calculateRecipeAPMarketOfferTokenData = ({
   enrichedMarket,
   propsMarketOffers,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsMarketOffers: ReturnType<typeof useMarketOffers>;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   const total_quantity_filled: string =
     propsMarketOffers.data
       ?.reduce(
@@ -299,6 +316,7 @@ export const useRecipeAPMarketOffer = ({
   const isValid = isRecipeAPMarketOfferValid({
     quantity,
     funding_vault,
+    enabled,
   });
 
   // Get market offers
@@ -308,25 +326,31 @@ export const useRecipeAPMarketOffer = ({
     market_id,
     offer_side: RoycoMarketUserType.ip.value,
     quantity: quantity ?? "0",
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get market offers validator
   const propsMarketOffersValidator = useMarketOffersValidator({
     offer_ids: propsMarketOffers.data?.map((offer) => offer.id) ?? [],
     offerValidationUrl: offer_validation_url,
+    enabled: isValid.status,
   });
 
   // Trigger refetch when validator returns non-empty array
   React.useEffect(() => {
     if (
+      isValid.status &&
       !propsMarketOffersValidator.isLoading &&
       propsMarketOffersValidator.data &&
       propsMarketOffersValidator.data.length > 0
     ) {
       propsMarketOffers.refetch();
     }
-  }, [propsMarketOffersValidator.isLoading, propsMarketOffersValidator.data]);
+  }, [
+    isValid.status,
+    propsMarketOffersValidator.isLoading,
+    propsMarketOffersValidator.data,
+  ]);
 
   // Get token quotes - Only proceed if offers are valid
   const propsTokenQuotes = useTokenQuotes({
@@ -339,7 +363,6 @@ export const useRecipeAPMarketOffer = ({
     custom_token_data,
     enabled:
       isValid.status &&
-      enabled &&
       // Only proceed if validation is complete and returned empty array (all offers valid)
       !propsMarketOffersValidator.isLoading &&
       propsMarketOffersValidator.data?.length === 0,
@@ -352,6 +375,7 @@ export const useRecipeAPMarketOffer = ({
       enrichedMarket,
       propsMarketOffers,
       propsTokenQuotes,
+      enabled,
     });
 
   // Create transaction options
@@ -427,6 +451,7 @@ export const useRecipeAPMarketOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   // Get vault allowance
@@ -437,6 +462,7 @@ export const useRecipeAPMarketOffer = ({
     spender:
       ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
         .address,
+    enabled: isValid.status,
   });
 
   // Refine transaction options

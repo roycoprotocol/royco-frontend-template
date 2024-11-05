@@ -23,14 +23,21 @@ export const isVaultIPExtendIncentivesValid = ({
   token_ids,
   token_amounts,
   end_timestamps,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
   end_timestamps: string[] | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check market
     if (!enrichedMarket || !baseMarket) {
       throw new Error("Market is missing");
@@ -177,13 +184,23 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
   propsTokenQuotes,
   tokenIds,
   tokenAmounts,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   tokenIds: string[];
   tokenAmounts: string[];
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -369,6 +386,7 @@ export const useVaultIPExtendIncentives = ({
     token_ids,
     token_amounts,
     end_timestamps,
+    enabled,
   });
 
   // Get token quotes
@@ -377,7 +395,7 @@ export const useVaultIPExtendIncentives = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -388,6 +406,7 @@ export const useVaultIPExtendIncentives = ({
       propsTokenQuotes,
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
+      enabled,
     });
 
   // Create transaction options
@@ -435,6 +454,7 @@ export const useVaultIPExtendIncentives = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {

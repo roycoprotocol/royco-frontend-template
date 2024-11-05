@@ -21,10 +21,17 @@ import React from "react";
 
 export const isRecipeIPMarketOfferValid = ({
   quantity,
+  enabled,
 }: {
   quantity: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -59,12 +66,22 @@ export const calculateRecipeIPMarketOfferTokenData = ({
   enrichedMarket,
   propsMarketOffers,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsMarketOffers: ReturnType<typeof useMarketOffers>;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   const total_quantity_filled: string =
     propsMarketOffers.data
       ?.reduce(
@@ -281,6 +298,7 @@ export const useRecipeIPMarketOffer = ({
   // Check if market action is valid
   const isValid = isRecipeIPMarketOfferValid({
     quantity,
+    enabled,
   });
 
   // Get market offers
@@ -290,13 +308,14 @@ export const useRecipeIPMarketOffer = ({
     market_id,
     offer_side: RoycoMarketUserType.ap.value,
     quantity: quantity ?? "0",
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get market offers validator
   const propsMarketOffersValidator = useMarketOffersValidator({
     offer_ids: propsMarketOffers.data?.map((offer) => offer.id) ?? [],
     offerValidationUrl: offer_validation_url,
+    enabled: isValid.status,
   });
 
   // Trigger refetch when validator returns non-empty array
@@ -321,7 +340,6 @@ export const useRecipeIPMarketOffer = ({
     custom_token_data,
     enabled:
       isValid.status &&
-      enabled &&
       // Only proceed if validation is complete and returned empty array (all offers valid)
       !propsMarketOffersValidator.isLoading &&
       propsMarketOffersValidator.data?.length === 0,
@@ -334,6 +352,7 @@ export const useRecipeIPMarketOffer = ({
       enrichedMarket,
       propsMarketOffers,
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -446,6 +465,7 @@ export const useRecipeIPMarketOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {
