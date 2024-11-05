@@ -134,8 +134,6 @@ export const useEnrichedAccountBalanceVault = ({
               token_amount_usd,
             };
           } else {
-            balance_usd_ap += token_amount_usd;
-
             incentives_ap_data.push({
               ...token_data,
               raw_amount,
@@ -143,6 +141,8 @@ export const useEnrichedAccountBalanceVault = ({
               token_amount_usd,
             });
           }
+
+          balance_usd_ap += token_amount_usd;
         }
       }
 

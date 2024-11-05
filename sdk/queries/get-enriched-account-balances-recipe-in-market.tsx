@@ -161,12 +161,13 @@ export const getEnrichedAccountBalancesRecipeInMarketQueryOptions = (
         ),
       };
 
-      const balance_usd_ap = incentives_ap_data.reduce(
-        (acc, cur) => acc + cur.token_amount_usd,
-        0
-      );
+      const balance_usd_ap =
+        incentives_ap_data.reduce((acc, cur) => acc + cur.token_amount_usd, 0) +
+        input_token_data_ap.token_amount_usd;
 
-      const balance_usd_ip = input_token_data_ip.token_amount_usd;
+      const balance_usd_ip =
+        input_token_data_ip.token_amount_usd +
+        incentives_ip_data.reduce((acc, cur) => acc + cur.token_amount_usd, 0);
 
       return {
         ...row,

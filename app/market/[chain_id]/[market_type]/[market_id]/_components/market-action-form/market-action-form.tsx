@@ -228,17 +228,20 @@ export const MarketActionForm = React.forwardRef<
               }}
               className={cn(
                 "cursor-pointer px-5 pt-5",
-                "transition-all duration-200 ease-in-out hover:text-primary",
-                userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
+                "transition-all duration-200 ease-in-out hover:text-primary"
+                /**
+                 * @note Commented out for now because user type switch is moved to top
+                 */
+                // userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
               )}
             >
               TRANSACT
             </TertiaryLabel>
 
             {/**
-             * @TODO Uncomment this when all UI is ready
+             * @note Commented out for now because user type switch is moved to top
              */}
-            {viewType === MarketViewType.advanced.id && (
+            {/* {viewType === MarketViewType.advanced.id && (
               <TertiaryLabel
                 onClick={() => {
                   setActionType(MarketActionType.supply.id);
@@ -252,7 +255,7 @@ export const MarketActionForm = React.forwardRef<
               >
                 INCENTIVIZE
               </TertiaryLabel>
-            )}
+            )} */}
           </SlideUpWrapper>
         )}
 
