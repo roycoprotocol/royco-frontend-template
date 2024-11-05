@@ -13,11 +13,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { getExplorerUrl } from "@/sdk/utils";
-import { MarketType, useMarketManager } from "@/store";
+import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { TransactionOptionsType } from "@/sdk/types";
 import { useActiveMarket } from "../hooks";
 import { ContractMap } from "@/sdk/contracts";
 import { BigNumber } from "ethers";
+import {
+  getRecipeCancelAPOfferTransactionOptions,
+  getRecipeCancelIPOfferTransactionOptions,
+} from "@/sdk/hooks";
+import { getVaultCancelAPOfferTransactionOptions } from "@/sdk/hooks/use-vault-offer-contract-options";
 
 /**
  * @description Column definitions for the table
@@ -209,7 +214,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
     enableHiding: false,
     meta: {},
     cell: (props: any) => {
-      const { transactions, setTransactions } = useMarketManager();
+      const { transactions, setTransactions, userType } = useMarketManager();
 
       const { marketMetadata } = useActiveMarket();
 
@@ -219,99 +224,41 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
             <DotsHorizontalIcon className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {!props.row.original.is_cancelled && (
-              <DropdownMenuItem
-                onClick={() => {
-                  const contract =
-                    marketMetadata.market_type === MarketType.recipe.id
-                      ? ContractMap[
-                          marketMetadata.chain_id as keyof typeof ContractMap
-                        ]["RecipeMarketHub"]
-                      : ContractMap[
-                          marketMetadata.chain_id as keyof typeof ContractMap
-                        ]["VaultMarketHub"];
+            {!props.row.original.is_cancelled &&
+              !BigNumber.from(
+                props.row.original.quantity_remaining
+              ).isZero() && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    let txOptions: TransactionOptionsType | null = null;
 
-                  const address = contract.address;
-                  const abi = contract.abi;
+                    if (marketMetadata.market_type === MarketType.recipe.id) {
+                      if (userType === MarketUserType.ap.id) {
+                        // Cancel Recipe AP Offer
+                        txOptions = getRecipeCancelAPOfferTransactionOptions({
+                          offer: props.row.original,
+                        });
+                      } else {
+                        // Cancel Recipe IP Offer
+                        txOptions = getRecipeCancelIPOfferTransactionOptions({
+                          offer: props.row.original,
+                        });
+                      }
+                    } else {
+                      // Cancel Vault AP Offer
+                      txOptions = getVaultCancelAPOfferTransactionOptions({
+                        offer: props.row.original,
+                      });
+                    }
 
-                  const functionName =
-                    props.row.original.offer_side === 0
-                      ? marketMetadata.market_type === MarketType.recipe.id
-                        ? "cancelAPOffer"
-                        : "cancelOffer"
-                      : "cancelIPOffer";
-
-                  const marketType = marketMetadata.market_type;
-
-                  const args =
-                    props.row.original.offer_side === 0
-                      ? marketMetadata.market_type === MarketType.recipe.id
-                        ? [
-                            {
-                              offerID: props.row.original.offer_id,
-                              targetMarketHash: marketMetadata.market_id,
-                              ap: props.row.original.creator,
-                              fundingVault: props.row.original.funding_vault,
-                              quantity: props.row.original.quantity,
-                              expiry: props.row.original.expiry,
-                              incentivesRequested:
-                                props.row.original.token_ids.map(
-                                  (tokenId: string, tokenIndex: number) => {
-                                    const [chainId, contractAddress] =
-                                      tokenId.split("-");
-
-                                    return contractAddress;
-                                  }
-                                ),
-                              incentiveAmountsRequested:
-                                props.row.original.token_amounts,
-                            },
-                          ]
-                        : [
-                            {
-                              offerID: props.row.original.offer_id,
-                              targetVault: marketMetadata.market_id,
-                              ap: props.row.original.creator,
-                              fundingVault: props.row.original.funding_vault,
-                              expiry: props.row.original.expiry,
-                              incentivesRequested:
-                                props.row.original.token_ids.map(
-                                  (tokenId: string, tokenIndex: number) => {
-                                    const [chainId, contractAddress] =
-                                      tokenId.split("-");
-
-                                    return contractAddress;
-                                  }
-                                ),
-                              incentivesRatesRequested:
-                                props.row.original.token_amounts,
-                            },
-                          ]
-                      : [props.row.original.offer_id];
-
-                  const txOptions: TransactionOptionsType = {
-                    contractId:
-                      marketMetadata.market_type === MarketType.recipe.id
-                        ? "RecipeMarketHub"
-                        : "VaultMarketHub",
-                    chainId: props.row.original.chain_id,
-                    id: `cancel_offer_${props.row.original.id}`,
-                    label: `Cancel Limit Offer`,
-                    address,
-                    abi,
-                    functionName,
-                    marketType,
-                    args,
-                    txStatus: "idle",
-                    txHash: null,
-                  };
-
-                  setTransactions([txOptions]);
-                }}
-              >
-                Cancel offer
-              </DropdownMenuItem>
-            )}
+                    if (txOptions) {
+                      setTransactions([txOptions]);
+                    }
+                  }}
+                >
+                  Cancel offer
+                </DropdownMenuItem>
+              )}
 
             <DropdownMenuItem
               onClick={() => {
