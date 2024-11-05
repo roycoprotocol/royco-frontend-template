@@ -76,11 +76,22 @@ export const FundingTypeSelector = React.forwardRef<
         </SelectTrigger>
 
         <SelectContent className="w-full">
-          {Object.values(MarketFundingType).map((option) => (
+          <SelectItem
+            className="text-sm"
+            key={MarketFundingType.wallet.id}
+            value={MarketFundingType.wallet.id}
+          >
+            {MarketFundingType.wallet.label}
+          </SelectItem>
+
+          {/**
+           * @note Below code is for selecting funding vault, it is disabled for now
+           */}
+          {/* {Object.values(MarketFundingType).map((option) => (
             <SelectItem className="text-sm" key={option.id} value={option.id}>
               {option.label}
             </SelectItem>
-          ))}
+          ))} */}
         </SelectContent>
       </Select>
     </div>

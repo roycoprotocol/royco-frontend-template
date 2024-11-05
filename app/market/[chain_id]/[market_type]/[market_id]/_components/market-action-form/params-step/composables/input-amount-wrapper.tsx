@@ -132,7 +132,7 @@ export const InputAmountWrapper = React.forwardRef<
                 style: "decimal",
                 notation: "compact",
                 minimumFractionDigits: 0,
-                maximumFractionDigits: 5,
+                maximumFractionDigits: 8,
                 useGrouping: true,
               }}
             />
@@ -181,10 +181,22 @@ export const InputAmountWrapper = React.forwardRef<
           return (
             <div
               onClick={() => {
-                const quantityRawValue =
-                  userType === MarketUserType.ip.id
-                    ? currentMarketData?.quantity_ap
-                    : currentMarketData?.quantity_ip;
+                /**
+                 * @note This is the code to set max amount to fillable amount
+                 */
+                // const quantityRawValue =
+                //   userType === MarketUserType.ip.id
+                //     ? currentMarketData?.quantity_ap
+                //     : currentMarketData?.quantity_ip;
+                // const quantityTokenValue = parseRawAmountToTokenAmount(
+                //   quantityRawValue,
+                //   currentMarketData?.input_token_data.decimals ?? 0
+                // );
+
+                const quantityRawValue = parseRawAmount(
+                  (dataWallet?.[0]?.raw_amount ?? "0").toString()
+                );
+
                 const quantityTokenValue = parseRawAmountToTokenAmount(
                   quantityRawValue,
                   currentMarketData?.input_token_data.decimals ?? 0
@@ -233,8 +245,8 @@ export const InputAmountWrapper = React.forwardRef<
               ? Intl.NumberFormat("en-US", {
                   notation: "compact",
                   useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 8,
                 }).format(
                   parseRawAmountToTokenAmount(
                     currentMarketData?.quantity_ip ?? "0", // @note: AP fills IP quantity
@@ -244,15 +256,16 @@ export const InputAmountWrapper = React.forwardRef<
               : Intl.NumberFormat("en-US", {
                   notation: "compact",
                   useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 8,
                 }).format(
                   parseRawAmountToTokenAmount(
                     currentMarketData?.quantity_ap ?? "0", // @note: IP fills AP quantity
                     currentMarketData?.input_token_data.decimals ?? 0
                   )
                 )}{" "}
-            {currentMarketData?.input_token_data.symbol.toUpperCase()} Remaining
+            {currentMarketData?.input_token_data.symbol.toUpperCase()} Fillable
+            for Current Rate
           </div>
         </TertiaryLabel>
       ) : null}

@@ -4,7 +4,7 @@ import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { useEnrichedPositionsRecipe } from "@/sdk/hooks";
-import { MarketType, useMarketManager } from "@/store";
+import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { offerColumns } from "./offer-columns";
 import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
@@ -19,6 +19,8 @@ export const PositionsRecipeTable = React.forwardRef<
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
+  const { userType } = useMarketManager();
+
   const { positionsRecipeTablePage, setPositionsRecipeTablePage } =
     useMarketManager();
 
@@ -27,6 +29,15 @@ export const PositionsRecipeTable = React.forwardRef<
     market_id: marketMetadata.market_id,
     account_address: (address?.toLowerCase() as string) ?? "",
     page_index: positionsRecipeTablePage,
+    filters: [
+      {
+        id: "offer_side",
+        value:
+          userType === MarketUserType.ap.id
+            ? MarketUserType.ap.value
+            : MarketUserType.ip.value,
+      },
+    ],
   });
 
   let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;
