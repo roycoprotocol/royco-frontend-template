@@ -117,7 +117,7 @@ export const OfferListVisualizer = React.forwardRef<
           BASE_PADDING_TOP
         )}
       >
-        DEPTH
+        APR
       </TertiaryLabel>
 
       <PrimaryLabel
@@ -129,10 +129,13 @@ export const OfferListVisualizer = React.forwardRef<
         )}
       >
         <SpringNumber
-          previousValue={previousChangeRatioDepth}
-          currentValue={currentChangeRatioDepth}
+          previousValue={previousMarketData?.annual_change_ratio ?? 0}
+          currentValue={currentMarketData?.annual_change_ratio ?? 0}
           numberFormatOptions={{
             style: "percent",
+            notation: "compact",
+            useGrouping: true,
+            compactDisplay: "short",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }}
