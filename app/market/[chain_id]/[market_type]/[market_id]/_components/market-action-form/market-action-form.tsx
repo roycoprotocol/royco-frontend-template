@@ -74,7 +74,7 @@ export const MarketActionForm = React.forwardRef<
     defaultValues: {
       funding_vault: "" as string,
       incentive_tokens: [],
-      no_expiry: false,
+      no_expiry: true,
     },
   });
 

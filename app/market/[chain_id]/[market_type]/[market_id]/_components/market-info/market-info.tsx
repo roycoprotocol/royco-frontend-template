@@ -122,25 +122,27 @@ export const MarketInfo = React.forwardRef<
               </TertiaryLabel>
             </div>
 
-            <div>
-              <PrimaryLabel className={cn("text-3xl font-light")}>
-                {formatDuration(
-                  Object.entries(
-                    secondsToDuration(currentMarketData.lockup_time)
-                  )
-                    .filter(([_, value]) => value > 0) // Filter out zero values
-                    .slice(0, 2) // Take the first two non-zero units
-                    .reduce(
-                      (acc, [unit, value]) => ({ ...acc, [unit]: value }),
-                      {}
+            {marketMetadata.market_type === MarketType.recipe.id && (
+              <div>
+                <PrimaryLabel className={cn("text-3xl font-light")}>
+                  {formatDuration(
+                    Object.entries(
+                      secondsToDuration(currentMarketData.lockup_time)
                     )
-                )}
-                {currentMarketData.lockup_time === "0" && "N/A"}
-              </PrimaryLabel>
-              <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
-                Lockup
-              </TertiaryLabel>
-            </div>
+                      .filter(([_, value]) => value > 0) // Filter out zero values
+                      .slice(0, 2) // Take the first two non-zero units
+                      .reduce(
+                        (acc, [unit, value]) => ({ ...acc, [unit]: value }),
+                        {}
+                      )
+                  )}
+                  {currentMarketData.lockup_time === "0" && "N/A"}
+                </PrimaryLabel>
+                <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
+                  Lockup
+                </TertiaryLabel>
+              </div>
+            )}
           </div>
 
           <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL)}>
@@ -219,29 +221,31 @@ export const MarketInfo = React.forwardRef<
                 <InfoCard
                   className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.LG)}
                 >
-                  <div className="mb-2 grid grid-cols-2 gap-x-4">
-                    <div>
-                      <SecondaryLabel>Deposite Script</SecondaryLabel>
+                  {marketMetadata.market_type === MarketType.recipe.id && (
+                    <div className="mb-2 grid grid-cols-2 gap-x-4">
+                      <div>
+                        <SecondaryLabel>Deposit Script</SecondaryLabel>
 
-                      <ActionFlow
-                        className={cn(BASE_MARGIN_TOP.SM)}
-                        size="xs"
-                        actions={propsActionsDecoderEnterMarket.data ?? []}
-                        alert={false}
-                      />
+                        <ActionFlow
+                          className={cn(BASE_MARGIN_TOP.SM)}
+                          size="xs"
+                          actions={propsActionsDecoderEnterMarket.data ?? []}
+                          alert={false}
+                        />
+                      </div>
+
+                      <div>
+                        <SecondaryLabel>Withdrawal Script</SecondaryLabel>
+
+                        <ActionFlow
+                          className={cn(BASE_MARGIN_TOP.SM)}
+                          size="xs"
+                          actions={propsActionsDecoderExitMarket.data ?? []}
+                          alert={false}
+                        />
+                      </div>
                     </div>
-
-                    <div>
-                      <SecondaryLabel>Withdrawal Script</SecondaryLabel>
-
-                      <ActionFlow
-                        className={cn(BASE_MARGIN_TOP.SM)}
-                        size="xs"
-                        actions={propsActionsDecoderExitMarket.data ?? []}
-                        alert={false}
-                      />
-                    </div>
-                  </div>
+                  )}
 
                   {/**
                    * @info Chain

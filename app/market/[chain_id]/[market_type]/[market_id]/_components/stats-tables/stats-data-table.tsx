@@ -158,7 +158,7 @@ export function StatsDataTable<TData, TValue>({
 
                 return (
                   <TableRow
-                    // key={`list:row:${row.index}`}
+                    key={`list:row:${row.index}`}
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
                       "cursor-pointer px-5 hover:bg-focus",

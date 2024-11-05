@@ -23,8 +23,8 @@ export const AccessProtocol = React.forwardRef<
         <SectionTitle>Access the Royco Protocol</SectionTitle>
 
         <SectionSubtitle className="pb-[1rem] font-normal">
-          Leading instituations and individuals who believe Action Markets
-          should be more efficient.
+          Leading institutions and individuals who believe Action Markets should
+          be more efficient.
         </SectionSubtitle>
 
         <div
