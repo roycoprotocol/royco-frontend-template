@@ -31,7 +31,7 @@ export const SimulationViewer = React.forwardRef<
 
   const { writeContractOptions } = useMarketFormDetails(marketActionForm);
 
-  const { data, isLoading, isError } = useTransactionSimulation({
+  const { data, isLoading, isError, error } = useTransactionSimulation({
     chainId: marketMetadata.chain_id,
     writeContractOptions,
     simulationUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/simulate` ?? "",

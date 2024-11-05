@@ -59,6 +59,8 @@ export const getTransactionSimulationQueryOptions = ({
 
     const res = await response.json();
 
+    // const data = res.data as unknown;
+
     const data = res.data as Array<{
       asset_changes: Array<{
         raw_amount: string;
