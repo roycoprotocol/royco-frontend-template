@@ -136,9 +136,6 @@ export const MarketManager = React.forwardRef<
         >
           {viewType === MarketViewType.simple.id ? (
             <Fragment>
-              {/**
-               * @TODO Uncomment this when all UI is ready
-               */}
               {marketStep === MarketSteps.params.id && <MarketInfo />}
 
               <MarketActionForm
