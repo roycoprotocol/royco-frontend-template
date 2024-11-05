@@ -7,15 +7,18 @@ export const useTokenAllowance = ({
   account,
   spender,
   tokens,
+  enabled = true,
 }: {
   chain_id: number;
   account: Address;
   spender: Address;
   tokens: Address[];
+  enabled?: boolean;
 }) => {
-  const props = useQuery(
-    getAccountAllowanceQueryOptions(chain_id, account, spender, tokens)
-  );
+  const props = useQuery({
+    ...getAccountAllowanceQueryOptions(chain_id, account, spender, tokens),
+    enabled,
+  });
 
   return props;
 };
