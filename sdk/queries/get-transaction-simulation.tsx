@@ -25,7 +25,7 @@ export const getTransactionSimulationQueryOptions = ({
 }) => ({
   queryKey: ["simulate", JSON.stringify(writeContractOptions)],
   queryFn: async () => {
-    if (!writeContractOptions) {
+    if (!writeContractOptions || !account || !chainId) {
       return [];
     }
 
