@@ -228,10 +228,27 @@ export const TransactionModal = React.forwardRef<
               Do not close this window when the transaction is in progress.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-3">
+          <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-scroll py-3">
+            <div className={cn("flex flex-col gap-2")}>
+              {!!transactions &&
+                transactions.map((txOptions, txIndex) => {
+                  if (!!txOptions) {
+                    const key = `transaction:${txOptions.id}`;
+
+                    return (
+                      <TransactionRow
+                        key={key}
+                        transactionIndex={txIndex + 1}
+                        transaction={txOptions}
+                        txStatus={txStatus}
+                      />
+                    );
+                  }
+                })}
+            </div>
             {allTransactionsExecuted && (
               <AlertIndicator
-                className="w-full"
+                className="w-full rounded-xl border"
                 contentClassName="w-full"
                 type="success"
               >
@@ -241,25 +258,6 @@ export const TransactionModal = React.forwardRef<
                   mins.
                 </div>
               </AlertIndicator>
-            )}
-            {!allTransactionsExecuted && (
-              <div className={cn("flex flex-col gap-2")}>
-                {!!transactions &&
-                  transactions.map((txOptions, txIndex) => {
-                    if (!!txOptions) {
-                      const key = `transaction:${txOptions.id}`;
-
-                      return (
-                        <TransactionRow
-                          key={key}
-                          transactionIndex={txIndex + 1}
-                          transaction={txOptions}
-                          txStatus={txStatus}
-                        />
-                      );
-                    }
-                  })}
-              </div>
             )}
           </div>
           <div className="flex flex-col space-y-2">
