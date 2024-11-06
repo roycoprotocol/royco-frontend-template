@@ -116,7 +116,7 @@ export const FormChain = React.forwardRef<
             </SelectContent>
 
             <FormDescription className="mt-2">
-              The chain that the market will be deployed on
+              Chain that the market is deployed on.
             </FormDescription>
           </Select>
           <FormMessage />

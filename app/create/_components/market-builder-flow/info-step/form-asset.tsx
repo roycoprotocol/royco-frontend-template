@@ -385,7 +385,7 @@ export const FormAsset = React.forwardRef<
           </FormControl>
 
           <FormDescription className="mt-2">
-            What can be deposited into the market
+            Asset that users will provide.
           </FormDescription>
 
           <FormMessage />

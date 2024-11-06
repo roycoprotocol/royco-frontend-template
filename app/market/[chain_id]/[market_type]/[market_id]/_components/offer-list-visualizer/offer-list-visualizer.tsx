@@ -70,7 +70,7 @@ export const OfferListVisualizer = React.forwardRef<
         color: "#4AE75A",
       },
     };
-  }, []);
+  }, [currentMarketData]);
 
   const currentChangeRatioDepth = Math.abs(
     currentHighestOffers

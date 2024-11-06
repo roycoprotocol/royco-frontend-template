@@ -53,7 +53,7 @@ export const ActionTypeMap: Record<
     label: "Recipe Market",
     tag: "",
     description:
-      "Offer incentives to perform any onchain transaction or series of transactions. Best for actions with lump sum rewards and timelocks.",
+      "Incentivize any onchain transaction (or series of transaction).",
     icon: ScrollTextIcon,
   },
   vault: {
@@ -62,7 +62,7 @@ export const ActionTypeMap: Record<
     label: "Vault Market",
     tag: "",
     description:
-      "Offer incentives to deposit into an underlying ERC4626 Vault. Best for streaming rewards pro-rated to depositors and for actions easily represented by a 4646 vault.",
+      "Incentivize deposits into an existing ERC4626 Vault. Supports: streaming, cross-collateral.",
     icon: VaultIcon,
   },
 };
@@ -84,7 +84,7 @@ export const IncentiveScheduleMap: Record<
     id: "upfront",
     label: "Upfront",
     tag: "",
-    description: "Pay all incentives at the completion of action.",
+    description: "Payment at time action is completed.",
     icon: ArrowLeftRightIcon,
     type: "recipe",
   },
@@ -94,7 +94,7 @@ export const IncentiveScheduleMap: Record<
     label: "Arrear",
     tag: "",
     description:
-      "Lock Action Provider's assets and pay incentives once unlocked.",
+      "Payment after a timelock. Users may not withdraw their funds early.",
     icon: LockIcon,
     type: "recipe",
   },
@@ -104,7 +104,7 @@ export const IncentiveScheduleMap: Record<
     label: "Forfeitable",
     tag: "",
     description:
-      "Lock Action Provider's assets and stream incentives, which are forfeited if withdrawn early.",
+      "Payment after a timelock. Users may withdraw early, but forfeit incentives.",
     icon: RssIcon,
     type: "recipe",
   },
@@ -114,7 +114,8 @@ export const IncentiveScheduleMap: Record<
     label: "Streaming",
     tag: "",
     //TODO: change description
-    description: "Streaming Description",
+    description:
+      "Payment is streamed until users withdraw from the ERC4626 Vault.",
     icon: ActivityIcon,
     type: "vault",
   },
@@ -266,12 +267,12 @@ export const FormActionType = React.forwardRef<
             </div>
           </FormControl>
 
-          <div className="mt-2 flex justify-end text-sm text-tertiary">
+          <div className="mt-2 flex justify-start text-sm text-tertiary underline">
             <a
               target="_blank"
               href="https://docs.royco.org/developers/recipes-vs.-vaults"
             >
-              Read more...
+              Lean more
             </a>
           </div>
           <FormMessage />
@@ -365,12 +366,12 @@ export const FormIncentiveSchedule = React.forwardRef<
             </div>
           </FormControl>
 
-          <div className="mt-2 flex justify-end text-sm text-tertiary">
+          <div className="mt-2 flex justify-start text-sm text-tertiary underline">
             <a
               target="_blank"
               href="https://docs.royco.org/developers/creating-an-iam"
             >
-              Read more...
+              Learn more
             </a>
           </div>
 

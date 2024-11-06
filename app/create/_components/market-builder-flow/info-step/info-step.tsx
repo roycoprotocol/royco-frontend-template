@@ -14,6 +14,7 @@ import { FormAsset } from "./form-asset";
 import { FormActionType, FormIncentiveSchedule } from "./form-selectors";
 import { FormLockupTime } from "./form-lockup-time";
 import { AnimatePresence, motion } from "framer-motion";
+import { SectionSubtitle } from "../../../../_components/ui/composables";
 
 export const InfoStep = React.forwardRef<
   HTMLDivElement,
@@ -31,7 +32,20 @@ export const InfoStep = React.forwardRef<
       {...props}
     >
       <MotionWrapper>
-        <div className={cn("subtitle-1 text-black")}>Basic Details</div>
+        <div className={cn("subtitle-1 text-black")}>Market Details</div>
+        <p className="caption text-tertiary">
+          Learn more about creating your Royco Market{" "}
+          <span className="underline">
+            <a
+              target="_blank"
+              href="https://docs.royco.org/developers/creating-an-iam"
+              rel="noopener noreferrer"
+            >
+              here
+            </a>
+          </span>
+          .
+        </p>
 
         <FormMarketName
           className="mt-9"

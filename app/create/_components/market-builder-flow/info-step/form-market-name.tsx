@@ -32,14 +32,19 @@ export const FormMarketName = React.forwardRef<
       name="market_name"
       render={({ field }) => (
         <FormItem className={cn("", className)}>
-          <FormInputLabel className="mb-2" label="Market Name" />
+          <FormInputLabel className="mb-2" label="Incentivized Action" />
 
           <FormControl>
-            <Input className="" placeholder="Enter Market Name" {...field} />
+            <Input
+              className=""
+              placeholder="i.e. Lend USDC on Compound"
+              {...field}
+            />
           </FormControl>
 
           <FormDescription className="mt-2">
-            How the market will be shown across interfaces
+            Action that the market will incentivize. This will be the name of
+            your market.
           </FormDescription>
           <FormMessage />
         </FormItem>
