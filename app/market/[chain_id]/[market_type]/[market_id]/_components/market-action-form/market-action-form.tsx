@@ -223,9 +223,12 @@ export const MarketActionForm = React.forwardRef<
             className={cn("flex flex-row items-center justify-between")}
           >
             <TertiaryLabel
-              onClick={() => {
-                setUserType(MarketUserType.ap.id);
-              }}
+              /**
+               * @note Commented out for now because user type switch is moved to top
+               */
+              // onClick={() => {
+              //   setUserType(MarketUserType.ap.id);
+              // }}
               className={cn(
                 "cursor-pointer px-5 pt-5",
                 "transition-all duration-200 ease-in-out hover:text-primary"
