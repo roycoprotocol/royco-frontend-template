@@ -15,6 +15,8 @@ import {
   parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
+import { RoycoMarketType } from "../market";
+import { BigNumber } from "ethers";
 
 export type MarketFilter = {
   id: string;
@@ -256,8 +258,19 @@ export const getEnrichedMarketsQueryOptions = (
                 row.annual_change_ratios?.[tokenIndex]
               );
 
-              const per_input_token =
-                token_amount / input_token_data.token_amount;
+              let per_input_token = 0;
+
+              if (market_type === RoycoMarketType.recipe.value) {
+                // recipe
+                per_input_token = token_amount / input_token_data.token_amount;
+              } else {
+                // vault
+                per_input_token =
+                  token_amount / input_token_data.locked_token_amount;
+              }
+
+              if (isNaN(per_input_token) || !isFinite(per_input_token))
+                per_input_token = 0;
 
               return {
                 ...token_info,
