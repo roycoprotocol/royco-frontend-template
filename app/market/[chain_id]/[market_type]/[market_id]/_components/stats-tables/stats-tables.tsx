@@ -15,6 +15,7 @@ import {
 import { PositionsRecipeTable } from "./positions-recipe-table";
 import { useActiveMarket } from "../hooks";
 import { PositionsVaultTable } from "./positions-vault-table";
+import { useEnrichedOffers } from "../../../../../../../sdk/hooks";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,
@@ -24,6 +25,14 @@ export const StatsTables = React.forwardRef<
   const { address, isConnected } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
+
+  const { data: offers } = useEnrichedOffers({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    creator: (address?.toLowerCase() as string) ?? "",
+    market_type: marketMetadata.market_type === MarketType.recipe.id ? 0 : 1,
+    filters: [{ id: "is_cancelled", value: false }],
+  });
 
   return (
     <div ref={ref} className={cn("flex w-full flex-col", className)}>
@@ -55,7 +64,7 @@ export const StatsTables = React.forwardRef<
             statsView === MarketStatsView.offers.id && "decoration-tertiary"
           )}
         >
-          OFFERS
+          {`OFFERS ${offers?.count ? `(${offers?.count})` : ""}`}
         </TertiaryLabel>
       </div>
 
