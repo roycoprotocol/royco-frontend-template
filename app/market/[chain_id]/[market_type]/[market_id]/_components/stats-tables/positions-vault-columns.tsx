@@ -119,6 +119,10 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
         <div
           className={cn("flex flex-col gap-[0.2rem] font-gt text-sm font-300")}
         >
+          {props.row.original.tokens_data.length === 0 && (
+            <div className="flex items-center space-x-2">None</div>
+          )}
+
           {props.row.original.tokens_data.map(
             (
               // @ts-ignore
