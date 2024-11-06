@@ -37,3 +37,5 @@ export * from "./use-market-offers-validator";
 export * from "./use-enriched-positions-vault";
 export * from "./use-withdraw-contract-options";
 export * from "./use-recipe-offer-contract-options";
+export * from "./use-vault-offer-contract-options";
+export * from "./use-recipe-position-contract-options";
