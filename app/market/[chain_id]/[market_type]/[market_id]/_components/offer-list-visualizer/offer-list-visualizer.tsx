@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp } from "lucide-react";
 import {
@@ -39,19 +39,9 @@ import {
 } from "../composables";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
+import { MarketType } from "../../../../../../../store";
 
 export const description = "A bar chart with an active bar";
-
-const chartConfig = {
-  ap_offer: {
-    label: "AP Offer",
-    color: "#EB3C27",
-  },
-  ip_offer: {
-    label: "IP Offer",
-    color: "#3CC27A",
-  },
-} satisfies ChartConfig;
 
 export const OfferListVisualizer = React.forwardRef<
   HTMLDivElement,
@@ -64,6 +54,23 @@ export const OfferListVisualizer = React.forwardRef<
     currentMarketData,
     previousMarketData,
   } = useActiveMarket();
+
+  const chartConfig = useMemo(() => {
+    return {
+      ap_offer: {
+        label: "AP Offer",
+        color:
+          currentMarketData &&
+          currentMarketData.market_type === MarketType.recipe.value
+            ? "#4AE7A8"
+            : "#F7F7F6",
+      },
+      ip_offer: {
+        label: "IP Offer",
+        color: "#4AE75A",
+      },
+    };
+  }, []);
 
   const currentChangeRatioDepth = Math.abs(
     currentHighestOffers

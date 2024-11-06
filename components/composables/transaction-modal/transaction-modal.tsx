@@ -255,7 +255,7 @@ export const TransactionModal = React.forwardRef<
                 <div>All transactions successful</div>
                 <div className="mt-5 px-5 font-gt text-sm font-light text-secondary">
                   Changes will be reflected on your market dashboard in a few
-                  mins.
+                  minutes.
                 </div>
               </AlertIndicator>
             )}

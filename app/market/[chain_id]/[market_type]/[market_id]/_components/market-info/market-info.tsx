@@ -31,8 +31,11 @@ import {
 import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ExternalLinkIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { capitalize } from "lodash";
+import { ScrollArea } from "../../../../../../../components/ui/scroll-area";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -75,27 +78,28 @@ export const MarketInfo = React.forwardRef<
         )}
         {...props}
       >
-        <div
-          className={cn(BASE_PADDING, "flex items-start justify-between pb-4")}
-        >
-          <div>
+        <div className={cn(BASE_PADDING, "flex flex-col pb-4")}>
+          <div className="flex justify-between">
             <TertiaryLabel>MARKET</TertiaryLabel>
-
-            <PrimaryLabel
-              className={cn(BASE_MARGIN_TOP.XS)}
-              isVerified={currentMarketData.is_verified ? true : false}
-            >
-              {currentMarketData.name && currentMarketData.name.trim() !== ""
-                ? currentMarketData.name.trim()
-                : "Unknown Market"}
-            </PrimaryLabel>
+            <img
+              src={getSupportedChain(marketMetadata.chain_id)?.image}
+              alt={String(marketMetadata.chain_id)}
+              className="h-6 w-6 rounded-md border"
+            />
           </div>
 
-          <img
-            src={getSupportedChain(marketMetadata.chain_id)?.image}
-            alt={String(marketMetadata.chain_id)}
-            className="h-6 w-6 rounded-md border"
-          />
+          <PrimaryLabel
+            className={cn(BASE_MARGIN_TOP.XS)}
+            isVerified={currentMarketData.is_verified ? true : false}
+          >
+            {currentMarketData.name && currentMarketData.name.trim() !== ""
+              ? currentMarketData.name
+                  .trim()
+                  .split(" ")
+                  .map((word) => capitalize(word))
+                  .join(" ")
+              : "Unknown Market"}
+          </PrimaryLabel>
         </div>
 
         <div className={cn(BASE_PADDING)}>
@@ -103,7 +107,7 @@ export const MarketInfo = React.forwardRef<
            * Annual Incentive Percent
            */}
 
-          <div className="flex gap-x-8">
+          <div className="hide-scrollbar flex gap-x-8 overflow-x-scroll">
             <div>
               <PrimaryLabel className={cn("text-3xl font-light")}>
                 {currentMarketData.annual_change_ratio === Math.pow(10, 18) ||
@@ -483,18 +487,34 @@ export const MarketInfo = React.forwardRef<
                   {marketMetadata.market_type === MarketType.vault.id && (
                     <InfoCard.Row className={INFO_ROW_CLASSES}>
                       <InfoCard.Row.Key>ERC4626 Vault</InfoCard.Row.Key>
+
                       <InfoCard.Row.Value>
-                        {
-                          // @ts-ignore
-                          currentMarketData.underlying_vault_address.slice(
-                            0,
-                            6
-                          ) +
-                            "..." +
+                        <Link
+                          href={getExplorerUrl({
+                            chainId: marketMetadata.chain_id,
+                            type: "address",
+                            value:
+                              currentMarketData.underlying_vault_address ?? "",
+                          })}
+                          className="flex items-center gap-1"
+                        >
+                          {
                             // @ts-ignore
-                            currentMarketData.underlying_vault_address.slice(-4)
-                        }
-                        <InfoTip {...INFO_TIP_PROPS}>ERC4626 Vault</InfoTip>
+                            currentMarketData.underlying_vault_address.slice(
+                              0,
+                              6
+                            ) +
+                              "..." +
+                              // @ts-ignore
+                              currentMarketData.underlying_vault_address.slice(
+                                -4
+                              )
+                          }
+                          <ExternalLinkIcon
+                            strokeWidth={1.5}
+                            className={cn("h-5 w-5 p-[0.1rem]")}
+                          />
+                        </Link>
                       </InfoCard.Row.Value>
                     </InfoCard.Row>
                   )}
@@ -505,18 +525,93 @@ export const MarketInfo = React.forwardRef<
                   {marketMetadata.market_type === MarketType.vault.id && (
                     <InfoCard.Row className={INFO_ROW_CLASSES}>
                       <InfoCard.Row.Key>Wrapped Vault</InfoCard.Row.Key>
+
                       <InfoCard.Row.Value>
-                        {
-                          // @ts-ignore
-                          currentMarketData.market_id.slice(0, 6) +
-                            "..." +
+                        <Link
+                          href={getExplorerUrl({
+                            chainId: marketMetadata.chain_id,
+                            type: "address",
+                            value: currentMarketData.market_id ?? "",
+                          })}
+                          className="flex items-center gap-1"
+                        >
+                          {
                             // @ts-ignore
-                            currentMarketData.market_id.slice(-4)
-                        }
-                        <InfoTip {...INFO_TIP_PROPS}>Wrapped Vault</InfoTip>
+                            currentMarketData.market_id.slice(0, 6) +
+                              "..." +
+                              // @ts-ignore
+                              currentMarketData.market_id.slice(-4)
+                          }
+                          <ExternalLinkIcon
+                            strokeWidth={1.5}
+                            className={cn("h-5 w-5 p-[0.1rem]")}
+                          />
+                        </Link>
                       </InfoCard.Row.Value>
                     </InfoCard.Row>
                   )}
+
+                  <InfoCard.Row className={INFO_ROW_CLASSES}>
+                    <InfoCard.Row.Key>Market Deployer</InfoCard.Row.Key>
+
+                    <InfoCard.Row.Value>
+                      <Link
+                        href={getExplorerUrl({
+                          chainId: marketMetadata.chain_id,
+                          type: "address",
+                          value: currentMarketData.creator ?? "",
+                        })}
+                        className="flex items-center gap-1"
+                      >
+                        {
+                          // @ts-ignore
+                          currentMarketData.creator.slice(0, 6) +
+                            "..." +
+                            // @ts-ignore
+                            currentMarketData.creator.slice(-4)
+                        }
+                        <ExternalLinkIcon
+                          strokeWidth={1.5}
+                          className={cn("h-5 w-5 p-[0.1rem]")}
+                        />
+                      </Link>
+                    </InfoCard.Row.Value>
+                  </InfoCard.Row>
+
+                  <InfoCard.Row className={INFO_ROW_CLASSES}>
+                    <InfoCard.Row.Key>Input Token</InfoCard.Row.Key>
+
+                    <InfoCard.Row.Value>
+                      <Link
+                        href={getExplorerUrl({
+                          chainId: marketMetadata.chain_id,
+                          type: "address",
+                          value:
+                            currentMarketData.input_token_data
+                              .contract_address ?? "",
+                        })}
+                        className="flex items-center gap-1"
+                      >
+                        {
+                          // @ts-ignore
+                          currentMarketData.input_token_data.contract_address.slice(
+                            0,
+                            6
+                          ) +
+                            "..." +
+                            // @ts-ignore
+                            currentMarketData.input_token_data.contract_address.slice(
+                              -4
+                            )
+                        }
+                        {/* <InfoTip {...INFO_TIP_PROPS}>Wrapped Vault</InfoTip> */}
+                        <ExternalLinkIcon
+                          strokeWidth={1.5}
+                          className={cn("h-5 w-5 p-[0.1rem]")}
+                        />
+                      </Link>
+                    </InfoCard.Row.Value>
+                  </InfoCard.Row>
 
                   {/**
                    * @info Lockup Time
@@ -550,7 +645,7 @@ export const MarketInfo = React.forwardRef<
                   }
                 </InfoCard>
 
-                <div className="mt-3 flex flex-row flex-wrap items-center gap-2">
+                {/* <div className="mt-3 flex flex-row flex-wrap items-center gap-2">
                   <BadgeLink
                     size="sm"
                     target="_blank"
@@ -609,7 +704,7 @@ export const MarketInfo = React.forwardRef<
                       })}
                     />
                   )}
-                </div>
+                </div> */}
               </motion.div>
             )}
           </AnimatePresence>

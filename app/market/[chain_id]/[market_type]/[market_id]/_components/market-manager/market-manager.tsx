@@ -110,11 +110,19 @@ export const MarketManager = React.forwardRef<
             <Switch
               checked={viewType === MarketViewType.advanced.id}
               onCheckedChange={() => {
-                setViewType(
+                const updateViewType =
                   viewType === MarketViewType.advanced.id
                     ? MarketViewType.simple.id
-                    : MarketViewType.advanced.id
-                );
+                    : MarketViewType.advanced.id;
+
+                if (typeof window !== "undefined") {
+                  localStorage.setItem(
+                    "royco_market_view_type",
+                    updateViewType
+                  );
+                }
+
+                setViewType(updateViewType);
               }}
             />
           </div>
@@ -163,11 +171,18 @@ export const MarketManager = React.forwardRef<
                 <Switch
                   checked={viewType === MarketViewType.advanced.id}
                   onCheckedChange={() => {
-                    setViewType(
+                    const updateViewType =
                       viewType === MarketViewType.advanced.id
                         ? MarketViewType.simple.id
-                        : MarketViewType.advanced.id
-                    );
+                        : MarketViewType.advanced.id;
+
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem(
+                        "royco_market_view_type",
+                        updateViewType
+                      );
+                    }
+                    setViewType(updateViewType);
                   }}
                 />
               </div>

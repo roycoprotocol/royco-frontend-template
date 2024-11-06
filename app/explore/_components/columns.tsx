@@ -29,6 +29,7 @@ import {
 import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
+import { capitalize } from "lodash";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -115,7 +116,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           <div className="w-fit grow-0 overflow-hidden truncate text-ellipsis">
-            {props.row.original.name}
+            {props.row.original.name
+              .split(" ")
+              .map((word: string) => capitalize(word))
+              .join(" ")}
           </div>
 
           <Tooltip>
