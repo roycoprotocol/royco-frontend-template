@@ -14,6 +14,47 @@ import {
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
 
+const constructOfferFilterClauses = (
+  filters: BaseQueryFilter[] | undefined
+): string | undefined => {
+  if (!filters) return undefined;
+
+  let offerSideFilter = "";
+  let isCancelledFilter = "";
+
+  filters.forEach((filter) => {
+    switch (filter.id) {
+      case "offer_side":
+        if (offerSideFilter) offerSideFilter += " OR ";
+        if (filter.condition === "NOT") {
+          offerSideFilter += `offer_side <> ${filter.value}`;
+        } else {
+          offerSideFilter += `offer_side = ${filter.value}`;
+        }
+        break;
+      case "is_cancelled":
+        if (isCancelledFilter) isCancelledFilter += " OR ";
+        if (filter.condition === "NOT") {
+          isCancelledFilter += `is_cancelled <> ${filter.value}`;
+        } else {
+          isCancelledFilter += `is_cancelled = ${filter.value}`;
+        }
+        break;
+    }
+  });
+
+  let filterClauses = "";
+
+  if (offerSideFilter) filterClauses += `(${offerSideFilter}) AND `;
+  if (isCancelledFilter) filterClauses += `(${isCancelledFilter}) AND `;
+
+  if (filterClauses) {
+    filterClauses = filterClauses.slice(0, -5); // Remove the trailing " AND "
+  }
+
+  return filterClauses;
+};
+
 export type EnrichedOfferDataType =
   Database["public"]["CompositeTypes"]["enriched_offer_data_type"] & {
     tokens_data: Array<
@@ -63,7 +104,7 @@ export const getEnrichedOffersQueryOptions = (
     ),
   ],
   queryFn: async () => {
-    const filterClauses = constructBaseQueryFilterClauses(filters);
+    const filterClauses = constructOfferFilterClauses(filters);
     const sortingClauses = constructBaseSortingFilterClauses(sorting);
 
     const result = await client.rpc("get_enriched_offers", {

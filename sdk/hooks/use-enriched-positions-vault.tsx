@@ -4,18 +4,20 @@ import { getEnrichedPositionsRecipeQueryOptions } from "../queries/get-enriched-
 import { BaseQueryFilter, BaseSortingFilter, CustomTokenData } from "../types";
 import { useEnrichedMarkets } from "./use-enriched-markets";
 import { useEnrichedAccountBalancesVaultInMarket } from "./use-enriched-account-balances-vault-in-market";
-import { RoycoMarketUserType } from "../market";
+import { RoycoMarketUserType, TypedRoycoMarketUserType } from "../market";
 
 export const useEnrichedPositionsVault = ({
   account_address,
   chain_id,
   market_id,
   custom_token_data,
+  offer_side,
 }: {
   account_address: string;
   chain_id: number;
   market_id: string;
   custom_token_data?: CustomTokenData;
+  offer_side?: number;
 }) => {
   let data = null;
 
@@ -59,13 +61,15 @@ export const useEnrichedPositionsVault = ({
     let new_data = [];
 
     if (
-      balances.incentives_ap_data.length > 0 ||
-      balances.input_token_data_ap.token_amount > 0
+      (balances.incentives_ap_data.length > 0 ||
+        balances.input_token_data_ap.token_amount > 0) &&
+      (!offer_side || offer_side === RoycoMarketUserType.ap.value)
     ) {
       new_data.push(position_ap);
     } else if (
-      balances.incentives_ip_data.length > 0 ||
-      balances.input_token_data_ip.token_amount > 0
+      (balances.incentives_ip_data.length > 0 ||
+        balances.input_token_data_ip.token_amount > 0) &&
+      (!offer_side || offer_side === RoycoMarketUserType.ip.value)
     ) {
       new_data.push(position_ip);
     }
