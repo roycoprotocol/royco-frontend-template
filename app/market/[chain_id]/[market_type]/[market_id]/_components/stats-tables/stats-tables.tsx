@@ -44,17 +44,6 @@ export const StatsTables = React.forwardRef<
         )}
       >
         <TertiaryLabel
-          onClick={() => setStatsView(MarketStatsView.offers.id)}
-          className={cn(
-            BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent",
-            statsView === MarketStatsView.offers.id && "decoration-tertiary"
-          )}
-        >
-          {`OFFERS ${offers?.count ? `(${offers?.count})` : ""}`}
-        </TertiaryLabel>
-        <TertiaryLabel>/</TertiaryLabel>
-        <TertiaryLabel
           onClick={() => setStatsView(MarketStatsView.positions.id)}
           className={cn(
             BASE_UNDERLINE.MD,
@@ -75,7 +64,7 @@ export const StatsTables = React.forwardRef<
             statsView === MarketStatsView.offers.id && "decoration-tertiary"
           )}
         >
-          OFFERS
+          {`OFFERS ${offers?.count ? `(${offers?.count})` : ""}`}
         </TertiaryLabel>
       </div>
 

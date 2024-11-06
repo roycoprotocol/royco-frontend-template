@@ -58,8 +58,6 @@ export const MarketInfo = React.forwardRef<
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
 
-  console.log("currentMarketData", currentMarketData);
-
   const { scriptType, setScriptType, viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
