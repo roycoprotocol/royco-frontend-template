@@ -127,7 +127,10 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               tokenIndex
             ) => {
               return (
-                <div key={tokenIndex} className="flex items-center space-x-2">
+                <div
+                  key={`${props.row.original.id}:incentives:${token.id}`}
+                  className="flex items-center space-x-2"
+                >
                   <div className="h-4">
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
@@ -192,7 +195,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "tokens_data",
+    accessorKey: "unclaimed_incentives",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
@@ -239,7 +242,10 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               {props.row.original.tokens_data.map(
                 (token: any, tokenIndex: number) => {
                   return (
-                    <div className="flex flex-row items-center space-x-2">
+                    <div
+                      key={`${props.row.original.id}:unclaimed_incentives:${token.id}`}
+                      className="flex flex-row items-center space-x-2"
+                    >
                       <SecondaryLabel className="text-tertiary">
                         {Intl.NumberFormat("en-US", {
                           style: "decimal",
@@ -261,7 +267,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "market_value",
     enableResizing: false,
     enableSorting: false,
     header: "Market Value",

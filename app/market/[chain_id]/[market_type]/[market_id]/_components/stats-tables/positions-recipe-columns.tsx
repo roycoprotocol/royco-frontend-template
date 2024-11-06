@@ -79,6 +79,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
   //     );
   //   },
   // },
+
   {
     accessorKey: "annual_change_ratio",
     enableResizing: false,

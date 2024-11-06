@@ -39,6 +39,7 @@ export const useEnrichedPositionsVault = ({
 
   if (!!market && !!balances) {
     const position_ap = {
+      id: `${market.chain_id}_${market.market_type}_${market.market_id}_${RoycoMarketUserType.ap.value}`,
       offer_side: RoycoMarketUserType.ap.value,
       annual_change_ratio: market.annual_change_ratio,
       reward_style: 0,
@@ -47,6 +48,7 @@ export const useEnrichedPositionsVault = ({
     };
 
     const position_ip = {
+      id: `${market.chain_id}_${market.market_type}_${market.market_id}_${RoycoMarketUserType.ip.value}`,
       offer_side: RoycoMarketUserType.ip.value,
       annual_change_ratio: market.annual_change_ratio,
       reward_style: 0,
