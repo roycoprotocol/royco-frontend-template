@@ -101,7 +101,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                         notation: "compact",
                         useGrouping: true,
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }).format(token.token_amount)}
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
 
@@ -147,7 +147,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount)}{" "}
             {props.row.original.input_token_data.symbol.toUpperCase()}
           </SecondaryLabel>

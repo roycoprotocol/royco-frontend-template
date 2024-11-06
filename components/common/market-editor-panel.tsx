@@ -290,7 +290,7 @@ export const MarketEditorPanel = ({
                         containerClassName="border-none shrink-0 flex-grow"
                         placeholder={`${Intl.NumberFormat("en-US", {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(tokenDetails?.fdv || 0)}`}
                         value={watch("fdv") || ""}
                         onChange={(e) => {

@@ -202,7 +202,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                         notation: "compact",
                         useGrouping: true,
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }).format(token.token_amount)}
                     </span>
                   </div>
@@ -254,7 +254,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
 
@@ -265,7 +265,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                 notation: "compact",
                 useGrouping: true,
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+                maximumFractionDigits: 8,
               }).format(props.row.original.input_token_data.token_amount)}{" "}
               {props.row.original.input_token_data.symbol.toUpperCase()}
             </SecondaryLabel>
@@ -377,7 +377,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                 notation: "compact",
                 useGrouping: true,
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+                maximumFractionDigits: 8,
               }).format(unclaimed_incentives_usd)}
             </SecondaryLabel>
 
@@ -404,7 +404,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                           notation: "compact",
                           useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(token.token_amount)}{" "}
                         {token.symbol.toUpperCase()}
                       </SecondaryLabel>
@@ -459,7 +459,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(market_value)}
           </SecondaryLabel>
         </div>

@@ -191,7 +191,7 @@ export const IncentiveBreakdown = ({
                         notation: "compact",
                         useGrouping: true,
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }).format(
                         incentives_info.token_amount_usd ||
                           incentives_info.token_amount

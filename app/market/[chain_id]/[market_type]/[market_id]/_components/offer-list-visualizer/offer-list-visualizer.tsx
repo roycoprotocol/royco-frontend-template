@@ -192,7 +192,7 @@ export const OfferListVisualizer = React.forwardRef<
                     useGrouping: true,
                     notation: "compact",
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
+                    maximumFractionDigits: 8,
                   }).format(value as number);
 
                   return formattedValue;

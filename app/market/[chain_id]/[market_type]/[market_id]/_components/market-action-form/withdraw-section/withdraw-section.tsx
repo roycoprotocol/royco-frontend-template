@@ -48,7 +48,7 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
             notation: "compact",
             useGrouping: true,
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            maximumFractionDigits: 8,
           }).format(token.token_amount)}
         </SecondaryLabel>
 
@@ -82,7 +82,7 @@ export const WithdrawInputTokenRow = React.forwardRef<
             notation: "compact",
             useGrouping: true,
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            maximumFractionDigits: 8,
           }).format(token.token_amount)}
         </SecondaryLabel>
 
@@ -206,7 +206,7 @@ export const WithdrawSection = React.forwardRef<
                               notation: "compact",
                               useGrouping: true,
                               minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
+                              maximumFractionDigits: 8,
                             }).format(
                               withdrawType === MarketWithdrawType.input_token.id
                                 ? (position?.input_token_data

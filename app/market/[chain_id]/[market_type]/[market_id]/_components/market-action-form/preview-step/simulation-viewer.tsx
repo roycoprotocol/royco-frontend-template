@@ -87,7 +87,7 @@ export const SimulationViewer = React.forwardRef<
                         notation: "compact",
                         useGrouping: true,
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }
                     ).format(
                       tokenData.token_amount
@@ -101,7 +101,7 @@ export const SimulationViewer = React.forwardRef<
                       notation: "compact",
                       useGrouping: true,
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
+                      maximumFractionDigits: 8,
                     }).format(tokenData.token_amount_usd)}
                   </TertiaryLabel>
                 </SlideUpWrapper>

@@ -176,7 +176,7 @@ export const PreviewStep = React.forwardRef<
                           notation: "compact",
                           useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(incentive.token_amount_usd)}
                         )
                       </TertiaryLabel>
@@ -188,7 +188,7 @@ export const PreviewStep = React.forwardRef<
                           notation: "compact",
                           useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(incentive.per_input_token)}{" "}
                         {incentive.symbol.toUpperCase()} /{" 1.00 "}
                         {currentMarketData?.input_token_data.symbol.toUpperCase()}
@@ -235,7 +235,7 @@ export const PreviewStep = React.forwardRef<
                           notation: "compact",
                           useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(
                           incentiveData.reduce(
                             (acc, incentive) =>
