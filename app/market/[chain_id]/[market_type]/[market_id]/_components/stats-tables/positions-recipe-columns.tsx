@@ -25,6 +25,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ContractMap } from "@/sdk/contracts";
 import { getExplorerUrl } from "@/sdk/utils";
 import { BigNumber } from "ethers";
+import { getRecipeForfeitTransactionOptions } from "@/sdk/hooks";
 
 /**
  * @description Column definitions for the table
@@ -497,7 +498,15 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {can_be_forfeited && (
-              <DropdownMenuItem onClick={() => {}}>
+              <DropdownMenuItem
+                onClick={() => {
+                  const txOptions = getRecipeForfeitTransactionOptions({
+                    position: props.row.original,
+                  });
+
+                  setTransactions([...transactions, txOptions]);
+                }}
+              >
                 Forfeit position
               </DropdownMenuItem>
             )}
