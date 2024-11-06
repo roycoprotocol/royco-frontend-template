@@ -2,7 +2,6 @@ import { type TypedRoycoClient } from "@/sdk/client";
 
 import {
   getSupportedToken,
-  isVerifiedMarket,
   SupportedChain,
   SupportedToken,
 } from "../constants";
@@ -16,6 +15,8 @@ import {
   parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
+import { RoycoMarketType } from "../market";
+import { BigNumber } from "ethers";
 
 export type MarketFilter = {
   id: string;
@@ -119,7 +120,6 @@ export type EnrichedMarketDataType =
       total_supply: number;
     };
     chain_data: SupportedChain;
-    is_verified: boolean;
   };
 
 export const getEnrichedMarketsQueryOptions = (
@@ -131,6 +131,7 @@ export const getEnrichedMarketsQueryOptions = (
   filters: Array<MarketFilter> | undefined,
   sorting: Array<BaseSortingFilter> | undefined,
   search_key: string | undefined,
+  is_verified: boolean | undefined,
   custom_token_data: CustomTokenData | undefined
 ) => ({
   queryKey: [
@@ -143,6 +144,7 @@ export const getEnrichedMarketsQueryOptions = (
       (sort) => `${sort.id}-${sort.desc ? "desc" : "asc"}`
     ),
     search_key,
+    is_verified,
   ],
   queryFn: async () => {
     const filterClauses = constructMarketFilterClauses(filters);
@@ -156,6 +158,7 @@ export const getEnrichedMarketsQueryOptions = (
       filters: filterClauses,
       sorting: sortingClauses,
       search_key: search_key,
+      is_verified: is_verified,
       custom_token_data: custom_token_data,
     });
 
@@ -255,8 +258,19 @@ export const getEnrichedMarketsQueryOptions = (
                 row.annual_change_ratios?.[tokenIndex]
               );
 
-              const per_input_token =
-                token_amount / input_token_data.token_amount;
+              let per_input_token = 0;
+
+              if (market_type === RoycoMarketType.recipe.value) {
+                // recipe
+                per_input_token = token_amount / input_token_data.token_amount;
+              } else {
+                // vault
+                per_input_token =
+                  token_amount / input_token_data.locked_token_amount;
+              }
+
+              if (isNaN(per_input_token) || !isFinite(per_input_token))
+                per_input_token = 0;
 
               return {
                 ...token_info,
@@ -272,14 +286,11 @@ export const getEnrichedMarketsQueryOptions = (
             }
           );
 
-          const is_verified = isVerifiedMarket(row.id);
-
           return {
             ...row,
             incentive_tokens_data: incentive_tokens_data,
             input_token_data,
             chain_data,
-            is_verified,
           };
         }
       });

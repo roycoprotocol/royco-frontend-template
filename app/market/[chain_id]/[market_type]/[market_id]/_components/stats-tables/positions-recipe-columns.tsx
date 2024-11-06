@@ -7,8 +7,25 @@ import { EnrichedOfferDataType } from "@/sdk/queries";
 
 import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
-import { MarketUserType, RewardStyleMap } from "@/store";
+import {
+  MarketType,
+  MarketUserType,
+  RewardStyleMap,
+  useMarketManager,
+} from "@/store";
 import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
+import { useActiveMarket } from "../hooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ContractMap } from "@/sdk/contracts";
+import { getExplorerUrl } from "@/sdk/utils";
+import { BigNumber } from "ethers";
+import { getRecipeForfeitTransactionOptions } from "@/sdk/hooks";
 
 /**
  * @description Column definitions for the table
@@ -31,33 +48,38 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
   //     return <div>{props.row.original.name}</div>;
   //   },
   // },
-  {
-    accessorKey: "offer_side",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Side",
-    meta: {
-      className: "min-w-24",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "font-gt text-sm font-300",
-            props.row.original.offer_side ===
-              RoycoMarketUserType.ap.value.toString()
-              ? "text-success"
-              : "text-error"
-          )}
-        >
-          {props.row.original.offer_side ===
-          RoycoMarketUserType.ap.value.toString()
-            ? MarketUserType.ap.label
-            : MarketUserType.ip.label}
-        </div>
-      );
-    },
-  },
+
+  /**
+   * @note Below code represents the side of the offer
+   */
+  // {
+  //   accessorKey: "offer_side",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Side",
+  //   meta: {
+  //     className: "min-w-24",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "font-gt text-sm font-300",
+  //           props.row.original.offer_side ===
+  //             RoycoMarketUserType.ap.value.toString()
+  //             ? "text-success"
+  //             : "text-error"
+  //         )}
+  //       >
+  //         {props.row.original.offer_side ===
+  //         RoycoMarketUserType.ap.value.toString()
+  //           ? MarketUserType.ap.label
+  //           : MarketUserType.ip.label}
+  //       </div>
+  //     );
+  //   },
+  // },
+
   {
     accessorKey: "annual_change_ratio",
     enableResizing: false,
@@ -314,7 +336,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "tokens_data",
+    accessorKey: "token_amounts",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
@@ -406,7 +428,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "input_token_id",
     enableResizing: false,
     enableSorting: false,
     header: "Market Value",
@@ -441,6 +463,86 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             }).format(market_value)}
           </SecondaryLabel>
         </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    meta: {},
+    cell: (props: any) => {
+      const { transactions, setTransactions } = useMarketManager();
+
+      const { currentMarketData, marketMetadata } = useActiveMarket();
+
+      let can_be_forfeited = false;
+
+      if (
+        !!currentMarketData &&
+        currentMarketData.reward_style === 2 && // "2" represents forfeitable position
+        props.row.original.is_forfeited === false &&
+        props.row.original.is_claimed.every(
+          (isClaimed: boolean) => isClaimed === false
+        ) &&
+        props.row.original.is_withdrawn === false &&
+        BigNumber.from(props.row.original.unlock_timestamp).gt(
+          BigNumber.from(Math.floor(Date.now() / 1000))
+        )
+      ) {
+        can_be_forfeited = true;
+      }
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <DotsHorizontalIcon className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {can_be_forfeited && (
+              <DropdownMenuItem
+                onClick={() => {
+                  const txOptions = getRecipeForfeitTransactionOptions({
+                    position: props.row.original,
+                  });
+
+                  setTransactions([...transactions, txOptions]);
+                }}
+              >
+                Forfeit position
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.weiroll_wallet,
+                  type: "address",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              Weiroll Wallet
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.transaction_hash,
+                  type: "tx",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              Creation Transaction
+            </DropdownMenuItem>
+
+            {/* <DropdownMenuSeparator /> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },

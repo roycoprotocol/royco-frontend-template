@@ -58,6 +58,8 @@ export const MarketInfo = React.forwardRef<
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
 
+  console.log("currentMarketData", currentMarketData);
+
   const { scriptType, setScriptType, viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
@@ -110,9 +112,9 @@ export const MarketInfo = React.forwardRef<
           <div className="hide-scrollbar flex gap-x-8 overflow-x-scroll">
             <div>
               <PrimaryLabel className={cn("text-3xl font-light")}>
-                {currentMarketData.annual_change_ratio === Math.pow(10, 18) ||
-                currentMarketData.annual_change_ratio === 0 ? (
-                  `N/D`
+                {(currentMarketData.annual_change_ratio ?? 0) >=
+                Math.pow(10, 18) ? (
+                  `0`
                 ) : (
                   <SpringNumber
                     previousValue={
@@ -125,6 +127,7 @@ export const MarketInfo = React.forwardRef<
                     numberFormatOptions={{
                       style: "percent",
                       notation: "compact",
+                      useGrouping: true,
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     }}
@@ -138,7 +141,7 @@ export const MarketInfo = React.forwardRef<
 
             {marketMetadata.market_type === MarketType.recipe.id && (
               <div>
-                <PrimaryLabel className={cn("text-3xl font-light")}>
+                <PrimaryLabel className={cn("text-3xl font-light capitalize")}>
                   {formatDuration(
                     Object.entries(
                       secondsToDuration(currentMarketData.lockup_time)
@@ -150,7 +153,7 @@ export const MarketInfo = React.forwardRef<
                         {}
                       )
                   )}
-                  {currentMarketData.lockup_time === "0" && "N/A"}
+                  {currentMarketData.lockup_time === "0" && "No Lockup"}
                 </PrimaryLabel>
                 <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
                   Lockup

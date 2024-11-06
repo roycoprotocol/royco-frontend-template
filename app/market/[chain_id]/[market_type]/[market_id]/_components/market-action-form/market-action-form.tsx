@@ -166,7 +166,7 @@ export const MarketActionForm = React.forwardRef<
   if (!!currentMarketData) {
     return (
       <div
-        key={`market-action-form:container:${viewType}`}
+        key={`market-action-form:container:${marketStep}:${viewType}`}
         ref={ref}
         className={cn(
           "flex w-full shrink-0 grow flex-col",
@@ -178,7 +178,7 @@ export const MarketActionForm = React.forwardRef<
         {marketStep !== MarketSteps.params.id && (
           <SlideUpWrapper
             layout="position"
-            layoutId="motion:market:back-button"
+            layoutId={`motion:market:back-button:${marketStep}`}
             className={cn(
               "mt-5 flex w-full flex-row place-content-start items-center px-5 pb-3 text-left"
             )}
@@ -223,22 +223,28 @@ export const MarketActionForm = React.forwardRef<
             className={cn("flex flex-row items-center justify-between")}
           >
             <TertiaryLabel
-              onClick={() => {
-                setUserType(MarketUserType.ap.id);
-              }}
+              /**
+               * @note Commented out for now because user type switch is moved to top
+               */
+              // onClick={() => {
+              //   setUserType(MarketUserType.ap.id);
+              // }}
               className={cn(
                 "cursor-pointer px-5 pt-5",
-                "transition-all duration-200 ease-in-out hover:text-primary",
-                userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
+                "transition-all duration-200 ease-in-out hover:text-primary"
+                /**
+                 * @note Commented out for now because user type switch is moved to top
+                 */
+                // userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
               )}
             >
               TRANSACT
             </TertiaryLabel>
 
             {/**
-             * @TODO Uncomment this when all UI is ready
+             * @note Commented out for now because user type switch is moved to top
              */}
-            {viewType === MarketViewType.advanced.id && (
+            {/* {viewType === MarketViewType.advanced.id && (
               <TertiaryLabel
                 onClick={() => {
                   setActionType(MarketActionType.supply.id);
@@ -252,7 +258,7 @@ export const MarketActionForm = React.forwardRef<
               >
                 INCENTIVIZE
               </TertiaryLabel>
-            )}
+            )} */}
           </SlideUpWrapper>
         )}
 

@@ -2,7 +2,11 @@
 
 import React, { Fragment } from "react";
 import { useMarketManager } from "@/store";
-import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
+import {
+  MarketSteps,
+  MarketUserType,
+  MarketViewType,
+} from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
 import { MarketActionForm } from "../market-action-form";
 import { useActiveMarket } from "../hooks";
@@ -26,8 +30,14 @@ export const MarketManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { viewType, setViewType, marketStep, setMarketStep } =
-    useMarketManager();
+  const {
+    viewType,
+    setViewType,
+    marketStep,
+    setMarketStep,
+    userType,
+    setUserType,
+  } = useMarketManager();
 
   const {
     isLoading,
@@ -104,27 +114,51 @@ export const MarketManager = React.forwardRef<
               <div className="absolute left-0 top-0 h-full w-full"></div>
             )}
 
-            <div className="font-gt text-sm font-light text-secondary">
-              Advanced Mode
-            </div>
-            <Switch
-              checked={viewType === MarketViewType.advanced.id}
-              onCheckedChange={() => {
-                const updateViewType =
-                  viewType === MarketViewType.advanced.id
-                    ? MarketViewType.simple.id
-                    : MarketViewType.advanced.id;
-
-                if (typeof window !== "undefined") {
-                  localStorage.setItem(
-                    "royco_market_view_type",
-                    updateViewType
+            {/**
+             * User Type Switch
+             */}
+            <div className="flex flex-row items-center gap-2">
+              <div className="font-gt text-sm font-light text-secondary">
+                Incentive Provider
+              </div>
+              <Switch
+                checked={userType === MarketUserType.ip.id}
+                onCheckedChange={() => {
+                  setUserType(
+                    userType === MarketUserType.ap.id
+                      ? MarketUserType.ip.id
+                      : MarketUserType.ap.id
                   );
-                }
+                }}
+              />
+            </div>
 
-                setViewType(updateViewType);
-              }}
-            />
+            {/**
+             * Advanced View Switch
+             */}
+            <div className="ml-3 flex flex-row items-center gap-2">
+              <div className="font-gt text-sm font-light text-secondary">
+                Advanced Mode
+              </div>
+              <Switch
+                checked={viewType === MarketViewType.advanced.id}
+                onCheckedChange={() => {
+                  const updateViewType =
+                    viewType === MarketViewType.advanced.id
+                      ? MarketViewType.simple.id
+                      : MarketViewType.advanced.id;
+
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem(
+                      "royco_market_view_type",
+                      updateViewType
+                    );
+                  }
+
+                  setViewType(updateViewType);
+                }}
+              />
+            </div>
           </div>
         </div>
 

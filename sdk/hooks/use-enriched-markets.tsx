@@ -15,6 +15,7 @@ export const useEnrichedMarkets = ({
   filters = [],
   sorting = [],
   search_key,
+  is_verified,
   custom_token_data,
   enabled = true,
 }: {
@@ -26,6 +27,7 @@ export const useEnrichedMarkets = ({
   filters?: Array<MarketFilter>;
   sorting?: Array<BaseSortingFilter>;
   search_key?: string;
+  is_verified?: boolean;
   custom_token_data?: CustomTokenData;
   enabled?: boolean;
 }) => {
@@ -41,6 +43,7 @@ export const useEnrichedMarkets = ({
       filters,
       sorting,
       search_key,
+      is_verified,
       custom_token_data
     ),
     enabled,
@@ -50,7 +53,7 @@ export const useEnrichedMarkets = ({
     ? // @ts-ignore
       (props.data.data as Array<EnrichedMarketDataType>)
     : null;
-  const count = !!props.data ? props.data.count ?? 0 : 0;
+  const count = !!props.data ? (props.data.count ?? 0) : 0;
 
   return {
     ...props,

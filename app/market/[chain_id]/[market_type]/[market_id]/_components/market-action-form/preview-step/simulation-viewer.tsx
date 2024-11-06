@@ -29,13 +29,16 @@ export const SimulationViewer = React.forwardRef<
 
   const { marketMetadata } = useActiveMarket();
 
-  const { writeContractOptions } = useMarketFormDetails(marketActionForm);
+  const { writeContractOptions, isReady } =
+    useMarketFormDetails(marketActionForm);
 
   const { data, isLoading, isError, error } = useTransactionSimulation({
     chainId: marketMetadata.chain_id,
     writeContractOptions,
     simulationUrl: `/api/simulate`,
     account: address as Address,
+    enabled:
+      isReady && !!writeContractOptions && writeContractOptions.length > 0,
   });
 
   return (

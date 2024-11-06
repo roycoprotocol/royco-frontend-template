@@ -17,8 +17,8 @@ import {
   PrimaryLabel,
   TertiaryLabel,
 } from "../composables";
-import { MarketIncentiveType, MarketType, useMarketManager } from "@/store";
-import { HorizontalTabs, SpringNumber } from "@/components/composables";
+import { MarketType, MarketUserType, useMarketManager } from "@/store";
+import { SpringNumber } from "@/components/composables";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 
 export const BalanceIndicator = React.forwardRef<
@@ -28,7 +28,7 @@ export const BalanceIndicator = React.forwardRef<
   const { address, isConnected } = useAccount();
 
   const { marketMetadata, currentMarketData } = useActiveMarket();
-  const { balanceIncentiveType, setBalanceIncentiveType } = useMarketManager();
+  const { userType } = useMarketManager();
 
   /**
    * Recipe balances for AP & IP
@@ -122,33 +122,6 @@ export const BalanceIndicator = React.forwardRef<
       <TertiaryLabel>BALANCES</TertiaryLabel>
 
       {/**
-       * Show distinction between AP and IP
-       */}
-      {(placeholderData[1]?.incentives_ip_data.length !== 0 ||
-        placeholderData[1]?.incentives_ap_data.length !== 0 ||
-        placeholderData[1]?.input_token_data_ap.token_amount !== 0 ||
-        placeholderData[1]?.input_token_data_ip.token_amount !== 0) && (
-        <HorizontalTabs
-          className={cn(BASE_MARGIN_TOP.MD)}
-          size="sm"
-          key="market:balance-incentive-type:container"
-          baseId="market:balance-incentive-type"
-          tabs={[
-            {
-              label: "AP",
-              id: MarketIncentiveType.ap.id,
-            },
-            {
-              label: "IP",
-              id: MarketIncentiveType.ip.id,
-            },
-          ]}
-          activeTab={balanceIncentiveType}
-          setter={setBalanceIncentiveType}
-        />
-      )}
-
-      {/**
        * Total balance for recipe
        */}
       {placeholderData[1] && (
@@ -156,14 +129,14 @@ export const BalanceIndicator = React.forwardRef<
           <SpringNumber
             previousValue={
               placeholderData[0]
-                ? balanceIncentiveType === MarketIncentiveType.ap.id
+                ? userType === MarketUserType.ap.id
                   ? placeholderData[0].balance_usd_ap
                   : placeholderData[0].balance_usd_ip
                 : 0
             }
             currentValue={
               placeholderData[1]
-                ? balanceIncentiveType === MarketIncentiveType.ap.id
+                ? userType === MarketUserType.ap.id
                   ? placeholderData[1].balance_usd_ap
                   : placeholderData[1].balance_usd_ip
                 : 0
@@ -214,7 +187,7 @@ export const BalanceIndicator = React.forwardRef<
                   spanClassName="leading-5"
                   previousValue={0}
                   currentValue={
-                    balanceIncentiveType === MarketIncentiveType.ap.id
+                    userType === MarketUserType.ap.id
                       ? (placeholderData[1]?.input_token_data_ap
                           ?.token_amount ?? 0)
                       : (placeholderData[1]?.input_token_data_ip
@@ -263,7 +236,7 @@ export const BalanceIndicator = React.forwardRef<
               <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
               <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
                 {placeholderData[1]?.[
-                  balanceIncentiveType === MarketIncentiveType.ap.id
+                  userType === MarketUserType.ap.id
                     ? "incentives_ap_data"
                     : "incentives_ip_data"
                 ].length === 0 ? (
@@ -273,11 +246,11 @@ export const BalanceIndicator = React.forwardRef<
                 ) : null}
 
                 {placeholderData[1]?.[
-                  balanceIncentiveType === MarketIncentiveType.ap.id
+                  userType === MarketUserType.ap.id
                     ? "incentives_ap_data"
                     : "incentives_ip_data"
                 ].map((incentive, index) => {
-                  const BASE_KEY = `market:balance-indicator:balance-incentice-type:${balanceIncentiveType}:incentive:${incentive.id}`;
+                  const BASE_KEY = `market:balance-indicator:balance-incentice-type:${userType}:incentive:${incentive.id}`;
 
                   return (
                     <InfoCard.Row.Value

@@ -375,7 +375,7 @@ export const createMarketManagerStore = () => {
       balanceIncentiveType: TypedRoycoMarketIncentiveType
     ) => set({ balanceIncentiveType }),
 
-    statsView: MarketStatsView.offers.id,
+    statsView: MarketStatsView.positions.id,
     setStatsView: (statsView: MarketStatsViewType) => set({ statsView }),
 
     offerTablePage: 0,
@@ -397,17 +397,9 @@ export const createMarketManagerStore = () => {
     setActionType: (actionType: TypedRoycoMarketActionType) =>
       set({ actionType }),
 
-    /**
-     * @TODO Reset after UI is ready
-     */
-    // userType: MarketUserType.ip.id,
     userType: MarketUserType.ap.id,
     setUserType: (userType: TypedRoycoMarketUserType) => set({ userType }),
 
-    /**
-     * @TODO Reset after UI is ready
-     */
-    // offerType: MarketOfferType.limit.id,
     offerType: MarketOfferType.market.id,
     setOfferType: (offerType: TypedRoycoMarketOfferType) => set({ offerType }),
 

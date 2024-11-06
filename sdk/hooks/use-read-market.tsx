@@ -1,11 +1,10 @@
-import { useReadContract, useReadContracts } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { ContractMap } from "../contracts";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "../constants";
 import {
   RoycoMarketRewardStyle,
   RoycoMarketType,
-  TypedRoycoMarketRewardStyle,
   TypedRoycoMarketType,
 } from "../market";
 import { Abi, Address } from "abitype";
