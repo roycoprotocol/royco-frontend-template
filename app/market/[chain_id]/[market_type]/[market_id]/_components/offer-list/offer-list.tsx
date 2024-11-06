@@ -44,7 +44,7 @@ export const CentralBar = React.forwardRef<
           currency: "USD",
           notation: "compact",
           minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+          maximumFractionDigits: 8,
           useGrouping: true,
         }).format(
           marketMetadata.market_type === RoycoMarketType.recipe.id

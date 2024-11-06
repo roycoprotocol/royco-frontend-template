@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { MarketStatsView, MarketType, useMarketManager } from "@/store";
+import {
+  MarketStatsView,
+  MarketType,
+  MarketUserType,
+  useMarketManager,
+} from "@/store";
 import React from "react";
 import { OfferTable } from "./offer-table";
 import { useAccount } from "wagmi";
@@ -21,7 +26,7 @@ export const StatsTables = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { statsView, setStatsView } = useMarketManager();
+  const { statsView, setStatsView, userType } = useMarketManager();
   const { address, isConnected } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
@@ -31,7 +36,13 @@ export const StatsTables = React.forwardRef<
     market_id: marketMetadata.market_id,
     creator: (address?.toLowerCase() as string) ?? "",
     market_type: marketMetadata.market_type === MarketType.recipe.id ? 0 : 1,
-    filters: [{ id: "is_cancelled", value: false }],
+    filters: [
+      { id: "is_cancelled", value: false },
+      {
+        id: "offer_side",
+        value: userType === MarketUserType.ap.id ? 0 : 1,
+      },
+    ],
   });
 
   return (

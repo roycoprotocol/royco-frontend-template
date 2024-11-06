@@ -244,7 +244,7 @@ export const MarketInfo = React.forwardRef<
                         <div
                           className={cn(
                             BASE_MARGIN_TOP.SM,
-                            "max-h-[200px] overflow-y-scroll rounded-lg border p-1"
+                            "max-h-[200px] overflow-x-hidden overflow-y-scroll rounded-lg border p-1"
                           )}
                         >
                           <ActionFlow
@@ -261,7 +261,7 @@ export const MarketInfo = React.forwardRef<
                         <div
                           className={cn(
                             BASE_MARGIN_TOP.SM,
-                            "rounded-lg border p-1"
+                            "max-h-[200px] overflow-x-hidden overflow-y-scroll rounded-lg border p-1"
                           )}
                         >
                           <ActionFlow

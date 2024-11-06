@@ -147,7 +147,7 @@ export const BalanceIndicator = React.forwardRef<
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }}
           />
         </PrimaryLabel>
@@ -198,7 +198,7 @@ export const BalanceIndicator = React.forwardRef<
                     notation: "compact",
                     useGrouping: true,
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
+                    maximumFractionDigits: 8,
                   }}
                 />
 
@@ -267,7 +267,7 @@ export const BalanceIndicator = React.forwardRef<
                           notation: "compact",
                           useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }}
                       />
 

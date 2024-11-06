@@ -76,7 +76,12 @@ export const ActionFlow = React.forwardRef<
                   size === "xs" && "ml-2"
                 )}
               >
-                <span className={cn("leading-5", size === "sm" && "leading-5")}>
+                <span
+                  className={cn(
+                    "break-all leading-5",
+                    size === "sm" && "leading-5"
+                  )}
+                >
                   Call to
                   <Tooltip>
                     <TooltipTrigger>
@@ -101,7 +106,7 @@ export const ActionFlow = React.forwardRef<
                         href={action.explorer_url}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="inline-block text-black underline decoration-secondary decoration-dotted underline-offset-[3px] transition-colors duration-200 ease-in-out hover:text-secondary hover:decoration-tertiary"
+                        className="inline-block text-left text-black underline decoration-secondary decoration-dotted underline-offset-[3px] transition-colors duration-200 ease-in-out hover:text-secondary hover:decoration-tertiary"
                       >
                         {action.contract_name
                           ? action.contract_name
