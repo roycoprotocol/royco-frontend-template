@@ -384,8 +384,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           <Tooltip>
-            {props.row.original.annual_change_ratio === Math.pow(10, 18) ? (
-              "N/D"
+            {props.row.original.annual_change_ratio >= Math.pow(10, 18) ? (
+              "0"
             ) : (
               <TooltipTrigger className={cn("cursor-pointer")}>
                 <SpringNumber
@@ -410,10 +410,14 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               </TooltipTrigger>
             )}
 
-            {props.row.original.incentive_tokens_data.length > 0 && (
+            {props.row.original.incentive_tokens_data.filter(
+              (token: any) => token.annual_change_ratio !== 0
+            ).length > 0 && (
               <AipBreakdown
                 noEdit
-                breakdown={props.row.original.incentive_tokens_data}
+                breakdown={props.row.original.incentive_tokens_data.filter(
+                  (token: any) => token.annual_change_ratio !== 0
+                )}
               />
             )}
           </Tooltip>
