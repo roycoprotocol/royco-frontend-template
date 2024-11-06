@@ -169,14 +169,20 @@ export const InputAmountWrapper = React.forwardRef<
           );
         }}
         Prefix={() => {
-          if (offerType === MarketOfferType.limit.id) return null;
+          /**
+           * @note Below code is for the case where max value needs to be avaialble fill amount
+           */
+          // if (offerType === MarketOfferType.limit.id) return null;
 
-          if (
-            marketMetadata.market_type === MarketType.vault.id &&
-            userType === MarketUserType.ap.id &&
-            offerType === MarketOfferType.limit.id
-          )
-            return null;
+          /**
+           * @note Below code is for the case where max value needs to be avaialble fill amount
+           */
+          // if (
+          //   marketMetadata.market_type === MarketType.vault.id &&
+          //   userType === MarketUserType.ap.id &&
+          //   offerType === MarketOfferType.limit.id
+          // )
+          //   return null;
 
           return (
             <div
