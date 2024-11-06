@@ -55,7 +55,7 @@ export const useEnrichedAccountBalanceVault = ({
           abi: ContractMap[market.chain_id as keyof typeof ContractMap][
             "WrappedVault"
           ].abi as Abi,
-          functionName: "balanceOf",
+          functionName: "maxWithdraw",
           args: [account_address],
         },
         ...(market.base_incentive_ids ?? []).map((incentive) => {
