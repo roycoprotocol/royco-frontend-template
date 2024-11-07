@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 export const WarningBox = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
+    title?: string;
     text: string;
   }
->(({ className, text, ...props }, ref) => {
+>(({ className, text, title = "WARNING", ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -22,7 +23,7 @@ export const WarningBox = React.forwardRef<
         </div>
 
         <div className="ml-1 h-6 text-wrap text-center text-lg font-normal text-white">
-          <span className="leading-2">WARNING</span>
+          <span className="leading-2">{title}</span>
         </div>
       </div>
 

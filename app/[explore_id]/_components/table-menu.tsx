@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { isEqual } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,7 +24,7 @@ type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
   ({ className }, ref) => {
     const params = useParams<{ explore_id: "explore" | "all" }>();
-    const exploreId = params.explore_id;
+    const exploreId = useMemo(() => params.explore_id, [params.explore_id]);
 
     const {
       exploreView: view,
@@ -58,7 +58,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       filters,
       page_index: pageIndex,
       search_key: searchKey,
-      is_verified: exploreIsVerified,
+      is_verified: exploreId === "explore" ? true : exploreIsVerified,
     });
 
     /**
@@ -148,11 +148,17 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
 
           {exploreId !== "explore" && (
             <div className="body-2 mt-4 flex justify-between text-primary">
-              <h5 className="">Show Verified Market</h5>
+              <h5 className="">Show Unverified Markets</h5>
 
               <Switch
-                checked={exploreIsVerified}
+                checked={!exploreIsVerified}
                 onCheckedChange={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem(
+                      "royco_verified_market_filter_type",
+                      !exploreIsVerified ? "true" : "false"
+                    );
+                  }
                   setExploreIsVerified(!exploreIsVerified);
                 }}
               />

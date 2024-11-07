@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 
 import { LoadingSpinner } from "@/components/composables";
 import { DataTable } from "./data-table";
@@ -18,12 +18,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { produce } from "immer";
 
 import { useImmer } from "use-immer";
+import { useParams } from "next/navigation";
 
 export const MarketsTable = () => {
   const [placeholderDatas, setPlaceholderDatas] = useImmer<Array<any | null>>([
     null,
     null,
   ]);
+
+  const params = useParams<{ explore_id: "explore" | "all" }>();
+  const exploreId = useMemo(() => params.explore_id, [params.explore_id]);
 
   const {
     exploreSortKey: sortKey,
@@ -41,7 +45,7 @@ export const MarketsTable = () => {
       filters,
       page_index: pageIndex,
       search_key: searchKey,
-      is_verified: isVerified,
+      is_verified: exploreId === "explore" ? true : isVerified,
     });
 
   /**
