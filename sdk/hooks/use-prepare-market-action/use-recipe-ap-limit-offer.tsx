@@ -227,13 +227,14 @@ export const calculateRecipeAPLimitOfferTokenData = ({
         // Get annual change ratio
         let annual_change_ratio = 0;
 
-        // Calculate annual change ratio
-        if (!enrichedMarket.lockup_time || enrichedMarket.lockup_time === "0") {
-          annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
-        } else {
+        const lockup_time = Number(enrichedMarket.lockup_time ?? "0");
+        const quantity_value_usd = input_token_data.token_amount_usd;
+        const incentive_value_usd = incentive_token_amount_usd;
+
+        if (quantity_value_usd > 0 && !isNaN(lockup_time) && lockup_time > 0) {
           annual_change_ratio =
-            (incentive_token_amount_usd / input_token_data.token_amount_usd) *
-            ((365 * 24 * 60 * 60) / parseInt(enrichedMarket.lockup_time));
+            (incentive_value_usd / quantity_value_usd) *
+            ((365 * 24 * 60 * 60) / lockup_time);
         }
 
         // Get incentive token data
@@ -375,6 +376,7 @@ export const useRecipeAPLimitOffer = ({
     token_ids,
     token_amounts,
     expiry,
+    enabled,
   });
 
   // Get token quotes
