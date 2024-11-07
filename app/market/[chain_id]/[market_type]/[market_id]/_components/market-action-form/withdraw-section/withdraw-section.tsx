@@ -130,6 +130,8 @@ export const WithdrawSection = React.forwardRef<
     ],
   });
 
+  console.log("postionsRecipe", postionsRecipe);
+
   const { isLoading: isLoadingPositionsVault, data: positionsVault } =
     useEnrichedPositionsVault({
       chain_id: marketMetadata.chain_id,
@@ -155,7 +157,7 @@ export const WithdrawSection = React.forwardRef<
           (position) => position.offer_side === RoycoMarketUserType.ap.value
         );
 
-  console.log("positions", positions);
+  const isLoading = isLoadingPositionsRecipe || isLoadingPositionsVault;
 
   return (
     <div
@@ -168,7 +170,7 @@ export const WithdrawSection = React.forwardRef<
           <SelectWithdrawType />
 
           <div className="mt-5 flex w-full grow flex-col">
-            <div className="flex grow flex-col place-content-start items-center gap-2">
+            <div className="flex grow flex-col place-content-start items-center gap-3">
               {(isLoadingPositionsRecipe || isLoadingPositionsVault) && (
                 <LoadingSpinner className="h-5 w-5" />
               )}
@@ -179,13 +181,16 @@ export const WithdrawSection = React.forwardRef<
                 </div>
               )}
 
-              {!!positions && positions.length === 0 && (
-                <div className="h-full w-full place-content-center items-start">
-                  <AlertIndicator>
-                    No withdrawable positions found
-                  </AlertIndicator>
-                </div>
-              )}
+              {!isLoading &&
+                isConnected &&
+                !!positions &&
+                positions.length === 0 && (
+                  <div className="h-full w-full place-content-center items-start">
+                    <AlertIndicator>
+                      No withdrawable positions found
+                    </AlertIndicator>
+                  </div>
+                )}
 
               {!!positions &&
                 totalCount > 0 &&
@@ -219,7 +224,7 @@ export const WithdrawSection = React.forwardRef<
                             )}
                           </SecondaryLabel>
 
-                          <div className="flex w-full grow flex-col space-y-1">
+                          <div className="flex w-full grow flex-col space-y-3">
                             {withdrawType ===
                             MarketWithdrawType.input_token.id ? (
                               <WithdrawInputTokenRow
