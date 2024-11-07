@@ -489,4 +489,15 @@ export const TokenMap42161 = {
       "https://assets-cdn.trustwallet.com/blockchains/arbitrum/assets/0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9/logo.png",
     decimals: 6,
   },
+  "42161-0xdf161e3ea7610c22f10f9ac2704d8f20e359989c": {
+    id: "42161-0xdf161e3ea7610c22f10f9ac2704d8f20e359989c",
+    chain_id: 42161,
+    contract_address: "0xdf161e3ea7610c22f10f9ac2704d8f20e359989c",
+    name: "Fake Points",
+    symbol: "FP",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/8/88/Eo_circle_green_letter-p.svg",
+    decimals: 18,
+    type: "point",
+  },
 };
