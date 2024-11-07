@@ -38,7 +38,6 @@ export type EnrichedPositionsRecipeDataType =
         total_supply: number;
       }
     >;
-    change_ratio: number;
     annual_change_ratio: number;
   };
 
@@ -174,31 +173,31 @@ export const getEnrichedPositionsRecipeQueryOptions = (
             total_supply: input_token_total_supply,
           };
 
-          const total_value_in_usd = input_token_data.token_amount_usd;
-          const total_value_out_usd = tokens_data.reduce(
+          const lockup_time = Number(row.lockup_time ?? "0");
+
+          const quantity_value_usd = input_token_data.token_amount_usd;
+          const incentive_value_usd = tokens_data.reduce(
             (acc, token) => acc + token.token_amount_usd,
             0
           );
 
-          const change_ratio =
-            total_value_in_usd > 0
-              ? total_value_out_usd / total_value_in_usd
-              : 0;
+          let annual_change_ratio = 0;
 
-          let lockup_time = Number(row.lockup_time ?? "0");
-
-          if (lockup_time === 0) {
-            lockup_time = 365 * 24 * 60 * 60;
+          if (
+            quantity_value_usd > 0 &&
+            !isNaN(lockup_time) &&
+            lockup_time > 0
+          ) {
+            annual_change_ratio =
+              ((incentive_value_usd / quantity_value_usd) *
+                (365 * 24 * 60 * 60)) /
+              lockup_time;
           }
-
-          const annual_change_ratio =
-            (change_ratio * lockup_time) / (60 * 60 * 24 * 365);
 
           return {
             ...row,
             tokens_data,
             input_token_data,
-            change_ratio,
             annual_change_ratio,
           };
         }
