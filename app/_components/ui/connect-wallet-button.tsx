@@ -13,7 +13,6 @@ export const ConnectWalletButton = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
   const { open, close } = useWeb3Modal();
-  console.log(useWeb3Modal);
   const { address, isConnected, isConnecting, isDisconnected } = useAccount();
   const { selectedNetworkId } = useWeb3ModalState();
 
