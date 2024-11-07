@@ -232,15 +232,15 @@ const ChartTooltipContent = React.forwardRef<
                         nestLabel ? "items-end" : "items-center"
                       )}
                     >
-                      <div className="grid gap-1.5">
+                      {/* <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-tertiary">
                           {itemConfig?.label || item.name}
                         </span>
-                      </div>
+                      </div> */}
                       {item.value && (
                         <span className="font-mono font-medium tabular-nums text-secondary">
-                          {item.value.toLocaleString()}
+                          {item.value.toLocaleString() + " " + "USD"}
                         </span>
                       )}
                     </div>

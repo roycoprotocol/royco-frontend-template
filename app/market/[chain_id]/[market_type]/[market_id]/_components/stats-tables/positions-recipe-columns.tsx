@@ -184,7 +184,9 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     cell: (props: any) => {
       return (
         <div
-          className={cn("flex flex-col gap-[0.2rem] font-gt text-sm font-300")}
+          className={cn(
+            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
+          )}
         >
           {props.row.original.tokens_data.map(
             (

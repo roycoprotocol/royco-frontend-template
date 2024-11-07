@@ -124,7 +124,9 @@ export const FormFunctionSelector = React.forwardRef<
                         )}
                         value={BASE_KEY}
                       >
-                        {contractFunction.name}
+                        {contractFunction.name}{" "}
+                        {contractFunction.inputs.length > 0 &&
+                          `(${contractFunction.inputs.map((input) => input.type).join(", ")})`}
                       </SelectItem>
                     );
                   })}

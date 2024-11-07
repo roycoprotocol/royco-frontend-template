@@ -491,6 +491,8 @@ export const MarketInfo = React.forwardRef<
 
                       <InfoCard.Row.Value>
                         <Link
+                          target="_blank"
+                          rel="noopener noreferrer"
                           href={getExplorerUrl({
                             chainId: marketMetadata.chain_id,
                             type: "address",
@@ -513,7 +515,7 @@ export const MarketInfo = React.forwardRef<
                           }
                           <ExternalLinkIcon
                             strokeWidth={1.5}
-                            className={cn("h-5 w-5 p-[0.1rem]")}
+                            className={cn("h-5 w-5 p-[0.1rem] text-secondary")}
                           />
                         </Link>
                       </InfoCard.Row.Value>
@@ -529,6 +531,8 @@ export const MarketInfo = React.forwardRef<
 
                       <InfoCard.Row.Value>
                         <Link
+                          target="_blank"
+                          rel="noopener noreferrer"
                           href={getExplorerUrl({
                             chainId: marketMetadata.chain_id,
                             type: "address",
@@ -545,7 +549,7 @@ export const MarketInfo = React.forwardRef<
                           }
                           <ExternalLinkIcon
                             strokeWidth={1.5}
-                            className={cn("h-5 w-5 p-[0.1rem]")}
+                            className={cn("h-5 w-5 p-[0.1rem] text-secondary")}
                           />
                         </Link>
                       </InfoCard.Row.Value>
@@ -557,6 +561,8 @@ export const MarketInfo = React.forwardRef<
 
                     <InfoCard.Row.Value>
                       <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
                         href={getExplorerUrl({
                           chainId: marketMetadata.chain_id,
                           type: "address",
@@ -573,7 +579,7 @@ export const MarketInfo = React.forwardRef<
                         }
                         <ExternalLinkIcon
                           strokeWidth={1.5}
-                          className={cn("h-5 w-5 p-[0.1rem]")}
+                          className={cn("h-5 w-5 p-[0.1rem] text-secondary")}
                         />
                       </Link>
                     </InfoCard.Row.Value>
@@ -584,6 +590,8 @@ export const MarketInfo = React.forwardRef<
 
                     <InfoCard.Row.Value>
                       <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
                         href={getExplorerUrl({
                           chainId: marketMetadata.chain_id,
                           type: "address",
@@ -608,7 +616,7 @@ export const MarketInfo = React.forwardRef<
                         {/* <InfoTip {...INFO_TIP_PROPS}>Wrapped Vault</InfoTip> */}
                         <ExternalLinkIcon
                           strokeWidth={1.5}
-                          className={cn("h-5 w-5 p-[0.1rem]")}
+                          className={cn("h-5 w-5 p-[0.1rem] text-secondary")}
                         />
                       </Link>
                     </InfoCard.Row.Value>
