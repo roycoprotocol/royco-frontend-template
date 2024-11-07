@@ -81,7 +81,7 @@ export const MarketManager = React.forwardRef<
 
         <div
           className={cn(
-            "flex w-full max-w-lg flex-row items-center justify-between pb-3",
+            "flex w-full max-w-lg flex-col gap-y-3 pb-3 md:flex-row md:items-center md:justify-between md:gap-y-0",
             viewType === MarketViewType.advanced.id && MAX_SCREEN_WIDTH
           )}
         >
@@ -106,7 +106,7 @@ export const MarketManager = React.forwardRef<
 
           <div
             className={cn(
-              "relative flex w-fit shrink-0 flex-row items-center gap-3 ",
+              "relative flex shrink-0 flex-row justify-between md:w-fit md:items-center md:justify-end md:gap-3",
               viewType === MarketViewType.simple.id && "opacity-0"
             )}
           >

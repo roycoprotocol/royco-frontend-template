@@ -16,12 +16,22 @@ import {
   IncentivesFilter,
   ViewSelector,
 } from "./ui";
+import { Switch } from "../../../components/ui/switch";
+import { useParams } from "next/navigation";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
   ({ className }, ref) => {
-    const { exploreView: view, setExploreView } = useExplore();
+    const params = useParams<{ explore_id: "explore" | "all" }>();
+    const exploreId = params.explore_id;
+
+    const {
+      exploreView: view,
+      setExploreView,
+      exploreIsVerified,
+      setExploreIsVerified,
+    } = useExplore();
 
     /**
      * @description Placeholder data state
@@ -48,6 +58,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       filters,
       page_index: pageIndex,
       search_key: searchKey,
+      is_verified: exploreIsVerified,
     });
 
     /**
@@ -134,6 +145,19 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
 
         <div className="flex flex-col px-5 py-4">
           <h4 className="badge text-tertiary">FILTER</h4>
+
+          {exploreId !== "explore" && (
+            <div className="body-2 mt-4 flex justify-between text-primary">
+              <h5 className="">Show Verified Market</h5>
+
+              <Switch
+                checked={exploreIsVerified}
+                onCheckedChange={() => {
+                  setExploreIsVerified(!exploreIsVerified);
+                }}
+              />
+            </div>
+          )}
 
           {/**
            * @description Asset filter
