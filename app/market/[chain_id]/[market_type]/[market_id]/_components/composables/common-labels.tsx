@@ -76,7 +76,7 @@ export const PrimaryLabel = React.forwardRef<
           {typeof window !== "undefined" &&
             createPortal(
               <TooltipContent className="z-9999">
-                {isVerified ? "Verified Market" : "Unverified Market"}
+                {isVerified ? "Verified Market" : "WARNING: UNVERIFIED MARKET"}
               </TooltipContent>,
               document.body
             )}

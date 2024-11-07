@@ -135,7 +135,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 <TooltipContent className="z-9999">
                   {props.row.original.is_verified
                     ? "Verified Market"
-                    : "Unverified Market"}
+                    : "WARNING: UNVERIFIED MARKET"}
                 </TooltipContent>,
                 document.body
               )}

@@ -74,7 +74,8 @@ export const MarketManager = React.forwardRef<
                 viewType === MarketViewType.simple.id && "mb-10",
                 viewType === MarketViewType.advanced.id && "mb-10"
               )}
-              text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
+              title="THIS MARKET MAY LEAD TO LOSS OF FUNDS. IT IS UNVERIFIED."
+              text="This market may be malicious or not function as expected, it has not yet been verified."
             />
           </SlideUpWrapper>
         )}
@@ -170,11 +171,12 @@ export const MarketManager = React.forwardRef<
           key={`market-manager:${viewType}`}
           className={cn(
             "flex items-center rounded-2xl border border-divider bg-white",
-            "w-full overflow-hidden md:h-[70rem] md:overflow-y-scroll",
+            "w-full overflow-hidden md:overflow-y-scroll",
             MAX_SCREEN_WIDTH,
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",
-            viewType === MarketViewType.simple.id && "h-fit max-w-lg flex-col",
+            viewType === MarketViewType.simple.id &&
+              "h-fit max-w-lg flex-col md:min-h-[90vh]",
             "flex-0"
           )}
         >
