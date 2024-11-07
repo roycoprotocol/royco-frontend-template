@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { MarketSteps, useMarketManager } from "@/store";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { LoadingSpinner } from "../loading-spinner";
 import { ErrorAlert } from "../alerts";
@@ -23,6 +23,7 @@ import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
 import { TransactionOptionsType } from "@/sdk/types";
 import { SlideUpWrapper } from "@/components/animations";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -31,13 +32,10 @@ export const TransactionModal = React.forwardRef<
   const { className, ...otherProps } = props;
   const { transactions, setTransactions, marketStep, setMarketStep } =
     useMarketManager();
-  const allTransactionsExecuted = transactions.every((tx) => {
-    if (tx.txStatus === "success") {
-      return true;
-    } else {
-      return false;
-    }
-  });
+
+  const queryClient = useQueryClient();
+
+  const [isTransactionTimeout, setTransactionTimeout] = useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
     React.useState<TransactionOptionsType | null>(null);
@@ -53,12 +51,6 @@ export const TransactionModal = React.forwardRef<
     reset: resetTx,
   } = useWriteContract();
 
-  // console.log("txHash", txHash);
-
-  // console.log("transactions", transactions);
-
-  // console.log("txError", txError);
-
   const {
     isLoading: isTxConfirming,
     isSuccess: isTxConfirmed,
@@ -66,6 +58,16 @@ export const TransactionModal = React.forwardRef<
   } = useWaitForTransactionReceipt({
     hash: txHash,
   });
+
+  const allTransactionsExecuted = useMemo(() => {
+    return transactions.every((tx) => {
+      if (tx.txStatus === "success") {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }, [transactions]);
 
   const findNextTransaction = () => {
     for (let i = 0; i < transactions.length; i++) {
@@ -88,8 +90,6 @@ export const TransactionModal = React.forwardRef<
     }
   };
 
-  // console.log("currentTransaction   ", currentTransaction);
-
   const handleNextStep = () => {
     if (allTransactionsExecuted === true) {
       setMarketStep(MarketSteps.params.id);
@@ -97,6 +97,7 @@ export const TransactionModal = React.forwardRef<
     } else {
       try {
         if (!!currentTransaction) {
+          setTransactionTimeout(true);
           resetTx();
           // @ts-ignore
           writeContract({
@@ -105,6 +106,7 @@ export const TransactionModal = React.forwardRef<
           });
         }
       } catch (error) {
+        setTransactionTimeout(false);
         toast.custom(<ErrorAlert message="Error submitting transaction" />);
       }
     }
@@ -129,11 +131,22 @@ export const TransactionModal = React.forwardRef<
       if (!isEqual(newTransactions, transactions)) {
         setTransactions(newTransactions);
       }
+
+      if ((txStatus === "success" && isTxConfirmed) || txStatus === "error") {
+        setTransactionTimeout(false);
+        queryClient.invalidateQueries();
+      }
     }
   };
 
   useEffect(() => {
-    updateTransactions();
+    if (txStatus === "error") {
+      updateTransactions();
+    } else {
+      setTimeout(() => {
+        updateTransactions();
+      }, 30 * 1000);
+    }
   }, [txStatus, txHash, isTxConfirming, isTxConfirmed]);
 
   useEffect(() => {
@@ -197,7 +210,7 @@ export const TransactionModal = React.forwardRef<
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        if (!open && !isTxPending && !isTxConfirming) {
+        if (!open && !isTxPending && !isTxConfirming && !isTransactionTimeout) {
           handleClose();
         }
       }}
@@ -212,12 +225,12 @@ export const TransactionModal = React.forwardRef<
           ref={ref}
           {...otherProps}
           onInteractOutside={(e) => {
-            if (isTxPending || isTxConfirming) {
+            if (isTxPending || isTxConfirming || isTransactionTimeout) {
               e.preventDefault();
             }
           }}
           onEscapeKeyDown={(e) => {
-            if (isTxPending || isTxConfirming) {
+            if (isTxPending || isTxConfirming || isTransactionTimeout) {
               e.preventDefault();
             }
           }}
@@ -263,11 +276,11 @@ export const TransactionModal = React.forwardRef<
           <div className="flex flex-col space-y-2">
             <Button
               className="h-9 text-sm"
-              disabled={isTxPending || isTxConfirming}
+              disabled={isTxPending || isTxConfirming || isTransactionTimeout}
               onClick={handleNextStep}
               type="submit"
             >
-              {isTxPending || isTxConfirming ? (
+              {isTxPending || isTxConfirming || isTransactionTimeout ? (
                 <LoadingSpinner className="h-5 w-5" />
               ) : (
                 <div className="h-5">{getNextLabel()}</div>
@@ -280,7 +293,9 @@ export const TransactionModal = React.forwardRef<
                   className="h-9 bg-error text-sm"
                   onClick={handleClose}
                   type="button"
-                  disabled={isTxPending || isTxConfirming}
+                  disabled={
+                    isTxPending || isTxConfirming || isTransactionTimeout
+                  }
                 >
                   <div className="h-5">Close</div>
                 </Button>

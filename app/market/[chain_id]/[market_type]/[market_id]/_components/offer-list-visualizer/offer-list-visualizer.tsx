@@ -198,10 +198,10 @@ export const OfferListVisualizer = React.forwardRef<
                   return formattedValue;
                 }}
               />
-              {/* <ChartTooltip
-cursor={false}
-content={<ChartTooltipContent hideLabel />}
-/> */}
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
               <Bar
                 maxBarSize={60}
                 dataKey="quantity_value_usd"
