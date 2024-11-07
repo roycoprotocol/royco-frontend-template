@@ -13,12 +13,14 @@ export const Pagination = () => {
     explorePageIndex: pageIndex,
     exploreCustomPoolParams: customPoolParams,
     setExplorePageIndex: setPageIndex,
+    exploreIsVerified: isVerified,
   } = useExplore();
 
   const { count, isLoading } = useEnrichedMarkets({
     sorting,
     filters,
     page_index: pageIndex,
+    is_verified: isVerified,
   });
 
   const totalPages = Math.ceil((count ?? 0) / 20); // marketPerPage = 20

@@ -19,12 +19,12 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 
 const NavbarLinks = [
-  {
-    id: "create",
-    label: "Create",
-    link: "/create",
-    target: "_self",
-  },
+  // {
+  //   id: "create",
+  //   label: "Create",
+  //   link: "/create",
+  //   target: "_self",
+  // },
   {
     id: "explore",
     label: "Explore",
@@ -32,20 +32,20 @@ const NavbarLinks = [
     target: "_self",
   },
   {
-    id: "learn",
-    label: "Learn",
+    id: "docs",
+    label: "Docs",
+    link: "https://docs.royco.org/",
+    target: "_blank",
+  },
+  {
+    id: "social",
+    label: "Social",
     link: null,
     items: [
       {
         id: "blog",
         label: "Blog",
         link: "https://paragraph.xyz/@royco",
-        target: "_blank",
-      },
-      {
-        id: "docs",
-        label: "Docs",
-        link: "https://docs.royco.org/",
         target: "_blank",
       },
       {
@@ -229,7 +229,7 @@ export const ActualNavbar = React.forwardRef<
               </a>
             ) : (
               <DropdownMenu key={`navbar-link:learn:${BASE_KEY}`}>
-                <DropdownMenuTrigger>Learn</DropdownMenuTrigger>
+                <DropdownMenuTrigger>{label}</DropdownMenuTrigger>
                 <DropdownMenuContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
                   {items?.map((item) => (
                     <a

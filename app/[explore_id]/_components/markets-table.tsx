@@ -32,6 +32,7 @@ export const MarketsTable = () => {
     exploreSearch: searchKey,
     explorePageIndex: pageIndex,
     exploreCustomPoolParams: customPoolParams,
+    exploreIsVerified: isVerified,
   } = useExplore();
 
   const { data, isLoading, isError, error, isRefetching, count } =
@@ -40,6 +41,7 @@ export const MarketsTable = () => {
       filters,
       page_index: pageIndex,
       search_key: searchKey,
+      is_verified: isVerified,
     });
 
   /**

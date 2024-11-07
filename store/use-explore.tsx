@@ -39,6 +39,8 @@ interface ExploreState {
   setExploreCustomPoolParams: (
     exploreCustomPoolParams: Array<ExploreCustomPoolParam>
   ) => void;
+  exploreIsVerified: boolean;
+  setExploreIsVerified: (exploreIsVerified: boolean) => void;
 }
 
 export const exploreColumnNames = {
@@ -112,4 +114,7 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreCustomPoolParams: [],
   setExploreCustomPoolParams: (exploreCustomPoolParams) =>
     set({ exploreCustomPoolParams }),
+  exploreIsVerified: true,
+  setExploreIsVerified: (exploreIsVerified: boolean) =>
+    set({ exploreIsVerified }),
 }));

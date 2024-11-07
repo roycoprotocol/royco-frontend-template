@@ -212,6 +212,7 @@ export const OfferList = React.forwardRef<
 
               return (
                 <OfferListRow
+                  key={`offer-list-row:${offer.offer_id}`}
                   type="ap"
                   customKey={`${BASE_KEY}:${keyInfo.previousValue}:${keyInfo.currentValue}:${valueInfo.previousValue}:${valueInfo.currentValue}`}
                   indexKey={INDEX_KEY}

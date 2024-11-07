@@ -12,8 +12,15 @@ import { Pagination } from "./_components/pagination";
 import { cn } from "@/lib/utils";
 import { Protector } from "../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { notFound } from "next/navigation";
 
-const Page = () => {
+const Page = ({ params }: { params: { explore_id: "explore" | "all" } }) => {
+  const validExplorePageIds = ["explore", "all"];
+
+  if (!validExplorePageIds.includes(params.explore_id)) {
+    notFound();
+  }
+
   const Content = () => {
     return (
       <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
