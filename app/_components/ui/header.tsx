@@ -5,7 +5,7 @@ import "./header.css";
 import { cn } from "@/lib/utils";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { GetUpdatesStrip } from "./composables";
+import { FadeInMotionWrapper, GetUpdatesStrip } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
 import { Button } from "../../../components/ui/button";
 
@@ -98,19 +98,7 @@ export const Header = React.forwardRef<
       {/**
        * @descriptioon Banner
        */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{
-          opacity: 1,
-        }}
-        viewport={{
-          once: true,
-        }}
-        transition={{
-          delay: 0,
-          duration: 1,
-          ease: "easeOut",
-        }}
+      <FadeInMotionWrapper
         className={cn("mt-10 w-full overflow-hidden md:mt-[3.41rem]", "-z-10")}
       >
         <div className="-mx-20 flex h-[250px] space-x-[-62px] md:h-[320px] md:space-x-[-80px] lg:h-[400px] lg:space-x-[-100px]">
@@ -170,7 +158,7 @@ export const Header = React.forwardRef<
             )}
           />
         </div>
-      </motion.div>
+      </FadeInMotionWrapper>
     </div>
   );
 });
