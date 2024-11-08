@@ -59,8 +59,6 @@ export const MarketInfo = React.forwardRef<
     currentHighestOffers,
   } = useActiveMarket();
 
-  console.log("currentHighestOffers", currentHighestOffers);
-
   const { scriptType, setScriptType, viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
