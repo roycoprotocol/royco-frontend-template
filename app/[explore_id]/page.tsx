@@ -40,8 +40,8 @@ const Page = ({ params }: { params: { explore_id: "explore" | "all" } }) => {
             <h2 className="heading-2 text-black">Explore</h2>
 
             <div className="body-1 mt-2 text-secondary">
-              Browse Action Markets using Royco. Negotiate for incentives to
-              complete onchain actions.
+              Browse Action Markets. Negotiate for incentives to complete
+              onchain actions.
             </div>
           </div>
 
