@@ -82,6 +82,17 @@ export const parseTokenAmountToTokenAmountUsd = (
   }
 };
 
+export const parseRawAmountToTokenAmountUsd = (
+  value: string | undefined | null,
+  decimals: number,
+  price: number
+): number => {
+  return parseTokenAmountToTokenAmountUsd(
+    parseRawAmountToTokenAmount(value, decimals),
+    price
+  );
+};
+
 export const parseTextToFormattedValue = (
   value: string | undefined | null
 ): string => {

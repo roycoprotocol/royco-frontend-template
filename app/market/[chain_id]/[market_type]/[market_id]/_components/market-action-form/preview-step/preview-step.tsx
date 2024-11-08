@@ -218,14 +218,17 @@ export const PreviewStep = React.forwardRef<
             {/**
              * Incentives Schedule
              */}
-            {currentMarketData?.reward_style && (
+            {currentMarketData?.reward_style !== undefined && (
               <SecondaryLabel
                 className={cn(BASE_MARGIN_TOP.XL, "w-full text-black")}
               >
                 <div className="flex w-full items-center justify-between text-sm">
                   <span>Incentives Schedule</span>
                   <span className="rounded-full border px-2 py-px text-tertiary">
-                    {RewardStyleMap[currentMarketData.reward_style].label}
+                    {marketMetadata.market_type === MarketType.vault.id
+                      ? "Streaming"
+                      : RewardStyleMap[currentMarketData.reward_style ?? 0]
+                          .label}
                   </span>
                 </div>
               </SecondaryLabel>

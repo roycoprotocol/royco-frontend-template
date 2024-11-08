@@ -23,6 +23,7 @@ import {
   getRecipeCancelIPOfferTransactionOptions,
 } from "@/sdk/hooks";
 import { getVaultCancelAPOfferTransactionOptions } from "@/sdk/hooks/use-vault-offer-contract-options";
+import { RoycoMarketType } from "@/sdk/market";
 
 /**
  * @description Column definitions for the table
@@ -102,11 +103,29 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                         useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 8,
-                      }).format(token.token_amount)}
+                      }).format(
+                        props.row.original.market_type ===
+                          MarketType.recipe.value
+                          ? token.token_amount
+                          : token.rate_per_year
+                      )}
                     </span>
                   </div>
 
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
+                  <TokenDisplayer
+                    size={4}
+                    tokens={[
+                      {
+                        ...token,
+                        symbol:
+                          props.row.original.market_type ===
+                          MarketType.recipe.value
+                            ? token.symbol
+                            : `${token.symbol}/year`,
+                      },
+                    ]}
+                    symbols={true}
+                  />
                 </div>
               );
             }

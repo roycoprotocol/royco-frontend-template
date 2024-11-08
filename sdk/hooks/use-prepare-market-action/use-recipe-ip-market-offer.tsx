@@ -1,5 +1,11 @@
 import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
-import { isSolidityIntValid, parseRawAmount } from "@/sdk/utils";
+import {
+  isSolidityIntValid,
+  parseRawAmount,
+  parseRawAmountToTokenAmount,
+  parseRawAmountToTokenAmountUsd,
+  parseTokenAmountToTokenAmountUsd,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { useMarketOffers } from "../use-market-offers";
@@ -132,20 +138,15 @@ export const calculateRecipeIPMarketOfferTokenData = ({
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
     raw_amount: total_quantity_filled ?? "0",
-    token_amount: parseFloat(
-      ethers.utils.formatUnits(
-        total_quantity_filled || "0",
-        input_token_quote.decimals
-      )
+    token_amount: parseRawAmountToTokenAmount(
+      total_quantity_filled ?? "0",
+      input_token_quote.decimals
     ),
-    token_amount_usd:
-      input_token_quote.price *
-      parseFloat(
-        ethers.utils.formatUnits(
-          total_quantity_filled || "0",
-          input_token_quote.decimals
-        )
-      ),
+    token_amount_usd: parseRawAmountToTokenAmountUsd(
+      total_quantity_filled ?? "0",
+      input_token_quote.decimals,
+      input_token_quote.price
+    ),
   };
 
   if (!!enrichedMarket) {
@@ -162,16 +163,16 @@ export const calculateRecipeIPMarketOfferTokenData = ({
         token_id_to_amount_map[incentive_token_id].toString();
 
       // Get incentive token amount
-      const incentive_token_amount = parseFloat(
-        ethers.utils.formatUnits(
-          incentive_token_raw_amount || "0",
-          incentive_token_quote.decimals
-        )
+      const incentive_token_amount = parseRawAmountToTokenAmount(
+        incentive_token_raw_amount ?? "0",
+        incentive_token_quote.decimals
       );
 
       // Get incentive token amount in USD
-      const incentive_token_amount_usd =
-        incentive_token_quote.price * incentive_token_amount;
+      const incentive_token_amount_usd = parseTokenAmountToTokenAmountUsd(
+        incentive_token_amount,
+        incentive_token_quote.price
+      );
 
       // Get per input token
       const per_input_token =
@@ -243,8 +244,8 @@ export const getRecipeIPMarketOfferTransactionOptions = ({
     chainId: chain_id,
     id: "fill_ap_offers",
     label: "Fill AP Offers",
-    address: address,
-    abi: abi,
+    address,
+    abi,
     functionName: "fillAPOffers",
     marketType: RoycoMarketType.recipe.id,
     args: [offers, fill_amounts, frontend_fee_recipient],

@@ -169,6 +169,7 @@ export const usePrepareMarketAction = ({
     quantity,
     custom_token_data,
     frontend_fee_recipient,
+    offer_validation_url,
     enabled: action_type === PrepareMarketActionType.VaultIPMarketOffer,
   });
 

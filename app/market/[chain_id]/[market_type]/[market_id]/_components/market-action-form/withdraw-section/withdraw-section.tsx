@@ -169,7 +169,7 @@ export const WithdrawSection = React.forwardRef<
 
           <div className="mt-5 flex w-full grow flex-col">
             <div className="flex grow flex-col place-content-start items-center gap-3">
-              {(isLoadingPositionsRecipe || isLoadingPositionsVault) && (
+              {isConnected && isLoading && (
                 <LoadingSpinner className="h-5 w-5" />
               )}
 

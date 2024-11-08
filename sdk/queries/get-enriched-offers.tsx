@@ -13,6 +13,7 @@ import {
   parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
+import { RoycoMarketType } from "../market";
 
 const constructOfferFilterClauses = (
   filters: BaseQueryFilter[] | undefined
@@ -67,6 +68,7 @@ export type EnrichedOfferDataType =
         total_supply: number;
         annual_change_ratio: number;
         per_input_token: number;
+        rate_per_year: number;
       }
     >;
     input_token_data: SupportedToken & {
@@ -188,11 +190,28 @@ export const getEnrichedOffersQueryOptions = (
               token_price
             );
 
-            const per_input_token =
-              token_amount / input_token_data.token_amount;
+            let per_input_token = 0;
+
+            if (market_type === RoycoMarketType.recipe.value) {
+              // Recipe Market
+              per_input_token = token_amount / input_token_data.token_amount;
+            } else {
+              // Vault Market
+              per_input_token = token_amount; // @note: This is rate per second
+            }
 
             const annual_change_ratio =
               row.annual_change_ratios?.[tokenIndex] ?? 0;
+
+            let rate_per_year = 0;
+
+            if (market_type === RoycoMarketType.recipe.value) {
+              // Recipe Market
+              rate_per_year = 0;
+            } else {
+              // Vault Market
+              rate_per_year = token_amount * (365 * 24 * 60 * 60);
+            }
 
             return {
               ...token_info,
@@ -204,6 +223,7 @@ export const getEnrichedOffersQueryOptions = (
               total_supply: token_total_supply,
               annual_change_ratio,
               per_input_token,
+              rate_per_year,
             };
           });
 
