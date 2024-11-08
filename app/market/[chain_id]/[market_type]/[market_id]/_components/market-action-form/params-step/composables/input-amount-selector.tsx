@@ -12,16 +12,25 @@ export const InputAmountSelector = React.forwardRef<
     containerClassName?: string;
     Prefix?: React.FC;
     Suffix?: React.FC;
+    disabled?: boolean;
   }
 >(
   (
-    { className, currentValue, setCurrentValue, containerClassName, ...props },
+    {
+      className,
+      currentValue,
+      setCurrentValue,
+      containerClassName,
+      disabled,
+      ...props
+    },
     ref
   ) => {
     return (
       <Input
         ref={ref}
         type="text"
+        disabled={disabled}
         containerClassName={cn(
           "h-9 text-sm bg-white rounded-lg grow",
           containerClassName
