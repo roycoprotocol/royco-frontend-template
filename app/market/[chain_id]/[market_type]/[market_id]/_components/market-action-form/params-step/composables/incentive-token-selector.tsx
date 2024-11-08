@@ -19,14 +19,23 @@ import { SpringNumber } from "@/components/composables";
 export const IncentiveTokenSelector = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    token_ids?: string[];
     selected_token_ids?: string[];
     onSelect?: (token: any) => void;
     key?: string;
+    token_ids?: string[];
+    not_token_ids?: string[];
   }
 >(
   (
-    { className, token_ids, selected_token_ids, onSelect, key = "", ...props },
+    {
+      className,
+      token_ids,
+      not_token_ids,
+      selected_token_ids,
+      onSelect,
+      key = "",
+      ...props
+    },
     ref
   ) => {
     const { marketMetadata } = useActiveMarket();
@@ -40,6 +49,7 @@ export const IncentiveTokenSelector = React.forwardRef<
       page,
       search,
       token_ids,
+      not_token_ids,
     });
 
     const propsTokenQuotes = useTokenQuotes({

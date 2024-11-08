@@ -140,7 +140,7 @@ export const IncentiveInfo = React.forwardRef<
         )}
         {...props}
       >
-        <TertiaryLabel>INCENTIVE RATE</TertiaryLabel>
+        <TertiaryLabel>CURRENT INCENTIVE RATE</TertiaryLabel>
 
         {!currentIncentives ||
           (currentIncentives.length === 0 && (

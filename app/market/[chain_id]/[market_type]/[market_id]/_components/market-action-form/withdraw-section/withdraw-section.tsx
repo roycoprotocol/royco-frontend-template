@@ -111,7 +111,7 @@ export const WithdrawSection = React.forwardRef<
 
   const {
     isLoading: isLoadingPositionsRecipe,
-    data: postionsRecipe,
+    data: positionsRecipe,
     isError,
     error,
   } = useEnrichedPositionsRecipe({
@@ -130,8 +130,6 @@ export const WithdrawSection = React.forwardRef<
     ],
   });
 
-  console.log("postionsRecipe", postionsRecipe);
-
   const { isLoading: isLoadingPositionsVault, data: positionsVault } =
     useEnrichedPositionsVault({
       chain_id: marketMetadata.chain_id,
@@ -141,8 +139,8 @@ export const WithdrawSection = React.forwardRef<
 
   const totalCount =
     marketMetadata.market_type === MarketType.recipe.id
-      ? !!postionsRecipe && "count" in postionsRecipe
-        ? (postionsRecipe.count ?? 0)
+      ? !!positionsRecipe && "count" in positionsRecipe
+        ? (positionsRecipe.count ?? 0)
         : 0
       : !!positionsVault
         ? positionsVault.length
@@ -150,8 +148,8 @@ export const WithdrawSection = React.forwardRef<
 
   const positions =
     marketMetadata.market_type === MarketType.recipe.id
-      ? Array.isArray(postionsRecipe?.data)
-        ? postionsRecipe.data
+      ? Array.isArray(positionsRecipe?.data)
+        ? positionsRecipe.data
         : []
       : positionsVault?.filter(
           (position) => position.offer_side === RoycoMarketUserType.ap.value
@@ -193,11 +191,12 @@ export const WithdrawSection = React.forwardRef<
                 )}
 
               {!!positions &&
+                !isLoading &&
                 totalCount > 0 &&
                 positions.map((position, positionIndex) => {
                   return (
                     <SlideUpWrapper
-                      delay={positionIndex * 0.1}
+                      delay={0.1 + positionIndex * 0.1}
                       className="w-full"
                       key={`withdraw-position:${positionIndex}-${withdrawType}`}
                     >

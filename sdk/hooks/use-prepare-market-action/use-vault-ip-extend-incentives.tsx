@@ -1,5 +1,9 @@
 import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
-import { isSolidityAddressValid, isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityAddressValid,
+  isSolidityIntValid,
+  parseRawAmountToTokenAmount,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { useMarketOffers } from "../use-market-offers";
@@ -139,7 +143,7 @@ export const isVaultIPExtendIncentivesValid = ({
         .sub(frontendFeeTaken)
         .sub(protocolFeeTaken);
 
-      const newStart = blockTimestamp.gt(rewardsInterval.start)
+      const newStart: BigNumber = blockTimestamp.gt(rewardsInterval.start)
         ? blockTimestamp
         : rewardsInterval.start;
 
@@ -184,6 +188,8 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
   propsTokenQuotes,
   tokenIds,
   tokenAmounts,
+  startTimestamps,
+  endTimestamps,
   enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
@@ -191,6 +197,8 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   tokenIds: string[];
   tokenAmounts: string[];
+  startTimestamps: string[];
+  endTimestamps: string[];
   enabled?: boolean;
 }) => {
   // Check if enabled
@@ -228,7 +236,7 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
     token_amount_usd: 0,
   };
 
-  if (!!enrichedMarket) {
+  if (!!enrichedMarket && !!baseMarket) {
     // Calculate incentive data
     incentiveData = action_incentive_token_ids.map(
       (incentive_token_id, index) => {
@@ -239,15 +247,32 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
         });
 
         // Get incentive token raw amount
-        const incentive_token_raw_amount =
+        const incentive_token_raw_amount_with_fees =
           action_incentive_token_amounts[index];
 
+        const protocol_fee = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .mul(baseMarket.protocol_fee)
+          .div(BigNumber.from(10).pow(18));
+
+        const frontend_fee = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .mul(baseMarket.frontend_fee)
+          .div(BigNumber.from(10).pow(18));
+
+        const incentive_token_raw_amount = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .sub(protocol_fee)
+          .sub(frontend_fee)
+          .toString();
+
         // Get incentive token amount
-        const incentive_token_amount = parseFloat(
-          ethers.utils.formatUnits(
-            incentive_token_raw_amount || "0",
-            incentive_token_quote.decimals
-          )
+        const incentive_token_amount = parseRawAmountToTokenAmount(
+          incentive_token_raw_amount ?? "0",
+          incentive_token_quote.decimals
         );
 
         // Get incentive token amount in USD
@@ -255,10 +280,96 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
           incentive_token_quote.price * incentive_token_amount;
 
         // Get per input token
-        const per_input_token = 0;
+        let per_input_token = 0;
+
+        if (
+          enrichedMarket.input_token_data.locked_token_amount &&
+          enrichedMarket.input_token_data.locked_token_amount > 0
+        ) {
+          const new_per_input_token =
+            incentive_token_amount /
+            (enrichedMarket.input_token_data.locked_token_amount ?? 1);
+
+          if (!isNaN(new_per_input_token)) {
+            per_input_token = new_per_input_token;
+          }
+        }
 
         // Get annual change ratio
-        let annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
+        let annual_change_ratio = 0;
+
+        const existing_reward_index =
+          enrichedMarket.base_incentive_ids?.findIndex(
+            (id) => id === incentive_token_id
+          ) ?? -1;
+
+        const rewardsInterval = {
+          start: BigNumber.from(
+            enrichedMarket?.base_start_timestamps?.[existing_reward_index] ??
+              "0"
+          ),
+          end: BigNumber.from(
+            enrichedMarket?.base_end_timestamps?.[existing_reward_index] ?? "0"
+          ),
+          rate: BigNumber.from(
+            enrichedMarket?.base_incentive_rates?.[existing_reward_index] ?? "0"
+          ),
+        };
+
+        const newEnd = BigNumber.from(endTimestamps?.[index] ?? "0");
+        const rewardsAdded = BigNumber.from(tokenAmounts[index]);
+
+        const blockTimestamp = BigNumber.from(
+          Math.floor(Date.now() / 1000).toString()
+        );
+
+        const frontendFeeTaken: BigNumber = rewardsAdded
+          .mul(BigNumber.from(baseMarket?.frontend_fee ?? "0"))
+          .div(BigNumber.from(10).pow(18));
+
+        const protocolFeeTaken: BigNumber = rewardsAdded
+          .mul(BigNumber.from(baseMarket?.protocol_fee ?? "0"))
+          .div(BigNumber.from(10).pow(18));
+
+        const rewardsAfterFee: BigNumber = rewardsAdded
+          .sub(frontendFeeTaken)
+          .sub(protocolFeeTaken);
+
+        const newStart: BigNumber = blockTimestamp.gt(rewardsInterval.start)
+          ? blockTimestamp
+          : rewardsInterval.start;
+
+        const remainingRewards = BigNumber.from(
+          enrichedMarket.base_incentive_rates?.[existing_reward_index] ?? "0"
+        ).mul(rewardsInterval.end.sub(newStart));
+
+        const scaled_rate: BigNumber = rewardsAfterFee
+          .add(remainingRewards)
+          .div(newEnd.sub(newStart));
+
+        const token_rate = parseRawAmountToTokenAmount(
+          scaled_rate.toString() ?? "0",
+          incentive_token_quote.decimals + 18
+        );
+
+        const rate_in_usd = token_rate * incentive_token_quote.price;
+
+        if (
+          enrichedMarket.locked_quantity_usd &&
+          enrichedMarket.locked_quantity_usd > 0
+        ) {
+          const new_annual_change_ratio =
+            (rate_in_usd * 365 * 24 * 60 * 60) /
+            (enrichedMarket.locked_quantity_usd ?? 1);
+
+          if (!isNaN(new_annual_change_ratio)) {
+            annual_change_ratio = new_annual_change_ratio;
+          }
+        }
+
+        if (annual_change_ratio >= Math.pow(10, 18)) {
+          annual_change_ratio = 0;
+        }
 
         // Get incentive token data
         const incentive_token_data = {
@@ -268,6 +379,7 @@ export const calculateVaultIPExtendIncentivesTokenData = ({
           token_amount_usd: incentive_token_amount_usd,
           per_input_token,
           annual_change_ratio,
+          token_rate,
         };
 
         return incentive_token_data;
@@ -406,6 +518,8 @@ export const useVaultIPExtendIncentives = ({
       propsTokenQuotes,
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
+      startTimestamps: enrichedMarket?.base_start_timestamps ?? [],
+      endTimestamps: enrichedMarket?.base_end_timestamps ?? [],
       enabled,
     });
 
