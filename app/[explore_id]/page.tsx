@@ -37,11 +37,11 @@ const Page = ({ params }: { params: { explore_id: "explore" | "all" } }) => {
           )}
         >
           <div className="flex w-full shrink flex-col items-start lg:w-1/2">
-            <h2 className="heading-2 text-black">Discover</h2>
+            <h2 className="heading-2 text-black">Explore</h2>
 
             <div className="body-1 mt-2 text-secondary">
-              Browse the Royco ecosystem of projects to find opportunities to
-              earn rich incentives.
+              Browse Action Markets using Royco. Negotiate for incentives to
+              complete onchain actions.
             </div>
           </div>
 
