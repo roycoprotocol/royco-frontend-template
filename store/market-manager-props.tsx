@@ -121,16 +121,17 @@ export const MarketIncentiveType = {
 
 /**
  * @info Market Vault Incentive Action
+ * @note Currently, increase and extend are in the same action
  */
 export const MarketVaultIncentiveAction = {
   [RoycoMarketVaultIncentiveAction.add.id]: {
     ...RoycoMarketVaultIncentiveAction.add,
     label: "Add Incentives",
   },
-  [RoycoMarketVaultIncentiveAction.increase.id]: {
-    ...RoycoMarketVaultIncentiveAction.increase,
-    label: "Increase Incentives",
-  },
+  // [RoycoMarketVaultIncentiveAction.increase.id]: {
+  //   ...RoycoMarketVaultIncentiveAction.increase,
+  //   label: "Increase Incentives",
+  // },
   [RoycoMarketVaultIncentiveAction.extend.id]: {
     ...RoycoMarketVaultIncentiveAction.extend,
     label: "Extend Incentives",

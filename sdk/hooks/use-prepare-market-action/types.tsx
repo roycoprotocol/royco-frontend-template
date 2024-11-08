@@ -6,6 +6,7 @@ export type TypedMarketActionIncentiveDataElement = SupportedToken & {
   token_amount_usd: number;
   per_input_token: number;
   annual_change_ratio: number;
+  token_rate?: number;
   price: number;
   fdv: number;
   total_supply: number;

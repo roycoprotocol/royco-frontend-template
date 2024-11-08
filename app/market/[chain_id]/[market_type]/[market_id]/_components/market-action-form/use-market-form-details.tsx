@@ -191,26 +191,29 @@ export const useMarketFormDetails = (
           new Date(incentive.end_timestamp ?? 0).getTime() / 1000
         ).toString();
 
-        if (
-          vaultIncentiveActionType === MarketVaultIncentiveAction.increase.id
-        ) {
-          const existingRewardIndex =
-            currentMarketData?.base_incentive_ids?.findIndex(
-              (reward) => reward === incentive.id
-            ) ?? -1;
+        /**
+         * @note Below is the code for the increase action, which is merged with the extend action for now
+         */
+        // if (
+        //   vaultIncentiveActionType === MarketVaultIncentiveAction.increase.id
+        // ) {
+        //   const existingRewardIndex =
+        //     currentMarketData?.base_incentive_ids?.findIndex(
+        //       (reward) => reward === incentive.id
+        //     ) ?? -1;
 
-          if (existingRewardIndex !== -1) {
-            endTimestamp =
-              currentMarketData?.base_end_timestamps?.[existingRewardIndex] ??
-              "0";
-          } else {
-            endTimestamp = "0";
-          }
+        //   if (existingRewardIndex !== -1) {
+        //     endTimestamp =
+        //       currentMarketData?.base_end_timestamps?.[existingRewardIndex] ??
+        //       "0";
+        //   } else {
+        //     endTimestamp = "0";
+        //   }
 
-          endTimestamp = BigNumber.from(parseRawAmount(endTimestamp))
-            .add(1)
-            .toString();
-        }
+        //   endTimestamp = BigNumber.from(parseRawAmount(endTimestamp))
+        //     .add(1)
+        //     .toString();
+        // }
 
         return endTimestamp;
       }),

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { FormInputLabel } from "@/components/composables";
 import { SlideUpWrapper } from "@/components/animations";
@@ -16,6 +16,8 @@ import { z } from "zod";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { parseTokenAmountToRawAmount } from "@/sdk/utils";
 import { MarketVaultIncentiveAction, useMarketManager } from "@/store";
+import { useActiveMarket } from "../../../hooks";
+import { BigNumber } from "ethers";
 
 export const IPLimitOfferIncentivesUI = React.forwardRef<
   HTMLDivElement,
@@ -24,6 +26,16 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { vaultIncentiveActionType } = useMarketManager();
+
+  const { currentMarketData } = useActiveMarket();
+
+  const resetCurrentIncentivesArray = () => {
+    marketActionForm.setValue("incentive_tokens", []);
+  };
+
+  useEffect(() => {
+    resetCurrentIncentivesArray();
+  }, [vaultIncentiveActionType]);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -40,6 +52,41 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
         />
 
         <IncentiveTokenSelector
+          {...(vaultIncentiveActionType === MarketVaultIncentiveAction.add.id
+            ? {
+                not_token_ids: currentMarketData?.base_incentive_ids ?? [],
+              }
+            : vaultIncentiveActionType === MarketVaultIncentiveAction.extend.id
+              ? {
+                  token_ids: (
+                    currentMarketData?.base_incentive_ids ?? []
+                  ).filter((base_incentive_id, index) => {
+                    const base_incentive_amount = BigNumber.from(
+                      currentMarketData?.base_incentive_amounts?.[index] ?? "0"
+                    );
+                    return base_incentive_amount.gt(0);
+                  }),
+                }
+              : vaultIncentiveActionType ===
+                  MarketVaultIncentiveAction.refund.id
+                ? {
+                    token_ids: (
+                      currentMarketData?.base_incentive_ids ?? []
+                    ).filter((base_incentive_id, index) => {
+                      const current_time_in_seconds = Math.floor(
+                        new Date().getTime() / 1000
+                      );
+
+                      const current_timestamp = BigNumber.from(
+                        current_time_in_seconds
+                      );
+                      const start_timestamp = BigNumber.from(
+                        currentMarketData?.base_start_timestamps?.[index] ?? "0"
+                      );
+                      return current_timestamp.gt(start_timestamp);
+                    }),
+                  }
+                : {})}
           selected_token_ids={marketActionForm
             .watch("incentive_tokens")
             .map((token) => token.id)}

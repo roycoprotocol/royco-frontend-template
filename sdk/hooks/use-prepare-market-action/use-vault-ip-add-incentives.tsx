@@ -1,5 +1,9 @@
 import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
-import { isSolidityAddressValid, isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityAddressValid,
+  isSolidityIntValid,
+  parseRawAmountToTokenAmount,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { useMarketOffers } from "../use-market-offers";
@@ -215,6 +219,8 @@ export const calculateVaultIPAddIncentivesTokenData = ({
   propsTokenQuotes,
   tokenIds,
   tokenAmounts,
+  startTimestamps,
+  endTimestamps,
   enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
@@ -222,6 +228,8 @@ export const calculateVaultIPAddIncentivesTokenData = ({
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   tokenIds: string[];
   tokenAmounts: string[];
+  startTimestamps: string[];
+  endTimestamps: string[];
   enabled?: boolean;
 }) => {
   // Check if enabled
@@ -259,7 +267,7 @@ export const calculateVaultIPAddIncentivesTokenData = ({
     token_amount_usd: 0,
   };
 
-  if (!!enrichedMarket) {
+  if (!!enrichedMarket && !!baseMarket) {
     // Calculate incentive data
     incentiveData = action_incentive_token_ids.map(
       (incentive_token_id, index) => {
@@ -270,15 +278,32 @@ export const calculateVaultIPAddIncentivesTokenData = ({
         });
 
         // Get incentive token raw amount
-        const incentive_token_raw_amount =
+        const incentive_token_raw_amount_with_fees =
           action_incentive_token_amounts[index];
 
+        const protocol_fee = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .mul(baseMarket.protocol_fee)
+          .div(BigNumber.from(10).pow(18));
+
+        const frontend_fee = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .mul(baseMarket.frontend_fee)
+          .div(BigNumber.from(10).pow(18));
+
+        const incentive_token_raw_amount = BigNumber.from(
+          incentive_token_raw_amount_with_fees
+        )
+          .sub(protocol_fee)
+          .sub(frontend_fee)
+          .toString();
+
         // Get incentive token amount
-        const incentive_token_amount = parseFloat(
-          ethers.utils.formatUnits(
-            incentive_token_raw_amount || "0",
-            incentive_token_quote.decimals
-          )
+        const incentive_token_amount = parseRawAmountToTokenAmount(
+          incentive_token_raw_amount ?? "0",
+          incentive_token_quote.decimals
         );
 
         // Get incentive token amount in USD
@@ -286,10 +311,59 @@ export const calculateVaultIPAddIncentivesTokenData = ({
           incentive_token_quote.price * incentive_token_amount;
 
         // Get per input token
-        const per_input_token = 0;
+        let per_input_token = 0;
+
+        if (
+          enrichedMarket.input_token_data.locked_token_amount &&
+          enrichedMarket.input_token_data.locked_token_amount > 0
+        ) {
+          const new_per_input_token =
+            incentive_token_amount /
+            (enrichedMarket.input_token_data.locked_token_amount ?? 1);
+
+          if (!isNaN(new_per_input_token)) {
+            per_input_token = new_per_input_token;
+          }
+        }
 
         // Get annual change ratio
-        let annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
+        let annual_change_ratio = 0;
+
+        const start_timestamp: BigNumber = BigNumber.from(
+          startTimestamps[index]
+        );
+        const end_timestamp: BigNumber = BigNumber.from(endTimestamps[index]);
+
+        const scaled_incentive_token_rate = BigNumber.from(
+          action_incentive_token_amounts[index]
+        )
+          .mul(BigNumber.from(10).pow(18))
+          .mul(365 * 24 * 60 * 60)
+          .div(end_timestamp.sub(start_timestamp).toString());
+
+        const token_rate = parseRawAmountToTokenAmount(
+          scaled_incentive_token_rate.toString() ?? "0",
+          incentive_token_quote.decimals + 18
+        );
+
+        const rate_in_usd = token_rate * incentive_token_quote.price;
+
+        if (
+          enrichedMarket.locked_quantity_usd &&
+          enrichedMarket.locked_quantity_usd > 0
+        ) {
+          const new_annual_change_ratio =
+            (rate_in_usd * 365 * 24 * 60 * 60) /
+            (enrichedMarket.locked_quantity_usd ?? 1);
+
+          if (!isNaN(new_annual_change_ratio)) {
+            annual_change_ratio = new_annual_change_ratio;
+          }
+        }
+
+        if (annual_change_ratio >= Math.pow(10, 18)) {
+          annual_change_ratio = 0;
+        }
 
         // Get incentive token data
         const incentive_token_data = {
@@ -299,6 +373,7 @@ export const calculateVaultIPAddIncentivesTokenData = ({
           token_amount_usd: incentive_token_amount_usd,
           per_input_token,
           annual_change_ratio,
+          token_rate,
         };
 
         return incentive_token_data;
@@ -410,11 +485,9 @@ export const getVaultIPAddIncentivesTransactionOptions = ({
         {
           ...token_data,
           raw_amount: token_amounts[i],
-          token_amount: parseFloat(
-            ethers.utils.formatUnits(
-              token_amounts[i] || "0",
-              token_data.decimals
-            )
+          token_amount: parseRawAmountToTokenAmount(
+            token_amounts[i] ?? "0",
+            token_data.decimals
           ),
         },
       ],
@@ -482,6 +555,7 @@ export const useVaultIPAddIncentives = ({
     token_amounts,
     start_timestamps,
     end_timestamps,
+    enabled: enabled && !!baseMarket && !!enrichedMarket,
   });
 
   // Get token quotes
@@ -490,7 +564,7 @@ export const useVaultIPAddIncentives = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -501,6 +575,9 @@ export const useVaultIPAddIncentives = ({
       propsTokenQuotes,
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
+      startTimestamps: start_timestamps ?? [],
+      endTimestamps: end_timestamps ?? [],
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -541,6 +618,9 @@ export const useVaultIPAddIncentives = ({
     // Set approval transaction options
     preContractOptions = approvalTxOptions;
   }
+
+  // console.log("preContractOptions", preContractOptions);
+  // console.log("postContractOptions", postContractOptions);
 
   // Get token allowance
   const propsTokenAllowance = useTokenAllowance({

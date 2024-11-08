@@ -107,6 +107,7 @@ export type EnrichedMarketDataType =
         total_supply: number;
         annual_change_ratio: number;
         per_input_token: number;
+        token_rate: number;
       }
     >;
     input_token_data: SupportedToken & {
@@ -272,6 +273,20 @@ export const getEnrichedMarketsQueryOptions = (
               if (isNaN(per_input_token) || !isFinite(per_input_token))
                 per_input_token = 0;
 
+              let token_rate = 0;
+
+              if (market_type === RoycoMarketType.recipe.value) {
+                // Recipe Market
+                token_rate = 0;
+              } else {
+                // Vault Market
+                // this rate is actually tokens per year
+                token_rate = parseRawAmountToTokenAmount(
+                  row.base_incentive_rates?.[tokenIndex],
+                  token_info.decimals
+                );
+              }
+
               return {
                 ...token_info,
                 raw_amount,
@@ -282,6 +297,7 @@ export const getEnrichedMarketsQueryOptions = (
                 total_supply: token_total_supply,
                 annual_change_ratio: annual_change_ratio,
                 per_input_token: per_input_token,
+                token_rate,
               };
             }
           );
