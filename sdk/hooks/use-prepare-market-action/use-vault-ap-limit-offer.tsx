@@ -440,10 +440,12 @@ export const useVaultAPLimitOffer = ({
     // Get approval transaction options
     const approvalTxOptions: TransactionOptionsType[] =
       getApprovalContractOptions({
-        market_type: RoycoMarketType.recipe.id,
+        market_type: RoycoMarketType.vault.id,
         token_ids: [inputTokenData.id],
         required_approval_amounts: [inputTokenData.raw_amount],
-        spender: market_id,
+        spender:
+          ContractMap[chain_id as keyof typeof ContractMap]["VaultMarketHub"]
+            .address,
       });
 
     // Set approval transaction options
@@ -454,7 +456,9 @@ export const useVaultAPLimitOffer = ({
   const propsTokenAllowance = useTokenAllowance({
     chain_id: chain_id,
     account: account ? (account as Address) : NULL_ADDRESS,
-    spender: market_id as Address,
+    spender:
+      ContractMap[chain_id as keyof typeof ContractMap]["VaultMarketHub"]
+        .address,
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),

@@ -330,7 +330,7 @@ export const useVaultAPMarketOffer = ({
     // Get approval transaction options
     const approvalTxOptions: TransactionOptionsType[] =
       getApprovalContractOptions({
-        market_type: RoycoMarketType.recipe.id,
+        market_type: RoycoMarketType.vault.id,
         token_ids: [inputTokenData.id],
         required_approval_amounts: [inputTokenData.raw_amount],
         spender: market_id,

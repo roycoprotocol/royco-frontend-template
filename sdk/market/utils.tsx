@@ -79,9 +79,12 @@ export const RoycoMarketOfferType: Record<
   },
 };
 
+/**
+ * @note Currently, increase and extend are in the same action, feel free to change if you would like to separate both actions
+ */
 export type TypedRoycoMarketVaultIncentiveAction =
   | "add"
-  | "increase"
+  // | "increase"
   | "extend"
   | "refund";
 export const RoycoMarketVaultIncentiveAction: Record<
@@ -91,9 +94,9 @@ export const RoycoMarketVaultIncentiveAction: Record<
   add: {
     id: "add",
   },
-  increase: {
-    id: "increase",
-  },
+  // increase: {
+  //   id: "increase",
+  // },
   extend: {
     id: "extend",
   },
