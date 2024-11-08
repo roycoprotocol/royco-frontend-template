@@ -60,6 +60,7 @@ export const MarketActionForm = React.forwardRef<
     viewType,
     offerType,
     setOfferType,
+    vaultIncentiveActionType,
   } = useMarketManager();
   const { address, isConnected } = useAccount();
   const { open, close } = useWeb3Modal();
@@ -160,6 +161,14 @@ export const MarketActionForm = React.forwardRef<
       setActionType(MarketActionType.supply.id);
     }
   }, [userType]);
+
+  const resetCurrentIncentivesArray = () => {
+    marketActionForm.setValue("incentive_tokens", []);
+  };
+
+  useEffect(() => {
+    resetCurrentIncentivesArray();
+  }, [vaultIncentiveActionType]);
 
   if (!!currentMarketData) {
     return (

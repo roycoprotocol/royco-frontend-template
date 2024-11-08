@@ -36,7 +36,7 @@ export const ActionTypeSelector = React.forwardRef<
           currentMarketData.base_start_timestamps![index] ?? "0"
         );
 
-        if (currentTimestamp.gt(startTimestamp)) {
+        if (currentTimestamp.lt(startTimestamp)) {
           return true;
         } else {
           return false;

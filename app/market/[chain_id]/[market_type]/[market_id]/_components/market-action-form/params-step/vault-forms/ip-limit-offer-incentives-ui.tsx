@@ -14,7 +14,10 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
-import { parseTokenAmountToRawAmount } from "@/sdk/utils";
+import {
+  parseRawAmountToTokenAmount,
+  parseTokenAmountToRawAmount,
+} from "@/sdk/utils";
 import { MarketVaultIncentiveAction, useMarketManager } from "@/store";
 import { useActiveMarket } from "../../../hooks";
 import { BigNumber } from "ethers";
@@ -28,14 +31,6 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
   const { vaultIncentiveActionType } = useMarketManager();
 
   const { currentMarketData } = useActiveMarket();
-
-  const resetCurrentIncentivesArray = () => {
-    marketActionForm.setValue("incentive_tokens", []);
-  };
-
-  useEffect(() => {
-    resetCurrentIncentivesArray();
-  }, [vaultIncentiveActionType]);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -54,7 +49,15 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
         <IncentiveTokenSelector
           {...(vaultIncentiveActionType === MarketVaultIncentiveAction.add.id
             ? {
-                not_token_ids: currentMarketData?.base_incentive_ids ?? [],
+                not_token_ids:
+                  (currentMarketData?.base_incentive_ids ?? []).filter(
+                    (base_incentive_id, index) => {
+                      const base_start_timestamp = BigNumber.from(
+                        currentMarketData?.base_start_timestamps?.[index] ?? "0"
+                      );
+                      return base_start_timestamp.eq(0);
+                    }
+                  ) ?? [],
               }
             : vaultIncentiveActionType === MarketVaultIncentiveAction.extend.id
               ? {
@@ -83,7 +86,7 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                       const start_timestamp = BigNumber.from(
                         currentMarketData?.base_start_timestamps?.[index] ?? "0"
                       );
-                      return current_timestamp.gt(start_timestamp);
+                      return current_timestamp.lt(start_timestamp);
                     }),
                   }
                 : {})}
@@ -132,7 +135,31 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                    */}
                   <div className="flex w-full flex-row items-center gap-1">
                     <InputAmountSelector
-                      currentValue={token.amount ?? ""}
+                      disabled={
+                        vaultIncentiveActionType ===
+                        MarketVaultIncentiveAction.refund.id
+                      }
+                      currentValue={
+                        vaultIncentiveActionType ===
+                        MarketVaultIncentiveAction.refund.id
+                          ? (() => {
+                              const tokenIndex =
+                                currentMarketData?.base_incentive_ids?.findIndex(
+                                  (id) => id === token.id
+                                );
+                              if (tokenIndex === undefined || tokenIndex === -1)
+                                return "0";
+                              return (
+                                parseRawAmountToTokenAmount(
+                                  currentMarketData?.base_incentive_amounts?.[
+                                    tokenIndex
+                                  ] ?? "0",
+                                  token.decimals
+                                ).toString() ?? "0"
+                              );
+                            })()
+                          : (token.amount ?? "")
+                      }
                       setCurrentValue={(value) => {
                         /**
                          * Set the amount of the token

@@ -13,6 +13,7 @@ import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { SpringNumber } from "@/components/composables";
 import { format } from "date-fns";
 import { RoycoMarketType } from "@/sdk/market";
+import { BigNumber } from "ethers";
 
 const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
@@ -111,14 +112,22 @@ export const IncentiveInfo = React.forwardRef<
       ? !!currentHighestOffers && currentHighestOffers.ip_offers.length > 0
         ? currentHighestOffers.ip_offers[0].tokens_data
         : []
-      : currentMarketData?.incentive_tokens_data;
+      : currentMarketData?.incentive_tokens_data.filter(
+          (incentive_token_data) => {
+            return BigNumber.from(incentive_token_data.raw_amount ?? "0").gt(0);
+          }
+        );
 
   const previousIncentives =
     marketMetadata.market_type === RoycoMarketType.recipe.id
       ? !!previousHighestOffers && previousHighestOffers.ip_offers.length > 0
         ? previousHighestOffers.ip_offers[0].tokens_data
         : []
-      : previousMarketData?.incentive_tokens_data;
+      : previousMarketData?.incentive_tokens_data.filter(
+          (incentive_token_data) => {
+            return BigNumber.from(incentive_token_data.raw_amount ?? "0").gt(0);
+          }
+        );
 
   const currentNetAPR = currentIncentives?.reduce(
     (acc, curr) => acc + (curr.annual_change_ratio || 0),
