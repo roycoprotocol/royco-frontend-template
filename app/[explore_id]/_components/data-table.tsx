@@ -228,11 +228,11 @@ export function DataTable<TData, TValue>({
                                 <span
                                   className={InfoGrid.Content.Secondary.Span}
                                 >
-                                  Yield
+                                  APR
                                 </span>
                               </div>
 
-                              <InfoTip>Annual Incentive Percent</InfoTip>
+                              <InfoTip>Annual Percentage Rate</InfoTip>
                             </InfoGrid.Content.Secondary>
 
                             <FallMotion
