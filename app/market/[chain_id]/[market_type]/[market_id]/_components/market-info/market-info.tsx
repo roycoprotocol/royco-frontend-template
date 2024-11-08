@@ -56,6 +56,7 @@ export const MarketInfo = React.forwardRef<
     propsReadMarket,
     propsActionsDecoderEnterMarket,
     propsActionsDecoderExitMarket,
+    currentHighestOffers,
   } = useActiveMarket();
 
   const { scriptType, setScriptType, viewType } = useMarketManager();
