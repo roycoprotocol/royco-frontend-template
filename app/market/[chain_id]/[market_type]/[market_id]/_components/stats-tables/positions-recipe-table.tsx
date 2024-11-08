@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { useEnrichedPositionsRecipe } from "@/sdk/hooks";
@@ -20,6 +20,15 @@ export const PositionsRecipeTable = React.forwardRef<
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
   const { userType } = useMarketManager();
+
+  const dataColumns = useMemo(() => {
+    if (userType === MarketUserType.ip.id) {
+      return (positionsRecipeColumns as any).filter(
+        (column: any) => column.accessorKey !== "token_amounts"
+      );
+    }
+    return positionsRecipeColumns;
+  }, [positionsRecipeColumns, userType]);
 
   const { positionsRecipeTablePage, setPositionsRecipeTablePage } =
     useMarketManager();
@@ -62,7 +71,7 @@ export const PositionsRecipeTable = React.forwardRef<
           totalPages: Math.ceil(totalCount / 20),
           setPage: setPositionsRecipeTablePage,
         }}
-        columns={positionsRecipeColumns}
+        columns={dataColumns}
         data={data && data.data ? data.data : []}
       />
     );
