@@ -19,6 +19,7 @@ import {
   MarketOfferType,
   MarketType,
   MarketUserType,
+  RewardStyleMap,
   useMarketManager,
 } from "@/store";
 import { TransactionRow } from "@/components/composables/transaction-modal/transaction-row";
@@ -209,14 +210,30 @@ export const PreviewStep = React.forwardRef<
             </AlertIndicator>
           )}
 
-          {/**
-           * Net/Total Indicator
-           */}
           <SlideUpWrapper
             layout="position"
             layoutId="motion:market:preview-step:net-total-indicator"
-            delay={0.5}
+            delay={0.6}
           >
+            {/**
+             * Incentives Schedule
+             */}
+            {currentMarketData?.reward_style && (
+              <SecondaryLabel
+                className={cn(BASE_MARGIN_TOP.XL, "w-full text-black")}
+              >
+                <div className="flex w-full items-center justify-between text-sm">
+                  <span>Incentives Schedule</span>
+                  <span className="rounded-full border px-2 py-px text-tertiary">
+                    {RewardStyleMap[currentMarketData.reward_style].label}
+                  </span>
+                </div>
+              </SecondaryLabel>
+            )}
+
+            {/**
+             * Net/Total Indicator
+             */}
             {!!incentiveData && (
               <div className="flex w-full flex-row items-center justify-between py-3">
                 <SecondaryLabel className="text-success">
