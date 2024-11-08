@@ -4,6 +4,8 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SectionSubtitle, SectionTitle } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
+import { Block } from "./partners";
+import { RoycoTerminalLogo } from "../assets";
 
 export const AccessProtocol = React.forwardRef<
   HTMLDivElement,
@@ -20,11 +22,10 @@ export const AccessProtocol = React.forwardRef<
       )}
     >
       <MaxWidthWrapper>
-        <SectionTitle>Access the Royco Protocol</SectionTitle>
+        <SectionTitle>Access Royco Protocol</SectionTitle>
 
         <SectionSubtitle className="pb-[1rem] font-normal">
-          Leading institutions and individuals who believe Action Markets should
-          be more efficient.
+          Via ecosystem projects.
         </SectionSubtitle>
 
         <div
@@ -36,11 +37,15 @@ export const AccessProtocol = React.forwardRef<
           )}
         >
           {[
-            { label: "WACCO LOCO", url: "#" },
-            { label: "Coming soon", url: "" },
+            {
+              label: "WACCO LOCO",
+              url: "/explore",
+              image: "/home/royco-terminal.svg",
+            },
+            { label: "Coming soon", url: null },
           ].map((item) => {
-            return (
-              <a href={item.url}>
+            if (!item.url) {
+              return (
                 <div
                   className={cn(
                     "flex h-28 items-center justify-center bg-[#f7f7f6] text-lg text-tertiary md:h-32 lg:h-[10rem]",
@@ -48,6 +53,24 @@ export const AccessProtocol = React.forwardRef<
                   )}
                 >
                   {item.label}
+                </div>
+              );
+            }
+
+            return (
+              <a href={item.url} target="_blank" rel="noopener noreferrer">
+                <div
+                  className={cn(
+                    "col-span-1 w-full rounded-md lg:rounded-[0.3125rem]",
+                    "h-28 md:h-32 lg:h-[10rem]",
+                    "cursor-pointer overflow-hidden border border-transparent transition-all duration-200 ease-in-out hover:border-divider hover:opacity-80 hover:drop-shadow-sm"
+                  )}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.label}
+                    className="object-top"
+                  />
                 </div>
               </a>
             );

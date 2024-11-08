@@ -35,7 +35,7 @@ export const TransactionModal = React.forwardRef<
 
   const queryClient = useQueryClient();
 
-  const [isTransactionTimeout, setTransactionTimeout] = useState(false);
+  const [isTransactionTimeout, setIsTransactionTimeout] = useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
     React.useState<TransactionOptionsType | null>(null);
@@ -54,6 +54,7 @@ export const TransactionModal = React.forwardRef<
   const {
     isLoading: isTxConfirming,
     isSuccess: isTxConfirmed,
+    isError: isTxConfirmError,
     status: confirmationStatus,
   } = useWaitForTransactionReceipt({
     hash: txHash,
@@ -94,10 +95,11 @@ export const TransactionModal = React.forwardRef<
     if (allTransactionsExecuted === true) {
       setMarketStep(MarketSteps.params.id);
       setTransactions([]);
+      setIsTransactionTimeout(false);
     } else {
       try {
         if (!!currentTransaction) {
-          setTransactionTimeout(true);
+          setIsTransactionTimeout(true);
           resetTx();
           // @ts-ignore
           writeContract({
@@ -106,7 +108,7 @@ export const TransactionModal = React.forwardRef<
           });
         }
       } catch (error) {
-        setTransactionTimeout(false);
+        setIsTransactionTimeout(false);
         toast.custom(<ErrorAlert message="Error submitting transaction" />);
       }
     }
@@ -132,21 +134,14 @@ export const TransactionModal = React.forwardRef<
         setTransactions(newTransactions);
       }
 
-      if ((txStatus === "success" && isTxConfirmed) || txStatus === "error") {
-        setTransactionTimeout(false);
-        queryClient.invalidateQueries();
+      if (txError || isTxConfirmError) {
+        setIsTransactionTimeout(false);
       }
     }
   };
 
   useEffect(() => {
-    if (txStatus === "error") {
-      updateTransactions();
-    } else {
-      setTimeout(() => {
-        updateTransactions();
-      }, 30 * 1000);
-    }
+    updateTransactions();
   }, [txStatus, txHash, isTxConfirming, isTxConfirmed]);
 
   useEffect(() => {
@@ -159,18 +154,14 @@ export const TransactionModal = React.forwardRef<
     }
   }, [isTxError]);
 
-  // console.log("transactions", transactions);
-
-  // console.log("txStatus", txStatus);
-  // console.log("txHash", txHash);
-  // console.log("isTxPending", isTxPending);
-  // console.log("isTxError", isTxError);
-
-  // console.log("txError", txError);
-
-  // console.log("transactions", transactions);
-
-  // console.log("currentTransaction", currentTransaction);
+  useEffect(() => {
+    if (allTransactionsExecuted) {
+      setTimeout(() => {
+        setIsTransactionTimeout(false);
+        queryClient.invalidateQueries();
+      }, 5 * 1000); // 5 seconds
+    }
+  }, [allTransactionsExecuted]);
 
   useEffect(() => {
     findNextTransaction();
@@ -259,7 +250,7 @@ export const TransactionModal = React.forwardRef<
                   }
                 })}
             </div>
-            {allTransactionsExecuted && (
+            {allTransactionsExecuted && !isTransactionTimeout && (
               <AlertIndicator
                 className="w-full rounded-xl border"
                 contentClassName="w-full"
@@ -287,7 +278,7 @@ export const TransactionModal = React.forwardRef<
               )}
             </Button>
 
-            {!allTransactionsExecuted && (
+            {(!allTransactionsExecuted || isTransactionTimeout) && (
               <DialogClose asChild>
                 <Button
                   className="h-9 bg-error text-sm"

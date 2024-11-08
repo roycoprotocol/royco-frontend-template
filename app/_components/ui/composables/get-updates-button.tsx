@@ -70,7 +70,7 @@ export const GetUpdatesButton = React.forwardRef<
         // {...props}
       >
         <div className="h-5 md:h-5">
-          <span className="leading-5 md:leading-5">Access Royco Protocol</span>
+          <span className="leading-5 md:leading-5">Access Royco</span>
         </div>
       </Button>
       {/* </MotionWrapper> */}
