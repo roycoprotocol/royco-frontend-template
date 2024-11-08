@@ -237,7 +237,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
         if (props.row.original.is_withdrawn === true) {
           costText = "Withdrawn";
         } else if (unlockDate < new Date()) {
-          costText = "Withdraw";
+          costText = "Can Withdraw";
         } else {
           costText = "Locked";
         }

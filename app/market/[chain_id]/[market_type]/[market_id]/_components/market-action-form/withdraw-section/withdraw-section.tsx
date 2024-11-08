@@ -111,7 +111,7 @@ export const WithdrawSection = React.forwardRef<
 
   const {
     isLoading: isLoadingPositionsRecipe,
-    data: postionsRecipe,
+    data: positionsRecipe,
     isError,
     error,
   } = useEnrichedPositionsRecipe({
@@ -139,8 +139,8 @@ export const WithdrawSection = React.forwardRef<
 
   const totalCount =
     marketMetadata.market_type === MarketType.recipe.id
-      ? !!postionsRecipe && "count" in postionsRecipe
-        ? (postionsRecipe.count ?? 0)
+      ? !!positionsRecipe && "count" in positionsRecipe
+        ? (positionsRecipe.count ?? 0)
         : 0
       : !!positionsVault
         ? positionsVault.length
@@ -148,14 +148,14 @@ export const WithdrawSection = React.forwardRef<
 
   const positions =
     marketMetadata.market_type === MarketType.recipe.id
-      ? Array.isArray(postionsRecipe?.data)
-        ? postionsRecipe.data
+      ? Array.isArray(positionsRecipe?.data)
+        ? positionsRecipe.data
         : []
       : positionsVault?.filter(
           (position) => position.offer_side === RoycoMarketUserType.ap.value
         );
 
-  console.log("positions", positions);
+  const isLoading = isLoadingPositionsRecipe || isLoadingPositionsVault;
 
   return (
     <div
@@ -168,7 +168,7 @@ export const WithdrawSection = React.forwardRef<
           <SelectWithdrawType />
 
           <div className="mt-5 flex w-full grow flex-col">
-            <div className="flex grow flex-col place-content-start items-center gap-2">
+            <div className="flex grow flex-col place-content-start items-center gap-3">
               {(isLoadingPositionsRecipe || isLoadingPositionsVault) && (
                 <LoadingSpinner className="h-5 w-5" />
               )}
@@ -179,20 +179,24 @@ export const WithdrawSection = React.forwardRef<
                 </div>
               )}
 
-              {!!positions && positions.length === 0 && (
-                <div className="h-full w-full place-content-center items-start">
-                  <AlertIndicator>
-                    No withdrawable positions found
-                  </AlertIndicator>
-                </div>
-              )}
+              {!isLoading &&
+                isConnected &&
+                !!positions &&
+                positions.length === 0 && (
+                  <div className="h-full w-full place-content-center items-start">
+                    <AlertIndicator>
+                      No withdrawable positions found
+                    </AlertIndicator>
+                  </div>
+                )}
 
               {!!positions &&
+                !isLoading &&
                 totalCount > 0 &&
                 positions.map((position, positionIndex) => {
                   return (
                     <SlideUpWrapper
-                      delay={positionIndex * 0.1}
+                      delay={0.1 + positionIndex * 0.1}
                       className="w-full"
                       key={`withdraw-position:${positionIndex}-${withdrawType}`}
                     >
@@ -219,7 +223,7 @@ export const WithdrawSection = React.forwardRef<
                             )}
                           </SecondaryLabel>
 
-                          <div className="flex w-full grow flex-col space-y-1">
+                          <div className="flex w-full grow flex-col space-y-3">
                             {withdrawType ===
                             MarketWithdrawType.input_token.id ? (
                               <WithdrawInputTokenRow

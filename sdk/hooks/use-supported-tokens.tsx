@@ -5,11 +5,13 @@ export const useSupportedTokens = ({
   page = 1,
   search = "",
   token_ids,
+  not_token_ids,
 }: {
   chain_id?: number;
   page?: number;
   search?: string;
   token_ids?: string[] | undefined | null;
+  not_token_ids?: string[] | undefined | null;
 } = {}) => {
   const PAGE_SIZE = 20;
 
@@ -30,6 +32,12 @@ export const useSupportedTokens = ({
   if (!!token_ids) {
     filteredTokens = filteredTokens.filter((token) =>
       token_ids.includes(token.id)
+    );
+  }
+
+  if (!!not_token_ids) {
+    filteredTokens = filteredTokens.filter(
+      (token) => !not_token_ids.includes(token.id)
     );
   }
 

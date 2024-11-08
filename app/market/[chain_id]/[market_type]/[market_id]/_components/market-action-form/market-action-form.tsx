@@ -34,7 +34,7 @@ import { config } from "@/components/web3-modal/modal-config";
 import { ParamsStep } from "./params-step";
 import { PreviewStep } from "./preview-step";
 import { ChevronLeftIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { WithdrawSection } from "./withdraw-section"; // @todo fix it
 import { AlertIndicator } from "@/components/common";
 import { useMarketFormDetails } from "./use-market-form-details";
@@ -329,7 +329,14 @@ export const MarketActionForm = React.forwardRef<
          * Action Button
          */}
         {actionType === MarketActionType.supply.id && (
-          <SlideUpWrapper className={cn("mt-5 shrink-0 px-5 pb-5")}>
+          // <AnimatePresence mode="popLayout">
+          //   <motion.div
+          //     className={cn("mt-5 shrink-0 px-5 pb-5")}
+          //     initial={{ opacity: 0 }}
+          //     animate={{ opacity: 1 }}
+          //     transition={{ duration: 0.5, ease: "easeInOut" }}
+          //   >
+          <div className={cn("mt-5 shrink-0 px-5 pb-5")}>
             <Button
               disabled={
                 marketStep === MarketSteps.preview.id &&
@@ -346,7 +353,9 @@ export const MarketActionForm = React.forwardRef<
             >
               {nextLabel()}
             </Button>
-          </SlideUpWrapper>
+          </div>
+          //   </motion.div>
+          // </AnimatePresence>
         )}
       </div>
     );
