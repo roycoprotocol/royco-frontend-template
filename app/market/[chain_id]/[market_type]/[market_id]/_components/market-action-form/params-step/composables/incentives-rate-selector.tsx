@@ -56,16 +56,12 @@ export const IncentivesRateSelector = React.forwardRef<
                 /**
                  * Remove the token from the list
                  */
-                marketActionForm.setValue(
-                  "incentive_tokens",
-                  incentiveTokens.filter((t) => t.id !== token.id)
-                );
+                marketActionForm.setValue("incentive_tokens", []);
               } else {
                 /**
-                 * Add the token to the list
+                 * Replace existing tokens with the new one
                  */
                 marketActionForm.setValue("incentive_tokens", [
-                  ...incentiveTokens,
                   {
                     ...token,
                     fdv: token.fdv?.toString() ?? "0",
@@ -73,6 +69,31 @@ export const IncentivesRateSelector = React.forwardRef<
                 ]);
               }
             }}
+            // onSelect={(token) => {
+            //   const incentiveTokens =
+            //     marketActionForm.watch("incentive_tokens");
+
+            //   if (incentiveTokens.some((t) => t.id === token.id)) {
+            //     /**
+            //      * Remove the token from the list
+            //      */
+            //     marketActionForm.setValue(
+            //       "incentive_tokens",
+            //       incentiveTokens.filter((t) => t.id !== token.id)
+            //     );
+            //   } else {
+            //     /**
+            //      * Add the token to the list
+            //      */
+            //     marketActionForm.setValue("incentive_tokens", [
+            //       ...incentiveTokens,
+            //       {
+            //         ...token,
+            //         fdv: token.fdv?.toString() ?? "0",
+            //       },
+            //     ]);
+            //   }
+            // }}
             className="mt-2"
           />
         </SlideUpWrapper>
