@@ -347,10 +347,7 @@ export type MarketManagerState = {
 
 export const createMarketManagerStore = () => {
   return create<MarketManagerState>((set) => ({
-    viewType: ((typeof window !== "undefined" &&
-      localStorage.getItem("royco_market_view_type")) ||
-      MarketViewType.simple.id) as TypedMarketViewType,
-    // viewType: MarketViewType.advanced.id,
+    viewType: MarketViewType.simple.id as TypedMarketViewType,
     setViewType: (viewType: TypedMarketViewType) => set({ viewType }),
 
     incentiveType: MarketIncentiveType.ap.id,

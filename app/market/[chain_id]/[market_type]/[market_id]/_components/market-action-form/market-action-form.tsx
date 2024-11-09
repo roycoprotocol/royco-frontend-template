@@ -43,6 +43,7 @@ import { SlideUpWrapper } from "@/components/animations";
 import { OfferTypeSelector } from "./offer-type-selector";
 import { NULL_ADDRESS } from "@/sdk/constants";
 import { MarketActionFormSchema } from "./market-action-form-schema";
+import { useConnectWallet } from "../../../../../../_components/provider/connect-wallet-provider";
 
 export const MarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -67,6 +68,8 @@ export const MarketActionForm = React.forwardRef<
   const { selectedNetworkId, open: isModalOpen } = useWeb3ModalState();
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
+
+  const { connectWallet } = useConnectWallet();
 
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
@@ -97,7 +100,7 @@ export const MarketActionForm = React.forwardRef<
   const handleNextStep = async () => {
     try {
       if (!isConnected) {
-        open();
+        connectWallet();
       } else if (
         // @ts-ignore
         selectedNetworkId !== marketMetadata.chain_id

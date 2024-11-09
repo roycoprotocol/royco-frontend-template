@@ -17,14 +17,18 @@ import {
   ViewSelector,
 } from "./ui";
 import { Switch } from "../../../components/ui/switch";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
   ({ className }, ref) => {
-    const params = useParams<{ explore_id: "explore" | "all" }>();
-    const exploreId = useMemo(() => params.explore_id, [params.explore_id]);
+    const pathname = usePathname();
+
+    const showVerifiedMarket = useMemo(
+      () => (pathname === "/" ? true : false),
+      [pathname]
+    );
 
     const {
       exploreView: view,
@@ -46,6 +50,15 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       exploreCustomPoolParams: customPoolParams,
     } = useExplore();
 
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const updateIsVerified = localStorage.getItem(
+          "royco_verified_market_filter_type"
+        );
+        setExploreIsVerified(updateIsVerified === "false" ? false : true);
+      }
+    }, []);
+
     // const { isLoading, isError, isRefetching, count } = usePoolTable({
     //   sorting,
     //   filters,
@@ -58,7 +71,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       filters,
       page_index: pageIndex,
       search_key: searchKey,
-      is_verified: exploreId === "explore" ? true : exploreIsVerified,
+      is_verified: showVerifiedMarket ? true : exploreIsVerified,
     });
 
     /**
@@ -146,7 +159,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
         <div className="flex flex-col px-5 py-4">
           <h4 className="badge text-tertiary">FILTER</h4>
 
-          {exploreId !== "explore" && (
+          {!showVerifiedMarket && (
             <div className="body-2 mt-4 flex justify-between text-primary">
               <h5 className="">Show Unverified Markets</h5>
 

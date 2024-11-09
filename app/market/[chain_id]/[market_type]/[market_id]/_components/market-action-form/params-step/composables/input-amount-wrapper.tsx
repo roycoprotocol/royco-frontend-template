@@ -271,7 +271,7 @@ export const InputAmountWrapper = React.forwardRef<
                   )
                 )}{" "}
             {currentMarketData?.input_token_data.symbol.toUpperCase()} Fillable
-            for Current Rate
+            in Total
           </div>
         </TertiaryLabel>
       ) : null}

@@ -114,12 +114,7 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreCustomPoolParams: [],
   setExploreCustomPoolParams: (exploreCustomPoolParams) =>
     set({ exploreCustomPoolParams }),
-  exploreIsVerified:
-    typeof window !== "undefined"
-      ? localStorage.getItem("royco_verified_market_filter_type") === "false"
-        ? false
-        : true
-      : true,
+  exploreIsVerified: true,
   setExploreIsVerified: (exploreIsVerified: boolean) =>
     set({ exploreIsVerified }),
 }));

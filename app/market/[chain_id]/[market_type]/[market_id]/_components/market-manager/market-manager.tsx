@@ -1,11 +1,12 @@
 "use client";
 
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useMarketManager } from "@/store";
 import {
   MarketSteps,
   MarketUserType,
   MarketViewType,
+  TypedMarketViewType,
 } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
 import { MarketActionForm } from "../market-action-form";
@@ -47,6 +48,16 @@ export const MarketManager = React.forwardRef<
     marketMetadata,
   } = useActiveMarket();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const updateViewType =
+        (localStorage.getItem(
+          "royco_market_view_type"
+        ) as TypedMarketViewType) || MarketViewType.simple.id;
+      setViewType(updateViewType);
+    }
+  }, []);
+
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
   } else if (!currentMarketData) {
@@ -87,9 +98,7 @@ export const MarketManager = React.forwardRef<
           )}
         >
           <div
-            onClick={() =>
-              window.open("/explore", "_self", "noopener noreferrer")
-            }
+            onClick={() => window.open("/", "_self", "noopener noreferrer")}
             className={cn(
               "flex cursor-pointer flex-row items-center gap-0 font-gt text-sm font-light text-secondary",
               "transition-all duration-200 ease-in-out hover:opacity-80"
