@@ -116,18 +116,17 @@ const OfferListRow = React.forwardRef<
               currency: "USD",
             }}
           />
-        </SecondaryLabel>
-        <SecondaryLabel>
           {!!offer && (
-            <Fragment>
+            <div className="ml-2">
               <TokenDisplayer
                 size={4}
                 tokens={offer?.tokens_data ?? []}
                 symbols={false}
               />
-            </Fragment>
+            </div>
           )}
-
+        </SecondaryLabel>
+        <SecondaryLabel>
           <SpringNumber
             previousValue={valueInfo.previousValue}
             currentValue={valueInfo.currentValue}
