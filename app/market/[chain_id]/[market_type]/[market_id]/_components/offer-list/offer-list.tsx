@@ -110,13 +110,18 @@ const OfferListRow = React.forwardRef<
             previousValue={keyInfo.previousValue}
             currentValue={keyInfo.currentValue}
             numberFormatOptions={{
-              style: "currency",
+              // style: "currency",
               notation: "compact",
               useGrouping: true,
-              currency: "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+              // currency: "USD",
             }}
           />
-          {!!offer && (
+          {/**
+           * @note Hidden for now
+           */}
+          {/* {!!offer && (
             <div className="ml-2">
               <TokenDisplayer
                 size={4}
@@ -124,18 +129,18 @@ const OfferListRow = React.forwardRef<
                 symbols={false}
               />
             </div>
-          )}
+          )} */}
         </SecondaryLabel>
         <SecondaryLabel>
           <SpringNumber
             previousValue={valueInfo.previousValue}
             currentValue={valueInfo.currentValue}
             numberFormatOptions={{
-              style: "percent",
+              // style: "percent",
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }}
           />
         </SecondaryLabel>
@@ -179,7 +184,8 @@ export const OfferList = React.forwardRef<
         )}
       >
         <TertiaryLabel className="text-tertiary">SIZE</TertiaryLabel>
-        <TertiaryLabel className="text-tertiary">APR</TertiaryLabel>
+        {/* <TertiaryLabel className="text-tertiary">APR</TertiaryLabel> */}
+        <TertiaryLabel className="text-tertiary">INCENTIVES</TertiaryLabel>
       </div>
 
       {/**
@@ -207,20 +213,38 @@ export const OfferList = React.forwardRef<
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
                     ? (previousHighestOffers?.ip_offers[offerIndex]
-                        .quantity_value_usd ?? 0)
+                        .input_token_data.token_amount ?? 0)
                     : 0,
 
-                currentValue: offer.quantity_value_usd as number,
+                currentValue: offer.input_token_data.token_amount as number,
               };
+
+              // const valueInfo = {
+              //   previousValue:
+              //     !!previousHighestOffers &&
+              //     offerIndex < previousHighestOffers.ip_offers.length
+              //       ? (previousHighestOffers?.ip_offers[offerIndex]
+              //           .annual_change_ratio ?? 0)
+              //       : 0,
+              //   currentValue: offer.annual_change_ratio as number,
+              // };
 
               const valueInfo = {
                 previousValue:
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
-                    ? (previousHighestOffers?.ip_offers[offerIndex]
-                        .annual_change_ratio ?? 0)
+                    ? previousHighestOffers?.ip_offers[offerIndex]
+                        .tokens_data &&
+                      previousHighestOffers?.ip_offers[offerIndex].tokens_data
+                        .length > 0
+                      ? previousHighestOffers?.ip_offers[offerIndex]
+                          .tokens_data[0].token_amount
+                      : 0
                     : 0,
-                currentValue: offer.annual_change_ratio as number,
+                currentValue:
+                  offer.tokens_data && offer.tokens_data.length > 0
+                    ? offer.tokens_data[0].token_amount
+                    : 0,
               };
 
               return (
@@ -268,20 +292,37 @@ export const OfferList = React.forwardRef<
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
                   ? (previousHighestOffers?.ap_offers[offerIndex]
-                      .quantity_value_usd ?? 0)
+                      .input_token_data.token_amount ?? 0)
                   : 0,
 
-              currentValue: offer.quantity_value_usd as number,
+              currentValue: offer.input_token_data.token_amount as number,
             };
+
+            // const valueInfo = {
+            //   previousValue:
+            //     !!previousHighestOffers &&
+            //     offerIndex < previousHighestOffers.ap_offers.length
+            //       ? (previousHighestOffers?.ap_offers[offerIndex]
+            //           .annual_change_ratio ?? 0)
+            //       : 0,
+            //   currentValue: offer.annual_change_ratio as number,
+            // };
 
             const valueInfo = {
               previousValue:
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
-                  ? (previousHighestOffers?.ap_offers[offerIndex]
-                      .annual_change_ratio ?? 0)
+                  ? previousHighestOffers?.ap_offers[offerIndex].tokens_data &&
+                    previousHighestOffers?.ap_offers[offerIndex].tokens_data
+                      .length > 0
+                    ? previousHighestOffers?.ap_offers[offerIndex]
+                        .tokens_data[0].token_amount
+                    : 0
                   : 0,
-              currentValue: offer.annual_change_ratio as number,
+              currentValue:
+                offer.tokens_data && offer.tokens_data.length > 0
+                  ? offer.tokens_data[0].token_amount
+                  : 0,
             };
 
             return (
