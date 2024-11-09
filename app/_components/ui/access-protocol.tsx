@@ -4,8 +4,6 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SectionSubtitle, SectionTitle } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
-import { Block } from "./partners";
-import { RoycoTerminalLogo } from "../assets";
 
 export const AccessProtocol = React.forwardRef<
   HTMLDivElement,

@@ -24,6 +24,7 @@ import { TransactionRow } from "./transaction-row";
 import { TransactionOptionsType } from "@/sdk/types";
 import { SlideUpWrapper } from "@/components/animations";
 import { useQueryClient } from "@tanstack/react-query";
+import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -36,6 +37,7 @@ export const TransactionModal = React.forwardRef<
   const queryClient = useQueryClient();
 
   const [isTransactionTimeout, setIsTransactionTimeout] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
     React.useState<TransactionOptionsType | null>(null);
@@ -97,20 +99,7 @@ export const TransactionModal = React.forwardRef<
       setTransactions([]);
       setIsTransactionTimeout(false);
     } else {
-      try {
-        if (!!currentTransaction) {
-          setIsTransactionTimeout(true);
-          resetTx();
-          // @ts-ignore
-          writeContract({
-            ...currentTransaction,
-            // __mode: "prepared",
-          });
-        }
-      } catch (error) {
-        setIsTransactionTimeout(false);
-        toast.custom(<ErrorAlert message="Error submitting transaction" />);
-      }
+      setIsConfirmationModalOpen(true);
     }
   };
 
@@ -137,12 +126,16 @@ export const TransactionModal = React.forwardRef<
       if (txError || isTxConfirmError) {
         setIsTransactionTimeout(false);
       }
+
+      if (isTxConfirmed && currentTransactionIndex < transactions.length - 1) {
+        setIsTransactionTimeout(false);
+      }
     }
   };
 
   useEffect(() => {
     updateTransactions();
-  }, [txStatus, txHash, isTxConfirming, isTxConfirmed]);
+  }, [txStatus, txHash, isTxConfirming, isTxConfirmError, isTxConfirmed]);
 
   useEffect(() => {
     if (isTxError) {
@@ -212,7 +205,7 @@ export const TransactionModal = React.forwardRef<
 
       {isOpen && (
         <DialogContent
-          className={cn("z-[999] sm:max-w-[425px]", className)}
+          className={cn("sm:max-w-[425px]", className)}
           ref={ref}
           {...otherProps}
           onInteractOutside={(e) => {
@@ -293,6 +286,29 @@ export const TransactionModal = React.forwardRef<
               </DialogClose>
             )}
           </div>
+
+          <TransactionConfirmationModal
+            isOpen={isConfirmationModalOpen}
+            onOpenModal={(open) => setIsConfirmationModalOpen(open)}
+            onConfirm={() => {
+              try {
+                if (!!currentTransaction) {
+                  setIsTransactionTimeout(true);
+                  resetTx();
+                  // @ts-ignore
+                  writeContract({
+                    ...currentTransaction,
+                    // __mode: "prepared",
+                  });
+                }
+              } catch (error) {
+                setIsTransactionTimeout(false);
+                toast.custom(
+                  <ErrorAlert message="Error submitting transaction" />
+                );
+              }
+            }}
+          />
         </DialogContent>
       )}
     </Dialog>

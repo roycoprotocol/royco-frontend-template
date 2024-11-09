@@ -4,17 +4,23 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
 import { SupportedChainMap } from "@/sdk/constants";
+import { useConnectWallet } from "../provider/connect-wallet-provider";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
-  const { open, close } = useWeb3Modal();
   const { address, isConnected, isConnecting, isDisconnected } = useAccount();
   const { selectedNetworkId } = useWeb3ModalState();
+
+  const {
+    connectWallet,
+    isConnectWalletAlertOpen,
+    setIsConnectWalletAlertOpen,
+  } = useConnectWallet();
 
   /**
    * @description Bug in exported type of selectedNetworkId
@@ -32,9 +38,7 @@ export const ConnectWalletButton = React.forwardRef<
         isConnected && !isChainSupported && "bg-error",
         className
       )}
-      onClick={() => {
-        open();
-      }}
+      onClick={() => connectWallet()}
       {...props}
     >
       {isConnected && !isChainSupported && (

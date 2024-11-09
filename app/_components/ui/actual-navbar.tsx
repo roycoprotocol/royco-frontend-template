@@ -25,11 +25,17 @@ const NavbarLinks = [
   //   link: "/create",
   //   target: "_self",
   // },
+  // {
+  //   id: "explore",
+  //   label: "Explore",
+  //   link: "/explore",
+  //   target: "_self",
+  // },
   {
-    id: "explore",
-    label: "Explore",
-    link: "/explore",
-    target: "_self",
+    id: "blog",
+    label: "Blog",
+    link: "https://paragraph.xyz/@royco",
+    target: "_blank",
   },
   {
     id: "docs",
@@ -42,12 +48,6 @@ const NavbarLinks = [
     label: "Social",
     link: null,
     items: [
-      {
-        id: "blog",
-        label: "Blog",
-        link: "https://paragraph.xyz/@royco",
-        target: "_blank",
-      },
       {
         id: "twitter",
         label: "Twitter",
@@ -78,10 +78,10 @@ export const ActualNavbar = React.forwardRef<
         "safari-blur-fix",
         "sticky left-0 right-0 top-0 z-40 flex w-full flex-row items-center justify-between",
         "h-fit",
-        "bg-opacity-0 px-5 py-3 md:px-12 md:py-[1.09rem] lg:px-[10.44rem] xl:px-[12.44rem]",
+        "bg-opacity-0 py-3 md:py-[1.09rem]",
         "flex flex-col place-content-center items-center",
         "border-b border-t-0 border-divider",
-        pathname !== "/" && "px-3 sm:px-12 md:px-12 lg:px-12 xl:px-12",
+        "px-3 sm:px-12 md:px-12 lg:px-12 xl:px-12",
         className
       )}
     >
@@ -171,8 +171,7 @@ export const ActualNavbar = React.forwardRef<
       <MaxWidthWrapper
         className={cn(
           "flex flex-row items-center justify-between self-center",
-          pathname !== "/" ? MAX_SCREEN_WIDTH : ""
-          // pathname !== "/" && "px-3 sm:px-3 md:px-12 lg:px-12 xl:px-12 "
+          MAX_SCREEN_WIDTH
         )}
       >
         {/**
@@ -272,7 +271,7 @@ export const ActualNavbar = React.forwardRef<
           })}
           className="flex flex-row items-center"
         >
-          {pathname === "/" ? <GetUpdatesButton /> : <ConnectWalletButton />}
+          <ConnectWalletButton />
 
           <div
             onClick={() => setIsMobileOpen(!isMobileOpen)}

@@ -18,7 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { produce } from "immer";
 
 import { useImmer } from "use-immer";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export const MarketsTable = () => {
   const [placeholderDatas, setPlaceholderDatas] = useImmer<Array<any | null>>([
@@ -26,8 +26,11 @@ export const MarketsTable = () => {
     null,
   ]);
 
-  const params = useParams<{ explore_id: "explore" | "all" }>();
-  const exploreId = useMemo(() => params.explore_id, [params.explore_id]);
+  const pathname = usePathname();
+  const showVerifiedMarket = useMemo(
+    () => (pathname === "/" ? true : false),
+    [pathname]
+  );
 
   const {
     exploreSortKey: sortKey,
@@ -45,7 +48,7 @@ export const MarketsTable = () => {
       filters,
       page_index: pageIndex,
       search_key: searchKey,
-      is_verified: exploreId === "explore" ? true : isVerified,
+      is_verified: showVerifiedMarket ? true : isVerified,
     });
 
   /**

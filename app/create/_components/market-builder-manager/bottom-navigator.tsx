@@ -19,6 +19,7 @@ import { ContractMap } from "@/sdk/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "@/sdk/hooks";
 import { REWARD_STYLE } from "@/sdk/constants";
 import { BuilderSectionWrapper } from "../composables";
+import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 
 export const BottomNavigator = React.forwardRef<
   HTMLDivElement,
@@ -44,6 +45,8 @@ export const BottomNavigator = React.forwardRef<
     const { open, close } = useWeb3Modal();
     const { selectedNetworkId, open: isModalOpen } = useWeb3ModalState();
     const { address, isConnected, isConnecting, isDisconnected } = useAccount();
+
+    const { connectWallet } = useConnectWallet();
 
     const {
       isReady: isReadyRecipe,
@@ -94,7 +97,7 @@ export const BottomNavigator = React.forwardRef<
       } else {
         // wallet not connected
         if (!isConnected) {
-          open();
+          connectWallet();
         }
 
         // wrong chain
