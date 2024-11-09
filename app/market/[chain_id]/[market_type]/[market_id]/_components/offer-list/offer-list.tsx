@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { Fragment } from "react";
 import { useActiveMarket } from "../hooks";
 import {
   BASE_MARGIN_TOP,
@@ -11,9 +11,11 @@ import {
 } from "../composables";
 
 import { SpringNumber } from "@/components/composables";
-import { AlertIndicator } from "@/components/common";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { FallMotion } from "@/components/animations";
 import { RoycoMarketType } from "@/sdk/market";
+import { EnrichedOfferDataType } from "@/sdk/queries";
+import { MarketUserType } from "@/store";
 
 export const CentralBar = React.forwardRef<
   HTMLDivElement,
@@ -73,6 +75,7 @@ const OfferListRow = React.forwardRef<
       previousValue: number;
       currentValue: number;
     };
+    offer?: EnrichedOfferDataType;
     delay?: number;
   }
 >(
@@ -85,6 +88,7 @@ const OfferListRow = React.forwardRef<
       customKey,
       keyInfo,
       valueInfo,
+      offer,
       ...props
     },
     ref
@@ -114,6 +118,16 @@ const OfferListRow = React.forwardRef<
           />
         </SecondaryLabel>
         <SecondaryLabel>
+          {!!offer && (
+            <Fragment>
+              <TokenDisplayer
+                size={4}
+                tokens={offer?.tokens_data ?? []}
+                symbols={false}
+              />
+            </Fragment>
+          )}
+
           <SpringNumber
             previousValue={valueInfo.previousValue}
             currentValue={valueInfo.currentValue}
@@ -218,6 +232,7 @@ export const OfferList = React.forwardRef<
                   indexKey={INDEX_KEY}
                   keyInfo={keyInfo}
                   valueInfo={valueInfo}
+                  offer={offer}
                 />
               );
             })
@@ -265,7 +280,7 @@ export const OfferList = React.forwardRef<
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
                   ? (previousHighestOffers?.ap_offers[offerIndex]
-                      .change_ratio ?? 0)
+                      .annual_change_ratio ?? 0)
                   : 0,
               currentValue: offer.annual_change_ratio as number,
             };
@@ -277,6 +292,7 @@ export const OfferList = React.forwardRef<
                 indexKey={INDEX_KEY}
                 keyInfo={keyInfo}
                 valueInfo={valueInfo}
+                offer={offer}
               />
             );
           })
