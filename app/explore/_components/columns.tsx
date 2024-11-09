@@ -116,10 +116,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           <div className="w-fit grow-0 overflow-hidden truncate text-ellipsis">
-            {props.row.original.name
-              .split(" ")
-              .map((word: string) => capitalize(word))
-              .join(" ")}
+            {props.row.original.name.trim()}
           </div>
 
           <Tooltip>

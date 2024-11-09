@@ -94,11 +94,7 @@ export const MarketInfo = React.forwardRef<
             isVerified={currentMarketData.is_verified ? true : false}
           >
             {currentMarketData.name && currentMarketData.name.trim() !== ""
-              ? currentMarketData.name
-                  .trim()
-                  .split(" ")
-                  .map((word) => capitalize(word))
-                  .join(" ")
+              ? currentMarketData.name.trim()
               : "Unknown Market"}
           </PrimaryLabel>
         </div>
