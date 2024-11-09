@@ -35,6 +35,7 @@ export type OfferValidationDataType = {
   id: string; // Global offer ID [ <CHAIN_ID>_<MARKET_TYPE>_<OFFER_SIDE>_<OFFER_ID> ]
   chain_id: number;
   market_type: 0 | 1;
+  market_id: string;
   offer_side: 0 | 1;
   creator: string; // Address of the AP (Offer creator)
   funding_vault: string; // Address of the vault that is funding the offer (if 0x0000000000000000000000000000000000000000, then it's user's own wallet, else it is a vault)
@@ -161,6 +162,13 @@ async function getInvalidApOffers(
         const allowance = BigNumber.from(approvalData["data"]);
 
         if (allowance.lt(BigNumber.from(offer.quantity_remaining))) {
+          invalidApOffers.push(offer.id);
+        } else if (
+          offer.market_type === 1 &&
+          offer.offer_side === 0 &&
+          offer.funding_vault === offer.market_id
+        ) {
+          // Circular offers are considered invalid
           invalidApOffers.push(offer.id);
         }
       } catch (err) {
