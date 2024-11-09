@@ -111,38 +111,43 @@ export const InputAmountWrapper = React.forwardRef<
       {/**
        * Balance indicator based on the funding type: wallet or vault
        */}
-      <FormInputLabel size="sm" label="Amount">
-        <TertiaryLabel>
-          Balance:{" "}
-          {isLoading ? (
-            <LoadingSpinner className="ml-1 h-4 w-4" />
-          ) : balance ? (
-            <SpringNumber
-              className="ml-1"
-              defaultColor="text-tertiary"
-              previousValue={parseRawAmountToTokenAmount(
-                balance,
-                currentMarketData?.input_token_data.decimals ?? 0
-              )}
-              currentValue={parseRawAmountToTokenAmount(
-                balance,
-                currentMarketData?.input_token_data.decimals ?? 0
-              )}
-              numberFormatOptions={{
-                style: "decimal",
-                notation: "compact",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 8,
-                useGrouping: true,
-              }}
-            />
-          ) : (
-            0
-          )}
-          <span className="ml-1">
-            {currentMarketData?.input_token_data.symbol.toUpperCase()}
-          </span>
-        </TertiaryLabel>
+      <FormInputLabel
+        size="sm"
+        label={userType === MarketUserType.ip.id ? "Desired Result" : "Amount"}
+      >
+        {userType === MarketUserType.ap.id && (
+          <TertiaryLabel>
+            Balance:{" "}
+            {isLoading ? (
+              <LoadingSpinner className="ml-1 h-4 w-4" />
+            ) : balance ? (
+              <SpringNumber
+                className="ml-1"
+                defaultColor="text-tertiary"
+                previousValue={parseRawAmountToTokenAmount(
+                  balance,
+                  currentMarketData?.input_token_data.decimals ?? 0
+                )}
+                currentValue={parseRawAmountToTokenAmount(
+                  balance,
+                  currentMarketData?.input_token_data.decimals ?? 0
+                )}
+                numberFormatOptions={{
+                  style: "decimal",
+                  notation: "compact",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 8,
+                  useGrouping: true,
+                }}
+              />
+            ) : (
+              0
+            )}
+            <span className="ml-1">
+              {currentMarketData?.input_token_data.symbol.toUpperCase()}
+            </span>
+          </TertiaryLabel>
+        )}
       </FormInputLabel>
 
       {/**
@@ -183,6 +188,10 @@ export const InputAmountWrapper = React.forwardRef<
           //   offerType === MarketOfferType.limit.id
           // )
           //   return null;
+
+          if (userType === MarketUserType.ip.id) {
+            return null;
+          }
 
           return (
             <div

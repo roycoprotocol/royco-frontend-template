@@ -13,6 +13,7 @@ import { z } from "zod";
 import { SlideUpWrapper } from "@/components/animations";
 import {
   FundingVaultSelector,
+  IncentiveAssetsSelector,
   IncentivesAmountSelector,
   InputAmountWrapper,
   InputExpirySelector,
@@ -80,18 +81,30 @@ export const RecipeForms = React.forwardRef<
             />
           )}
 
+        {/**
+         * Incentive Assets Selector
+         */}
+        {userType === MarketUserType.ip.id &&
+          offerType === MarketOfferType.market.id && (
+            <IncentiveAssetsSelector
+              marketActionForm={marketActionForm}
+              delayTitle={0.4}
+              delayContent={0.5}
+            />
+          )}
+
         {userType === MarketUserType.ip.id &&
           offerType === MarketOfferType.limit.id && (
             <IncentivesAmountSelector
               marketActionForm={marketActionForm}
-              delayTitle={0.3}
-              delayContent={0.4}
+              delayTitle={0.5}
+              delayContent={0.5}
             />
           )}
 
         {offerType === MarketOfferType.limit.id && (
           <InputExpirySelector
-            delay={0.5}
+            delay={0.6}
             marketActionForm={marketActionForm}
           />
         )}
