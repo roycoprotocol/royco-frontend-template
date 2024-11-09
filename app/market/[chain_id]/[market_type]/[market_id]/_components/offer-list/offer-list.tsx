@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { Fragment } from "react";
 import { useActiveMarket } from "../hooks";
 import {
   BASE_MARGIN_TOP,
@@ -11,9 +11,12 @@ import {
 } from "../composables";
 
 import { SpringNumber } from "@/components/composables";
-import { AlertIndicator } from "@/components/common";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { FallMotion } from "@/components/animations";
 import { RoycoMarketType } from "@/sdk/market";
+import { EnrichedOfferDataType } from "@/sdk/queries";
+import { MarketUserType } from "@/store";
+import { parseRawAmountToTokenAmount } from "@/sdk/utils";
 
 export const CentralBar = React.forwardRef<
   HTMLDivElement,
@@ -40,21 +43,36 @@ export const CentralBar = React.forwardRef<
          * For Vault, this needs to be calculated
          */}
         {Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
+          // style: "currency",
+          // currency: "USD",
           notation: "compact",
+          useGrouping: true,
           minimumFractionDigits: 2,
           maximumFractionDigits: 8,
-          useGrouping: true,
         }).format(
           marketMetadata.market_type === RoycoMarketType.recipe.id
-            ? (currentMarketData?.quantity_ap_usd ?? 0) +
-                (currentMarketData?.quantity_ip_usd ?? 0)
-            : (currentMarketData?.quantity_ap_usd ?? 0)
+            ? parseRawAmountToTokenAmount(
+                currentMarketData?.quantity_ap ?? "",
+                currentMarketData?.input_token_data.decimals ?? 0
+              ) +
+                parseRawAmountToTokenAmount(
+                  currentMarketData?.quantity_ip ?? "",
+                  currentMarketData?.input_token_data.decimals ?? 0
+                )
+            : parseRawAmountToTokenAmount(
+                currentMarketData?.quantity_ap ?? "",
+                currentMarketData?.input_token_data.decimals ?? 0
+              )
+          // marketMetadata.market_type === RoycoMarketType.recipe.id
+          //   ? (currentMarketData?.quantity_ap_usd ?? 0) +
+          //       (currentMarketData?.quantity_ip_usd ?? 0)
+          //   : (currentMarketData?.quantity_ap_usd ?? 0)
         )}
       </SecondaryLabel>
 
-      <SecondaryLabel className="font-medium text-black">MARKET</SecondaryLabel>
+      <SecondaryLabel className="font-medium text-black">
+        OPEN INTEREST
+      </SecondaryLabel>
     </div>
   );
 });
@@ -73,6 +91,7 @@ const OfferListRow = React.forwardRef<
       previousValue: number;
       currentValue: number;
     };
+    offer?: EnrichedOfferDataType;
     delay?: number;
   }
 >(
@@ -85,6 +104,7 @@ const OfferListRow = React.forwardRef<
       customKey,
       keyInfo,
       valueInfo,
+      offer,
       ...props
     },
     ref
@@ -106,23 +126,45 @@ const OfferListRow = React.forwardRef<
             previousValue={keyInfo.previousValue}
             currentValue={keyInfo.currentValue}
             numberFormatOptions={{
-              style: "currency",
+              // style: "currency",
               notation: "compact",
               useGrouping: true,
-              currency: "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+              // currency: "USD",
             }}
           />
+
+          {!!offer && (
+            <div className="ml-1">
+              <TokenDisplayer
+                size={4}
+                tokens={[offer?.input_token_data] ?? []}
+                symbols={false}
+              />
+            </div>
+          )}
         </SecondaryLabel>
         <SecondaryLabel>
+          {!!offer && (
+            <div className="mr-0">
+              <TokenDisplayer
+                size={4}
+                tokens={[offer?.tokens_data[0]] ?? []}
+                symbols={false}
+              />
+            </div>
+          )}
+
           <SpringNumber
             previousValue={valueInfo.previousValue}
             currentValue={valueInfo.currentValue}
             numberFormatOptions={{
-              style: "percent",
+              // style: "percent",
               notation: "compact",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }}
           />
         </SecondaryLabel>
@@ -166,7 +208,8 @@ export const OfferList = React.forwardRef<
         )}
       >
         <TertiaryLabel className="text-tertiary">SIZE</TertiaryLabel>
-        <TertiaryLabel className="text-tertiary">APR</TertiaryLabel>
+        {/* <TertiaryLabel className="text-tertiary">APR</TertiaryLabel> */}
+        <TertiaryLabel className="text-tertiary">INCENTIVES</TertiaryLabel>
       </div>
 
       {/**
@@ -194,20 +237,38 @@ export const OfferList = React.forwardRef<
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
                     ? (previousHighestOffers?.ip_offers[offerIndex]
-                        .quantity_value_usd ?? 0)
+                        .input_token_data.token_amount ?? 0)
                     : 0,
 
-                currentValue: offer.quantity_value_usd as number,
+                currentValue: offer.input_token_data.token_amount as number,
               };
+
+              // const valueInfo = {
+              //   previousValue:
+              //     !!previousHighestOffers &&
+              //     offerIndex < previousHighestOffers.ip_offers.length
+              //       ? (previousHighestOffers?.ip_offers[offerIndex]
+              //           .annual_change_ratio ?? 0)
+              //       : 0,
+              //   currentValue: offer.annual_change_ratio as number,
+              // };
 
               const valueInfo = {
                 previousValue:
                   !!previousHighestOffers &&
                   offerIndex < previousHighestOffers.ip_offers.length
-                    ? (previousHighestOffers?.ip_offers[offerIndex]
-                        .annual_change_ratio ?? 0)
+                    ? previousHighestOffers?.ip_offers[offerIndex]
+                        .tokens_data &&
+                      previousHighestOffers?.ip_offers[offerIndex].tokens_data
+                        .length > 0
+                      ? previousHighestOffers?.ip_offers[offerIndex]
+                          .tokens_data[0].token_amount
+                      : 0
                     : 0,
-                currentValue: offer.annual_change_ratio as number,
+                currentValue:
+                  offer.tokens_data && offer.tokens_data.length > 0
+                    ? offer.tokens_data[0].token_amount
+                    : 0,
               };
 
               return (
@@ -218,6 +279,7 @@ export const OfferList = React.forwardRef<
                   indexKey={INDEX_KEY}
                   keyInfo={keyInfo}
                   valueInfo={valueInfo}
+                  offer={offer}
                 />
               );
             })
@@ -254,20 +316,37 @@ export const OfferList = React.forwardRef<
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
                   ? (previousHighestOffers?.ap_offers[offerIndex]
-                      .quantity_value_usd ?? 0)
+                      .input_token_data.token_amount ?? 0)
                   : 0,
 
-              currentValue: offer.quantity_value_usd as number,
+              currentValue: offer.input_token_data.token_amount as number,
             };
+
+            // const valueInfo = {
+            //   previousValue:
+            //     !!previousHighestOffers &&
+            //     offerIndex < previousHighestOffers.ap_offers.length
+            //       ? (previousHighestOffers?.ap_offers[offerIndex]
+            //           .annual_change_ratio ?? 0)
+            //       : 0,
+            //   currentValue: offer.annual_change_ratio as number,
+            // };
 
             const valueInfo = {
               previousValue:
                 !!previousHighestOffers &&
                 offerIndex < previousHighestOffers.ap_offers.length
-                  ? (previousHighestOffers?.ap_offers[offerIndex]
-                      .change_ratio ?? 0)
+                  ? previousHighestOffers?.ap_offers[offerIndex].tokens_data &&
+                    previousHighestOffers?.ap_offers[offerIndex].tokens_data
+                      .length > 0
+                    ? previousHighestOffers?.ap_offers[offerIndex]
+                        .tokens_data[0].token_amount
+                    : 0
                   : 0,
-              currentValue: offer.annual_change_ratio as number,
+              currentValue:
+                offer.tokens_data && offer.tokens_data.length > 0
+                  ? offer.tokens_data[0].token_amount
+                  : 0,
             };
 
             return (
@@ -277,6 +356,7 @@ export const OfferList = React.forwardRef<
                 indexKey={INDEX_KEY}
                 keyInfo={keyInfo}
                 valueInfo={valueInfo}
+                offer={offer}
               />
             );
           })
