@@ -16,6 +16,7 @@ import { FallMotion } from "@/components/animations";
 import { RoycoMarketType } from "@/sdk/market";
 import { EnrichedOfferDataType } from "@/sdk/queries";
 import { MarketUserType } from "@/store";
+import { parseRawAmountToTokenAmount } from "@/sdk/utils";
 
 export const CentralBar = React.forwardRef<
   HTMLDivElement,
@@ -42,21 +43,36 @@ export const CentralBar = React.forwardRef<
          * For Vault, this needs to be calculated
          */}
         {Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
+          // style: "currency",
+          // currency: "USD",
           notation: "compact",
+          useGrouping: true,
           minimumFractionDigits: 2,
           maximumFractionDigits: 8,
-          useGrouping: true,
         }).format(
           marketMetadata.market_type === RoycoMarketType.recipe.id
-            ? (currentMarketData?.quantity_ap_usd ?? 0) +
-                (currentMarketData?.quantity_ip_usd ?? 0)
-            : (currentMarketData?.quantity_ap_usd ?? 0)
+            ? parseRawAmountToTokenAmount(
+                currentMarketData?.quantity_ap ?? "",
+                currentMarketData?.input_token_data.decimals ?? 0
+              ) +
+                parseRawAmountToTokenAmount(
+                  currentMarketData?.quantity_ip ?? "",
+                  currentMarketData?.input_token_data.decimals ?? 0
+                )
+            : parseRawAmountToTokenAmount(
+                currentMarketData?.quantity_ap ?? "",
+                currentMarketData?.input_token_data.decimals ?? 0
+              )
+          // marketMetadata.market_type === RoycoMarketType.recipe.id
+          //   ? (currentMarketData?.quantity_ap_usd ?? 0) +
+          //       (currentMarketData?.quantity_ip_usd ?? 0)
+          //   : (currentMarketData?.quantity_ap_usd ?? 0)
         )}
       </SecondaryLabel>
 
-      <SecondaryLabel className="font-medium text-black">MARKET</SecondaryLabel>
+      <SecondaryLabel className="font-medium text-black">
+        OPEN INTEREST
+      </SecondaryLabel>
     </div>
   );
 });
@@ -118,20 +134,28 @@ const OfferListRow = React.forwardRef<
               // currency: "USD",
             }}
           />
-          {/**
-           * @note Hidden for now
-           */}
-          {/* {!!offer && (
-            <div className="ml-2">
+
+          {!!offer && (
+            <div className="ml-1">
               <TokenDisplayer
                 size={4}
-                tokens={offer?.tokens_data ?? []}
+                tokens={[offer?.input_token_data] ?? []}
                 symbols={false}
               />
             </div>
-          )} */}
+          )}
         </SecondaryLabel>
         <SecondaryLabel>
+          {!!offer && (
+            <div className="mr-0">
+              <TokenDisplayer
+                size={4}
+                tokens={[offer?.tokens_data[0]] ?? []}
+                symbols={false}
+              />
+            </div>
+          )}
+
           <SpringNumber
             previousValue={valueInfo.previousValue}
             currentValue={valueInfo.currentValue}
