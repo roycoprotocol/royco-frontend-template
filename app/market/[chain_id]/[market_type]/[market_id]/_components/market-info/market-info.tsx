@@ -438,7 +438,7 @@ export const MarketInfo = React.forwardRef<
                    */}
                   {
                     <InfoCard.Row className={INFO_ROW_CLASSES}>
-                      <InfoCard.Row.Key>Total Incentives</InfoCard.Row.Key>
+                      <InfoCard.Row.Key>Incentives Remaining</InfoCard.Row.Key>
                       <InfoCard.Row.Value>
                         {/* <TokenDisplayer
                     size={4}
@@ -458,7 +458,11 @@ export const MarketInfo = React.forwardRef<
                           currentMarketData.total_incentive_amounts_usd ?? 0
                         )}
 
-                        <InfoTip {...INFO_TIP_PROPS}>Incentives</InfoTip>
+                        <InfoTip {...INFO_TIP_PROPS}>
+                          {marketMetadata.market_type === MarketType.recipe.id
+                            ? "Remaining incentives in all IP offers"
+                            : "Remaining incentives in a present or future campaign"}
+                        </InfoTip>
                       </InfoCard.Row.Value>
                     </InfoCard.Row>
                   }
@@ -477,7 +481,9 @@ export const MarketInfo = React.forwardRef<
                           useGrouping: true,
                         }).format(currentMarketData.locked_quantity_usd ?? 0)}
                         <InfoTip {...INFO_TIP_PROPS}>
-                          Total Value Locked
+                          {marketMetadata.market_type === MarketType.recipe.id
+                            ? "Value of all input tokens locked inside weiroll wallets"
+                            : "Value of all input tokens deposited in underlying vault through Royco"}
                         </InfoTip>
                       </InfoCard.Row.Value>
                     </InfoCard.Row>
