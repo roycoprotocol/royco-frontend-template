@@ -45,7 +45,6 @@ const InputOTPSlot = React.forwardRef<
         isActive && "z-10 ring-1 ring-slate-950 dark:ring-slate-300",
         className
       )}
-      data-input-type="text"
       {...props}
     >
       {char}
