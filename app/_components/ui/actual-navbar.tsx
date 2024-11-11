@@ -17,6 +17,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 const NavbarLinks = [
   // {
@@ -30,12 +35,6 @@ const NavbarLinks = [
     label: "Explore",
     link: "/",
     target: "_self",
-  },
-  {
-    id: "blog",
-    label: "Blog",
-    link: "https://paragraph.xyz/@royco",
-    target: "_blank",
   },
   {
     id: "docs",
@@ -61,6 +60,12 @@ const NavbarLinks = [
         target: "_blank",
       },
     ],
+  },
+  {
+    id: "blog",
+    label: "Blog",
+    link: "https://paragraph.xyz/@royco",
+    target: "_blank",
   },
 ];
 
@@ -227,9 +232,9 @@ export const ActualNavbar = React.forwardRef<
                 {label}
               </a>
             ) : (
-              <DropdownMenu key={`navbar-link:learn:${BASE_KEY}`}>
-                <DropdownMenuTrigger>{label}</DropdownMenuTrigger>
-                <DropdownMenuContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
+              <Tooltip>
+                <TooltipTrigger>{label}</TooltipTrigger>
+                <TooltipContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
                   {items?.map((item) => (
                     <a
                       key={`navbar-link:learn:${BASE_KEY}-${item.id}`}
@@ -237,13 +242,13 @@ export const ActualNavbar = React.forwardRef<
                       target={item.target}
                       rel="noopener noreferrer"
                     >
-                      <DropdownMenuLabel className="rounded px-4 py-2 transition-all hover:bg-gray-200">
+                      <DropdownMenuLabel className="rounded px-4 py-2 transition-all hover:bg-focus">
                         {item.label}
                       </DropdownMenuLabel>
                     </a>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </div>
