@@ -25,12 +25,12 @@ const NavbarLinks = [
   //   link: "/create",
   //   target: "_self",
   // },
-  // {
-  //   id: "explore",
-  //   label: "Explore",
-  //   link: "/explore",
-  //   target: "_self",
-  // },
+  {
+    id: "explore",
+    label: "Explore",
+    link: "/",
+    target: "_self",
+  },
   {
     id: "blog",
     label: "Blog",
