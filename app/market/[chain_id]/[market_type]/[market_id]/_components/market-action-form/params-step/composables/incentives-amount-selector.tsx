@@ -49,17 +49,27 @@ export const IncentivesAmountSelector = React.forwardRef<
                 marketActionForm.watch("incentive_tokens");
 
               if (incentiveTokens.some((t) => t.id === token.id)) {
-                marketActionForm.setValue(
-                  "incentive_tokens",
-                  incentiveTokens.filter((t) => t.id !== token.id)
-                );
+                marketActionForm.setValue("incentive_tokens", []);
               } else {
-                marketActionForm.setValue("incentive_tokens", [
-                  ...incentiveTokens,
-                  token,
-                ]);
+                marketActionForm.setValue("incentive_tokens", [token]);
               }
             }}
+            // onSelect={(token) => {
+            //   const incentiveTokens =
+            //     marketActionForm.watch("incentive_tokens");
+
+            //   if (incentiveTokens.some((t) => t.id === token.id)) {
+            //     marketActionForm.setValue(
+            //       "incentive_tokens",
+            //       incentiveTokens.filter((t) => t.id !== token.id)
+            //     );
+            //   } else {
+            //     marketActionForm.setValue("incentive_tokens", [
+            //       ...incentiveTokens,
+            //       token,
+            //     ]);
+            //   }
+            // }}
             className="mt-2"
           />
         </SlideUpWrapper>

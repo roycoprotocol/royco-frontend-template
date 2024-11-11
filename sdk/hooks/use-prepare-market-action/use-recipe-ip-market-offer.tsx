@@ -264,6 +264,7 @@ export const useRecipeIPMarketOffer = ({
   custom_token_data,
   frontend_fee_recipient,
   offer_validation_url,
+  incentive_asset_ids,
   enabled,
 }: {
   account: string | undefined;
@@ -278,6 +279,7 @@ export const useRecipeIPMarketOffer = ({
   }>;
   frontend_fee_recipient?: string;
   offer_validation_url: string;
+  incentive_asset_ids?: string[];
   enabled?: boolean;
 }) => {
   let preContractOptions: TransactionOptionsType[] = [];
@@ -310,6 +312,7 @@ export const useRecipeIPMarketOffer = ({
     market_id,
     offer_side: RoycoMarketUserType.ap.value,
     quantity: quantity ?? "0",
+    incentive_ids: incentive_asset_ids,
     enabled: isValid.status,
   });
 

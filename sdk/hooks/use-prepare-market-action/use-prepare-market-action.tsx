@@ -78,6 +78,7 @@ export const usePrepareMarketAction = ({
   vault_incentive_action,
   offer_validation_url,
   frontend_fee_recipient,
+  incentive_asset_ids,
 }: {
   chain_id: number;
   market_id: string;
@@ -102,6 +103,7 @@ export const usePrepareMarketAction = ({
   vault_incentive_action?: TypedRoycoMarketVaultIncentiveAction;
   offer_validation_url: string;
   frontend_fee_recipient?: string;
+  incentive_asset_ids?: string[];
 }) => {
   const action_type = `${market_type}-${user_type}-${offer_type}`;
 
@@ -124,6 +126,7 @@ export const usePrepareMarketAction = ({
     quantity,
     custom_token_data,
     offer_validation_url,
+    incentive_asset_ids,
     enabled: action_type === PrepareMarketActionType.RecipeIPMarketOffer,
   });
 

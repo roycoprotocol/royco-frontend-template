@@ -50,6 +50,11 @@ export const isRecipeIPLimitOfferValid = ({
       throw new Error("Quantity must be greater than 0");
     }
 
+    // Check quantity is greater than 10^6 wei
+    if (BigNumber.from(quantity).lte(BigNumber.from("1000000"))) {
+      throw new Error("Quantity must be greater than 10^6 wei");
+    }
+
     // Check token IDs
     if (!token_ids) {
       throw new Error("Incentive ids are missing");

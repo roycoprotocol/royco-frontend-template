@@ -34,6 +34,20 @@ export const MarketActionFormSchema = z.object({
     })
   ),
 
+  incentive_assets: z
+    .array(
+      z.object({
+        id: z.string(),
+        chain_id: z.number(),
+        contract_address: z.string(),
+        name: z.string(),
+        symbol: z.string(),
+        image: z.string(),
+        decimals: z.number(),
+      })
+    )
+    .optional(),
+
   expiry: z.date().optional(),
   no_expiry: z.boolean().default(false),
 });
