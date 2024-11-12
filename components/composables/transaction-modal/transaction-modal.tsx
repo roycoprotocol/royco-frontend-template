@@ -298,7 +298,7 @@ export const TransactionModal = React.forwardRef<
                   // @ts-ignore
                   writeContract({
                     ...currentTransaction,
-                    // __mode: "prepared",
+                    __mode: "prepared",
                   });
                 }
               } catch (error) {

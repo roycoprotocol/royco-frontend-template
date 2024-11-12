@@ -114,9 +114,10 @@ export const useEnrichedAccountBalanceVault = ({
 
         if (!!token_quote) {
           let result = propsReadContracts.data[i].result as BigNumber;
-          result = BigNumber.from(result.toString())
-            .mul(BigNumber.from(10).pow(15))
-            .div(BigNumber.from(10).pow(18));
+          result = BigNumber.from(result.toString());
+
+          // .mul(BigNumber.from(10).pow(15))
+          // .div(BigNumber.from(10).pow(18));
 
           const token_id = token_ids[i];
           const token_data = getSupportedToken(token_id);
