@@ -11829,4 +11829,27 @@ export const TokenMap1 = {
       "https://assets-cdn.trustwallet.com/blockchains/ethereum/assets/0xFFE02ee4C69eDf1b340fCaD64fbd6b37a7b9e265/logo.png",
     decimals: 8,
   },
+
+  "1-0x4c9edd5852cd905f086c759e8383e09bff1e68b3": {
+    id: "1-0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+    chain_id: 1,
+    contract_address: "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+    name: "Bridged USDC",
+    symbol: "USDC.e",
+    image:
+      "https://assets-cdn.trustwallet.com/blockchains/arbitrum/assets/0xaf88d065e77c8cC2239327C5EDb3A432268e5831/logo.png",
+    decimals: 6,
+  },
+
+  "1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+    source: "coinmarketcap",
+    search_id: 12409,
+    id: "1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+    chain_id: 1,
+    contract_address: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+    name: "Wrapped stETH",
+    symbol: "wstETH",
+    image: "https://basescan.org/token/images/wsteth3_32.png",
+    decimals: 18,
+  },
 };

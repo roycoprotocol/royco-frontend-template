@@ -48,6 +48,12 @@ const NavbarLinks = [
     link: null,
     items: [
       {
+        id: "blog",
+        label: "Blog",
+        link: "https://paragraph.xyz/@royco",
+        target: "_blank",
+      },
+      {
         id: "twitter",
         label: "Twitter",
         link: "https://x.com/roycoprotocol",
@@ -61,12 +67,12 @@ const NavbarLinks = [
       },
     ],
   },
-  {
-    id: "blog",
-    label: "Blog",
-    link: "https://paragraph.xyz/@royco",
-    target: "_blank",
-  },
+  // {
+  //   id: "blog",
+  //   label: "Blog",
+  //   link: "https://paragraph.xyz/@royco",
+  //   target: "_blank",
+  // },
 ];
 
 export const ActualNavbar = React.forwardRef<

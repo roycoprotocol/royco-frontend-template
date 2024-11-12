@@ -500,4 +500,37 @@ export const TokenMap42161 = {
     decimals: 18,
     type: "point",
   },
+
+  "42161-0x912ce59144191c1204e64559fe8253a0e49e6548": {
+    search_id: 11841,
+    id: "42161-0x912ce59144191c1204e64559fe8253a0e49e6548",
+    chain_id: 42161,
+    contract_address: "0x912ce59144191c1204e64559fe8253a0e49e6548",
+    name: "Arbitrum",
+    symbol: "ARB",
+    image: "https://arbiscan.io/token/images/arbitrumone2_32_new.png",
+    decimals: 18,
+  },
+  "42161-0x5979d7b546e38e414f7e9822514be443a4800529": {
+    source: "coinmarketcap",
+    search_id: 12409,
+    id: "42161-0x5979d7b546e38e414f7e9822514be443a4800529",
+    chain_id: 42161,
+    contract_address: "0x5979d7b546e38e414f7e9822514be443a4800529",
+    name: "Wrapped stETH",
+    symbol: "wstETH",
+    image: "https://basescan.org/token/images/wsteth3_32.png",
+    decimals: 18,
+  },
+
+  "42161-0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+    id: "42161-0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+    chain_id: 42161,
+    contract_address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+    name: "Bridged USDC",
+    symbol: "USDC.e",
+    image:
+      "https://assets-cdn.trustwallet.com/blockchains/arbitrum/assets/0xaf88d065e77c8cC2239327C5EDb3A432268e5831/logo.png",
+    decimals: 6,
+  },
 };
