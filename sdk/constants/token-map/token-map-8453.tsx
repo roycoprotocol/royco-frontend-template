@@ -203,4 +203,29 @@ export const TokenMap8453 = {
       "https://assets-cdn.trustwallet.com/blockchains/base/assets/0xFd4330b0312fdEEC6d4225075b82E00493FF2e3f/logo.png",
     decimals: 18,
   },
+
+  "8453-0x04c0599ae5a44757c0af6f9ec3b93da8976c150a": {
+    source: "coinmarketcap",
+    search_id: 2396,
+    id: "8453-0x04c0599ae5a44757c0af6f9ec3b93da8976c150a",
+    chain_id: 8453,
+    contract_address: "0x04c0599ae5a44757c0af6f9ec3b93da8976c150a",
+    name: "Wrapped Ether",
+    symbol: "weETH",
+    image:
+      "https://assets-cdn.trustwallet.com/blockchains/base/assets/0x4200000000000000000000000000000000000006/logo.png",
+    decimals: 18,
+  },
+
+  "8453-0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452": {
+    source: "coinmarketcap",
+    search_id: 12409,
+    id: "8453-0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452",
+    chain_id: 8453,
+    contract_address: "0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452",
+    name: "Wrapped stETH",
+    symbol: "wstETH",
+    image: "https://basescan.org/token/images/wsteth3_32.png",
+    decimals: 18,
+  },
 };
