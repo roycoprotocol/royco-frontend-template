@@ -58,7 +58,7 @@ const InfoValueElementClone = React.forwardRef<
             ? `N/D`
             : Intl.NumberFormat("en-US", {
                 style: "percent",
-                notation: "compact",
+                notation: "standard",
                 useGrouping: true,
                 minimumFractionDigits: 0, // Ensures at least 2 decimal places
                 maximumFractionDigits: 8, // Limits to exactly 2 decimal places
@@ -67,7 +67,7 @@ const InfoValueElementClone = React.forwardRef<
 
         <TertiaryLabel className={cn("", className)}>
           {Intl.NumberFormat("en-US", {
-            notation: "compact",
+            notation: "standard",
             useGrouping: true,
             minimumFractionDigits: 0, // Ensures at least 2 decimal places
             maximumFractionDigits: 8, // Limits to exactly 2 decimal places
@@ -81,7 +81,7 @@ const InfoValueElementClone = React.forwardRef<
           {Intl.NumberFormat("en-US", {
             style: "currency",
             currency: "USD",
-            notation: "compact",
+            notation: "standard",
             useGrouping: true,
             minimumFractionDigits: 0, // Ensures at least 2 decimal places
             maximumFractionDigits: 8, // Limits to exactly 2 decimal places
@@ -242,7 +242,7 @@ export const IncentiveInfo = React.forwardRef<
                 currentValue={currentNetAPR ?? 0}
                 numberFormatOptions={{
                   style: "percent",
-                  notation: "compact",
+                  notation: "standard",
                   useGrouping: true,
                   minimumFractionDigits: 0, // Ensures at least 2 decimal places
                   maximumFractionDigits: 8, // Limits to exactly 2 decimal places

@@ -84,7 +84,7 @@ export const SimulationViewer = React.forwardRef<
                       "en-US",
                       {
                         style: "decimal",
-                        notation: "compact",
+                        notation: "standard",
                         useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 8,
@@ -98,7 +98,7 @@ export const SimulationViewer = React.forwardRef<
                     {Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "USD",
-                      notation: "compact",
+                      notation: "standard",
                       useGrouping: true,
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 8,

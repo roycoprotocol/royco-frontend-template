@@ -448,7 +448,7 @@ export const MarketInfo = React.forwardRef<
                         {Intl.NumberFormat("en-US", {
                           style: "currency",
                           currency: "USD",
-                          notation: "compact",
+                          notation: "standard",
                           useGrouping: true,
                         }).format(
                           currentMarketData.total_incentive_amounts_usd ?? 0
@@ -473,7 +473,7 @@ export const MarketInfo = React.forwardRef<
                         {Intl.NumberFormat("en-US", {
                           style: "currency",
                           currency: "USD",
-                          notation: "compact",
+                          notation: "standard",
                           useGrouping: true,
                         }).format(currentMarketData.locked_quantity_usd ?? 0)}
                         <InfoTip {...INFO_TIP_PROPS}>
@@ -560,7 +560,7 @@ export const MarketInfo = React.forwardRef<
                   )}
 
                   <InfoCard.Row className={INFO_ROW_CLASSES}>
-                    <InfoCard.Row.Key>Market Deployer</InfoCard.Row.Key>
+                    <InfoCard.Row.Key>Created By</InfoCard.Row.Key>
 
                     <InfoCard.Row.Value>
                       <Link

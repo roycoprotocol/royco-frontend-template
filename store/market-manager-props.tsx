@@ -231,7 +231,7 @@ export const MarketSteps: Record<
   },
   preview: {
     id: "preview",
-    label: "PREVIEW",
+    label: "REVIEW",
     description: "Select the action you want to perform.",
   },
   transaction: {

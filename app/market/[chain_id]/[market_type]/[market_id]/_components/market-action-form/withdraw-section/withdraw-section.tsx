@@ -45,7 +45,7 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
         <SecondaryLabel>
           {Intl.NumberFormat("en-US", {
             style: "decimal",
-            notation: "compact",
+            notation: "standard",
             useGrouping: true,
             minimumFractionDigits: 2,
             maximumFractionDigits: 8,
@@ -79,7 +79,7 @@ export const WithdrawInputTokenRow = React.forwardRef<
         <SecondaryLabel className="h-4">
           {Intl.NumberFormat("en-US", {
             style: "decimal",
-            notation: "compact",
+            notation: "standard",
             useGrouping: true,
             minimumFractionDigits: 2,
             maximumFractionDigits: 8,
@@ -207,7 +207,7 @@ export const WithdrawSection = React.forwardRef<
                             {Intl.NumberFormat("en-US", {
                               style: "currency",
                               currency: "USD",
-                              notation: "compact",
+                              notation: "standard",
                               useGrouping: true,
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 8,

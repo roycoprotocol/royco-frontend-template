@@ -134,7 +134,7 @@ export const InputAmountWrapper = React.forwardRef<
                 )}
                 numberFormatOptions={{
                   style: "decimal",
-                  notation: "compact",
+                  notation: "standard",
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 8,
                   useGrouping: true,
@@ -258,7 +258,7 @@ export const InputAmountWrapper = React.forwardRef<
           <div>
             {userType === MarketUserType.ap.id
               ? Intl.NumberFormat("en-US", {
-                  notation: "compact",
+                  notation: "standard",
                   useGrouping: true,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 8,
@@ -269,7 +269,7 @@ export const InputAmountWrapper = React.forwardRef<
                   )
                 )
               : Intl.NumberFormat("en-US", {
-                  notation: "compact",
+                  notation: "standard",
                   useGrouping: true,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 8,

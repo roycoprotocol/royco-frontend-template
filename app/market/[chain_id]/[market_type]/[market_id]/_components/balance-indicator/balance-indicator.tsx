@@ -144,7 +144,7 @@ export const BalanceIndicator = React.forwardRef<
             numberFormatOptions={{
               style: "currency",
               currency: "USD",
-              notation: "compact",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,
@@ -195,7 +195,7 @@ export const BalanceIndicator = React.forwardRef<
                   }
                   numberFormatOptions={{
                     style: "decimal",
-                    notation: "compact",
+                    notation: "standard",
                     useGrouping: true,
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 8,
@@ -264,7 +264,7 @@ export const BalanceIndicator = React.forwardRef<
                         currentValue={incentive.token_amount}
                         numberFormatOptions={{
                           style: "decimal",
-                          notation: "compact",
+                          notation: "standard",
                           useGrouping: true,
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 8,

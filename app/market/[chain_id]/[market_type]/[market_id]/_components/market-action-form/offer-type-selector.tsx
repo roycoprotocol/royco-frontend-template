@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { FormInputLabel } from "@/components/composables";
-import { MarketOfferType } from "@/store";
+import { MarketOfferType, MarketUserType } from "@/store";
 import { useMarketManager } from "@/store";
 import {
   Select,
@@ -16,7 +16,8 @@ export const OfferTypeSelector = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { offerType, setOfferType } = useMarketManager();
+  const { offerType, setOfferType, userType } = useMarketManager();
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <FormInputLabel
@@ -47,7 +48,10 @@ export const OfferTypeSelector = React.forwardRef<
               contentClassName="text-left"
             >
               {MarketOfferType[offerType]
-                ? MarketOfferType[offerType].label
+                ? userType === MarketUserType.ip.id &&
+                  offerType === MarketOfferType.market.id
+                  ? "Fill AP Offers"
+                  : MarketOfferType[offerType].label
                 : "Select Offer Type"}
             </FallMotion>
           </div>
@@ -56,7 +60,10 @@ export const OfferTypeSelector = React.forwardRef<
         <SelectContent className="w-full">
           {Object.values(MarketOfferType).map((option) => (
             <SelectItem className="text-sm" key={option.id} value={option.id}>
-              {option.label}
+              {userType === MarketUserType.ip.id &&
+              option.id === MarketOfferType.market.id
+                ? "Fill AP Offers"
+                : option.label}
             </SelectItem>
           ))}
         </SelectContent>

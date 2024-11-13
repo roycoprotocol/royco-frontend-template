@@ -45,7 +45,7 @@ export const CentralBar = React.forwardRef<
         {Intl.NumberFormat("en-US", {
           // style: "currency",
           // currency: "USD",
-          notation: "compact",
+          notation: "standard",
           useGrouping: true,
           minimumFractionDigits: 2,
           maximumFractionDigits: 8,
@@ -127,7 +127,7 @@ const OfferListRow = React.forwardRef<
             currentValue={keyInfo.currentValue}
             numberFormatOptions={{
               // style: "currency",
-              notation: "compact",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,
@@ -161,7 +161,7 @@ const OfferListRow = React.forwardRef<
             currentValue={valueInfo.currentValue}
             numberFormatOptions={{
               // style: "percent",
-              notation: "compact",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,

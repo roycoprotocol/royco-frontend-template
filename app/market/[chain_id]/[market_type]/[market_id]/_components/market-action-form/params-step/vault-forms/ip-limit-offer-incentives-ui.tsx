@@ -232,7 +232,7 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                        * Start Timestamp Selector
                        */}
                       <TimestampSelector
-                        currentValue={token.start_timestamp}
+                        currentValue={token.start_timestamp || new Date()}
                         setCurrentValue={(date) => {
                           marketActionForm.setValue(
                             "incentive_tokens",
@@ -266,7 +266,7 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                        * End Timestamp Selector
                        */}
                       <TimestampSelector
-                        currentValue={token.end_timestamp}
+                        currentValue={token.end_timestamp || new Date()}
                         setCurrentValue={(date) => {
                           marketActionForm.setValue(
                             "incentive_tokens",

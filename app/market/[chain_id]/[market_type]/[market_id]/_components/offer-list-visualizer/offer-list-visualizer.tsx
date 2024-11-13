@@ -99,6 +99,9 @@ export const OfferListVisualizer = React.forwardRef<
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ap_offer.color,
+            offer_side: offer.offer_side,
+            quantity: offer.quantity,
+            input_token_data: offer.input_token_data,
           };
         }),
         ...currentHighestOffers.ip_offers.map((offer) => {
@@ -106,6 +109,9 @@ export const OfferListVisualizer = React.forwardRef<
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ip_offer.color,
+            offer_side: offer.offer_side,
+            quantity: offer.quantity,
+            input_token_data: offer.input_token_data,
           };
         }),
       ] // Sort the data by `change_ratio` (X-axis key)
@@ -190,7 +196,7 @@ export const OfferListVisualizer = React.forwardRef<
                     style: "currency",
                     currency: "USD",
                     useGrouping: true,
-                    notation: "compact",
+                    notation: "standard",
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 8,
                   }).format(value as number);
