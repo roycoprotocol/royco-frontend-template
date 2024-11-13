@@ -99,7 +99,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
                         style: "decimal",
-                        notation: "compact",
+                        notation: "standard",
                         useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 8,
@@ -153,7 +153,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-              notation: "compact",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,
@@ -163,7 +163,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
           <SecondaryLabel className="text-tertiary">
             {Intl.NumberFormat("en-US", {
               style: "decimal",
-              notation: "compact",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,

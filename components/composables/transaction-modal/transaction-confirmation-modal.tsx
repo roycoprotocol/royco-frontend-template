@@ -33,19 +33,26 @@ export const TransactionConfirmationModal = React.forwardRef<
           {...otherProps}
         >
           <DialogHeader>
-            <DialogTitle>Confirm Transaction</DialogTitle>
+            <DialogTitle>Confirm Offer & Action</DialogTitle>
             <DialogDescription>
-              Please confirm that you want to proceed with this transaction.
-              This action cannot be undone.
+              Please confirm that you have reviewed the Offer & Market Action(s)
+              and want to proceed. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
+
           <DialogClose asChild>
             <Button
               className="mt-5 h-9 text-sm"
               onClick={onConfirm}
               type="button"
             >
-              <div className="h-5">Confirm</div>
+              <div className="h-5">Confirm, I have reviewed</div>
+            </Button>
+          </DialogClose>
+
+          <DialogClose asChild>
+            <Button className="h-9 bg-error text-sm" type="button">
+              <div className="h-5">Go back</div>
             </Button>
           </DialogClose>
         </DialogContent>

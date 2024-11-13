@@ -60,7 +60,7 @@ export const TransactionRow = React.forwardRef<
                         <span className="leading-5">
                           -
                           {`${new Intl.NumberFormat("en-US", {
-                            notation: "compact",
+                            notation: "standard",
                             useGrouping: true,
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 8,
@@ -82,7 +82,7 @@ export const TransactionRow = React.forwardRef<
                         <span className="leading-5">
                           +
                           {`${new Intl.NumberFormat("en-US", {
-                            notation: "compact",
+                            notation: "standard",
                             useGrouping: true,
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 8,

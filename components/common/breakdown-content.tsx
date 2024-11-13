@@ -188,7 +188,7 @@ export const IncentiveBreakdown = ({
                         currency: incentives_info.token_amount_usd
                           ? "USD"
                           : undefined,
-                        notation: "compact",
+                        notation: "standard",
                         useGrouping: true,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 8,
