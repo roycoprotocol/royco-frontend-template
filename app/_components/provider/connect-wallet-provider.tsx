@@ -29,16 +29,22 @@ export const ConnectWalletProvider = ({
   children: ReactNode;
 }) => {
   const { open } = useWeb3Modal();
-  const { isConnected } = useAccount();
+  const { isConnected, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const [isConnectWalletAlertOpen, setIsConnectWalletAlertOpen] =
     useState(false);
 
   useEffect(() => {
+    if (isConnected && !connector) {
+      disconnect();
+    }
+  }, [isConnected, connector, disconnect]);
+
+  useEffect(() => {
     const checkRestriction = async () => {
       if (isConnected && process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
         try {
-          const response = await fetch("http://ip-api.com/json/");
+          const response = await fetch("https://ip-api.com/json/");
           const data = await response.json();
 
           if (

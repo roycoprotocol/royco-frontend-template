@@ -40,7 +40,8 @@ export const config = defaultWagmiConfig({
   metadata,
   ssr: true,
   storage: createStorage({
-    storage: cookieStorage,
+    storage:
+      typeof window !== "undefined" ? window.localStorage : cookieStorage,
   }),
   batch: {
     multicall: true,
