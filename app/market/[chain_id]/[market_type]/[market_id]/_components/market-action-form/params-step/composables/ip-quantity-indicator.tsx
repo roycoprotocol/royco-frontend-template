@@ -7,6 +7,7 @@ import { parseRawAmount, parseRawAmountToTokenAmount } from "@/sdk/utils";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { z } from "zod";
 import { InfoIcon } from "lucide-react";
+import { useMarketManager } from "@/store";
 
 export const IPQuantityIndicator = React.forwardRef<
   HTMLDivElement,
@@ -15,12 +16,15 @@ export const IPQuantityIndicator = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { currentMarketData } = useActiveMarket();
+  const { userType, offerType, marketStep } = useMarketManager();
 
   return (
     <div ref={ref} className={cn("flex flex-col", className)} {...props}>
       {parseRawAmount(marketActionForm.watch("quantity.raw_amount")) !==
         "0" && (
-        <SlideUpWrapper>
+        <SlideUpWrapper
+          key={`ip-quantity-indicator:${userType}:${offerType}:${marketStep}`}
+        >
           <div className="mt-5 flex flex-col gap-1 rounded-xl border border-divider bg-focus px-3 py-2 text-sm text-secondary">
             <div className="flex flex-row items-center gap-1">
               <InfoIcon className="size-4 text-inherit" />
