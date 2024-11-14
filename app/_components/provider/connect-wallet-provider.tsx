@@ -44,7 +44,7 @@ export const ConnectWalletProvider = ({
     const checkRestriction = async () => {
       if (isConnected && process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
         try {
-          const response = await fetch("http://ip-api.com/json/");
+          const response = await fetch("https://ip-api.com/json/");
           const data = await response.json();
 
           if (
