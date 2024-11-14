@@ -101,7 +101,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
 
     meta: {
-      className: "min-w-60 shrink-0",
+      className: "min-w-72 shrink-0",
     },
     cell: (props: any) => {
       return (
@@ -111,11 +111,17 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             props.column.columnDef.meta.className,
             props.view === "list" && "body-2 text-black",
             props.view === "grid" &&
-              "body-1 overflow-hidden truncate text-ellipsis whitespace-nowrap text-black",
+              "body-1 w-fit overflow-hidden truncate text-ellipsis whitespace-nowrap text-black",
             "flex flex-row items-center gap-2"
           )}
         >
-          <div className="max-w-44 overflow-hidden truncate text-ellipsis">
+          <div
+            className={cn(
+              "w-fit overflow-hidden truncate text-ellipsis",
+              props.view === "list" && "max-w-52",
+              props.view === "grid" && "max-w-60"
+            )}
+          >
             {props.row.original.name.trim()}
           </div>
 
