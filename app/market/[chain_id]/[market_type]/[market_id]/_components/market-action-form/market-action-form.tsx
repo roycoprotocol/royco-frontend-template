@@ -366,12 +366,13 @@ export const MarketActionForm = React.forwardRef<
               {nextLabel()}
             </Button>
 
-            {marketStep === MarketSteps.preview.id && (
-              <p className="mt-5 text-center text-sm text-tertiary">
-                Royco takes a fee only when an offer is filled. See more on the
-                fee breakdown here
-              </p>
-            )}
+            {userType === MarketUserType.ip.id &&
+              marketStep === MarketSteps.preview.id && (
+                <p className="mt-5 text-center text-sm text-tertiary">
+                  Royco takes a fee only when an offer is filled. See more on
+                  fee breakdown here
+                </p>
+              )}
           </div>
 
           //   </motion.div>
