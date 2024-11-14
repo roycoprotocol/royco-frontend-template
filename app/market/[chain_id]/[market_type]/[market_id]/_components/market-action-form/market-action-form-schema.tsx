@@ -21,6 +21,7 @@ export const MarketActionFormSchema = z.object({
       decimals: z.number(),
       amount: z.string().optional(),
       raw_amount: z.string().optional(),
+      price: z.number().optional(),
 
       start_timestamp: z.date().optional(),
       end_timestamp: z.date().optional(),
