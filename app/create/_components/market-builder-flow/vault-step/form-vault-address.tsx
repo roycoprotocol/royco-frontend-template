@@ -91,7 +91,6 @@ export const FormVaultAddress = React.forwardRef<
                   );
                 }
               }}
-              className=""
               placeholder="Enter Address"
               {...field}
             />
