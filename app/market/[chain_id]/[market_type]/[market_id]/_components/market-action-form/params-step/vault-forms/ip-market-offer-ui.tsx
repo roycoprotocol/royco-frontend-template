@@ -2,9 +2,12 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { useMarketManager } from "@/store";
-import { InputAmountWrapper } from "../composables";
+import { InputAmountWrapper, IPQuantityIndicator } from "../composables";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { UseFormReturn } from "react-hook-form";
+import { BigNumber } from "ethers";
+import { parseRawAmount } from "@/sdk/utils";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const IPMarketOfferUI = React.forwardRef<
   HTMLDivElement,
@@ -20,6 +23,11 @@ export const IPMarketOfferUI = React.forwardRef<
        * Quantity Selector for IP
        */}
       <InputAmountWrapper marketActionForm={marketActionForm} delay={0.3} />
+
+      {/**
+       * Grey Box for IP
+       */}
+      <IPQuantityIndicator marketActionForm={marketActionForm} />
     </div>
   );
 });
