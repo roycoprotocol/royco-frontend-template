@@ -11834,11 +11834,10 @@ export const TokenMap1 = {
     id: "1-0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
     chain_id: 1,
     contract_address: "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-    name: "Bridged USDC",
-    symbol: "USDC.e",
-    image:
-      "https://assets-cdn.trustwallet.com/blockchains/arbitrum/assets/0xaf88d065e77c8cC2239327C5EDb3A432268e5831/logo.png",
-    decimals: 6,
+    name: "Ethena USDe",
+    symbol: "USDe",
+    image: "https://s2.coinmarketcap.com/static/img/coins/64x64/29470.png",
+    decimals: 18,
   },
 
   "1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
