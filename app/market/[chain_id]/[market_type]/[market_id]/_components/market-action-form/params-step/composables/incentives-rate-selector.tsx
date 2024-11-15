@@ -190,6 +190,27 @@ export const IncentivesRateSelector = React.forwardRef<
                                     );
 
                                     /**
+                                     * Update price
+                                     */
+                                    marketActionForm.setValue(
+                                      "incentive_tokens",
+                                      marketActionForm
+                                        .watch("incentive_tokens")
+                                        .map((t) =>
+                                          t.id === token.id
+                                            ? {
+                                                ...t,
+                                                price:
+                                                  parseFloat(value) /
+                                                  parseFloat(
+                                                    token.total_supply as string
+                                                  ),
+                                              }
+                                            : t
+                                        )
+                                    );
+
+                                    /**
                                      * Update distribution
                                      */
 
@@ -259,7 +280,95 @@ export const IncentivesRateSelector = React.forwardRef<
                                 <InputAmountSelector
                                   containerClassName="col-span-2"
                                   currentValue={String(token.price || 0)}
-                                  setCurrentValue={(value) => {}}
+                                  setCurrentValue={(value) => {
+                                    /**
+                                     * Set the fdv of the token
+                                     */
+                                    marketActionForm.setValue(
+                                      "incentive_tokens",
+                                      marketActionForm
+                                        .watch("incentive_tokens")
+                                        .map((t) =>
+                                          t.id === token.id
+                                            ? { ...t, price: parseFloat(value) }
+                                            : t
+                                        )
+                                    );
+
+                                    /**
+                                     * Update fdv
+                                     */
+                                    marketActionForm.setValue(
+                                      "incentive_tokens",
+                                      marketActionForm
+                                        .watch("incentive_tokens")
+                                        .map((t) =>
+                                          t.id === token.id
+                                            ? {
+                                                ...t,
+                                                fdv: (
+                                                  parseFloat(value) *
+                                                  parseFloat(
+                                                    token.total_supply as string
+                                                  )
+                                                ).toString(),
+                                              }
+                                            : t
+                                        )
+                                    );
+
+                                    /**
+                                     * Update distribution
+                                     */
+                                    let distribution = 0;
+
+                                    try {
+                                      let aip =
+                                        parseFloat(token.aip ?? "0") / 100;
+                                      let incentive_token_fdv =
+                                        parseFloat(value) *
+                                        parseFloat(
+                                          token.total_supply as string
+                                        );
+                                      let input_token_amount = parseFloat(
+                                        marketActionForm.watch(
+                                          "quantity.amount"
+                                        ) ?? "0"
+                                      );
+                                      let input_token_price =
+                                        currentMarketData?.input_token_price ??
+                                        0;
+                                      let incentive_token_total_supply =
+                                        parseFloat(token.total_supply ?? "0");
+
+                                      distribution =
+                                        (aip *
+                                          input_token_amount *
+                                          input_token_price *
+                                          incentive_token_total_supply) /
+                                        incentive_token_fdv;
+                                    } catch (err) {}
+
+                                    /**
+                                     * Set new distribution
+                                     */
+                                    if (!isNaN(distribution)) {
+                                      marketActionForm.setValue(
+                                        "incentive_tokens",
+                                        marketActionForm
+                                          .watch("incentive_tokens")
+                                          .map((t) =>
+                                            t.id === token.id
+                                              ? {
+                                                  ...t,
+                                                  distribution:
+                                                    distribution.toString(),
+                                                }
+                                              : t
+                                          )
+                                      );
+                                    }
+                                  }}
                                   Suffix={() => {
                                     return (
                                       <SecondaryLabel className="shrink-0 font-light text-black">
@@ -474,8 +583,8 @@ export const IncentivesRateSelector = React.forwardRef<
                         placeholder="Incentive / Year"
                       />
 
-                      <TertiaryLabel className="text-secondary">
-                        {`The position will be deposited when there are ${token.distribution} ${token.symbol.toUpperCase()} / YEAR being streamed per ${currentMarketData?.input_token_data.symbol}`}
+                      <TertiaryLabel className="mt-2 text-secondary">
+                        {`The position will be deposited when there are ${token.distribution || 0} ${token.symbol.toUpperCase()} / YEAR being streamed per ${currentMarketData?.input_token_data.symbol}`}
                       </TertiaryLabel>
                     </div>
                   </div>
