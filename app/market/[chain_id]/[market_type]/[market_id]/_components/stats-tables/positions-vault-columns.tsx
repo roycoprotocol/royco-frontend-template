@@ -167,22 +167,6 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       className: "min-w-32",
     },
     cell: (props: any) => {
-      let costText = null;
-      if (props.row.original.unlock_timestamp) {
-        const unlockDate = new Date(
-          parseInt(props.row.original.unlock_timestamp) * 1000
-        );
-        if (props.row.original.offer_side === 0) {
-          if (props.row.original.is_withdrawn === true) {
-            costText = "Withdrawn";
-          } else if (unlockDate < new Date()) {
-            costText = "Can Withdraw";
-          } else {
-            costText = "Locked";
-          }
-        }
-      }
-
       return (
         <div
           className={cn(
@@ -211,14 +195,6 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               }).format(props.row.original.input_token_data.token_amount)}{" "}
               {props.row.original.input_token_data.symbol.toUpperCase()}
             </SecondaryLabel>
-
-            {costText && (
-              <SecondaryLabel
-                className={cn("text-tertiary", BASE_UNDERLINE.SM)}
-              >
-                {costText}
-              </SecondaryLabel>
-            )}
           </div>
         </div>
       );
