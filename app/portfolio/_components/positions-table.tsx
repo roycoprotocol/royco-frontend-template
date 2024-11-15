@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { useAccount } from "wagmi";
 import { LoadingSpinner } from "@/components/composables";
-import { AlertIndicator } from "@/components/common";
 import { motion } from "framer-motion";
-import { useEnrichedPositions } from "../../../sdk/hooks/use-enriched-positions";
+import { useEnrichedPositionsRecipe } from "../../../sdk/hooks";
+import { StatsDataTable } from "../../market/[chain_id]/[market_type]/[market_id]/_components/stats-tables/stats-data-table";
+import { positionsColumns } from "./postions-table-columns";
+import { TertiaryLabel } from "../../market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
 export const PositionsTable = React.forwardRef<
   HTMLDivElement,
@@ -14,21 +16,24 @@ export const PositionsTable = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { address } = useAccount();
 
-  const { isLoading, data, isError } = useEnrichedPositions({
-    account_address: address?.toLowerCase() as string,
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { isLoading, data, isError, error } = useEnrichedPositionsRecipe({
+    chain_id: undefined,
+    market_id: undefined,
+    account_address: (address?.toLowerCase() as string) ?? "",
+    page_index: pageIndex,
   });
 
-  console.log({ data });
+  let totalCount = data?.count || 0;
 
-  // let totalCount = data ? data.length : 0;
-
-  if (false) {
+  if (isLoading) {
     return (
       <div className="flex w-full grow flex-col place-content-center items-center">
         <LoadingSpinner className="h-5 w-5" />
       </div>
     );
-  } else if (false) {
+  } else if (!totalCount) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -94,6 +99,20 @@ export const PositionsTable = React.forwardRef<
       </motion.div>
     );
   } else {
-    return <div>Hello World</div>;
+    return (
+      <div className="p w- overflow-y-scroll rounded-2xl border border-divider bg-white">
+        <TertiaryLabel className="mb-5 mt-5 px-5">POSITIONS</TertiaryLabel>
+
+        <StatsDataTable
+          pagination={{
+            currentPage: pageIndex,
+            totalPages: Math.ceil(totalCount / 20),
+            setPage: setPageIndex,
+          }}
+          columns={positionsColumns}
+          data={data && data.data ? data.data : []}
+        />
+      </div>
+    );
   }
 });

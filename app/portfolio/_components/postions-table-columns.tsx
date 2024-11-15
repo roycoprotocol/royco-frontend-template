@@ -3,7 +3,10 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { EnrichedOfferDataType } from "@/sdk/queries";
+import {
+  EnrichedOfferDataType,
+  EnrichedPositionsRecipeDataType,
+} from "@/sdk/queries";
 
 import { formatDistanceToNow } from "date-fns";
 import { RewardStyleMap } from "@/store";
@@ -11,6 +14,7 @@ import {
   BASE_UNDERLINE,
   SecondaryLabel,
 } from "../../market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { getChain } from "../../../sdk/utils";
 
 /**
  * @description Column definitions for the table
@@ -20,7 +24,33 @@ import {
  * @TODO Strictly type this
  */
 // @ts-ignore
-export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
+export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
+  {
+    accessorKey: "name",
+    enableResizing: false,
+    enableSorting: false,
+    header: "Title",
+    meta: {
+      className: "min-w-32 w-80",
+    },
+    cell: (props: any) => {
+      return (
+        <div
+          className={cn(
+            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+          )}
+        >
+          <SecondaryLabel className="text-black">
+            {props.row.original.name}
+          </SecondaryLabel>
+
+          <SecondaryLabel className="text-tertiary">
+            {getChain(props.row.original.chain_id).name}
+          </SecondaryLabel>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "annual_change_ratio",
     enableResizing: false,
@@ -55,7 +85,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Incentive Payout",
     meta: {
-      className: "min-w-32",
+      className: "min-w-32 w-52",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -169,7 +199,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Cost",
     meta: {
-      className: "min-w-32",
+      className: "min-w-32 w-64",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -288,7 +318,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Unclaimed Incentives",
     meta: {
-      className: "min-w-48",
+      className: "min-w-48 w-64",
     },
     cell: (props: any) => {
       let unclaimed_incentives_usd = 0;
