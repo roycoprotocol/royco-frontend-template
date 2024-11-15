@@ -5,10 +5,12 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { EnrichedOfferDataType } from "@/sdk/queries";
 
-import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
-import { MarketUserType, RewardStyleMap } from "@/store";
-import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
+import { RewardStyleMap } from "@/store";
+import {
+  BASE_UNDERLINE,
+  SecondaryLabel,
+} from "../../market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
 /**
  * @description Column definitions for the table
@@ -18,46 +20,7 @@ import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
  * @TODO Strictly type this
  */
 // @ts-ignore
-export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
-  // {
-  //   accessorKey: "name",
-  //   enableResizing: false,
-  //   enableSorting: false,
-  //   header: "Name",
-  //   meta: {
-  //     className: "min-w-52",
-  //   },
-  //   cell: (props: any) => {
-  //     return <div>{props.row.original.name}</div>;
-  //   },
-  // },
-  // {
-  //   accessorKey: "offer_side",
-  //   enableResizing: false,
-  //   enableSorting: false,
-  //   header: "Side",
-  //   meta: {
-  //     className: "min-w-24",
-  //   },
-  //   cell: (props: any) => {
-  //     return (
-  //       <div
-  //         className={cn(
-  //           "font-gt text-sm font-300",
-  //           props.row.original.offer_side ===
-  //             RoycoMarketUserType.ap.value.toString()
-  //             ? "text-success"
-  //             : "text-error"
-  //         )}
-  //       >
-  //         {props.row.original.offer_side ===
-  //         RoycoMarketUserType.ap.value.toString()
-  //           ? MarketUserType.ap.label
-  //           : MarketUserType.ip.label}
-  //       </div>
-  //     );
-  //   },
-  // },
+export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
   {
     accessorKey: "annual_change_ratio",
     enableResizing: false,
@@ -95,13 +58,58 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       className: "min-w-32",
     },
     cell: (props: any) => {
+      const unlockDate = new Date(
+        parseInt(props.row.original.unlock_timestamp) * 1000
+      );
+      const currentDate = new Date();
+
+      let isOpenToClaim = false;
+      let isAlreadyClaimed = false;
+
+      if (props.row.original.reward_style === 0) {
+        isOpenToClaim = true;
+      } else if (unlockDate < currentDate) {
+        isOpenToClaim = true;
+      }
+
+      if (
+        props.row.original.is_claimed.every((claim: boolean) => claim === true)
+      ) {
+        isAlreadyClaimed = true;
+      }
+
+      let text = "";
+
+      if (props.row.original.is_forfeited === true) {
+        text = "Forfeited";
+      } else if (isAlreadyClaimed) {
+        if (props.row.original.offer_side === 0) {
+          text = "Already claimed";
+        } else {
+          text = "Already paid";
+        }
+      } else if (isOpenToClaim) {
+        text = "Open for claims";
+      } else {
+        text = formatDistanceToNow(
+          new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+          {
+            addSuffix: true,
+          }
+        );
+      }
+
       return (
         <div
           className={cn(
             "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
           )}
         >
-          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
+          <SecondaryLabel className="text-black">
+            {RewardStyleMap[props.row.original.reward_style].label}
+          </SecondaryLabel>
+
+          <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
         </div>
       );
     },
@@ -133,10 +141,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               tokenIndex
             ) => {
               return (
-                <div
-                  key={`${props.row.original.id}:incentives:${token.id}`}
-                  className="flex items-center space-x-2"
-                >
+                <div key={tokenIndex} className="flex items-center space-x-2">
                   <div className="h-4">
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
@@ -167,19 +172,19 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       className: "min-w-32",
     },
     cell: (props: any) => {
+      const unlockDate = new Date(
+        parseInt(props.row.original.unlock_timestamp) * 1000
+      );
+
       let costText = null;
-      if (props.row.original.unlock_timestamp) {
-        const unlockDate = new Date(
-          parseInt(props.row.original.unlock_timestamp) * 1000
-        );
-        if (props.row.original.offer_side === 0) {
-          if (props.row.original.is_withdrawn === true) {
-            costText = "Withdrawn";
-          } else if (unlockDate < new Date()) {
-            costText = "Can Withdraw";
-          } else {
-            costText = "Locked";
-          }
+
+      if (props.row.original.offer_side === 0) {
+        if (props.row.original.is_withdrawn === true) {
+          costText = "Withdrawn";
+        } else if (unlockDate < new Date()) {
+          costText = "Can Withdraw";
+        } else {
+          costText = "Locked";
         }
       }
 
@@ -225,7 +230,60 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "unclaimed_incentives",
+    accessorKey: "unlock_timestamp",
+    enableResizing: false,
+    enableSorting: false,
+    header: "Input Token",
+    meta: {
+      className: "min-w-32",
+    },
+    cell: (props: any) => {
+      let text = "";
+
+      let unlockDate = new Date(
+        parseInt(props.row.original.unlock_timestamp) * 1000
+      );
+
+      let currentDate = new Date();
+
+      if (props.row.original.is_withdrawn === true) {
+        if (props.row.original.offer_side === 0) {
+          text = "Already Withdrawn";
+        } else {
+          text = "Already Paid";
+        }
+      } else if (
+        props.row.original.is_forfeited === true ||
+        unlockDate < currentDate
+      ) {
+        if (props.row.original.offer_side === 0) {
+          text = "Open for Withdrawal";
+        } else {
+          text = "To be Paid";
+        }
+      } else {
+        if (props.row.original.offer_side === 0) {
+          text = `Withdrawal ${formatDistanceToNow(
+            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+            {
+              addSuffix: true,
+            }
+          )}`;
+        } else {
+          text = `Pay ${formatDistanceToNow(
+            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+            {
+              addSuffix: true,
+            }
+          )}`;
+        }
+      }
+
+      return <div className={cn("font-gt text-sm font-300")}>{text}</div>;
+    },
+  },
+  {
+    accessorKey: "token_amounts",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
@@ -236,8 +294,10 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       let unclaimed_incentives_usd = 0;
 
       for (let i = 0; i < props.row.original.tokens_data.length; i++) {
-        unclaimed_incentives_usd +=
-          props.row.original.tokens_data[i].token_amount_usd;
+        if (props.row.original.is_claimed[i] === false) {
+          unclaimed_incentives_usd +=
+            props.row.original.tokens_data[i].token_amount_usd;
+        }
       }
 
       if (props.row.original.offer_side === 1) {
@@ -271,11 +331,20 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
             <div className="flex flex-col gap-1">
               {props.row.original.tokens_data.map(
                 (token: any, tokenIndex: number) => {
+                  const isClaimed = props.row.original.is_claimed[tokenIndex];
+
+                  let claimText = isClaimed ? "Claimed" : "Can Claim";
+
+                  const unlockDate = new Date(
+                    parseInt(props.row.original.unlock_timestamp) * 1000
+                  );
+
+                  if (isClaimed === false && unlockDate > new Date()) {
+                    claimText = "Locked";
+                  }
+
                   return (
-                    <div
-                      key={`${props.row.original.id}:unclaimed_incentives:${token.id}`}
-                      className="flex flex-row items-center space-x-2"
-                    >
+                    <div className="flex flex-row items-center space-x-2">
                       <SecondaryLabel className="text-tertiary">
                         {Intl.NumberFormat("en-US", {
                           style: "decimal",
@@ -285,6 +354,15 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
                           maximumFractionDigits: 8,
                         }).format(token.token_amount)}{" "}
                         {token.symbol.toUpperCase()}
+                      </SecondaryLabel>
+
+                      <SecondaryLabel
+                        className={cn(
+                          "text-tertiary decoration-transparent",
+                          BASE_UNDERLINE.SM
+                        )}
+                      >
+                        {claimText}
                       </SecondaryLabel>
                     </div>
                   );
@@ -297,7 +375,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "market_value",
+    accessorKey: "input_token_id",
     enableResizing: false,
     enableSorting: false,
     header: "Market Value",
