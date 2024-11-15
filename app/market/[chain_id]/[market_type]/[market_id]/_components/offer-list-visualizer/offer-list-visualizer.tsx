@@ -196,9 +196,9 @@ export const OfferListVisualizer = React.forwardRef<
                     style: "currency",
                     currency: "USD",
                     useGrouping: true,
-                    notation: "standard",
+                    notation: "compact",
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 8,
+                    maximumFractionDigits: 2,
                   }).format(value as number);
 
                   return formattedValue;
