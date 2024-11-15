@@ -153,6 +153,7 @@ export const IncentivesRateSelector = React.forwardRef<
                               <InputAmountSelector
                                 containerClassName="col-span-2"
                                 currentValue={String(inputTokenSupplyInUSD)}
+                                setCurrentValue={(value) => {}}
                                 Suffix={() => {
                                   return (
                                     <SecondaryLabel className="shrink-0 font-light text-black">
