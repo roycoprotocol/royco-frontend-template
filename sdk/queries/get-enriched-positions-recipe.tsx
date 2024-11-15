@@ -64,8 +64,8 @@ const constructEnrichedPositionsRecipeFilterClauses = (
 export const getEnrichedPositionsRecipeQueryOptions = (
   client: TypedRoycoClient,
   account_address: string,
-  chain_id: number,
-  market_id: string,
+  chain_id?: number,
+  market_id?: string,
   custom_token_data?: CustomTokenData,
   page_index: number = 0,
   filters: Array<BaseQueryFilter> = [],

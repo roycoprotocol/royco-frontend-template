@@ -6,6 +6,7 @@ import * as RechartsPrimitive from "recharts";
 import { cn } from "@/lib/utils";
 import { BigNumber } from "ethers";
 import { MarketIncentiveType, MarketOfferType } from "../../store";
+import { formatUnits } from "viem";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -245,32 +246,27 @@ const ChartTooltipContent = React.forwardRef<
                           </div>
                         </div>
                       )}
-                      {item.value && (
-                        <div className="flex justify-between">
-                          <div className="mr-2 text-tertiary">Quantity:</div>
-                          <div>
-                            <div className="font-mono font-medium tabular-nums text-secondary">
-                              {item.value.toLocaleString() + " USD"}
-                            </div>
-                            <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                              {Intl.NumberFormat("en-US", {
-                                style: "decimal",
-                                notation: "standard",
-                                currency: "USD",
-                                useGrouping: true,
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }).format(
-                                BigNumber.from(item.payload.quantity)
-                                  .div(BigNumber.from(10).pow(18))
-                                  .toBigInt()
-                              ) +
-                                " " +
-                                item.payload.input_token_data.symbol}
+                      {item.value !== undefined &&
+                        item.payload?.quantity !== undefined && (
+                          <div className="flex justify-between">
+                            <div className="mr-2 text-tertiary">Quantity:</div>
+                            <div>
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {item.value.toLocaleString() + " USD"}
+                              </div>
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {formatUnits(
+                                  BigNumber.from(
+                                    item.payload.quantity
+                                  ).toBigInt(),
+                                  item.payload.input_token_data.decimals
+                                ) +
+                                  " " +
+                                  item.payload.input_token_data.symbol}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                       {item.payload && (
                         <div className="flex justify-between">
                           <div className="mr-2 text-tertiary">APY:</div>
