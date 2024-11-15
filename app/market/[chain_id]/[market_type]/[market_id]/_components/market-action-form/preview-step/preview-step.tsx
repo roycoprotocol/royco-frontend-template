@@ -84,7 +84,12 @@ export const PreviewStep = React.forwardRef<
   } else if (canBePerformedPartially === false) {
     return (
       <div className="flex h-12 w-full grow flex-col place-content-center items-center">
-        <AlertIndicator>Offer cannot be fulfilled</AlertIndicator>
+        <AlertIndicator>
+          {offerType === MarketOfferType.market.id &&
+          userType === MarketUserType.ap.id
+            ? "Offer cannot be filled because there are no incentives available"
+            : "Offer cannot be filled"}
+        </AlertIndicator>
       </div>
     );
   } else if (!!propsEnrichedMarket.data) {
@@ -271,7 +276,8 @@ export const PreviewStep = React.forwardRef<
                       }`}
                     </div>
                     {currentMarketData.frontend_fee !== undefined &&
-                      currentMarketData.frontend_fee !== null && (
+                      currentMarketData.frontend_fee !== null &&
+                      userType === MarketUserType.ip.id && (
                         <InfoTip size="sm" className="max-w-fit">
                           <div>
                             {`Net fees: ` +

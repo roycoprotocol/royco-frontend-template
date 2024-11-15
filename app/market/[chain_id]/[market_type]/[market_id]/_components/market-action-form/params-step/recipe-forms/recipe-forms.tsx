@@ -17,6 +17,7 @@ import {
   IncentivesAmountSelector,
   InputAmountWrapper,
   InputExpirySelector,
+  IPQuantityIndicator,
 } from "../composables";
 
 export const RecipeForms = React.forwardRef<
@@ -107,6 +108,10 @@ export const RecipeForms = React.forwardRef<
             delay={0.6}
             marketActionForm={marketActionForm}
           />
+        )}
+
+        {userType === MarketUserType.ip.id && (
+          <IPQuantityIndicator marketActionForm={marketActionForm} />
         )}
       </div>
     </div>
