@@ -14,8 +14,8 @@ export const useEnrichedPositionsRecipe = ({
   enabled = true,
 }: {
   account_address: string;
-  chain_id: number;
-  market_id: string;
+  chain_id?: number;
+  market_id?: string;
   custom_token_data?: CustomTokenData;
   page_index?: number;
   filters?: Array<BaseQueryFilter>;
