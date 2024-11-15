@@ -44,7 +44,7 @@ export const ConnectWalletProvider = ({
     const checkRestriction = async () => {
       if (isConnected && process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
         try {
-          const response = await fetch("https://ip-api.com/json/");
+          const response = await fetch("https://freeipapi.com/api/json/");
           const data = await response.json();
 
           if (
@@ -66,7 +66,7 @@ export const ConnectWalletProvider = ({
   const connectWallet = async () => {
     try {
       if (process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
-        const response = await fetch("https://ip-api.com/json/");
+        const response = await fetch("https://freeipapi.com/api/json/");
         const data = await response.json();
 
         if (
