@@ -106,10 +106,10 @@ export const MarketManager = React.forwardRef<
           >
             <ChevronLeftIcon
               strokeWidth={1.5}
-              className="h-6 w-6 text-secondary"
+              className="-ml-2 h-6 w-6 text-secondary"
             />
 
-            <div className="flex h-4">
+            <div className="flex h-4 items-center">
               <span className={cn("leading-5")}>Explore</span>
             </div>
           </div>
