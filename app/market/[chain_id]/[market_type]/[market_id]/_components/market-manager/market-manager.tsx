@@ -4,6 +4,7 @@ import React, { Fragment, useEffect } from "react";
 import { useMarketManager } from "@/store";
 import {
   MarketSteps,
+  MarketType,
   MarketUserType,
   MarketViewType,
   TypedMarketViewType,
@@ -26,6 +27,7 @@ import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { useAccount } from "wagmi";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -48,6 +50,8 @@ export const MarketManager = React.forwardRef<
     marketMetadata,
   } = useActiveMarket();
 
+  const { address: walletAddress } = useAccount();
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const updateViewType =
@@ -57,6 +61,18 @@ export const MarketManager = React.forwardRef<
       setViewType(updateViewType);
     }
   }, []);
+
+  useEffect(() => {
+    if (
+      currentMarketData &&
+      currentMarketData.market_type === MarketType.vault.value &&
+      walletAddress &&
+      currentMarketData.owner &&
+      walletAddress.toLowerCase() === currentMarketData.owner.toLowerCase()
+    ) {
+      setUserType(MarketUserType.ip.id);
+    }
+  }, [currentMarketData, walletAddress]);
 
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;

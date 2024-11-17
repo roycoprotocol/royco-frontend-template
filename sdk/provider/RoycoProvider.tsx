@@ -23,7 +23,6 @@ const RoycoProvider = ({
     queries: {
       refetchOnWindowFocus: false,
       retry: 3,
-      retryDelay: 1000,
       refetchIntervalInBackground: true,
       refetchOnReconnect: true,
     },

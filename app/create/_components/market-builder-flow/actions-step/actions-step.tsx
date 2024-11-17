@@ -6,11 +6,18 @@ import { cn } from "@/lib/utils";
 import { MotionWrapper } from "../animations";
 import { useMarketBuilderManager } from "@/store";
 import { MarketBuilderSteps } from "@/store";
-import { ExternalLinkIcon, GripVerticalIcon, Trash2Icon } from "lucide-react";
+import {
+  CheckCheck,
+  CheckIcon,
+  CopyIcon,
+  ExternalLinkIcon,
+  GripVerticalIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { getExplorerUrl } from "@/sdk/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FallMotion } from "@/components/animations";
 
 import { isEqual } from "lodash";
@@ -29,6 +36,8 @@ export const ActionsStep = React.forwardRef<
   const [isAnimationDelayed, setIsAnimationDelayed] = React.useState(true);
 
   const { activeStep, actionsType, setDraggingKey } = useMarketBuilderManager();
+
+  const [copied, setCopied] = React.useState(false);
 
   const validateActionInputs = () => {
     const originalActions = marketBuilderForm.watch(actionsType);
@@ -90,6 +99,14 @@ export const ActionsStep = React.forwardRef<
       setIsAnimationDelayed(true);
     }
   }, [activeStep]);
+
+  const handleCopyToClipboard = (text: string) => {
+    setCopied(true);
+    navigator.clipboard.writeText(text);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+  };
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
@@ -360,10 +377,70 @@ export const ActionsStep = React.forwardRef<
                                             ? "Unknown"
                                             : action.contract_function.name}
                                         </div>
-                                        <div className="text-xs leading-5 text-tertiary">
-                                          {action.contract_address.slice(0, 6)}
-                                          ...
-                                          {action.contract_address.slice(-4)}
+                                        <div
+                                          onClick={() =>
+                                            handleCopyToClipboard(
+                                              action.contract_address
+                                            )
+                                          }
+                                          className="flex flex-row items-center space-x-2 hover:cursor-pointer "
+                                        >
+                                          <div className="text-xs leading-5 text-tertiary">
+                                            {action.contract_address.slice(
+                                              0,
+                                              6
+                                            )}
+                                            ...
+                                            {action.contract_address.slice(-4)}
+                                          </div>
+                                          <AnimatePresence mode="wait">
+                                            {copied ? (
+                                              <motion.div
+                                                key="check"
+                                                initial={{
+                                                  opacity: 0,
+                                                  y: 5,
+                                                }}
+                                                animate={{
+                                                  opacity: 1,
+                                                  y: 0,
+                                                }}
+                                                exit={{
+                                                  opacity: 0,
+                                                  y: -5,
+                                                }}
+                                                transition={{
+                                                  duration: 0.15,
+                                                }}
+                                              >
+                                                <CheckIcon className="h-3 w-3 text-success" />
+                                              </motion.div>
+                                            ) : (
+                                              <motion.div
+                                                key="copy"
+                                                initial={{
+                                                  opacity: 0,
+                                                  y: 5,
+                                                }}
+                                                animate={{
+                                                  opacity: 1,
+                                                  y: 0,
+                                                }}
+                                                exit={{
+                                                  opacity: 0,
+                                                  y: -5,
+                                                }}
+                                                transition={{
+                                                  duration: 0.15,
+                                                }}
+                                                whileHover={{
+                                                  scale: 1.05,
+                                                }}
+                                              >
+                                                <CopyIcon className="h-3 w-3 text-tertiary hover:text-secondary" />
+                                              </motion.div>
+                                            )}
+                                          </AnimatePresence>
                                         </div>
                                       </div>
                                     </div>

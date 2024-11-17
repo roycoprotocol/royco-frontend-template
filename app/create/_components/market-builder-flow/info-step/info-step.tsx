@@ -60,22 +60,16 @@ export const InfoStep = React.forwardRef<
         />
       </MotionWrapper>
 
-      <MotionWrapper delay={0.3}>
+      <MotionWrapper delay={0.2}>
         <FormActionType
           className="mt-9"
           marketBuilderForm={marketBuilderForm}
         />
       </MotionWrapper>
 
-      <div className="mt-9 grid grid-cols-2 gap-3">
-        <MotionWrapper delay={0.2}>
-          <FormChain className="" marketBuilderForm={marketBuilderForm} />
-        </MotionWrapper>
-
-        <MotionWrapper delay={0.2}>
-          <FormAsset className="" marketBuilderForm={marketBuilderForm} />
-        </MotionWrapper>
-      </div>
+      <MotionWrapper delay={0.3}>
+        <FormChain className="mt-9" marketBuilderForm={marketBuilderForm} />
+      </MotionWrapper>
 
       <MotionWrapper delay={0.4}>
         <FormIncentiveSchedule
@@ -85,20 +79,35 @@ export const InfoStep = React.forwardRef<
       </MotionWrapper>
 
       <MotionWrapper delay={0.5}>
-        <AnimatePresence>
-          {marketBuilderForm.watch("action_type") === "recipe" && (
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.5 }}
-            >
-              <FormLockupTime
-                className="mt-9"
-                marketBuilderForm={marketBuilderForm}
-              />
-            </motion.div>
-          )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height:
+                marketBuilderForm.watch("action_type") === "recipe"
+                  ? "auto"
+                  : 0,
+              opacity:
+                marketBuilderForm.watch("action_type") === "recipe" ? 1 : 0,
+            }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              duration: 0.5,
+              height: {
+                type: "spring",
+                damping: 25,
+                stiffness: 200,
+              },
+            }}
+            style={{ overflow: "hidden" }}
+          >
+            <FormAsset className="mt-9" marketBuilderForm={marketBuilderForm} />
+
+            <FormLockupTime
+              className="mt-9"
+              marketBuilderForm={marketBuilderForm}
+            />
+          </motion.div>
         </AnimatePresence>
         {/* <FormExpiry className="mt-9" marketBuilderForm={marketBuilderForm} /> */}
       </MotionWrapper>
