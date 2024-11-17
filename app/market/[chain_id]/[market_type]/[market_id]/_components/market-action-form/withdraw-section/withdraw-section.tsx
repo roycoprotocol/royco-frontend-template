@@ -130,20 +130,38 @@ export const WithdrawSection = React.forwardRef<
     ],
   });
 
-  const { isLoading: isLoadingPositionsVault, data: positionsVault } =
-    useEnrichedPositionsVault({
-      chain_id: marketMetadata.chain_id,
-      market_id: marketMetadata.market_id,
-      account_address: (address?.toLowerCase() as string) ?? "",
-    });
+  const {
+    isLoading: isLoadingPositionsVault,
+    data: positionsVault,
+    isError: isErrorPositionsVault,
+    error: errorPositionsVault,
+  } = useEnrichedPositionsVault({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    account_address: (address?.toLowerCase() as string) ?? "",
+    page_index: withdrawSectionPage,
+    filters: [
+      {
+        id: "offer_side",
+        value: RoycoMarketUserType.ap.value,
+      },
+    ],
+  });
+
+  // const { isLoading: isLoadingPositionsVault, data: positionsVault } =
+  //   useEnrichedPositionsVault({
+  //     chain_id: marketMetadata.chain_id,
+  //     market_id: marketMetadata.market_id,
+  //     account_address: (address?.toLowerCase() as string) ?? "",
+  //   });
 
   const totalCount =
     marketMetadata.market_type === MarketType.recipe.id
       ? !!positionsRecipe && "count" in positionsRecipe
         ? (positionsRecipe.count ?? 0)
         : 0
-      : !!positionsVault
-        ? positionsVault.length
+      : !!positionsVault && "count" in positionsVault
+        ? (positionsVault.count ?? 0)
         : 0;
 
   const positions =
@@ -151,9 +169,34 @@ export const WithdrawSection = React.forwardRef<
       ? Array.isArray(positionsRecipe?.data)
         ? positionsRecipe.data
         : []
-      : positionsVault?.filter(
-          (position) => position.offer_side === RoycoMarketUserType.ap.value
-        );
+      : Array.isArray(positionsVault?.data)
+        ? positionsVault.data.filter((position) => {
+            if (!!position) {
+              if (withdrawType === MarketWithdrawType.input_token.id) {
+                // Check if the raw input token amount is greater than 0
+                if (
+                  BigNumber.from(position.input_token_data.raw_amount).gt(0)
+                ) {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                // Check if value of at least one token is greater than 0
+                if (
+                  position.tokens_data.some((token) =>
+                    BigNumber.from(token.raw_amount).gt(0)
+                  )
+                ) {
+                  return true;
+                } else {
+                  return false;
+                }
+              }
+            }
+            return false;
+          })
+        : [];
 
   const isLoading = isLoadingPositionsRecipe || isLoadingPositionsVault;
 

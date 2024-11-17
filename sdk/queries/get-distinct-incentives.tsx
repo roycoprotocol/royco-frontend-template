@@ -22,4 +22,5 @@ export const getDistinctIncentivesQueryOptions = (
       .then((result) => result.data);
   },
   keepPreviousData: true,
+  refetchInterval: 1000 * 60 * 1, // 1 minute
 });
