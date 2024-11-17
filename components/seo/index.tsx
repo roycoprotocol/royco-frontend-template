@@ -21,7 +21,7 @@ export const Meta = {
 
   authors: {
     me: {
-      name: "Waymont Holdings Co.",
+      name: "Royco Protocol",
       url: process.env.NEXT_PUBLIC_APP_URL,
     },
   },
@@ -33,7 +33,7 @@ export const Meta = {
     keywords: [
       "incentives, market, protocol, blockchain, crypto, liquidity, NFT",
     ],
-    publisher: `Waymont Holdings Co.`,
+    publisher: `Royco Protocol`,
     category: "General Protocol",
     locale: "en_US",
     type: "website",

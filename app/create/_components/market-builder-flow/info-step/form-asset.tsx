@@ -136,7 +136,7 @@ export const FormAsset = React.forwardRef<
       control={marketBuilderForm.control}
       name="asset"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={cn("", className)}>
           <FormInputLabel className="mb-2" label="Input Asset" />
 
           <FormControl>

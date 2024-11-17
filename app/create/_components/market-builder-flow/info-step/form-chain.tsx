@@ -44,7 +44,7 @@ export const FormChain = React.forwardRef<
       control={marketBuilderForm.control}
       name="chain"
       render={({ field }) => (
-        <FormItem className="">
+        <FormItem className={cn("", className)}>
           <FormInputLabel className="mb-2" label="Chain" />
 
           <Select
