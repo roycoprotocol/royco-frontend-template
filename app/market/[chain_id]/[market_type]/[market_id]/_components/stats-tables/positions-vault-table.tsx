@@ -8,7 +8,7 @@ import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
 import { positionsVaultColumns } from "./positions-vault-columns";
-import { useMarketManager } from "@/store";
+import { MarketUserType, useMarketManager } from "@/store";
 import { RoycoMarketUserType } from "@/sdk/market";
 
 export const PositionsVaultTable = React.forwardRef<
@@ -17,21 +17,26 @@ export const PositionsVaultTable = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { address } = useAccount();
 
-  const { userType } = useMarketManager();
-
   const { currentMarketData, marketMetadata } = useActiveMarket();
+
+  const { userType } = useMarketManager();
 
   const { isLoading, data, isError } = useEnrichedPositionsVault({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
     account_address: (address?.toLowerCase() as string) ?? "",
-    offer_side:
-      userType === RoycoMarketUserType.ap.id
-        ? RoycoMarketUserType.ap.value
-        : RoycoMarketUserType.ip.value,
+    filters: [
+      {
+        id: "offer_side",
+        value:
+          userType === MarketUserType.ap.id
+            ? MarketUserType.ap.value
+            : MarketUserType.ip.value,
+      },
+    ],
   });
 
-  let totalCount = data ? data.length : 0;
+  let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;
 
   if (isLoading) {
     return (
@@ -54,7 +59,7 @@ export const PositionsVaultTable = React.forwardRef<
           setPage: () => {},
         }}
         columns={positionsVaultColumns}
-        data={data ?? []}
+        data={data && data.data ? data.data : []}
       />
     );
   }

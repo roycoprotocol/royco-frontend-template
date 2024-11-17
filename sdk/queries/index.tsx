@@ -22,3 +22,4 @@ export * from "./get-enriched-account-balances-vault-in-market";
 export * from "./get-vault-balance";
 export * from "./get-vault-allowance";
 export * from "./get-market-offers-validator";
+export * from "./get-enriched-positions-vault";

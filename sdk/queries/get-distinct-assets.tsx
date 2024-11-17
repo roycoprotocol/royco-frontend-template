@@ -20,5 +20,5 @@ export const getDistinctAssetsQueryOptions = (client: TypedRoycoClient) => ({
       .then((result) => result.data);
   },
   keepPreviousData: true,
-  staleTime: 1000 * 60 * 60, // 60 minutes
+  refetchInterval: 1000 * 60 * 1, // 1 minute
 });
