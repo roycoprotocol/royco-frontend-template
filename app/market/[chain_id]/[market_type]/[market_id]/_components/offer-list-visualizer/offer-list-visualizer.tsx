@@ -130,7 +130,7 @@ export const OfferListVisualizer = React.forwardRef<
           BASE_PADDING_TOP
         )}
       >
-        APR
+        INCENTIVE DEPTH
       </TertiaryLabel>
 
       <PrimaryLabel

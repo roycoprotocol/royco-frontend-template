@@ -129,14 +129,18 @@ export const IncentiveInfo = React.forwardRef<
           }
         );
 
-  const currentNetAPR = currentIncentives?.reduce(
-    (acc, curr) => acc + (curr.annual_change_ratio || 0),
-    0
-  );
-  const previousNetAPR = previousIncentives?.reduce(
-    (acc, curr) => acc + (curr.annual_change_ratio || 0),
-    0
-  );
+  const currentNetAPR = currentMarketData?.native_annual_change_ratio ?? 0;
+  const previousNetAPR = previousMarketData?.native_annual_change_ratio ?? 0;
+
+  // const currentNetAPR = currentIncentives?.reduce(
+  //   (acc, curr) => acc + (curr.annual_change_ratio || 0),
+  //   0
+  // ) + (currentMarketData?.native_annual_change_ratio ?? 0) ?? 0;
+
+  // const previousNetAPR = (previousIncentives?.reduce(
+  //   (acc, curr) => acc + (curr.annual_change_ratio || 0),
+  //   0
+  // ) + (previousMarketData?.native_annual_change_ratio ?? 0)) ?? 0;
 
   if (!!currentMarketData && !!marketMetadata) {
     return (
@@ -223,6 +227,41 @@ export const IncentiveInfo = React.forwardRef<
               );
             })}
           </InfoCard>
+        )}
+
+        {!!currentMarketData.native_annual_change_ratio && (
+          <div
+            className={cn(
+              "flex w-full flex-row items-center justify-between",
+              BASE_MARGIN_TOP.SM
+            )}
+          >
+            <SecondaryLabel className="text-black">Native Yield</SecondaryLabel>
+
+            <SecondaryLabel className="text-black">
+              {(currentMarketData.native_annual_change_ratio ?? 0) >=
+              Math.pow(10, 18) ? (
+                `0`
+              ) : (
+                <SpringNumber
+                  previousValue={
+                    previousMarketData?.native_annual_change_ratio ?? 0
+                  }
+                  currentValue={
+                    currentMarketData.native_annual_change_ratio ?? 0
+                  }
+                  numberFormatOptions={{
+                    style: "percent",
+                    notation: "standard",
+                    useGrouping: true,
+                    minimumFractionDigits: 0, // Ensures at least 2 decimal places
+                    maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+                  }}
+                  defaultColor="text-black"
+                />
+              )}
+            </SecondaryLabel>
+          </div>
         )}
 
         <div
