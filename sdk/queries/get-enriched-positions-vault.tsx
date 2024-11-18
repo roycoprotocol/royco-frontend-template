@@ -72,6 +72,7 @@ export type EnrichedPositionsVaultDataType =
         price: number;
         fdv: number;
         total_supply: number;
+        shares: string;
       }
     >;
     annual_change_ratio: number;
@@ -115,6 +116,8 @@ export const getEnrichedPositionsVaultQueryOptions = (
 
       const new_rows = await Promise.all(
         rows.map(async (row) => {
+          console.log("row shares", row.quantity);
+
           if (
             !!row.input_token_id &&
             !!row.token_ids &&
@@ -197,6 +200,27 @@ export const getEnrichedPositionsVaultQueryOptions = (
               };
             });
 
+            const raw_input_token_amount_ap_data = await publicClient.multicall(
+              {
+                contracts: [
+                  {
+                    address: market_id as Address,
+                    abi: ContractMap[row.chain_id as keyof typeof ContractMap][
+                      "WrappedVault"
+                    ].abi as Abi,
+                    functionName: "maxWithdraw",
+                    args: [account_address],
+                  },
+                ],
+              }
+            );
+
+            const raw_input_token_amount_ap = parseRawAmount(
+              raw_input_token_amount_ap_data[0].status === "success"
+                ? (raw_input_token_amount_ap_data[0].result?.toString() ?? "0")
+                : "0"
+            );
+
             const input_token_info: SupportedToken = getSupportedToken(
               row.input_token_id
             );
@@ -204,7 +228,11 @@ export const getEnrichedPositionsVaultQueryOptions = (
             const input_token_fdv: number = row.input_token_fdv ?? 0;
             const input_token_total_supply: number =
               row.input_token_total_supply ?? 0;
-            const input_token_raw_amount: string = parseRawAmount(row.quantity);
+            const input_token_raw_amount: string = parseRawAmount(
+              row.offer_side === RoycoMarketUserType.ap.value
+                ? raw_input_token_amount_ap
+                : row.quantity
+            );
 
             const input_token_token_amount: number =
               parseRawAmountToTokenAmount(
@@ -226,6 +254,7 @@ export const getEnrichedPositionsVaultQueryOptions = (
               price: input_token_price,
               fdv: input_token_fdv,
               total_supply: input_token_total_supply,
+              shares: row.quantity,
             };
 
             return {

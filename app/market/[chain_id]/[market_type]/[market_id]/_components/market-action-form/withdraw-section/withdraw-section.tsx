@@ -174,9 +174,7 @@ export const WithdrawSection = React.forwardRef<
             if (!!position) {
               if (withdrawType === MarketWithdrawType.input_token.id) {
                 // Check if the raw input token amount is greater than 0
-                if (
-                  BigNumber.from(position.input_token_data.raw_amount).gt(0)
-                ) {
+                if (BigNumber.from(position.input_token_data.shares).gt(0)) {
                   return true;
                 } else {
                   return false;

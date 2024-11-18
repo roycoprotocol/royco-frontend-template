@@ -32,6 +32,11 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
 
   const { currentMarketData } = useActiveMarket();
 
+  console.log(
+    "currentMarketData base_start_timestamps",
+    currentMarketData?.base_start_timestamps
+  );
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <SlideUpWrapper
@@ -55,7 +60,19 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                       const base_start_timestamp = BigNumber.from(
                         currentMarketData?.base_start_timestamps?.[index] ?? "0"
                       );
-                      return base_start_timestamp.eq(0);
+
+                      const base_end_timestamp = BigNumber.from(
+                        currentMarketData?.base_end_timestamps?.[index] ?? "0"
+                      );
+
+                      const current_timestamp = BigNumber.from(
+                        Math.floor(new Date().getTime() / 1000).toString()
+                      );
+
+                      return (
+                        !base_start_timestamp.eq(0) &&
+                        current_timestamp.lt(base_end_timestamp)
+                      );
                     }
                   ) ?? [],
               }
@@ -67,7 +84,20 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                     const base_incentive_amount = BigNumber.from(
                       currentMarketData?.base_incentive_amounts?.[index] ?? "0"
                     );
-                    return base_incentive_amount.gt(0);
+
+                    const base_start_timestamp = BigNumber.from(
+                      currentMarketData?.base_start_timestamps?.[index] ?? "0"
+                    );
+
+                    const base_end_timestamp = BigNumber.from(
+                      currentMarketData?.base_end_timestamps?.[index] ?? "0"
+                    );
+
+                    const current_timestamp = BigNumber.from(
+                      Math.floor(new Date().getTime() / 1000).toString()
+                    );
+
+                    return current_timestamp.lt(base_end_timestamp);
                   }),
                 }
               : vaultIncentiveActionType ===
@@ -76,12 +106,8 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                     token_ids: (
                       currentMarketData?.base_incentive_ids ?? []
                     ).filter((base_incentive_id, index) => {
-                      const current_time_in_seconds = Math.floor(
-                        new Date().getTime() / 1000
-                      );
-
                       const current_timestamp = BigNumber.from(
-                        current_time_in_seconds
+                        Math.floor(new Date().getTime() / 1000).toString()
                       );
                       const start_timestamp = BigNumber.from(
                         currentMarketData?.base_start_timestamps?.[index] ?? "0"
