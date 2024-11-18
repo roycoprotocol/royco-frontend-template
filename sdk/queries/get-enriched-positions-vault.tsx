@@ -208,8 +208,8 @@ export const getEnrichedPositionsVaultQueryOptions = (
                     abi: ContractMap[row.chain_id as keyof typeof ContractMap][
                       "WrappedVault"
                     ].abi as Abi,
-                    functionName: "maxWithdraw",
-                    args: [account_address],
+                    functionName: "convertToAssets",
+                    args: [row.quantity],
                   },
                 ],
               }

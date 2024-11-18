@@ -26,7 +26,6 @@ export * from "./use-read-market";
 export * from "./use-market-offers";
 export * from "./use-enriched-royco-stats";
 export * from "./use-highest-offers";
-export * from "./use-enriched-account-balance-vault";
 export * from "./use-custom-token-quotes";
 export * from "./use-prepare-market-action";
 export * from "./use-transaction-simulation";
