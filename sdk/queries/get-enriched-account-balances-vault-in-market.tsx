@@ -17,6 +17,7 @@ export type EnrichedAccountBalanceVaultInMarketDataType = {
     raw_amount: string;
     token_amount: number;
     token_amount_usd: number;
+    shares: number;
   };
 
   input_token_data_ip: SupportedToken & {
@@ -164,20 +165,40 @@ export const getEnrichedAccountBalancesVaultInMarketQueryOptions = (
         row.input_token_id
       );
 
+      const raw_input_token_amount_ap_data = await publicClient.multicall({
+        contracts: [
+          {
+            address: market_id as Address,
+            abi: ContractMap[chain_id as keyof typeof ContractMap][
+              "WrappedVault"
+            ].abi as Abi,
+            functionName: "maxWithdraw",
+            args: [account_address],
+          },
+        ],
+      });
+
+      const raw_input_token_amount_ap = parseRawAmount(
+        raw_input_token_amount_ap_data[0].status === "success"
+          ? (raw_input_token_amount_ap_data[0].result?.toString() ?? "0")
+          : "0"
+      );
+
       const input_token_data_ap = {
         ...input_token_info,
-        raw_amount: row.quantity_ap,
+        raw_amount: raw_input_token_amount_ap,
         token_amount: parseRawAmountToTokenAmount(
-          row.quantity_ap,
+          raw_input_token_amount_ap,
           input_token_info.decimals
         ),
         token_amount_usd: parseTokenAmountToTokenAmountUsd(
           parseRawAmountToTokenAmount(
-            row.quantity_ap,
+            raw_input_token_amount_ap,
             input_token_info.decimals
           ),
           row.input_token_price
         ),
+        shares: row.quantity_ap,
       };
 
       const input_token_data_ip = {

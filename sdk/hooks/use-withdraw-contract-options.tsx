@@ -110,6 +110,7 @@ export const getVaultInputTokenWithdrawalTransactionOptions = ({
           raw_amount: string;
           token_amount: number;
           token_amount_usd: number;
+          shares: string;
         };
       }
     | undefined
@@ -128,9 +129,9 @@ export const getVaultInputTokenWithdrawalTransactionOptions = ({
     label: "Withdraw Input Token",
     address,
     abi,
-    functionName: "withdraw",
+    functionName: "redeem",
     marketType: RoycoMarketType.vault.id,
-    args: [position?.token_data.raw_amount, account, account],
+    args: [position?.token_data.shares, account, account],
     txStatus: "idle",
     txHash: null,
     tokensIn: position ? [position.token_data] : [],
