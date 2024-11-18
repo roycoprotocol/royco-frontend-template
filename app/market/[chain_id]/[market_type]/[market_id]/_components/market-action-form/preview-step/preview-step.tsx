@@ -261,10 +261,61 @@ export const PreviewStep = React.forwardRef<
               )}
 
               {/**
+               * Native Yield Indicator
+               */}
+              {marketMetadata.market_type === MarketType.vault.id &&
+                userType === MarketUserType.ap.id &&
+                offerType === MarketOfferType.market.id &&
+                !!currentMarketData.native_annual_change_ratio && (
+                  <div className="mt-3 flex w-full flex-row items-center justify-between">
+                    <SecondaryLabel className="text-black">
+                      <div className="mr-2">Native Yield</div>
+                      {currentMarketData.frontend_fee !== undefined &&
+                        currentMarketData.frontend_fee !== null &&
+                        userType === MarketUserType.ip.id && (
+                          <InfoTip size="sm" className="max-w-fit">
+                            <div>
+                              {`Net fees: ` +
+                                Intl.NumberFormat("en-US", {
+                                  style: "percent",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(Number(frontendFee)) +
+                                ` of incentives.`}
+                            </div>
+                            <div className="italic">
+                              This is the APY offered by the underlying ERC4626
+                              vault.
+                            </div>
+                          </InfoTip>
+                        )}
+                    </SecondaryLabel>
+
+                    <div className="flex w-fit flex-col items-end text-right">
+                      <SecondaryLabel className="text-black">
+                        {!!currentMarketData.native_annual_change_ratio &&
+                        currentMarketData.native_annual_change_ratio > 0
+                          ? "+"
+                          : null}
+                        {Intl.NumberFormat("en-US", {
+                          style: "percent",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(
+                          currentMarketData.native_annual_change_ratio ?? 0
+                        )}
+                      </SecondaryLabel>
+                    </div>
+                  </div>
+                )}
+
+              {/**
                * Net/Total Indicator
                */}
               {!!incentiveData && (
-                <div className="flex w-full flex-row items-center justify-between py-3">
+                <div className="mb-3 mt-2 flex w-full flex-row items-center justify-between">
                   <SecondaryLabel className="text-success">
                     <div className="mr-2">
                       {`${
@@ -331,7 +382,13 @@ export const PreviewStep = React.forwardRef<
                               incentiveData.reduce(
                                 (acc, incentive) =>
                                   acc + incentive.annual_change_ratio,
-                                0
+                                marketMetadata.market_type ===
+                                  MarketType.vault.id &&
+                                  userType === MarketUserType.ap.id &&
+                                  offerType === MarketOfferType.market.id &&
+                                  !!currentMarketData.native_annual_change_ratio
+                                  ? currentMarketData.native_annual_change_ratio
+                                  : 0
                               )
                             )}
                     </SecondaryLabel>
