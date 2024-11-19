@@ -88,7 +88,7 @@ export function DateTimePicker({
           mode="single"
           selected={date}
           onSelect={(d: any) => handleSelect(d)}
-          className="shadow-none drop-shadow-none"
+          className="min-h-[304px] shadow-none drop-shadow-none"
         />
         <div className="border-t border-divider px-5 py-3">
           <TimePicker12h setDate={setDate} date={date} />

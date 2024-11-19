@@ -242,7 +242,7 @@ export const WithdrawSection = React.forwardRef<
                       key={`withdraw-position:${positionIndex}-${withdrawType}`}
                     >
                       <div className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl border border-divider p-3">
-                        <div className="flex w-full grow flex-col items-start space-y-1">
+                        <div className="hide-scrollbar flex w-full grow flex-col items-start space-y-1 overflow-x-scroll">
                           <SecondaryLabel className="text-black">
                             Value:{" "}
                             {Intl.NumberFormat("en-US", {
