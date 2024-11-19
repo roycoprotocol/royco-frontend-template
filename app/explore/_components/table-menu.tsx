@@ -106,7 +106,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           className
         )}
       >
-        <div className="body-2 sticky top-0 z-10 flex h-16 shrink-0 flex-row place-content-center items-center justify-between border-b border-divider bg-white px-5 text-primary">
+        <div className="body-2 sticky top-0 z-20 flex h-16 shrink-0 flex-row place-content-center items-center justify-between border-b border-divider bg-white px-5 text-primary">
           <h3 className="flex flex-row items-center gap-2">
             <div className="tabular-nums">
               {isLoading ? (
