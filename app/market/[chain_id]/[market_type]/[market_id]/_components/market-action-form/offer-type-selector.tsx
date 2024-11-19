@@ -20,7 +20,7 @@ export const OfferTypeSelector = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { offerType, setOfferType, userType } = useMarketManager();
 
-  const { currentMarketData } = useActiveMarket();
+  const { currentMarketData, marketMetadata } = useActiveMarket();
   const { address: walletAddress } = useAccount();
 
   const isWalletVaultIP = useMemo(() => {
@@ -45,8 +45,12 @@ export const OfferTypeSelector = React.forwardRef<
 
   useEffect(() => {
     if (
-      isMarketVault &&
-      !isWalletVaultIP &&
+      // isMarketVault &&
+      // !isWalletVaultIP &&
+
+      marketMetadata.market_type === MarketType.vault.id &&
+      userType === MarketUserType.ip.id &&
+      walletAddress !== currentMarketData.owner &&
       offerType === MarketOfferType.limit.id
     ) {
       setOfferType(MarketOfferType.market.id);
@@ -67,8 +71,11 @@ export const OfferTypeSelector = React.forwardRef<
         }}
         onValueChange={(e) => {
           if (
-            isMarketVault &&
-            !isWalletVaultIP &&
+            // isMarketVault &&
+            // !isWalletVaultIP &&
+            marketMetadata.market_type === MarketType.vault.id &&
+            userType === MarketUserType.ip.id &&
+            walletAddress !== currentMarketData.owner &&
             e === MarketOfferType.limit.id
           ) {
             return;
@@ -104,8 +111,11 @@ export const OfferTypeSelector = React.forwardRef<
           {Object.values(MarketOfferType).map((option) => (
             <SelectItem
               disabled={
-                isMarketVault &&
-                !isWalletVaultIP &&
+                // isMarketVault &&
+                // !isWalletVaultIP &&
+                marketMetadata.market_type === MarketType.vault.id &&
+                userType === MarketUserType.ip.id &&
+                walletAddress !== currentMarketData.owner &&
                 option.id === MarketOfferType.limit.id
               }
               className="text-sm"
