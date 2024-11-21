@@ -67,12 +67,12 @@ const NavbarLinks = [
       },
     ],
   },
-  // {
-  //   id: "blog",
-  //   label: "Blog",
-  //   link: "https://paragraph.xyz/@royco",
-  //   target: "_blank",
-  // },
+  {
+    id: "portfolio",
+    label: "Portfolio",
+    link: "/portfolio",
+    target: "_self",
+  },
 ];
 
 export const ActualNavbar = React.forwardRef<

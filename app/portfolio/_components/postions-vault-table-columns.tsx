@@ -3,18 +3,10 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  EnrichedOfferDataType,
-  EnrichedPositionsRecipeDataType,
-} from "@/sdk/queries";
+import { EnrichedOfferDataType } from "@/sdk/queries";
 
-import { formatDistanceToNow } from "date-fns";
-import { RewardStyleMap } from "@/store";
-import {
-  BASE_UNDERLINE,
-  SecondaryLabel,
-} from "../../market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { getChain } from "../../../sdk/utils";
+import { getChain } from "@/sdk/utils";
+import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
 /**
  * @description Column definitions for the table
@@ -24,7 +16,7 @@ import { getChain } from "../../../sdk/utils";
  * @TODO Strictly type this
  */
 // @ts-ignore
-export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
+export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
   {
     accessorKey: "name",
     enableResizing: false,
@@ -88,58 +80,13 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
       className: "min-w-32 w-52",
     },
     cell: (props: any) => {
-      const unlockDate = new Date(
-        parseInt(props.row.original.unlock_timestamp) * 1000
-      );
-      const currentDate = new Date();
-
-      let isOpenToClaim = false;
-      let isAlreadyClaimed = false;
-
-      if (props.row.original.reward_style === 0) {
-        isOpenToClaim = true;
-      } else if (unlockDate < currentDate) {
-        isOpenToClaim = true;
-      }
-
-      if (
-        props.row.original.is_claimed.every((claim: boolean) => claim === true)
-      ) {
-        isAlreadyClaimed = true;
-      }
-
-      let text = "";
-
-      if (props.row.original.is_forfeited === true) {
-        text = "Forfeited";
-      } else if (isAlreadyClaimed) {
-        if (props.row.original.offer_side === 0) {
-          text = "Already claimed";
-        } else {
-          text = "Already paid";
-        }
-      } else if (isOpenToClaim) {
-        text = "Open for claims";
-      } else {
-        text = formatDistanceToNow(
-          new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-          {
-            addSuffix: true,
-          }
-        );
-      }
-
       return (
         <div
           className={cn(
             "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
           )}
         >
-          <SecondaryLabel className="text-black">
-            {RewardStyleMap[props.row.original.reward_style].label}
-          </SecondaryLabel>
-
-          <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
+          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
         </div>
       );
     },
@@ -202,22 +149,6 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
       className: "min-w-32 w-64",
     },
     cell: (props: any) => {
-      const unlockDate = new Date(
-        parseInt(props.row.original.unlock_timestamp) * 1000
-      );
-
-      let costText = null;
-
-      if (props.row.original.offer_side === 0) {
-        if (props.row.original.is_withdrawn === true) {
-          costText = "Withdrawn";
-        } else if (unlockDate < new Date()) {
-          costText = "Can Withdraw";
-        } else {
-          costText = "Locked";
-        }
-      }
-
       return (
         <div
           className={cn(
@@ -246,74 +177,13 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
               }).format(props.row.original.input_token_data.token_amount)}{" "}
               {props.row.original.input_token_data.symbol.toUpperCase()}
             </SecondaryLabel>
-
-            {costText && (
-              <SecondaryLabel
-                className={cn("text-tertiary", BASE_UNDERLINE.SM)}
-              >
-                {costText}
-              </SecondaryLabel>
-            )}
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "unlock_timestamp",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Input Token",
-    meta: {
-      className: "min-w-32",
-    },
-    cell: (props: any) => {
-      let text = "";
-
-      let unlockDate = new Date(
-        parseInt(props.row.original.unlock_timestamp) * 1000
-      );
-
-      let currentDate = new Date();
-
-      if (props.row.original.is_withdrawn === true) {
-        if (props.row.original.offer_side === 0) {
-          text = "Already Withdrawn";
-        } else {
-          text = "Already Paid";
-        }
-      } else if (
-        props.row.original.is_forfeited === true ||
-        unlockDate < currentDate
-      ) {
-        if (props.row.original.offer_side === 0) {
-          text = "Open for Withdrawal";
-        } else {
-          text = "To be Paid";
-        }
-      } else {
-        if (props.row.original.offer_side === 0) {
-          text = `Withdrawal ${formatDistanceToNow(
-            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-            {
-              addSuffix: true,
-            }
-          )}`;
-        } else {
-          text = `Pay ${formatDistanceToNow(
-            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-            {
-              addSuffix: true,
-            }
-          )}`;
-        }
-      }
-
-      return <div className={cn("font-gt text-sm font-300")}>{text}</div>;
-    },
-  },
-  {
-    accessorKey: "token_amounts",
+    accessorKey: "unclaimed_incentives",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
@@ -324,10 +194,8 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
       let unclaimed_incentives_usd = 0;
 
       for (let i = 0; i < props.row.original.tokens_data.length; i++) {
-        if (props.row.original.is_claimed[i] === false) {
-          unclaimed_incentives_usd +=
-            props.row.original.tokens_data[i].token_amount_usd;
-        }
+        unclaimed_incentives_usd +=
+          props.row.original.tokens_data[i].token_amount_usd;
       }
 
       if (props.row.original.offer_side === 1) {
@@ -361,20 +229,11 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
             <div className="flex flex-col gap-1">
               {props.row.original.tokens_data.map(
                 (token: any, tokenIndex: number) => {
-                  const isClaimed = props.row.original.is_claimed[tokenIndex];
-
-                  let claimText = isClaimed ? "Claimed" : "Can Claim";
-
-                  const unlockDate = new Date(
-                    parseInt(props.row.original.unlock_timestamp) * 1000
-                  );
-
-                  if (isClaimed === false && unlockDate > new Date()) {
-                    claimText = "Locked";
-                  }
-
                   return (
-                    <div className="flex flex-row items-center space-x-2">
+                    <div
+                      key={`${props.row.original.id}:unclaimed_incentives:${token.id}`}
+                      className="flex flex-row items-center space-x-2"
+                    >
                       <SecondaryLabel className="text-tertiary">
                         {Intl.NumberFormat("en-US", {
                           style: "decimal",
@@ -384,15 +243,6 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
                           maximumFractionDigits: 8,
                         }).format(token.token_amount)}{" "}
                         {token.symbol.toUpperCase()}
-                      </SecondaryLabel>
-
-                      <SecondaryLabel
-                        className={cn(
-                          "text-tertiary decoration-transparent",
-                          BASE_UNDERLINE.SM
-                        )}
-                      >
-                        {claimText}
                       </SecondaryLabel>
                     </div>
                   );
@@ -405,7 +255,7 @@ export const positionsColumns: ColumnDef<EnrichedPositionsRecipeDataType> = [
     },
   },
   {
-    accessorKey: "input_token_id",
+    accessorKey: "market_value",
     enableResizing: false,
     enableSorting: false,
     header: "Market Value",
