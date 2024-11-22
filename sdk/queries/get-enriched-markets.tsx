@@ -159,7 +159,7 @@ export const getEnrichedMarketsQueryOptions = (
       filters: filterClauses,
       sorting: sortingClauses,
       search_key: search_key,
-      is_verified: is_verified,
+      ...(is_verified === true ? { is_verified: is_verified } : {}),
       custom_token_data: custom_token_data,
     });
 
