@@ -45,7 +45,7 @@ export const FundingVaultSelector = React.forwardRef<
   });
 
   useEffect(() => {
-    if (data && data.data) {
+    if (data && data.data && data.count) {
       setVaults((prevVaults) => {
         const newVaults =
           data.data as unknown as EnrichedPositionsVaultDataType[];
