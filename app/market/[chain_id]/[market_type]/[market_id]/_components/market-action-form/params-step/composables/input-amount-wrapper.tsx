@@ -39,7 +39,7 @@ export const InputAmountWrapper = React.forwardRef<
 >(({ className, marketActionForm, delay, ...props }, ref) => {
   const { address } = useAccount();
   const { currentMarketData, marketMetadata } = useActiveMarket();
-  const { offerType, userType, fundingType } = useMarketManager();
+  const { offerType, userType, viewType, fundingType } = useMarketManager();
 
   const { isLoading: isLoadingWallet, data: dataWallet } = useAccountBalance({
     chain_id: marketMetadata.chain_id,
@@ -105,7 +105,7 @@ export const InputAmountWrapper = React.forwardRef<
   return (
     <SlideUpWrapper
       layout="position"
-      layoutId={`motion:market:amount-selector:${userType}`}
+      layoutId={`motion:market:amount-selector:${userType}:${viewType}`}
       delay={delay ?? 0}
     >
       {/**
