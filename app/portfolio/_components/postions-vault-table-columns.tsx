@@ -7,6 +7,8 @@ import { EnrichedOfferDataType } from "@/sdk/queries";
 
 import { getChain } from "@/sdk/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { MarketType } from "@/store/market-manager-props";
+import Link from "next/link";
 
 /**
  * @description Column definitions for the table
@@ -27,19 +29,23 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
     cell: (props: any) => {
       return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
+        <Link
+          href={`/market/${props.row.original.chain_id}/${MarketType.vault.id}/${props.row.original.market_id}`}
         >
-          <SecondaryLabel className="text-black">
-            {props.row.original.name}
-          </SecondaryLabel>
+          <div
+            className={cn(
+              "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+            )}
+          >
+            <SecondaryLabel className="text-black">
+              {props.row.original.name || "Unknown market"}
+            </SecondaryLabel>
 
-          <SecondaryLabel className="text-tertiary">
-            {getChain(props.row.original.chain_id).name}
-          </SecondaryLabel>
-        </div>
+            <SecondaryLabel className="text-tertiary">
+              {getChain(props.row.original.chain_id).name}
+            </SecondaryLabel>
+          </div>
+        </Link>
       );
     },
   },

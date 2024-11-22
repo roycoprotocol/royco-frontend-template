@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { BadgeCheckIcon } from "lucide-react";
+
 export const InputVaultSelector = React.forwardRef<
   HTMLInputElement,
   React.HTMLAttributes<HTMLDivElement> & {
