@@ -152,6 +152,7 @@ export const MarketActionForm = React.forwardRef<
 
   useEffect(() => {
     if (viewType === MarketViewType.simple.id) {
+      setOfferType(MarketOfferType.market.id);
       setUserType(MarketUserType.ap.id);
     }
   }, [viewType]);
@@ -295,7 +296,8 @@ export const MarketActionForm = React.forwardRef<
           )}
 
         {marketStep === MarketSteps.params.id &&
-          actionType === MarketActionType.supply.id && (
+          actionType === MarketActionType.supply.id &&
+          viewType === MarketViewType.advanced.id && (
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:offer-type-selector"

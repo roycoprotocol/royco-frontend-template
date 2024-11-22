@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
@@ -15,7 +15,12 @@ import {
   LoadingSpinner,
   SpringNumber,
 } from "@/components/composables";
-import { MarketRewardStyle, MarketScriptType, useMarketManager } from "@/store";
+import {
+  MarketRewardStyle,
+  MarketScriptType,
+  MarketViewType,
+  useMarketManager,
+} from "@/store";
 import {
   HoverCard,
   HoverCardContent,
@@ -34,8 +39,13 @@ import { secondsToDuration } from "@/app/create/_components/market-builder-form"
 import { ChevronDown, ExternalLinkIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { capitalize } from "lodash";
-import { ScrollArea } from "../../../../../../../components/ui/scroll-area";
+import { isEqual } from "lodash";
+import {
+  useEnrichedAccountBalancesRecipeInMarket,
+  useEnrichedAccountBalancesVaultInMarket,
+} from "@/sdk/hooks";
+import { useAccount } from "wagmi";
+import { produce } from "immer";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -62,6 +72,76 @@ export const MarketInfo = React.forwardRef<
   const { scriptType, setScriptType, viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
+
+  const { address } = useAccount();
+
+  const {
+    isLoading: isLoadingRecipe,
+    isRefetching: isRefetchingRecipe,
+    data: dataRecipe,
+  } = useEnrichedAccountBalancesRecipeInMarket({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    account_address: address ? address.toLowerCase() : "",
+    custom_token_data: undefined,
+  });
+
+  const {
+    isLoading: isLoadingVault,
+    isRefetching: isRefetchingVault,
+    data: dataVault,
+  } = useEnrichedAccountBalancesVaultInMarket({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    account_address: address ? address.toLowerCase() : "",
+    custom_token_data: undefined,
+  });
+
+  const [placeholderData, setPlaceholderData] = React.useState<
+    Array<typeof dataRecipe | typeof dataVault | undefined>
+  >([undefined, undefined]);
+
+  /**
+   * @effect Update placeholder data for recipe
+   */
+  useEffect(() => {
+    if (
+      marketMetadata.market_type === MarketType.recipe.id &&
+      isLoadingRecipe === false &&
+      isRefetchingRecipe === false &&
+      !isEqual(dataRecipe, placeholderData[1])
+    ) {
+      setPlaceholderData((prevDatas) => {
+        return produce(prevDatas, (draft) => {
+          if (!isEqual(draft[1], dataRecipe)) {
+            draft[0] = draft[1] as typeof dataRecipe;
+            draft[1] = dataRecipe as typeof dataRecipe;
+          }
+        });
+      });
+    }
+  }, [isLoadingRecipe, isRefetchingRecipe, dataRecipe]);
+
+  /**
+   * @effect Update placeholder data for vault
+   */
+  useEffect(() => {
+    if (
+      marketMetadata.market_type === MarketType.vault.id &&
+      isLoadingVault === false &&
+      isRefetchingVault === false &&
+      !isEqual(dataVault, placeholderData[1])
+    ) {
+      setPlaceholderData((prevDatas) => {
+        return produce(prevDatas, (draft) => {
+          if (!isEqual(draft[1], dataVault)) {
+            draft[0] = draft[1] as typeof dataVault;
+            draft[1] = dataVault as typeof dataVault;
+          }
+        });
+      });
+    }
+  }, [isLoadingVault, isRefetchingVault, dataVault]);
 
   if (
     !isLoading &&
@@ -104,65 +184,112 @@ export const MarketInfo = React.forwardRef<
            * Annual Incentive Percent
            */}
 
-          <div className="hide-scrollbar flex gap-x-8 overflow-x-scroll">
-            <div>
-              <PrimaryLabel className={cn("text-3xl font-light")}>
-                {(currentMarketData.annual_change_ratio ?? 0) >=
-                Math.pow(10, 18) ? (
-                  `0`
-                ) : (
-                  <SpringNumber
-                    previousValue={
-                      previousMarketData &&
-                      previousMarketData.annual_change_ratio
-                        ? previousMarketData.annual_change_ratio
-                        : 0
-                    }
-                    currentValue={currentMarketData.annual_change_ratio ?? 0}
-                    numberFormatOptions={{
-                      style: "percent",
-                      notation: "compact",
-                      useGrouping: true,
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }}
-                  />
-                )}
-              </PrimaryLabel>
-              <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
-                Annual Percentage Rate
-              </TertiaryLabel>
-            </div>
-
-            {marketMetadata.market_type === MarketType.recipe.id && (
-              <div>
-                <PrimaryLabel className={cn("text-3xl font-light capitalize")}>
-                  {formatDuration(
-                    Object.entries(
-                      secondsToDuration(currentMarketData.lockup_time)
-                    )
-                      .filter(([_, value]) => value > 0) // Filter out zero values
-                      .slice(0, 2) // Take the first two non-zero units
-                      .reduce(
-                        (acc, [unit, value]) => ({ ...acc, [unit]: value }),
-                        {}
-                      )
+          <div
+            className={cn(
+              "flex flex-col gap-4",
+              viewType === MarketViewType.advanced.id
+                ? "md:flex-col"
+                : "md:flex-row"
+            )}
+          >
+            {placeholderData[1] && placeholderData[1].balance_usd_ap > 0 && (
+              <div className="hide-scrollbar flex-1 overflow-x-scroll rounded-xl border bg-z2 p-3">
+                <SecondaryLabel>Balance</SecondaryLabel>
+                <PrimaryLabel
+                  className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
+                >
+                  {(currentMarketData.annual_change_ratio ?? 0) >=
+                  Math.pow(10, 18) ? (
+                    `0`
+                  ) : (
+                    <SpringNumber
+                      previousValue={
+                        placeholderData[0]
+                          ? placeholderData[0].balance_usd_ap
+                          : 0
+                      }
+                      currentValue={
+                        placeholderData[1]
+                          ? placeholderData[1].balance_usd_ap
+                          : 0
+                      }
+                      numberFormatOptions={{
+                        style: "currency",
+                        currency: "USD",
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }}
+                    />
                   )}
-                  {currentMarketData.lockup_time === "0" && "No Lockup"}
                 </PrimaryLabel>
-                <TertiaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
-                  Lockup
-                </TertiaryLabel>
               </div>
             )}
+
+            <div className="flex flex-1 rounded-xl border bg-z2">
+              <div className="hide-scrollbar flex-1 overflow-x-scroll p-3">
+                <SecondaryLabel>APR</SecondaryLabel>
+                <PrimaryLabel
+                  className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
+                >
+                  {(currentMarketData.annual_change_ratio ?? 0) >=
+                  Math.pow(10, 18) ? (
+                    `0`
+                  ) : (
+                    <SpringNumber
+                      previousValue={
+                        previousMarketData &&
+                        previousMarketData.annual_change_ratio
+                          ? previousMarketData.annual_change_ratio
+                          : 0
+                      }
+                      currentValue={currentMarketData.annual_change_ratio ?? 0}
+                      numberFormatOptions={{
+                        style: "percent",
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }}
+                    />
+                  )}
+                </PrimaryLabel>
+              </div>
+
+              {marketMetadata.market_type === MarketType.recipe.id &&
+                currentMarketData.lockup_time !== "0" && (
+                  <div className="hide-scrollbar flex-1 overflow-x-scroll border-l p-3">
+                    <SecondaryLabel>Lockup</SecondaryLabel>
+                    <PrimaryLabel
+                      className={cn(
+                        BASE_MARGIN_TOP.SM,
+                        "text-3xl font-light capitalize"
+                      )}
+                    >
+                      {formatDuration(
+                        Object.entries(
+                          secondsToDuration(currentMarketData.lockup_time)
+                        )
+                          .filter(([_, value]) => value > 0) // Filter out zero values
+                          .slice(0, 2) // Take the first two non-zero units
+                          .reduce(
+                            (acc, [unit, value]) => ({ ...acc, [unit]: value }),
+                            {}
+                          )
+                      )}
+                    </PrimaryLabel>
+                  </div>
+                )}
+            </div>
           </div>
 
-          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL)}>
+          {/* <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL)}>
             {currentMarketData.description ?? "No description available"}
-          </SecondaryLabel>
+          </SecondaryLabel> */}
 
           <button onClick={() => setShowTransactionDetails((prev) => !prev)}>
-            <SecondaryLabel className={cn(BASE_MARGIN_TOP.SM)}>
+            <TertiaryLabel className={cn(BASE_MARGIN_TOP.XL, "text-sm")}>
               <span>Transaction details</span>
               <motion.div
                 animate={{ rotate: showTransactionDetails ? 180 : 0 }}
@@ -171,7 +298,7 @@ export const MarketInfo = React.forwardRef<
               >
                 <ChevronDown className="h-5 " />
               </motion.div>
-            </SecondaryLabel>
+            </TertiaryLabel>
           </button>
 
           {/**
