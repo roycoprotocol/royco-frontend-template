@@ -1,15 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import {
-  FormInputLabel,
-  LoadingSpinner,
-  SpringNumber,
-} from "@/components/composables";
-import {
-  MarketFundingType,
-  MarketOfferType,
-  MarketVaultIncentiveAction,
-} from "@/store";
+import { FormInputLabel } from "@/components/composables";
+import { MarketFundingType } from "@/store";
 import { useMarketManager } from "@/store";
 import {
   Select,
@@ -18,16 +10,10 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { FallMotion } from "@/components/animations";
-import {
-  RoycoMarketFundingType,
-  TypedRoycoMarketFundingType,
-  TypedRoycoMarketVaultIncentiveAction,
-} from "@/sdk/market";
-import { useAccountBalance, useVaultBalance } from "@/sdk/hooks";
+import { TypedRoycoMarketFundingType } from "@/sdk/market";
+
 import { useActiveMarket } from "../../../hooks";
 import { useAccount } from "wagmi";
-import { NULL_ADDRESS } from "@/sdk/constants";
-import { TertiaryLabel } from "../../../composables";
 
 export const FundingTypeSelector = React.forwardRef<
   HTMLDivElement,
@@ -35,9 +21,7 @@ export const FundingTypeSelector = React.forwardRef<
     fundingVaultAddress: string;
   }
 >(({ className, fundingVaultAddress, ...props }, ref) => {
-  const { address } = useAccount();
   const { fundingType, setFundingType } = useMarketManager();
-  const { currentMarketData, marketMetadata } = useActiveMarket();
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -76,22 +60,23 @@ export const FundingTypeSelector = React.forwardRef<
         </SelectTrigger>
 
         <SelectContent className="w-full">
-          <SelectItem
+          {/* <SelectItem
             className="text-sm"
             key={MarketFundingType.wallet.id}
             value={MarketFundingType.wallet.id}
+
           >
             {MarketFundingType.wallet.label}
-          </SelectItem>
+          </SelectItem> */}
 
           {/**
            * @note Below code is for selecting funding vault, it is disabled for now
            */}
-          {/* {Object.values(MarketFundingType).map((option) => (
+          {Object.values(MarketFundingType).map((option) => (
             <SelectItem className="text-sm" key={option.id} value={option.id}>
               {option.label}
             </SelectItem>
-          ))} */}
+          ))}
         </SelectContent>
       </Select>
     </div>
