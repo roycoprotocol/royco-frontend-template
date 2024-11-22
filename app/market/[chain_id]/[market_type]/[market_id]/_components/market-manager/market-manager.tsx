@@ -201,7 +201,7 @@ export const MarketManager = React.forwardRef<
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",
             viewType === MarketViewType.simple.id &&
-              "h-fit max-w-lg flex-col md:min-h-[90vh]",
+              "h-fit max-w-lg flex-col md:min-h-[800px]",
             "flex-0"
           )}
         >

@@ -280,7 +280,7 @@ export const MarketActionForm = React.forwardRef<
           userType === MarketUserType.ap.id && (
             <SlideUpWrapper
               layout="position"
-              layoutId="motion:market:action-type"
+              layoutId={`motion:market:action-type:${viewType}`}
               className={cn("mt-5 flex flex-col px-5")}
             >
               <HorizontalTabs
