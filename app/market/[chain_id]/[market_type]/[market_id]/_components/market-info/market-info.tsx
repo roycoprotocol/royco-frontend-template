@@ -15,7 +15,12 @@ import {
   LoadingSpinner,
   SpringNumber,
 } from "@/components/composables";
-import { MarketRewardStyle, MarketScriptType, useMarketManager } from "@/store";
+import {
+  MarketRewardStyle,
+  MarketScriptType,
+  MarketViewType,
+  useMarketManager,
+} from "@/store";
 import {
   HoverCard,
   HoverCardContent,
@@ -179,7 +184,14 @@ export const MarketInfo = React.forwardRef<
            * Annual Incentive Percent
            */}
 
-          <div className="flex flex-col gap-4 md:flex-row ">
+          <div
+            className={cn(
+              "flex flex-col gap-4",
+              viewType === MarketViewType.advanced.id
+                ? "md:flex-col"
+                : "md:flex-row"
+            )}
+          >
             {placeholderData[1] && placeholderData[1].balance_usd_ap > 0 && (
               <div className="hide-scrollbar flex-1 overflow-x-scroll rounded-xl border bg-z2 p-3">
                 <SecondaryLabel>Balance</SecondaryLabel>
