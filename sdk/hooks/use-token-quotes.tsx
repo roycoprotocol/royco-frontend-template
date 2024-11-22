@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getTokenQuotesQueryOptions } from "../queries";
 import { RoycoClient, useRoycoClient } from "../client";
 import { getSupportedToken, SupportedToken } from "../constants";
-import { useCustomTokenQuotes } from "./use-custom-token-quotes";
 
 export const useTokenQuotes = ({
   token_ids,
