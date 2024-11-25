@@ -222,18 +222,18 @@ export const getEnrichedPositionsVaultQueryOptions = (
             let raw_input_token_amount: string = "0";
 
             if (row.offer_side === RoycoMarketUserType.ap.value) {
-              const raw_input_token_amount_data = await publicClient.multicall({
-                contracts: [
-                  {
-                    address: market_id as Address,
-                    abi: ContractMap[chain_id as keyof typeof ContractMap][
-                      "WrappedVault"
-                    ].abi as Abi,
-                    functionName: "convertToAssets",
-                    args: [row.quantity],
-                  },
-                ],
-              });
+              // const raw_input_token_amount_data = await publicClient.multicall({
+              //   contracts: [
+              //     {
+              //       address: market_id as Address,
+              //       abi: ContractMap[chain_id as keyof typeof ContractMap][
+              //         "WrappedVault"
+              //       ].abi as Abi,
+              //       functionName: "convertToAssets",
+              //       args: [row.quantity],
+              //     },
+              //   ],
+              // });
 
               raw_input_token_amount = parseRawAmount(
                 raw_input_token_amount_ap_data[0].status === "success"
