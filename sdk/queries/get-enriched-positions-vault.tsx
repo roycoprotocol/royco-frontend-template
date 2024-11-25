@@ -116,8 +116,6 @@ export const getEnrichedPositionsVaultQueryOptions = (
 
       const new_rows = await Promise.all(
         rows.map(async (row) => {
-          console.log("row shares", row.quantity);
-
           if (
             !!row.input_token_id &&
             !!row.token_ids &&
