@@ -19,7 +19,8 @@ export const TokenBadge = React.forwardRef<HTMLDivElement, TokenBadgeProps>(
     return (
       <button
         className={cn(
-          "flex cursor-pointer flex-row items-center gap-[0.375rem] rounded-full border border-divider px-[0.438rem] py-1 transition-all duration-200 ease-in-out hover:border-tertiary hover:text-black",
+          "flex cursor-pointer flex-row items-center gap-[0.375rem] rounded-full border border-divider py-1 transition-all duration-200 ease-in-out hover:border-tertiary hover:text-black",
+          "px-[0.438rem]",
           className
         )}
         onClick={onClick}
@@ -35,17 +36,16 @@ export const TokenBadge = React.forwardRef<HTMLDivElement, TokenBadgeProps>(
         <div
           className={cn(
             "body-2 flex items-center text-primary",
-            browser &&
-              (browser.name === "safari" || browser.name === "ios-webview")
-              ? ""
-              : "h-5"
+            "h-5"
+            // browser &&
+            //   (browser.name === "safari" || browser.name === "ios-webview")
+            //   ? ""
+            //   : "h-5"
           )}
         >
-          <span className="mt-px flex">{token.symbol.toUpperCase()}</span>
+          {/* <span className="mt-px flex">{token.symbol}</span> */}
 
-          {/* <span className=""></span> */}
-          {/* <span className="leading-5">{token.symbol.toUpperCase()}</span> */}
-          {/* <span className="leading-5">{token.symbol}</span> */}
+          {token.symbol}
         </div>
       </button>
     );
