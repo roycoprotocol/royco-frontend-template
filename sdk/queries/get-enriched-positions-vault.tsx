@@ -134,7 +134,7 @@ export const getEnrichedPositionsVaultQueryOptions = (
             // Create the contracts array for incentives
             const incentives_ap_contracts = row.token_ids.map(
               (incentiveId) => ({
-                address: market_id as Address,
+                address: row.market_id as Address,
                 abi: ContractMap[row.chain_id as keyof typeof ContractMap][
                   "WrappedVault"
                 ].abi as Abi,
@@ -202,7 +202,7 @@ export const getEnrichedPositionsVaultQueryOptions = (
               {
                 contracts: [
                   {
-                    address: market_id as Address,
+                    address: row.market_id as Address,
                     abi: ContractMap[row.chain_id as keyof typeof ContractMap][
                       "WrappedVault"
                     ].abi as Abi,
