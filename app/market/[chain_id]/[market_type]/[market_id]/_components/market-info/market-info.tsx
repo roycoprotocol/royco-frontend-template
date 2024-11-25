@@ -186,44 +186,52 @@ export const MarketInfo = React.forwardRef<
 
           <div
             className={cn(
-              "flex flex-col gap-4",
-              viewType === MarketViewType.advanced.id
+              "flex gap-4",
+              marketMetadata.market_type === MarketType.recipe.id &&
+                currentMarketData.lockup_time !== "0"
+                ? "flex-col"
+                : "flex-row",
+              viewType === MarketViewType.advanced.id &&
+                marketMetadata.market_type === MarketType.recipe.id &&
+                currentMarketData.lockup_time !== "0"
                 ? "md:flex-col"
                 : "md:flex-row"
             )}
           >
             {placeholderData[1] && placeholderData[1].balance_usd_ap > 0 && (
-              <div className="hide-scrollbar flex-1 overflow-x-scroll rounded-xl border bg-z2 p-3">
-                <SecondaryLabel>Balance</SecondaryLabel>
-                <PrimaryLabel
-                  className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
-                >
-                  {(currentMarketData.annual_change_ratio ?? 0) >=
-                  Math.pow(10, 18) ? (
-                    `0`
-                  ) : (
-                    <SpringNumber
-                      previousValue={
-                        placeholderData[0]
-                          ? placeholderData[0].balance_usd_ap
-                          : 0
-                      }
-                      currentValue={
-                        placeholderData[1]
-                          ? placeholderData[1].balance_usd_ap
-                          : 0
-                      }
-                      numberFormatOptions={{
-                        style: "currency",
-                        currency: "USD",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-                  )}
-                </PrimaryLabel>
+              <div className="flex flex-1">
+                <div className="hide-scrollbar flex-1 overflow-x-scroll rounded-xl border bg-z2 p-3">
+                  <SecondaryLabel>Balance</SecondaryLabel>
+                  <PrimaryLabel
+                    className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
+                  >
+                    {(currentMarketData.annual_change_ratio ?? 0) >=
+                    Math.pow(10, 18) ? (
+                      `0`
+                    ) : (
+                      <SpringNumber
+                        previousValue={
+                          placeholderData[0]
+                            ? placeholderData[0].balance_usd_ap
+                            : 0
+                        }
+                        currentValue={
+                          placeholderData[1]
+                            ? placeholderData[1].balance_usd_ap
+                            : 0
+                        }
+                        numberFormatOptions={{
+                          style: "currency",
+                          currency: "USD",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+                    )}
+                  </PrimaryLabel>
+                </div>
               </div>
             )}
 
