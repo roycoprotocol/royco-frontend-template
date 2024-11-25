@@ -130,14 +130,17 @@ export function DataTable<TData, TValue>({
               );
 
               return (
-                <motion.div
-                  onClick={() => {
-                    window.open(
-                      `/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`,
-                      "_self",
-                      "noopener,noreferrer"
-                    );
-                  }}
+                <motion.a
+                  target="_self"
+                  rel="noopener noreferrer"
+                  href={`/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`}
+                  // onClick={() => {
+                  //   window.open(
+                  //     `/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`,
+                  //     "_self",
+                  //     "noopener,noreferrer"
+                  //   );
+                  // }}
                   key={`grid:row:${row.id}`}
                   className="relative mb-3 w-full cursor-pointer rounded-[1.25rem] border border-divider bg-white p-5 transition-all duration-200 ease-in-out hover:shadow-md"
                 >
@@ -287,7 +290,7 @@ export function DataTable<TData, TValue>({
                         )}
                     </InfoGrid.Container>
                   )}
-                </motion.div>
+                </motion.a>
               );
             })}
           </div>

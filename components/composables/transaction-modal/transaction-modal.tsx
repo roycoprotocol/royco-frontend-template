@@ -7,7 +7,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -15,24 +14,39 @@ import {
 import { cn } from "@/lib/utils";
 import { MarketSteps, useMarketManager } from "@/store";
 import React, { useEffect, useMemo, useState } from "react";
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { LoadingSpinner } from "../loading-spinner";
 import { ErrorAlert } from "../alerts";
 import toast from "react-hot-toast";
 import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
 import { TransactionOptionsType } from "@/sdk/types";
-import { SlideUpWrapper } from "@/components/animations";
 import { useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
+import { switchChain } from "@wagmi/core";
+import { config } from "@/components/web3-modal/modal-config";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
+  const { chain } = useAccount();
+  const chainId = chain?.id;
+
   const { className, ...otherProps } = props;
   const { transactions, setTransactions, marketStep, setMarketStep } =
     useMarketManager();
+
+  const shouldSwitchChain = useMemo(() => {
+    if (transactions.length > 0 && chainId !== transactions[0]?.chainId) {
+      return true;
+    }
+    return false;
+  }, [chainId, transactions]);
 
   const queryClient = useQueryClient();
 
@@ -258,18 +272,38 @@ export const TransactionModal = React.forwardRef<
             )}
           </div>
           <div className="flex flex-col space-y-2">
-            <Button
-              className="h-9 text-sm"
-              disabled={isTxPending || isTxConfirming || isTransactionTimeout}
-              onClick={handleNextStep}
-              type="submit"
-            >
-              {isTxPending || isTxConfirming || isTransactionTimeout ? (
-                <LoadingSpinner className="h-5 w-5" />
-              ) : (
-                <div className="h-5">{getNextLabel()}</div>
-              )}
-            </Button>
+            {shouldSwitchChain ? (
+              <Button
+                className="h-9 text-sm"
+                onClick={async () => {
+                  try {
+                    await switchChain(config, {
+                      chainId: transactions[0]?.chainId,
+                    });
+                  } catch (error) {
+                    console.log(error);
+                    toast.custom(
+                      <ErrorAlert message="Error switching chain." />
+                    );
+                  }
+                }}
+              >
+                <div className="h-5">Switch Chain</div>
+              </Button>
+            ) : (
+              <Button
+                className="h-9 text-sm"
+                disabled={isTxPending || isTxConfirming || isTransactionTimeout}
+                onClick={handleNextStep}
+                type="submit"
+              >
+                {isTxPending || isTxConfirming || isTransactionTimeout ? (
+                  <LoadingSpinner className="h-5 w-5" />
+                ) : (
+                  <div className="h-5">{getNextLabel()}</div>
+                )}
+              </Button>
+            )}
 
             {(!allTransactionsExecuted || isTransactionTimeout) && (
               <DialogClose asChild>
