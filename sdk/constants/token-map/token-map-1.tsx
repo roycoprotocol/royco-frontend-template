@@ -11851,4 +11851,17 @@ export const TokenMap1 = {
     image: "https://basescan.org/token/images/wsteth3_32.png",
     decimals: 18,
   },
+
+  "1-0x270b7748cdf8243bfe68face7230ef0fce695389": {
+    source: "coinmarketcap",
+    search_id: 9999,
+    id: "1-0x270b7748cdf8243bfe68face7230ef0fce695389",
+    chain_id: 1,
+    contract_address: "0x270b7748cdf8243bfe68face7230ef0fce695389",
+    name: "Hinkal ETH",
+    symbol: "hETH",
+    image:
+      "https://assets.coingecko.com/coins/images/50579/large/hETH_Icon_CG.png?1728408977",
+    decimals: 18,
+  },
 };

@@ -215,24 +215,41 @@ export const getEnrichedPositionsVaultQueryOptions = (
               }
             );
 
-            const raw_input_token_amount_ap = parseRawAmount(
-              raw_input_token_amount_ap_data[0].status === "success"
-                ? (raw_input_token_amount_ap_data[0].result?.toString() ?? "0")
-                : "0"
-            );
-
             const input_token_info: SupportedToken = getSupportedToken(
               row.input_token_id
             );
+
+            let raw_input_token_amount: string = "0";
+
+            if (row.offer_side === RoycoMarketUserType.ap.value) {
+              const raw_input_token_amount_data = await publicClient.multicall({
+                contracts: [
+                  {
+                    address: market_id as Address,
+                    abi: ContractMap[chain_id as keyof typeof ContractMap][
+                      "WrappedVault"
+                    ].abi as Abi,
+                    functionName: "convertToAssets",
+                    args: [row.quantity],
+                  },
+                ],
+              });
+
+              raw_input_token_amount = parseRawAmount(
+                raw_input_token_amount_ap_data[0].status === "success"
+                  ? (raw_input_token_amount_ap_data[0].result?.toString() ??
+                      "0")
+                  : "0"
+              );
+            } else {
+              raw_input_token_amount = row.quantity ?? "0";
+            }
+
             const input_token_price: number = row.input_token_price ?? 0;
             const input_token_fdv: number = row.input_token_fdv ?? 0;
             const input_token_total_supply: number =
               row.input_token_total_supply ?? 0;
-            const input_token_raw_amount: string = parseRawAmount(
-              row.offer_side === RoycoMarketUserType.ap.value
-                ? raw_input_token_amount_ap
-                : row.quantity
-            );
+            const input_token_raw_amount: string = raw_input_token_amount;
 
             const input_token_token_amount: number =
               parseRawAmountToTokenAmount(
