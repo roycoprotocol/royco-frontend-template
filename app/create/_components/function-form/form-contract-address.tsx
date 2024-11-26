@@ -71,9 +71,8 @@ export const FormContractAddress = ({ control }: { control: any }) => {
                           isValid === false &&
                           "outline-error"
                       )}
-                      value={field.value}
-                      onChange={field.onChange}
-                      // {...field}
+                      value={field.value?.trim() ?? ""}
+                      onChange={(e) => field.onChange(e.target.value.trim())}
                     />
 
                     {/**

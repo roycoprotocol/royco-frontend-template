@@ -53,7 +53,7 @@ export const ActionTypeMap: Record<
     label: "Recipe Market",
     tag: "",
     description:
-      "Incentivize any onchain transaction (or series of transaction).",
+      "Incentivize any onchain transaction (or series of transactions).",
     icon: ScrollTextIcon,
   },
   vault: {

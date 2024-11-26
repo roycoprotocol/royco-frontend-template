@@ -182,7 +182,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
            * @description Asset filter
            */}
           <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
-            <h5 className="">Base Asset</h5>
+            <h5 className="">Input Asset</h5>
 
             <div className="flex flex-wrap gap-2">
               <AssetsFilter />
