@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useMarketManager } from "@/store";
 import {
   MarketSteps,
@@ -51,6 +51,9 @@ export const MarketManager = React.forwardRef<
   } = useActiveMarket();
 
   const { address: walletAddress } = useAccount();
+  const [connectWalletAddress, setConnectWalletAddress] = useState<
+    `0x${string}` | undefined
+  >(undefined);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,16 +66,23 @@ export const MarketManager = React.forwardRef<
   }, []);
 
   useEffect(() => {
+    if (!!currentMarketData && walletAddress !== connectWalletAddress) {
+      setConnectWalletAddress(walletAddress);
+    }
+  }, [walletAddress, currentMarketData]);
+
+  useEffect(() => {
     if (
-      currentMarketData &&
+      !!currentMarketData &&
+      !!currentMarketData.owner &&
+      !!connectWalletAddress &&
       currentMarketData.market_type === MarketType.vault.value &&
-      walletAddress &&
-      currentMarketData.owner &&
-      walletAddress.toLowerCase() === currentMarketData.owner.toLowerCase()
+      connectWalletAddress.toLowerCase() ===
+        currentMarketData.owner.toLowerCase()
     ) {
       setUserType(MarketUserType.ip.id);
     }
-  }, [currentMarketData, walletAddress]);
+  }, [connectWalletAddress]);
 
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
