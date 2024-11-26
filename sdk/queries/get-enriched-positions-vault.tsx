@@ -116,8 +116,6 @@ export const getEnrichedPositionsVaultQueryOptions = (
 
       const new_rows = await Promise.all(
         rows.map(async (row) => {
-          console.log("row shares", row.quantity);
-
           if (
             !!row.input_token_id &&
             !!row.token_ids &&
@@ -136,7 +134,7 @@ export const getEnrichedPositionsVaultQueryOptions = (
             // Create the contracts array for incentives
             const incentives_ap_contracts = row.token_ids.map(
               (incentiveId) => ({
-                address: market_id as Address,
+                address: row.market_id as Address,
                 abi: ContractMap[row.chain_id as keyof typeof ContractMap][
                   "WrappedVault"
                 ].abi as Abi,
@@ -204,7 +202,7 @@ export const getEnrichedPositionsVaultQueryOptions = (
               {
                 contracts: [
                   {
-                    address: market_id as Address,
+                    address: row.market_id as Address,
                     abi: ContractMap[row.chain_id as keyof typeof ContractMap][
                       "WrappedVault"
                     ].abi as Abi,
@@ -222,18 +220,18 @@ export const getEnrichedPositionsVaultQueryOptions = (
             let raw_input_token_amount: string = "0";
 
             if (row.offer_side === RoycoMarketUserType.ap.value) {
-              const raw_input_token_amount_data = await publicClient.multicall({
-                contracts: [
-                  {
-                    address: market_id as Address,
-                    abi: ContractMap[chain_id as keyof typeof ContractMap][
-                      "WrappedVault"
-                    ].abi as Abi,
-                    functionName: "convertToAssets",
-                    args: [row.quantity],
-                  },
-                ],
-              });
+              // const raw_input_token_amount_data = await publicClient.multicall({
+              //   contracts: [
+              //     {
+              //       address: market_id as Address,
+              //       abi: ContractMap[chain_id as keyof typeof ContractMap][
+              //         "WrappedVault"
+              //       ].abi as Abi,
+              //       functionName: "convertToAssets",
+              //       args: [row.quantity],
+              //     },
+              //   ],
+              // });
 
               raw_input_token_amount = parseRawAmount(
                 raw_input_token_amount_ap_data[0].status === "success"

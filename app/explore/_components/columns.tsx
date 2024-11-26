@@ -246,6 +246,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               {props.row.original.market_type === 0 ? "Recipe" : "Vault"}
             </span>
           </div>
+
+          {/* {props.row.original.market_type === 0 ? "Recipe" : "Vault"} */}
         </div>
       );
     },
