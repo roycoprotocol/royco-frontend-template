@@ -99,9 +99,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     header: ({ column }: { column: any }) => {
       return <HeaderWrapper column={column} />;
     },
-
     meta: {
-      className: "min-w-72 shrink-0",
+      className: "min-w-60 shrink-0",
     },
     cell: (props: any) => {
       return (
@@ -109,40 +108,37 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           key={`${props.view}:market:${props.row.original.id}:name`}
           className={cn(
             props.column.columnDef.meta.className,
-            props.view === "list" && "body-2 text-black",
-            props.view === "grid" &&
-              "body-1 w-fit overflow-hidden truncate text-ellipsis whitespace-nowrap text-black",
-            "flex flex-row items-center gap-2"
+            props.view === "list" && "body-2 pr-7 text-black",
+            props.view === "grid" && "body-1 pr-0 text-black",
+            "min-w flex w-full flex-row items-center"
           )}
         >
-          <div
-            className={cn(
-              "w-fit overflow-hidden truncate text-ellipsis",
-              props.view === "list" && "max-w-52",
-              props.view === "grid" && "max-w-60"
-            )}
-          >
-            {props.row.original.name.trim()}
-          </div>
+          <div className="flex min-w-0 flex-row items-center">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {props.row.original.name.trim()}
+            </div>
 
-          <Tooltip>
-            <TooltipTrigger className="flex flex-col place-content-center items-center">
-              {props.row.original.is_verified ? (
-                <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
-              ) : (
-                <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
-              )}
-            </TooltipTrigger>
-            {typeof window !== "undefined" &&
-              createPortal(
-                <TooltipContent className="z-9999">
-                  {props.row.original.is_verified
-                    ? "Verified Market"
-                    : "WARNING: UNVERIFIED MARKET"}
-                </TooltipContent>,
-                document.body
-              )}
-          </Tooltip>
+            <div className="ml-2">
+              <Tooltip>
+                <TooltipTrigger className="flex flex-col place-content-center items-center">
+                  {props.row.original.is_verified ? (
+                    <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
+                  ) : (
+                    <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
+                  )}
+                </TooltipTrigger>
+                {typeof window !== "undefined" &&
+                  createPortal(
+                    <TooltipContent className="z-9999">
+                      {props.row.original.is_verified
+                        ? "Verified Market"
+                        : "WARNING: UNVERIFIED MARKET"}
+                    </TooltipContent>,
+                    document.body
+                  )}
+              </Tooltip>
+            </div>
+          </div>
         </div>
       );
     },
