@@ -74,6 +74,7 @@ export const TransactionModal = React.forwardRef<
     status: confirmationStatus,
   } = useWaitForTransactionReceipt({
     hash: txHash,
+    confirmations: 2,
   });
 
   const allTransactionsExecuted = useMemo(() => {
@@ -164,9 +165,9 @@ export const TransactionModal = React.forwardRef<
   useEffect(() => {
     if (allTransactionsExecuted) {
       setTimeout(() => {
-        setIsTransactionTimeout(false);
         queryClient.invalidateQueries();
-      }, 5 * 1000); // 5 seconds
+        setIsTransactionTimeout(false);
+      }, 5 * 1000); // 10 seconds
     }
   }, [allTransactionsExecuted]);
 
