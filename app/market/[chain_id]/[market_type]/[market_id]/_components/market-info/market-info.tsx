@@ -46,6 +46,7 @@ import {
 } from "@/sdk/hooks";
 import { useAccount } from "wagmi";
 import { produce } from "immer";
+import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -443,15 +444,18 @@ export const MarketInfo = React.forwardRef<
                   <InfoCard.Row className={INFO_ROW_CLASSES}>
                     <InfoCard.Row.Key>Market ID</InfoCard.Row.Key>
                     <InfoCard.Row.Value>
-                      {`${marketMetadata.chain_id}_${marketMetadata.market_type === "recipe" ? "0" : "1"}_${shortAddress(
-                        currentMarketData.market_id ?? ""
-                      )}`}
+                      <CopyWrapper
+                        iconPosition={"left"}
+                        text={currentMarketData.market_id ?? ""}
+                      >
+                        {`${shortAddress(currentMarketData.market_id ?? "")}`}
+                      </CopyWrapper>
 
                       <InfoTip {...INFO_TIP_PROPS}>
                         Market id is constructed as concatenation of chain id,
-                        market type and market index. For recipe, market index
-                        is sequential number and for vaults, it is the address
-                        of wrapped vault.
+                        market type and market index. For recipes, market id is
+                        hash of the market and for vaults, it is the address of
+                        wrapped vault.
                       </InfoTip>
                     </InfoCard.Row.Value>
                   </InfoCard.Row>
