@@ -281,7 +281,7 @@ export const MarketFundingType = {
   },
   [RoycoMarketFundingType.vault.id]: {
     ...RoycoMarketFundingType.vault,
-    label: "ERC-4626 Vault",
+    label: "Royco Verified Vault",
   },
 };
 
