@@ -178,6 +178,10 @@ export const MarketInfo = React.forwardRef<
               ? currentMarketData.name.trim()
               : "Unknown Market"}
           </PrimaryLabel>
+
+          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS)}>
+            {currentMarketData.description ?? "No description available"}
+          </SecondaryLabel>
         </div>
 
         <div className={cn(BASE_PADDING)}>
@@ -292,10 +296,6 @@ export const MarketInfo = React.forwardRef<
                 )}
             </div>
           </div>
-
-          {/* <SecondaryLabel className={cn(BASE_MARGIN_TOP.XL)}>
-            {currentMarketData.description ?? "No description available"}
-          </SecondaryLabel> */}
 
           <button onClick={() => setShowTransactionDetails((prev) => !prev)}>
             <TertiaryLabel className={cn(BASE_MARGIN_TOP.XL, "text-sm")}>
