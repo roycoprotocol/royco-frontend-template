@@ -1,7 +1,7 @@
 import { getChain } from "@/sdk/utils";
 import { createClient } from "@supabase/supabase-js";
-import { http, createConfig } from "@wagmi/core";
-import { Chain, mainnet, sepolia } from "@wagmi/core/chains";
+import { http } from "@wagmi/core";
+import { Chain } from "@wagmi/core/chains";
 import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { getMarketIdFromEventLog } from "@/sdk/market";

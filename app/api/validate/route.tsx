@@ -1,13 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { http, createConfig } from "@wagmi/core";
-import {
-  baseSepolia,
-  base,
-  arbitrumSepolia,
-  mainnet,
-  sepolia,
-  arbitrum,
-} from "@wagmi/core/chains";
+import { http } from "@wagmi/core";
 import { Address } from "abitype";
 import { getChain } from "@/sdk/utils";
 import { ContractMap } from "@/sdk/contracts";
@@ -18,18 +10,6 @@ import { NULL_ADDRESS } from "@/sdk/constants";
 import { erc20Abi } from "viem";
 
 export const dynamic = true;
-
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  transports: {
-    [sepolia.id]: http(RPC_API_KEYS[sepolia.id]),
-    [mainnet.id]: http(RPC_API_KEYS[mainnet.id]),
-    [arbitrumSepolia.id]: http(RPC_API_KEYS[arbitrumSepolia.id]),
-    [arbitrum.id]: http(RPC_API_KEYS[arbitrum.id]),
-    [baseSepolia.id]: http(RPC_API_KEYS[baseSepolia.id]),
-    [base.id]: http(RPC_API_KEYS[base.id]),
-  },
-});
 
 export type OfferValidationDataType = {
   id: string; // Global offer ID [ <CHAIN_ID>_<MARKET_TYPE>_<OFFER_SIDE>_<OFFER_ID> ]

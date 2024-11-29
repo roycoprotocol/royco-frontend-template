@@ -1,5 +1,6 @@
-export const dynamic = true;
 import { ContractMap } from "@/sdk/contracts";
+
+export const dynamic = true;
 
 export async function GET(request: Request) {
   try {
