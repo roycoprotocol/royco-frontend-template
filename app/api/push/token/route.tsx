@@ -1,13 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-import { http, createConfig, multicall } from "@wagmi/core";
-import {
-  baseSepolia,
-  base,
-  arbitrumSepolia,
-  mainnet,
-  sepolia,
-  arbitrum,
-} from "@wagmi/core/chains";
+import { http } from "@wagmi/core";
 import { Address } from "abitype";
 import {
   getChain,
@@ -16,36 +7,15 @@ import {
   refineSolidityAddress,
   shortAddress,
 } from "@/sdk/utils";
-import { ContractMap } from "@/sdk/contracts";
-import {
-  encodeFunctionData,
-  createPublicClient,
-  Chain,
-  erc4626Abi,
-} from "viem";
+import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
-import { BigNumber } from "ethers";
-import { NULL_ADDRESS } from "@/sdk/constants";
 import { erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
-import path from "path";
 
 export const dynamic = true;
 
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  transports: {
-    [sepolia.id]: http(RPC_API_KEYS[sepolia.id]),
-    [mainnet.id]: http(RPC_API_KEYS[mainnet.id]),
-    [arbitrumSepolia.id]: http(RPC_API_KEYS[arbitrumSepolia.id]),
-    [arbitrum.id]: http(RPC_API_KEYS[arbitrum.id]),
-    [baseSepolia.id]: http(RPC_API_KEYS[baseSepolia.id]),
-    [base.id]: http(RPC_API_KEYS[base.id]),
-  },
-});
-
 /**
- * Chain ID to CMC slug mapping
+ * Chain ID to slug mapping
  *
  * CoinmarketCap refers it as slug
  * Coingecko refers it as asset platform id
@@ -64,7 +34,7 @@ export const CHAIN_SLUG = {
 };
 
 export const createCommitMessage = (tokenData: any) => {
-  return `feat(token-map): Add ${tokenData.name} (${tokenData.symbol}) (${shortAddress(tokenData.contract_address)}) 
+  return `feat(token-map): Update Token -- ${tokenData.chain_id}-${tokenData.contract_address} -- ${tokenData.name} (${tokenData.symbol}) (${shortAddress(tokenData.contract_address)}) 
 
 Token Details:
 - Id: ${tokenData.id}
@@ -112,12 +82,12 @@ export const fetchTokenFromCoinmarketCap = async ({
     (c: any) => c.platform.coin.slug === chainSlug
   );
 
-  // Check if contract address is found
+  // Check if contract info is found
   if (!contractInfo) {
     return null;
   }
 
-  // Enrich token data
+  // Create enriched token data
   const enrichedTokenData = {
     id: `${chainId}-${contractAddress}`.toLowerCase(),
     chain_id: chainId,
@@ -136,9 +106,11 @@ export const fetchTokenFromCoinmarketCap = async ({
 export const fetchTokenFromCoingecko = async ({
   chainId,
   contractAddress,
+  decimals,
 }: {
   chainId: number;
   contractAddress: string;
+  decimals: number;
 }) => {
   // Get asset platform id
   const chainSlug =
@@ -146,18 +118,70 @@ export const fetchTokenFromCoingecko = async ({
 
   const fetchResponse = await fetch(
     // Public API endpoint (can be used with Demo API key on free plan)
-    `https://api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`
+    `https://api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
 
     // Pro API endpoint (requires paid plan)
     // `https://pro-api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`
+    {
+      headers: {
+        // Demo API key
+        "x-cg-demo-api-key": process.env.COINGECKO_API_KEY!,
+
+        // Pro API key
+        // "x-cg-pro-api-key": process.env.COINGECKO_API_KEY!,
+      },
+    }
   );
   const fetchData = await fetchResponse.json();
 
-  // Get token id
-  const tokenId = fetchData.id;
-  const tokenData = {};
+  // Get search id
+  const searchId = fetchData.id;
 
-  return fetchData;
+  // Get raw token data
+  const tokenData = fetchData;
+
+  // Find contract address for the chain
+  const contractInfo = tokenData.detail_platforms[chainSlug];
+
+  // Check if contract info is found
+  if (!contractInfo) {
+    return null;
+  }
+
+  // Create enriched token data
+  const enrichedTokenData = {
+    id: `${chainId}-${contractAddress}`.toLowerCase(),
+    chain_id: chainId,
+    contract_address: contractAddress,
+    name: tokenData.name,
+    symbol: tokenData.symbol.toUpperCase(),
+    image: tokenData.image.large,
+    decimals: decimals,
+    source: "coingecko",
+    search_id: searchId,
+  };
+
+  return enrichedTokenData;
+};
+
+export const checkTokenFileExists = async (
+  octokit: Octokit,
+  filePath: string
+) => {
+  try {
+    await octokit.repos.getContent({
+      owner: "roycoprotocol",
+      repo: "royco-sdk",
+      path: filePath,
+      ref: "main",
+    });
+    return true;
+  } catch (error: any) {
+    if (error.status === 404) {
+      return false;
+    }
+    throw error;
+  }
 };
 
 export async function POST(request: Request) {
@@ -214,6 +238,20 @@ export async function POST(request: Request) {
       );
     }
 
+    // Create file path
+    const filePath = `sdk/constants/token-map/${chain_id}/json/${chain_id}-${contract_address.toLowerCase()}.json`;
+
+    // Create octokit client
+    const octokit = new Octokit({
+      auth: process.env.ROYCO_SDK_GITHUB_TOKEN,
+    });
+
+    // Check if token file already exists
+    const fileExists = await checkTokenFileExists(octokit, filePath);
+    if (fileExists) {
+      return Response.json({ status: "Token already exists" }, { status: 409 });
+    }
+
     // Create public client
     const publicClient = createPublicClient({
       chain: getChain(chain_id),
@@ -236,6 +274,7 @@ export async function POST(request: Request) {
     let enrichedTokenData = null;
 
     try {
+      // Try to fetch token from coinmarketcap
       enrichedTokenData = await fetchTokenFromCoinmarketCap({
         chainId: chain_id,
         contractAddress: contract_address,
@@ -243,51 +282,49 @@ export async function POST(request: Request) {
       });
     } catch (error) {
       // Token was not found on coinmarketcap
+      enrichedTokenData = await fetchTokenFromCoingecko({
+        chainId: chain_id,
+        contractAddress: contract_address,
+        decimals: decimals,
+      });
     }
 
-    // 4. Check if file already exists
-    const octokit = new Octokit({
-      auth: process.env.ROYCO_SDK_GITHUB_TOKEN,
+    if (enrichedTokenData === null) {
+      // Token was not found on coinmarketcap or coingecko
+      return Response.json(
+        { status: "Token not found on coinmarketcap or coingecko" },
+        { status: 404 }
+      );
+    }
+
+    const content = Buffer.from(
+      JSON.stringify(enrichedTokenData, null, 2)
+    ).toString("base64");
+
+    const commitMessage = createCommitMessage(enrichedTokenData);
+
+    await octokit.repos.createOrUpdateFileContents({
+      owner: "roycoprotocol",
+      repo: "royco-sdk",
+      path: filePath,
+      message: commitMessage,
+      content,
+      branch: "main",
     });
 
-    // Create file path
-    const filePath = `sdk/constants/token-map/${chain_id}/json/${chain_id}-${contract_address.toLowerCase()}.json`;
-
-    try {
-      await octokit.repos.getContent({
-        owner: "roycoprotocol",
-        repo: "royco-sdk",
-        path: filePath,
-        ref: "main",
-      });
-
-      return Response.json({ status: "Token already exists" }, { status: 409 });
-    } catch (error: any) {
-      if (error.status === 404) {
-        const content = Buffer.from(
-          JSON.stringify(enrichedTokenData, null, 2)
-        ).toString("base64");
-
-        const commitMessage = createCommitMessage(enrichedTokenData);
-
-        await octokit.repos.createOrUpdateFileContents({
-          owner: "roycoprotocol",
-          repo: "royco-sdk",
-          path: filePath,
-          message: commitMessage,
-          content,
-          branch: "main",
-        });
-
-        return Response.json(
-          { status: "Success", data: enrichedTokenData },
-          { status: 200 }
-        );
-      }
-      throw error;
-    }
+    return Response.json(
+      {
+        status: "Success",
+        data: {
+          ...enrichedTokenData,
+          filePath: filePath,
+          fileUrl: `https://github.com/roycoprotocol/royco-sdk/tree/main/${filePath}`,
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error(error);
+    console.error("Error in route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
   }
 }
