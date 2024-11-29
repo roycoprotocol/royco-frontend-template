@@ -75,7 +75,7 @@ export const WithdrawInputTokenRow = React.forwardRef<
 >(({ className, token, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("flex w-full flex-row", className)} {...props}>
-      <div className="flex flex-row items-center space-x-2">
+      <div className="flex flex-row items-center space-x-2 whitespace-nowrap break-normal">
         <SecondaryLabel className="h-4">
           {Intl.NumberFormat("en-US", {
             style: "decimal",
@@ -243,7 +243,7 @@ export const WithdrawSection = React.forwardRef<
                     >
                       <div className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl border border-divider p-3">
                         <div className="hide-scrollbar flex w-full grow flex-col items-start space-y-1 overflow-x-scroll">
-                          <SecondaryLabel className="text-black">
+                          <SecondaryLabel className="whitespace-nowrap break-normal text-black">
                             Value:{" "}
                             {Intl.NumberFormat("en-US", {
                               style: "currency",
