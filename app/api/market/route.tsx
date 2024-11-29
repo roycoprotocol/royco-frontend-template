@@ -1,12 +1,31 @@
-import { getChain } from "@/sdk/utils";
+import { getChain, shortAddress } from "@/sdk/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Chain } from "@wagmi/core/chains";
 import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { getMarketIdFromEventLog } from "@/sdk/market";
+import { Octokit } from "@octokit/rest";
 
 export const dynamic = true;
+
+export const createCommitMessage = ({
+  chainId,
+  marketType,
+  marketId,
+}: {
+  chainId: number;
+  marketType: number;
+  marketId: string;
+}) => {
+  return `feat(market-map): Update market -- ${chainId}_${marketType}_${marketId} -- ${marketType === 0 ? "Recipe" : "Vault"} (${shortAddress(marketId)})
+  
+Market Details:
+- Chain ID: ${chainId}
+- Market Type: ${marketType} (${marketType === 0 ? "Recipe" : "Vault"})
+- Market ID: ${marketId} (${marketType === 0 ? "Market Hash" : "Wrapped Vault Address"})
+- Request Timestamp: ${new Date().toUTCString()}`;
+};
 
 export async function POST(request: Request) {
   try {
@@ -56,6 +75,96 @@ export async function POST(request: Request) {
       const { data, error } = await client
         .from("market_userdata")
         .insert([row]);
+
+      if (!error) {
+        // Create file path
+        const filePath = `sdk/constants/market-map/${chain_id}/json/${chain_id}_${market_type}_${market_id}.json`;
+
+        // Create octokit client
+        const octokit = new Octokit({
+          auth: process.env.PERSONAL_ACCESS_GITHUB_TOKEN,
+        });
+
+        // Create a new branch name based on the market details
+        const newBranchName = `market-map/${chain_id}_${market_type}_${market_id}_${Date.now()}`;
+
+        // Get the main branch's latest commit SHA
+        const mainRef = await octokit.git.getRef({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          ref: "heads/main",
+        });
+
+        // Create a new branch from main
+        await octokit.git.createRef({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          ref: `refs/heads/${newBranchName}`,
+          sha: mainRef.data.object.sha,
+        });
+
+        // Create market map JSON content
+        const content = Buffer.from(
+          JSON.stringify(
+            {
+              id: id,
+              name: name,
+              description: description,
+              is_verified: false,
+            },
+            null,
+            2
+          )
+        ).toString("base64");
+
+        // Create commit message
+        const commitMessage = createCommitMessage({
+          chainId: chain_id,
+          marketType: market_type,
+          marketId: market_id,
+        });
+
+        // Check if file exists and get its SHA if it does
+        let fileSha;
+        try {
+          const fileContent = await octokit.repos.getContent({
+            owner: "roycoprotocol",
+            repo: "royco-sdk",
+            path: filePath,
+            ref: newBranchName,
+          });
+
+          if ("sha" in fileContent.data) {
+            fileSha = fileContent.data.sha;
+          }
+        } catch (error: any) {
+          // File doesn't exist, which is fine
+          if (error.status !== 404) {
+            throw error;
+          }
+        }
+
+        // Create the file in the new branch
+        await octokit.repos.createOrUpdateFileContents({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          path: filePath,
+          message: commitMessage,
+          content,
+          branch: newBranchName,
+          ...(fileSha && { sha: fileSha }), // Include SHA only if file exists
+        });
+
+        // Create pull request
+        const pr = await octokit.pulls.create({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          title: `feat(market-map): Update market -- ${chain_id}_${market_type}_${market_id}`,
+          head: newBranchName,
+          base: "main",
+          body: commitMessage,
+        });
+      }
 
       return Response.json(
         {
