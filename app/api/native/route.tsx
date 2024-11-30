@@ -1,40 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { http, createConfig, multicall } from "@wagmi/core";
-import {
-  baseSepolia,
-  base,
-  arbitrumSepolia,
-  mainnet,
-  sepolia,
-  arbitrum,
-} from "@wagmi/core/chains";
+import { http } from "@wagmi/core";
 import { Address } from "abitype";
 import { getChain } from "@/sdk/utils";
-import { ContractMap } from "@/sdk/contracts";
-import {
-  encodeFunctionData,
-  createPublicClient,
-  Chain,
-  erc4626Abi,
-} from "viem";
+import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
-import { BigNumber } from "ethers";
-import { NULL_ADDRESS } from "@/sdk/constants";
-import { erc20Abi } from "viem";
 
 export const dynamic = true;
-
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  transports: {
-    [sepolia.id]: http(RPC_API_KEYS[sepolia.id]),
-    [mainnet.id]: http(RPC_API_KEYS[mainnet.id]),
-    [arbitrumSepolia.id]: http(RPC_API_KEYS[arbitrumSepolia.id]),
-    [arbitrum.id]: http(RPC_API_KEYS[arbitrum.id]),
-    [baseSepolia.id]: http(RPC_API_KEYS[baseSepolia.id]),
-    [base.id]: http(RPC_API_KEYS[base.id]),
-  },
-});
 
 export async function POST(request: Request) {
   try {

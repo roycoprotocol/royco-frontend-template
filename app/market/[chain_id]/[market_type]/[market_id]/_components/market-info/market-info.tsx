@@ -699,35 +699,6 @@ export const MarketInfo = React.forwardRef<
                   )}
 
                   <InfoCard.Row className={INFO_ROW_CLASSES}>
-                    <InfoCard.Row.Key>Created By</InfoCard.Row.Key>
-
-                    <InfoCard.Row.Value>
-                      <Link
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={getExplorerUrl({
-                          chainId: marketMetadata.chain_id,
-                          type: "address",
-                          value: currentMarketData.creator ?? "",
-                        })}
-                        className="flex items-center gap-1"
-                      >
-                        {
-                          // @ts-ignore
-                          currentMarketData.creator.slice(0, 6) +
-                            "..." +
-                            // @ts-ignore
-                            currentMarketData.creator.slice(-4)
-                        }
-                        <ExternalLinkIcon
-                          strokeWidth={1.5}
-                          className={cn("h-5 w-5 p-[0.1rem] text-secondary")}
-                        />
-                      </Link>
-                    </InfoCard.Row.Value>
-                  </InfoCard.Row>
-
-                  <InfoCard.Row className={INFO_ROW_CLASSES}>
                     <InfoCard.Row.Key>Input Token</InfoCard.Row.Key>
 
                     <InfoCard.Row.Value>
