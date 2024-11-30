@@ -114,7 +114,7 @@ export const fetchTokenFromCoingecko = async ({
 }) => {
   // Get asset platform id
   const chainSlug =
-    CHAIN_SLUG.coinmarketcap[chainId as keyof typeof CHAIN_SLUG.coinmarketcap];
+    CHAIN_SLUG.coingecko[chainId as keyof typeof CHAIN_SLUG.coingecko];
 
   const fetchResponse = await fetch(
     // Public API endpoint (can be used with Demo API key on free plan)
@@ -281,12 +281,14 @@ export async function POST(request: Request) {
         decimals: decimals,
       });
     } catch (error) {
-      // Token was not found on coinmarketcap
-      enrichedTokenData = await fetchTokenFromCoingecko({
-        chainId: chain_id,
-        contractAddress: contract_address,
-        decimals: decimals,
-      });
+      try {
+        // Try to fetch token from coingecko
+        enrichedTokenData = await fetchTokenFromCoingecko({
+          chainId: chain_id,
+          contractAddress: contract_address,
+          decimals: decimals,
+        });
+      } catch (error) {}
     }
 
     if (enrichedTokenData === null) {
