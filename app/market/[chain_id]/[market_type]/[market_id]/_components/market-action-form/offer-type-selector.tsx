@@ -57,8 +57,6 @@ export const OfferTypeSelector = React.forwardRef<
     }
   }, [isWalletVaultIP]);
 
-  console.log({ currentMarketData });
-
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <FormInputLabel
