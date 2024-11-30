@@ -281,12 +281,14 @@ export async function POST(request: Request) {
         decimals: decimals,
       });
     } catch (error) {
-      // Try to fetch token from coingecko
-      enrichedTokenData = await fetchTokenFromCoingecko({
-        chainId: chain_id,
-        contractAddress: contract_address,
-        decimals: decimals,
-      });
+      try {
+        // Try to fetch token from coingecko
+        enrichedTokenData = await fetchTokenFromCoingecko({
+          chainId: chain_id,
+          contractAddress: contract_address,
+          decimals: decimals,
+        });
+      } catch (error) {}
     }
 
     if (enrichedTokenData === null) {
