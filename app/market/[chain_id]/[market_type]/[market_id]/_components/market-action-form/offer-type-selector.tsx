@@ -57,6 +57,8 @@ export const OfferTypeSelector = React.forwardRef<
     }
   }, [isWalletVaultIP]);
 
+  console.log({ currentMarketData });
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <FormInputLabel
@@ -113,10 +115,14 @@ export const OfferTypeSelector = React.forwardRef<
               disabled={
                 // isMarketVault &&
                 // !isWalletVaultIP &&
-                marketMetadata.market_type === MarketType.vault.id &&
-                userType === MarketUserType.ip.id &&
-                walletAddress !== currentMarketData.owner &&
-                option.id === MarketOfferType.limit.id
+                (marketMetadata.market_type === MarketType.vault.id &&
+                  userType === MarketUserType.ip.id &&
+                  walletAddress !== currentMarketData.owner &&
+                  option.id === MarketOfferType.limit.id) ||
+                (option.id === MarketOfferType.limit.id &&
+                  !!currentMarketData &&
+                  !!currentMarketData.base_incentive_ids &&
+                  currentMarketData.base_incentive_ids.length < 1)
               }
               className="text-sm"
               key={option.id}
