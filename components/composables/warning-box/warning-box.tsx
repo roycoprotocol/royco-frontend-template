@@ -17,17 +17,20 @@ export const WarningBox = React.forwardRef<
         className
       )}
     >
-      <div className="flex flex-row items-center justify-center">
-        <div className="h-6 w-6 shrink-0">
-          <TriangleAlertIcon strokeWidth={1.5} className="h-6 w-6 text-white" />
-        </div>
+      <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:gap-2">
+        <TriangleAlertIcon
+          strokeWidth={1.5}
+          className="h-6 w-6 shrink-0 text-white"
+        />
 
-        <div className="ml-1 h-6 text-wrap text-center text-lg font-normal text-white">
+        <div className="text-wrap text-center text-lg font-normal text-white">
           <span className="leading-2">{title}</span>
         </div>
       </div>
 
-      <div className="mt-2 flex w-full text-base leading-tight">{text}</div>
+      <div className="mt-2 flex w-full text-center text-base leading-tight">
+        {text}
+      </div>
     </div>
   );
 });
