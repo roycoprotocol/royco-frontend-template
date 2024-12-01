@@ -98,6 +98,7 @@ export const fetchTokenFromCoinmarketCap = async ({
     decimals: decimals,
     source: "coinmarketcap",
     search_id: searchId.toString(),
+    type: "token",
   };
 
   return enrichedTokenData;
@@ -159,6 +160,7 @@ export const fetchTokenFromCoingecko = async ({
     decimals: decimals,
     source: "coingecko",
     search_id: searchId,
+    type: "token",
   };
 
   return enrichedTokenData;
@@ -182,6 +184,25 @@ export const checkTokenFileExists = async (
     }
     throw error;
   }
+};
+
+export const getContent = (enrichedTokenData: any) => {
+  return Buffer.from(
+    `import { defineToken } from "@/sdk/constants";
+
+export default defineToken({
+  id: "${enrichedTokenData.id}",
+  chain_id: ${enrichedTokenData.chain_id},
+  contract_address: "${enrichedTokenData.contract_address}",
+  name: "${enrichedTokenData.name}",
+  symbol: "${enrichedTokenData.symbol}",
+  image: "${enrichedTokenData.image}",
+  decimals: ${enrichedTokenData.decimals},
+  source: "${enrichedTokenData.source}",
+  search_id: "${enrichedTokenData.search_id}",
+  type: "${enrichedTokenData.type}",
+});`
+  ).toString("base64");
 };
 
 export async function POST(request: Request) {
@@ -239,7 +260,7 @@ export async function POST(request: Request) {
     }
 
     // Create file path
-    const filePath = `sdk/constants/token-map/${chain_id}/json/${chain_id}-${contract_address.toLowerCase()}.json`;
+    const filePath = `sdk/constants/token-map/${chain_id}/definitions/${chain_id}-${contract_address.toLowerCase()}.ts`;
 
     // Create octokit client
     const octokit = new Octokit({
@@ -299,9 +320,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const content = Buffer.from(
-      JSON.stringify(enrichedTokenData, null, 2)
-    ).toString("base64");
+    const content = getContent(enrichedTokenData);
 
     const commitMessage = createCommitMessage(enrichedTokenData);
 
