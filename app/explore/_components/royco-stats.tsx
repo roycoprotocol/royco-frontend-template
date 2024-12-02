@@ -2,7 +2,7 @@
 
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { cn } from "@/lib/utils";
-import { useEnrichedRoycoStats, useRoycoStats } from "@/sdk/hooks";
+import { useEnrichedRoycoStats } from "@/sdk/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { produce } from "immer";
 import { isEqual } from "lodash";

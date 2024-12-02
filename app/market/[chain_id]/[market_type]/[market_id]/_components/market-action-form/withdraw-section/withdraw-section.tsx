@@ -127,8 +127,14 @@ export const WithdrawSection = React.forwardRef<
             : "can_claim",
         value: true,
       },
+      {
+        id: "offer_side",
+        value: 0,
+      },
     ],
   });
+
+  console.log("positionsRecipe", positionsRecipe);
 
   const {
     isLoading: isLoadingPositionsVault,
