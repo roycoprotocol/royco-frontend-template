@@ -127,6 +127,10 @@ export const WithdrawSection = React.forwardRef<
             : "can_claim",
         value: true,
       },
+      {
+        id: "offer_side",
+        value: 0,
+      },
     ],
   });
 

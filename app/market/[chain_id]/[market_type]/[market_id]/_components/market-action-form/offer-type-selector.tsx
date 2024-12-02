@@ -117,7 +117,8 @@ export const OfferTypeSelector = React.forwardRef<
                   userType === MarketUserType.ip.id &&
                   walletAddress !== currentMarketData.owner &&
                   option.id === MarketOfferType.limit.id) ||
-                (option.id === MarketOfferType.limit.id &&
+                (marketMetadata.market_type === MarketType.vault.id &&
+                  option.id === MarketOfferType.limit.id &&
                   !!currentMarketData &&
                   !!currentMarketData.base_incentive_ids &&
                   currentMarketData.base_incentive_ids.length < 1)

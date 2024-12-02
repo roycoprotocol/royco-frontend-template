@@ -41,6 +41,19 @@ export const checkMarketFileExists = async (
   }
 };
 
+export const getContent = (marketData: any) => {
+  return Buffer.from(
+    `import { defineMarket } from "@/sdk/constants";
+
+export default defineMarket({
+  id: "${marketData.id}",
+  name: "${marketData.name}",
+  description: "${marketData.description}",
+  is_verified: ${marketData.is_verified},
+});`
+  ).toString("base64");
+};
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -111,7 +124,7 @@ export async function POST(request: Request) {
     }
 
     // Create file path
-    const filePath = `sdk/constants/market-map/${chain_id}/json/${chain_id}_${market_type}_${market_id}.json`;
+    const filePath = `sdk/constants/market-map/${chain_id}/definitions/${chain_id}_${market_type}_${market_id}.ts`;
 
     // Create octokit client
     const octokit = new Octokit({
@@ -137,7 +150,12 @@ export async function POST(request: Request) {
     });
 
     // Create empty JSON content
-    const content = Buffer.from(JSON.stringify({}, null, 2)).toString("base64");
+    const content = getContent({
+      id: market_id,
+      name: "",
+      description: "",
+      is_verified: false,
+    });
 
     // Create commit message
     const commitMessage = createCommitMessage({

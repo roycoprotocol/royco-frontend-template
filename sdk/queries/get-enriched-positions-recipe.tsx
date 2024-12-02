@@ -44,19 +44,60 @@ export type EnrichedPositionsRecipeDataType =
 const constructEnrichedPositionsRecipeFilterClauses = (
   filters: Array<BaseQueryFilter>
 ): string => {
-  let filterClauses = "";
+  let offerSideFilter = "";
+  let canWithdrawFilter = "";
+  let canClaimFilter = "";
 
   /**
    * @note To filter string: wrap in single quotes
    * @note To filter number: no quotes
    */
-  filters.forEach((filter, filterIndex) => {
-    filterClauses += ` ${filter.id} = ${filter.value} `;
+  // filters.forEach((filter, filterIndex) => {
+  //   filterClauses += ` ${filter.id} = ${filter.value} `;
 
-    if (filterIndex !== filters.length - 1) {
-      filterClauses += ` ${filter.join ?? "OR"} `;
+  //   if (filterIndex !== filters.length - 1) {
+  //     filterClauses += ` ${filter.join ?? "OR"} `;
+  //   }
+  // });
+
+  filters.forEach((filter) => {
+    switch (filter.id) {
+      case "offer_side":
+        if (offerSideFilter) offerSideFilter += " OR ";
+        if (filter.condition === "NOT") {
+          offerSideFilter += ` offer_side <> ${filter.value} `;
+        } else {
+          offerSideFilter += ` offer_side = ${filter.value} `;
+        }
+        break;
+      case "can_withdraw":
+        if (canWithdrawFilter) canWithdrawFilter += " OR ";
+        if (filter.condition === "NOT") {
+          canWithdrawFilter += ` can_withdraw <> ${filter.value} `;
+        } else {
+          canWithdrawFilter += ` can_withdraw = ${filter.value} `;
+        }
+        break;
+      case "can_claim":
+        if (canClaimFilter) canClaimFilter += " OR ";
+        if (filter.condition === "NOT") {
+          canClaimFilter += ` can_claim <> ${filter.value} `;
+        } else {
+          canClaimFilter += ` can_claim = ${filter.value} `;
+        }
+        break;
     }
   });
+
+  let filterClauses = "";
+
+  if (offerSideFilter) filterClauses += `(${offerSideFilter}) AND `;
+  if (canWithdrawFilter) filterClauses += `(${canWithdrawFilter}) AND `;
+  if (canClaimFilter) filterClauses += `(${canClaimFilter}) AND `;
+
+  if (filterClauses) {
+    filterClauses = filterClauses.slice(0, -5); // Remove the trailing " AND "
+  }
 
   return filterClauses;
 };
