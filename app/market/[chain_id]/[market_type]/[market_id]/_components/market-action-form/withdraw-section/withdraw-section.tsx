@@ -134,8 +134,6 @@ export const WithdrawSection = React.forwardRef<
     ],
   });
 
-  console.log("positionsRecipe", positionsRecipe);
-
   const {
     isLoading: isLoadingPositionsVault,
     data: positionsVault,
