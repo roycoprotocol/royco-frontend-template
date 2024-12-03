@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
@@ -9,30 +9,11 @@ import {
   TertiaryLabel,
 } from "../composables";
 import { useActiveMarket } from "../hooks";
-import {
-  ActionFlow,
-  HorizontalTabs,
-  LoadingSpinner,
-  SpringNumber,
-} from "@/components/composables";
-import {
-  MarketRewardStyle,
-  MarketScriptType,
-  MarketViewType,
-  useMarketManager,
-} from "@/store";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { ActionFlow, SpringNumber } from "@/components/composables";
+import { MarketRewardStyle, MarketViewType, useMarketManager } from "@/store";
+
 import { MarketType } from "@/store";
-import {
-  BadgeLink,
-  InfoCard,
-  InfoTip,
-  TokenDisplayer,
-} from "@/components/common";
+import { InfoCard, InfoTip } from "@/components/common";
 import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
@@ -47,6 +28,15 @@ import {
 import { useAccount } from "wagmi";
 import { produce } from "immer";
 import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+
+const stkGHO_MARKET_ID =
+  "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -61,16 +51,31 @@ export const MarketInfo = React.forwardRef<
   const {
     isLoading,
     marketMetadata,
-    propsEnrichedMarket,
+
     currentMarketData,
     previousMarketData,
     propsReadMarket,
     propsActionsDecoderEnterMarket,
     propsActionsDecoderExitMarket,
-    currentHighestOffers,
   } = useActiveMarket();
 
-  const { scriptType, setScriptType, viewType } = useMarketManager();
+  const { data: stkGhoAPR } =
+    currentMarketData.id === stkGHO_MARKET_ID
+      ? useQuery({
+          queryKey: ["stkgho-apr"],
+          queryFn: async () => {
+            const response = await fetch(
+              "https://apps.aavechan.com/api/merit/aprs"
+            );
+            if (!response.ok) {
+              throw new Error("Failed to fetch stkGHO APR data.");
+            }
+            return response.json();
+          },
+        })
+      : { data: undefined };
+
+  const { viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
 
@@ -144,6 +149,16 @@ export const MarketInfo = React.forwardRef<
     }
   }, [isLoadingVault, isRefetchingVault, dataVault]);
 
+  const netAPR = useMemo(() => {
+    if (currentMarketData.id === stkGHO_MARKET_ID && stkGhoAPR) {
+      return (
+        (stkGhoAPR.currentAPR.actionsAPR["ethereum-stkgho"] ?? 0) / 100 +
+        (currentMarketData.annual_change_ratio ?? 0)
+      );
+    }
+    return currentMarketData.annual_change_ratio ?? 0;
+  }, [currentMarketData, stkGhoAPR]);
+
   if (
     !isLoading &&
     !!currentMarketData &&
@@ -179,7 +194,7 @@ export const MarketInfo = React.forwardRef<
               : "Unknown Market"}
           </PrimaryLabel>
 
-          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS)}>
+          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS, "break-normal")}>
             {currentMarketData.description ?? "No description available"}
           </SecondaryLabel>
         </div>
@@ -210,8 +225,7 @@ export const MarketInfo = React.forwardRef<
                   <PrimaryLabel
                     className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                   >
-                    {(currentMarketData.annual_change_ratio ?? 0) >=
-                    Math.pow(10, 18) ? (
+                    {netAPR >= Math.pow(10, 18) ? (
                       `0`
                     ) : (
                       <SpringNumber
@@ -241,13 +255,12 @@ export const MarketInfo = React.forwardRef<
             )}
 
             <div className="flex flex-1 rounded-xl border bg-z2">
-              <div className="hide-scrollbar flex-1 overflow-x-scroll p-3">
+              <div className="hide-scrollbar relative flex-1 overflow-x-scroll p-3">
                 <SecondaryLabel>APR</SecondaryLabel>
                 <PrimaryLabel
                   className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                 >
-                  {(currentMarketData.annual_change_ratio ?? 0) >=
-                  Math.pow(10, 18) ? (
+                  {netAPR >= Math.pow(10, 18) ? (
                     `0`
                   ) : (
                     <SpringNumber
@@ -257,7 +270,7 @@ export const MarketInfo = React.forwardRef<
                           ? previousMarketData.annual_change_ratio
                           : 0
                       }
-                      currentValue={currentMarketData.annual_change_ratio ?? 0}
+                      currentValue={netAPR}
                       numberFormatOptions={{
                         style: "percent",
                         notation: "compact",
@@ -268,6 +281,48 @@ export const MarketInfo = React.forwardRef<
                     />
                   )}
                 </PrimaryLabel>
+
+                {stkGhoAPR && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      className={cn("absolute right-3 top-3 cursor-pointer")}
+                    >
+                      ✨
+                    </TooltipTrigger>
+                    <TooltipContent
+                      className={cn(
+                        "bg-white",
+                        "text-sm leading-snug",
+                        "max-w-80"
+                      )}
+                    >
+                      <div className="flex justify-between gap-8">
+                        <div>APR:</div>
+                        <div>
+                          {Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(currentMarketData.annual_change_ratio ?? 0)}
+                        </div>
+                      </div>
+                      <div className="flex justify-between gap-8">
+                        <div>stkGHO APR:</div>
+                        <div>
+                          {Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(
+                            (stkGhoAPR.currentAPR.actionsAPR[
+                              "ethereum-stkgho"
+                            ] ?? 0) / 100
+                          )}
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
 
               {marketMetadata.market_type === MarketType.recipe.id &&
