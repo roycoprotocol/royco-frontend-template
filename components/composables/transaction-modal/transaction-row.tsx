@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
 import React, { Fragment } from "react";
 import { LoadingSpinner } from "../loading-spinner";
-import { TransactionOptionsType } from "@/sdk/types";
+import { TransactionOptionsType } from "royco/types";
 import { BigNumber } from "ethers";
 import { BadgeLink, ContentBadge, TokenDisplayer } from "@/components/common";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 
 export const TransactionRow = React.forwardRef<
   HTMLDivElement,

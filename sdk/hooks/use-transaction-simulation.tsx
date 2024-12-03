@@ -1,4 +1,4 @@
-import { getTransactionSimulationQueryOptions } from "@/sdk/queries";
+import { getTransactionSimulationQueryOptions } from "royco/queries";
 import { useQuery } from "@tanstack/react-query";
 import { TransactionOptionsType } from "../types";
 

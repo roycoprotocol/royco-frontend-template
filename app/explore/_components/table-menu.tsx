@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { useExplore } from "@/store";
-import { useEnrichedMarkets } from "@/sdk/hooks";
+import { useEnrichedMarkets } from "royco/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 
 import {

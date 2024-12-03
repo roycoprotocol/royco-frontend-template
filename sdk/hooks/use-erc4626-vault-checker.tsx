@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isERC4626VaultAddressValid } from "@/sdk/utils";
+import { isERC4626VaultAddressValid } from "royco/utils";
 
 export const useErc4626VaultChecker = ({
   chain_id,

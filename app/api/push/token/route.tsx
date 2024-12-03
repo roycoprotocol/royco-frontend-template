@@ -6,7 +6,7 @@ import {
   isSolidityAddressValid,
   refineSolidityAddress,
   shortAddress,
-} from "@/sdk/utils";
+} from "royco/utils";
 import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { erc20Abi } from "viem";
@@ -188,7 +188,7 @@ export const checkTokenFileExists = async (
 
 export const getContent = (enrichedTokenData: any) => {
   return Buffer.from(
-    `import { defineToken } from "@/sdk/constants";
+    `import { defineToken } from "royco/constants";
 
 export default defineToken({
   id: "${enrichedTokenData.id}",

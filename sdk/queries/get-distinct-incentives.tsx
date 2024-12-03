@@ -2,8 +2,8 @@
  * @notice will be updated
  */
 
-import { type TypedRoycoClient } from "@/sdk/client";
-import type { Tables } from "@/sdk/types";
+import { type TypedRoycoClient } from "royco/client";
+import type { Tables } from "royco/types";
 
 export type DistinctIncentives = Pick<
   Tables<"distinct_incentives">,

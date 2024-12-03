@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SupportedToken } from "@/sdk/constants";
+import { SupportedToken } from "royco/constants";
 
 export const TokenEditorSchema = z.object({
   id: z.string(),

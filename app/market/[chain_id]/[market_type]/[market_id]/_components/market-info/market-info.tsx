@@ -33,7 +33,7 @@ import {
   InfoTip,
   TokenDisplayer,
 } from "@/components/common";
-import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
+import { getExplorerUrl, getSupportedChain, shortAddress } from "royco/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
 import { ChevronDown, ExternalLinkIcon } from "lucide-react";
@@ -43,7 +43,7 @@ import { isEqual } from "lodash";
 import {
   useEnrichedAccountBalancesRecipeInMarket,
   useEnrichedAccountBalancesVaultInMarket,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { useAccount } from "wagmi";
 import { produce } from "immer";
 import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";

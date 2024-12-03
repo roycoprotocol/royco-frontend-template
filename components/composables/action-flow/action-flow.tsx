@@ -1,7 +1,7 @@
 "use client";
 
 import React, { act, Fragment } from "react";
-import { decodeActionsReturnType } from "@/sdk/market";
+import { decodeActionsReturnType } from "royco/market";
 import { SlideUpWrapper } from "@/components/animations";
 import {
   Tooltip,

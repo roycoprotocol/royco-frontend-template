@@ -1,4 +1,4 @@
-import { type TypedRoycoClient } from "@/sdk/client";
+import { type TypedRoycoClient } from "royco/client";
 import { CustomTokenData } from "../types";
 
 export const getMarketOffersQueryOptions = (

@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import {
   type ContractFilter,
   searchContractsQueryOptions,
-} from "@/sdk/queries";
+} from "royco/queries";
 import { type SortingState } from "@tanstack/react-table";
-import { useRoycoClient, type RoycoClient } from "@/sdk/client";
+import { useRoycoClient, type RoycoClient } from "royco/client";
 
 export const useSearchContracts = ({
   sorting,

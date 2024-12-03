@@ -1,4 +1,4 @@
-import { SupportedToken } from "@/sdk/constants";
+import { SupportedToken } from "royco/constants";
 
 export type TypedMarketActionIncentiveDataElement = SupportedToken & {
   raw_amount: string;

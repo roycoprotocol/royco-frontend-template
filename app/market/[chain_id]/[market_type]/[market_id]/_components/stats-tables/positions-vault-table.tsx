@@ -3,13 +3,13 @@
 import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
-import { useEnrichedPositionsVault } from "@/sdk/hooks";
+import { useEnrichedPositionsVault } from "royco/hooks";
 import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
 import { positionsVaultColumns } from "./positions-vault-columns";
 import { MarketUserType, useMarketManager } from "@/store";
-import { RoycoMarketUserType } from "@/sdk/market";
+import { RoycoMarketUserType } from "royco/market";
 
 export const PositionsVaultTable = React.forwardRef<
   HTMLDivElement,

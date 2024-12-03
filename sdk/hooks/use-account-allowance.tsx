@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAccountAllowanceQueryOptions } from "@/sdk/queries";
+import { getAccountAllowanceQueryOptions } from "royco/queries";
 import { formatUnits, type Address } from "viem";
 import {
   type SupportedTokenInfo,

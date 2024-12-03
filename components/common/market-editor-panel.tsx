@@ -1,4 +1,4 @@
-import { EnrichedMarketDataType } from "@/sdk/hooks";
+import { EnrichedMarketDataType } from "royco/hooks";
 import { ExploreCustomPoolParam, useExplore } from "@/store/use-explore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

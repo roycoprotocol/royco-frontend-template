@@ -1,4 +1,4 @@
-import { isAbiValid } from "@/sdk/utils";
+import { isAbiValid } from "royco/utils";
 import { getContract } from "./contract-getter";
 import { Abi } from "abitype";
 import { toFunctionHash } from "viem";

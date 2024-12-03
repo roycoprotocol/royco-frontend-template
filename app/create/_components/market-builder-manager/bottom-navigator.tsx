@@ -15,9 +15,9 @@ import { config } from "@/components/web3-modal/modal-config";
 import { switchChain } from "@wagmi/core";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import toast from "react-hot-toast";
-import { ContractMap } from "@/sdk/contracts";
-import { useCreateRecipeMarket, useCreateVaultMarket } from "@/sdk/hooks";
-import { REWARD_STYLE } from "@/sdk/constants";
+import { ContractMap } from "royco/contracts";
+import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
+import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 

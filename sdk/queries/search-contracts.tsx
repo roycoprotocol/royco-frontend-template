@@ -1,4 +1,4 @@
-import { type TypedRoycoClient } from "@/sdk/client";
+import { type TypedRoycoClient } from "royco/client";
 import { type SortingState } from "@tanstack/react-table";
 
 export const contractsPerPage = 10;

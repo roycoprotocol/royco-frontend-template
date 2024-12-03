@@ -1,5 +1,5 @@
-import { type TypedRoycoClient } from "@/sdk/client";
-import type { Tables } from "@/sdk/types";
+import { type TypedRoycoClient } from "royco/client";
+import type { Tables } from "royco/types";
 
 export type BaseTokens = Array<
   Pick<Tables<"base_tokens">, "ids" | "image" | "symbol">

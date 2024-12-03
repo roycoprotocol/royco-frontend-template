@@ -1,6 +1,6 @@
 import { type Address } from "viem";
 import { createPublicClient, http, erc20Abi, erc4626Abi } from "viem";
-import { getChain } from "@/sdk/utils";
+import { getChain } from "royco/utils";
 import { RoycoMarketFundingType } from "../market";
 import { RPC_API_KEYS } from "@/components/constants";
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useAccount, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
-import { SupportedChainMap } from "@/sdk/constants";
+import { SupportedChainMap } from "royco/constants";
 import { useConnectWallet } from "../provider/connect-wallet-provider";
 
 export const ConnectWalletButton = React.forwardRef<

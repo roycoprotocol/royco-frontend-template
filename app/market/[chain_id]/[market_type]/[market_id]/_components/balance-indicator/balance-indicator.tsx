@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import {
   useEnrichedAccountBalancesRecipeInMarket,
   useEnrichedAccountBalancesVaultInMarket,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { isEqual, set } from "lodash";

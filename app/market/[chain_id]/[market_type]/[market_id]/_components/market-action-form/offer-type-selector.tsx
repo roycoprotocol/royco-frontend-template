@@ -10,7 +10,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { FallMotion } from "@/components/animations";
-import { TypedRoycoMarketOfferType } from "@/sdk/market";
+import { TypedRoycoMarketOfferType } from "royco/market";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 

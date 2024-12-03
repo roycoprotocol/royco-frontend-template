@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { type RoycoClient, useRoycoClient } from "@/sdk/client";
-import { getContractsQueryOptions } from "@/sdk/queries";
+import { type RoycoClient, useRoycoClient } from "royco/client";
+import { getContractsQueryOptions } from "royco/queries";
 
 export const BaseFundingVault = {
   address: "0x0000000000000000000000000000000000000000",

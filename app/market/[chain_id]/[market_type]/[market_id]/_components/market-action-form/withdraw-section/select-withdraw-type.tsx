@@ -23,7 +23,7 @@ import { FallMotion } from "@/components/animations";
 import { useActiveMarket } from "../../hooks";
 import { FormLabel } from "@/components/ui/form";
 import { BASE_MARGIN_TOP, FormInputLabel, InputLabel } from "../../composables";
-import { TypedRoycoMarketOfferType } from "@/sdk/market";
+import { TypedRoycoMarketOfferType } from "royco/market";
 
 const options = [MarketWithdrawType.input_token, MarketWithdrawType.incentives];
 

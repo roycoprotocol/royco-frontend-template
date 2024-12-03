@@ -1,4 +1,4 @@
-import { type TypedRoycoClient } from "@/sdk/client";
+import { type TypedRoycoClient } from "royco/client";
 import { type TypedTokenQuote } from "./get-token-quotes";
 import { getSupportedToken } from "../constants";
 

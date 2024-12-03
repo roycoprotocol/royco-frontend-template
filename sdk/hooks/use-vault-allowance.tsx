@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getVaultAllowanceQueryOptions } from "@/sdk/queries";
+import { getVaultAllowanceQueryOptions } from "royco/queries";
 
 export const useVaultAllowance = ({
   chain_id,

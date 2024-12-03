@@ -31,7 +31,7 @@ import {
   refineSolidityBool,
   refineSolidityString,
   refineSolidityBytes,
-} from "@/sdk/utils";
+} from "royco/utils";
 
 export type isFixedValueValidReturnType = { status: boolean; message: string };
 

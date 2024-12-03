@@ -3,9 +3,9 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { type RoycoClient, useRoycoClient } from "@/sdk/client";
-import { getBaseTokensQueryOptions } from "@/sdk/queries";
-import type { Tables } from "@/sdk/types";
+import { type RoycoClient, useRoycoClient } from "royco/client";
+import { getBaseTokensQueryOptions } from "royco/queries";
+import type { Tables } from "royco/types";
 
 export type BaseToken = Pick<
   Tables<"tokens">,

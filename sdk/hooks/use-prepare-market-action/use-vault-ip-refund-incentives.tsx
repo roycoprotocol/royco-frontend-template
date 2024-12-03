@@ -1,15 +1,15 @@
-import { RoycoMarketType } from "@/sdk/market";
+import { RoycoMarketType } from "royco/market";
 import {
   isSolidityAddressValid,
   parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
-} from "@/sdk/utils";
+} from "royco/utils";
 import { BigNumber } from "ethers";
-import { EnrichedMarketDataType } from "@/sdk/queries";
+import { EnrichedMarketDataType } from "royco/queries";
 import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
-import { getSupportedToken } from "@/sdk/constants";
-import { ContractMap } from "@/sdk/contracts";
-import { CustomTokenData, TransactionOptionsType } from "@/sdk/types";
+import { getSupportedToken } from "royco/constants";
+import { ContractMap } from "royco/contracts";
+import { CustomTokenData, TransactionOptionsType } from "royco/types";
 import {
   TypedMarketActionIncentiveDataElement,
   TypedMarketActionInputTokenData,

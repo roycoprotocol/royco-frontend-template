@@ -1,5 +1,5 @@
 import { isAddress } from "viem";
-import type { TypedRoycoClient } from "@/sdk/client";
+import type { TypedRoycoClient } from "royco/client";
 
 export const getContractsQueryOptions = (
   client: TypedRoycoClient,

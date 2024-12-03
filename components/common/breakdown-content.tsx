@@ -8,7 +8,7 @@ import type {
   AipInfo,
   AssetInfo,
   EnrichedMarketDataType,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { cn } from "@/lib/utils";
 import { TokenDisplayer } from "./token-displayer";
 import { SquarePenIcon } from "lucide-react";

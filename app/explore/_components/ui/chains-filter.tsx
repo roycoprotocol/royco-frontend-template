@@ -3,7 +3,7 @@ import { Fragment } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { useBaseChains } from "@/sdk/hooks";
+import { useBaseChains } from "royco/hooks";
 
 import { FilterWrapper } from "../composables";
 

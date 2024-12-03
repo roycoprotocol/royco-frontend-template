@@ -1,7 +1,7 @@
-import { useRoycoClient, type RoycoClient } from "@/sdk/client";
-import { type SupportedToken, SupportedTokenMap } from "@/sdk/constants";
+import { useRoycoClient, type RoycoClient } from "royco/client";
+import { type SupportedToken, SupportedTokenMap } from "royco/constants";
 import { useQuery } from "@tanstack/react-query";
-import { getTokenQuotesQueryOptions, TypedTokenQuote } from "@/sdk/queries";
+import { getTokenQuotesQueryOptions, TypedTokenQuote } from "royco/queries";
 
 export type SupportedTokenInfo = SupportedToken & TypedTokenQuote;
 

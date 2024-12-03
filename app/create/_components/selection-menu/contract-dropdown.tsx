@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { motion } from "framer-motion";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 
 const waveAnimation = {
   hover: {

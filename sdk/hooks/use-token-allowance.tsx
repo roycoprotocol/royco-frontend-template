@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAccountAllowanceQueryOptions } from "@/sdk/queries";
+import { getAccountAllowanceQueryOptions } from "royco/queries";
 import { type Address } from "viem";
 
 export const useTokenAllowance = ({

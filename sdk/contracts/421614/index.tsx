@@ -1,6 +1,6 @@
 import { ContractAddresses } from "./contract-addresses";
 import { ContractAbis } from "./contract-abis";
-import { NULL_ADDRESS } from "@/sdk/constants";
+import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi, erc4626Abi } from "viem";
 
 export const Contracts = {

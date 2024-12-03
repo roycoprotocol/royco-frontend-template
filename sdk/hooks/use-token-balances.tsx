@@ -1,7 +1,7 @@
-import { getTokenBalanceQueryOptions } from "@/sdk/queries";
+import { getTokenBalanceQueryOptions } from "royco/queries";
 import { useQueries } from "@tanstack/react-query";
 import { formatEther, formatUnits } from "viem";
-import type { Tables } from "@/sdk/types";
+import type { Tables } from "royco/types";
 
 export type TokenData = Pick<
   Tables<"tokens">,

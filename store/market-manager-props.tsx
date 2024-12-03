@@ -19,7 +19,7 @@ import {
   TypedRoycoMarketScriptType,
   TypedRoycoMarketUserType,
   TypedRoycoMarketVaultIncentiveAction,
-} from "@/sdk/market";
+} from "royco/market";
 import { ScrollTextIcon, VaultIcon } from "lucide-react";
 
 /**

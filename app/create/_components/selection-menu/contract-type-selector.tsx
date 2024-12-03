@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import { LoadingSpinner } from "@/components/composables";
-import { useContractTypes } from "@/sdk/hooks";
+import { useContractTypes } from "royco/hooks";
 import { useSelectionMenu } from "@/store";
 
 import { motion } from "framer-motion";

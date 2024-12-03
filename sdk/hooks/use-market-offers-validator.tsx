@@ -1,4 +1,4 @@
-import { getMarketOffersValidatorQueryOptions } from "@/sdk/queries";
+import { getMarketOffersValidatorQueryOptions } from "royco/queries";
 import { useQuery } from "@tanstack/react-query";
 
 export const useMarketOffersValidator = ({

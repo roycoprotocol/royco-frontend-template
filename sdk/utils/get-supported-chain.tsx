@@ -1,4 +1,4 @@
-import { type SupportedChain, SupportedChainMap } from "@/sdk/constants";
+import { type SupportedChain, SupportedChainMap } from "royco/constants";
 
 const getSupportedChain = (
   chainId: number | undefined

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
-import { useEnrichedPositionsRecipe } from "@/sdk/hooks";
+import { useEnrichedPositionsRecipe } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { StatsDataTable } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/stats-tables/stats-data-table";
 import { positionsRecipeColumns } from "./postions-recipe-table-columns";

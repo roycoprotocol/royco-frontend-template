@@ -8,7 +8,7 @@ import {
   TypedRoycoMarketType,
   TypedRoycoMarketUserType,
   TypedRoycoMarketVaultIncentiveAction,
-} from "@/sdk/market";
+} from "royco/market";
 
 import { useRecipeAPMarketOffer } from "./use-recipe-ap-market-offer";
 import { useRecipeIPMarketOffer } from "./use-recipe-ip-market-offer";

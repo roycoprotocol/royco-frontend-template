@@ -6,7 +6,7 @@ import {
   // isSolidityAddressValid,
   isSolidityAddressValid,
   isERC4626VaultAddressValid,
-} from "@/sdk/utils";
+} from "royco/utils";
 import {
   AbiParameter as ZodAbiParameter,
   AbiFunction as ZodAbiFunction,
@@ -18,7 +18,7 @@ import {
   isFixedValueValid,
   isMarketActionScriptValid,
   isMarketActionValid,
-} from "@/sdk/market";
+} from "royco/market";
 import { arbitrum, base, mainnet, sepolia } from "viem/chains";
 import {
   SupportedChainMap,
@@ -26,8 +26,8 @@ import {
   TokenMap11155111,
   TokenMap42161,
   TokenMap8453,
-} from "@/sdk/constants";
-import { isSolidityStringValid } from "@/sdk/utils";
+} from "royco/constants";
+import { isSolidityStringValid } from "royco/utils";
 
 export const TypedZodAbiFunction = z.object({
   type: z.literal("function"),

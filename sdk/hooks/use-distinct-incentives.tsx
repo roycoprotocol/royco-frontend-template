@@ -3,8 +3,8 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { useRoycoClient, type RoycoClient } from "@/sdk/client";
-import { getDistinctIncentivesQueryOptions } from "@/sdk/queries";
+import { useRoycoClient, type RoycoClient } from "royco/client";
+import { getDistinctIncentivesQueryOptions } from "royco/queries";
 import { getSupportedToken } from "../constants";
 
 export type TypedArrayDistinctIncentive = {

@@ -12,7 +12,7 @@ import { useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { SpringNumber } from "@/components/composables";
 import { format } from "date-fns";
-import { RoycoMarketType } from "@/sdk/market";
+import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
 
 const InfoKeyElementClone = React.forwardRef<

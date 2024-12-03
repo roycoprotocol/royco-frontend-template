@@ -1,5 +1,5 @@
-import { useRoycoClient, type RoycoClient } from "@/sdk/client";
-import { getEnrichedRoycoStatsQueryOptions } from "@/sdk/queries";
+import { useRoycoClient, type RoycoClient } from "royco/client";
+import { getEnrichedRoycoStatsQueryOptions } from "royco/queries";
 import { useQuery } from "@tanstack/react-query";
 import { CustomTokenData } from "../types";
 

@@ -1,4 +1,4 @@
-import { ContractFilter } from "@/sdk/queries";
+import { ContractFilter } from "royco/queries";
 import { SortingState } from "@tanstack/react-table";
 import { create } from "zustand";
 

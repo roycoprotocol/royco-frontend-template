@@ -24,7 +24,7 @@ import { ErrorAlert } from "../alerts";
 import toast from "react-hot-toast";
 import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
-import { TransactionOptionsType } from "@/sdk/types";
+import { TransactionOptionsType } from "royco/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";

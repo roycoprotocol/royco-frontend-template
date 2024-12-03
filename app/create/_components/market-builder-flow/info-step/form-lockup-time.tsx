@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { MarketBuilderFormSchema } from "../../market-builder-form";
 import { UseFormReturn } from "react-hook-form";
 import { FormLockupTimeDurationType } from "./form-lockup-time-duration-type";
-import { isSolidityIntValid } from "@/sdk/utils";
+import { isSolidityIntValid } from "royco/utils";
 import {
   Tooltip,
   TooltipContent,

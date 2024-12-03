@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getVaultBalanceQueryOptions } from "@/sdk/queries";
+import { getVaultBalanceQueryOptions } from "royco/queries";
 
 export const useVaultBalance = ({
   chain_id,

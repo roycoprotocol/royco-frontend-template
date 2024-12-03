@@ -1,4 +1,4 @@
-import { type SupportedToken, SupportedTokenList } from "@/sdk/constants";
+import { type SupportedToken, SupportedTokenList } from "royco/constants";
 
 export const useSupportedTokens = ({
   chain_id,

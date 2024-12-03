@@ -1,4 +1,4 @@
-import { RoycoMarketType, TypedRoycoMarketType } from "@/sdk/market";
+import { RoycoMarketType, TypedRoycoMarketType } from "royco/market";
 import { ReadMarketDataType, useReadMarket } from "../use-read-market";
 import { useEnrichedMarkets } from "../use-enriched-markets";
 

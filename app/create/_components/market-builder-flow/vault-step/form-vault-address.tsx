@@ -18,7 +18,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
-import { isSolidityAddressValid } from "@/sdk/utils";
+import { isSolidityAddressValid } from "royco/utils";
 import { FormInputLabel, LoadingSpinner } from "@/components/composables";
 import {
   Tooltip,
@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { BadgeAlertIcon, BadgeCheckIcon } from "lucide-react";
-import { useErc4626VaultChecker } from "@/sdk/hooks";
+import { useErc4626VaultChecker } from "royco/hooks";
 
 export const FormVaultAddress = React.forwardRef<
   HTMLDivElement,

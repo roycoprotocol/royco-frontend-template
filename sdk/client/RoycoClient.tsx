@@ -3,8 +3,8 @@ import { useContext } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-import { RoycoContext } from "@/sdk/provider";
-import type { Database } from "@/sdk/types/data";
+import { RoycoContext } from "royco/provider";
+import type { Database } from "royco/types/data";
 
 type TypedRoycoClient = SupabaseClient<Database>;
 type RoycoClient = TypedRoycoClient;

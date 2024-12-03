@@ -1,6 +1,6 @@
 import { erc4626Abi, type Address } from "viem";
 import { createPublicClient, http, erc20Abi } from "viem";
-import { getChain } from "@/sdk/utils";
+import { getChain } from "royco/utils";
 import { NULL_ADDRESS } from "../constants";
 import { RPC_API_KEYS } from "@/components/constants";
 export const getVaultAllowance = async ({

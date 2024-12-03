@@ -3,7 +3,7 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { EnrichedPositionsRecipeDataType } from "@/sdk/queries";
+import { EnrichedPositionsRecipeDataType } from "royco/queries";
 
 import { formatDistanceToNow } from "date-fns";
 import { MarketType, RewardStyleMap } from "@/store";

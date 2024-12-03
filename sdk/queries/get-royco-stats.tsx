@@ -1,6 +1,6 @@
-import { type TypedRoycoClient } from "@/sdk/client";
-import type { Tables } from "@/sdk/types";
-import { getRandomMultiplier } from "@/sdk/utils";
+import { type TypedRoycoClient } from "royco/client";
+import type { Tables } from "royco/types";
+import { getRandomMultiplier } from "royco/utils";
 
 export type RoycoStats = Pick<
   Tables<"royco_stats">,

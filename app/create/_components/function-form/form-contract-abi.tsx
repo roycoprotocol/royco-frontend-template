@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { FormField, FormItem, useFormField } from "@/components/ui/form";
 import { LoadingSpinner } from "@/components/composables";
-import { isAbiValid } from "@/sdk/utils";
+import { isAbiValid } from "royco/utils";
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { useMarketBuilder, useMarketBuilderManager } from "@/store";
 import { Droppable } from "@hello-pangea/dnd";

@@ -14,7 +14,7 @@ import {
   GripVerticalIcon,
   Trash2Icon,
 } from "lucide-react";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 
 import { AnimatePresence, motion } from "framer-motion";

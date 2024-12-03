@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { TokenDisplayer } from "@/components/common";
 
-import { useSupportedChains } from "@/sdk/hooks";
+import { useSupportedChains } from "royco/hooks";
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
 import { FormInputLabel } from "@/components/composables";
 

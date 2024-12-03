@@ -1,11 +1,11 @@
-import { RoycoMarketType } from "@/sdk/market";
-import { isSolidityAddressValid, isSolidityIntValid } from "@/sdk/utils";
+import { RoycoMarketType } from "royco/market";
+import { isSolidityAddressValid, isSolidityIntValid } from "royco/utils";
 import { BigNumber, ethers } from "ethers";
-import { EnrichedMarketDataType } from "@/sdk/queries";
+import { EnrichedMarketDataType } from "royco/queries";
 import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
-import { NULL_ADDRESS } from "@/sdk/constants";
-import { ContractMap } from "@/sdk/contracts";
-import { TransactionOptionsType } from "@/sdk/types";
+import { NULL_ADDRESS } from "royco/constants";
+import { ContractMap } from "royco/contracts";
+import { TransactionOptionsType } from "royco/types";
 import { getApprovalContractOptions, refineTransactionOptions } from "./utils";
 import { useTokenAllowance } from "../use-token-allowance";
 import { Address } from "abitype";

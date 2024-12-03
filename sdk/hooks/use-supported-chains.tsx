@@ -2,7 +2,7 @@
  * @notice deprecated -- use directly from constants
  */
 
-import { SupportedChainMap } from "@/sdk/constants";
+import { SupportedChainMap } from "royco/constants";
 
 export const useSupportedChains = ({
   testnet = false,

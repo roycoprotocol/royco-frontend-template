@@ -5,10 +5,10 @@ import { LoadingSpinner } from "@/components/composables";
 import {
   type TypedArrayDistinctIncentive,
   useDistinctIncentives,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
-import { getSupportedChain } from "@/sdk/utils";
+import { getSupportedChain } from "royco/utils";
 
 export const IncentivesFilter = () => {
   const { data, isLoading, isError } = useDistinctIncentives({

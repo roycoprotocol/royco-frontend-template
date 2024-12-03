@@ -2,8 +2,8 @@
  * @notice will be updated
  */
 
-import { useRoycoClient, type RoycoClient } from "@/sdk/client";
-import { getDistinctAssetsQueryOptions } from "@/sdk/queries";
+import { useRoycoClient, type RoycoClient } from "royco/client";
+import { getDistinctAssetsQueryOptions } from "royco/queries";
 import { useQuery } from "@tanstack/react-query";
 import { getSupportedToken } from "../constants";
 

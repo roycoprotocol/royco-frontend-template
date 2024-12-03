@@ -3,12 +3,12 @@ import { Fragment } from "react";
 
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables";
-import { type TypedArrayDistinctAsset, useDistinctAssets } from "@/sdk/hooks";
+import { type TypedArrayDistinctAsset, useDistinctAssets } from "royco/hooks";
 
 import { FilterWrapper } from "../composables";
 import { sepolia } from "viem/chains";
 import { AlertIndicator } from "@/components/common";
-import { getSupportedChain } from "@/sdk/utils";
+import { getSupportedChain } from "royco/utils";
 
 export const AssetsFilter = () => {
   const { data, isLoading, isError, isRefetching } = useDistinctAssets({
