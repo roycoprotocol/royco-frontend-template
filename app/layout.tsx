@@ -14,8 +14,8 @@ import { headers } from "next/headers";
 import AppKitProvider from "@/components/web3-modal/context-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { RoycoProvider } from "@/sdk";
 import { BrowserDetector } from "@/store/use-general-stats";
+import { RoycoClientProvider } from "./royco-client-provider";
 
 /**
  * @description Inter Font
@@ -99,7 +99,7 @@ export default function RootLayout({
   const cookies = headers().get("cookie");
 
   return (
-    <RoycoProvider
+    <RoycoClientProvider
       originUrl={process.env.NEXT_PUBLIC_SUPABASE_URL!}
       originKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}
     >
@@ -127,6 +127,6 @@ export default function RootLayout({
           </body>
         </html>
       </TooltipProvider>
-    </RoycoProvider>
+    </RoycoClientProvider>
   );
 }

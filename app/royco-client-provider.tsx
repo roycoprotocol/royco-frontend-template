@@ -1,6 +1,6 @@
 "use client";
 
-import { RoycoProvider } from "@/sdk";
+import { RoycoProvider } from "royco";
 
 export const RoycoClientProvider = ({
   children,

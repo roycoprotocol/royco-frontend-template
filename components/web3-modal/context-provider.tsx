@@ -32,8 +32,10 @@ export default function AppKitProvider({
   const initialState = cookieToInitialState(config as Config, cookies);
 
   return (
-    <WagmiProvider config={config} initialState={initialState}>
-      <ConnectWalletProvider>{children}</ConnectWalletProvider>
-    </WagmiProvider>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config} initialState={initialState}>
+        <ConnectWalletProvider>{children}</ConnectWalletProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
   );
 }
