@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 
 import { LoadingSpinner } from "@/components/composables";
 import { DataTable } from "./data-table";
@@ -18,12 +18,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { produce } from "immer";
 
 import { useImmer } from "use-immer";
+import { usePathname } from "next/navigation";
 
 export const MarketsTable = () => {
   const [placeholderDatas, setPlaceholderDatas] = useImmer<Array<any | null>>([
     null,
     null,
   ]);
+
+  const pathname = usePathname();
+  const showVerifiedMarket = useMemo(
+    () => (pathname === "/" ? true : false),
+    [pathname]
+  );
 
   const {
     exploreSortKey: sortKey,
@@ -32,6 +39,7 @@ export const MarketsTable = () => {
     exploreSearch: searchKey,
     explorePageIndex: pageIndex,
     exploreCustomPoolParams: customPoolParams,
+    exploreIsVerified: isVerified,
   } = useExplore();
 
   const { data, isLoading, isError, error, isRefetching, count } =
@@ -40,6 +48,7 @@ export const MarketsTable = () => {
       filters,
       page_index: pageIndex,
       search_key: searchKey,
+      is_verified: showVerifiedMarket ? true : isVerified,
     });
 
   /**

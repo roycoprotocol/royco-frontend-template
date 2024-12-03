@@ -29,6 +29,7 @@ import {
 import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
+import { capitalize } from "lodash";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -98,9 +99,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     header: ({ column }: { column: any }) => {
       return <HeaderWrapper column={column} />;
     },
-
     meta: {
-      className: "min-w-52",
+      className: "min-w-60 shrink-0",
     },
     cell: (props: any) => {
       return (
@@ -108,34 +108,37 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           key={`${props.view}:market:${props.row.original.id}:name`}
           className={cn(
             props.column.columnDef.meta.className,
-            props.view === "list" && "body-2 text-black",
-            props.view === "grid" &&
-              "body-1 w-full overflow-hidden truncate text-ellipsis whitespace-nowrap text-black",
-            "flex flex-row items-center gap-2"
+            props.view === "list" && "body-2 pr-7 text-black",
+            props.view === "grid" && "body-1 pr-0 text-black",
+            "min-w flex w-full flex-row items-center"
           )}
         >
-          <div className="w-fit grow-0 overflow-hidden truncate text-ellipsis">
-            {props.row.original.name}
-          </div>
+          <div className="flex min-w-0 flex-row items-center">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {props.row.original.name.trim()}
+            </div>
 
-          <Tooltip>
-            <TooltipTrigger className="flex flex-col place-content-center items-center">
-              {props.row.original.is_verified ? (
-                <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
-              ) : (
-                <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
-              )}
-            </TooltipTrigger>
-            {typeof window !== "undefined" &&
-              createPortal(
-                <TooltipContent className="z-9999">
-                  {props.row.original.is_verified
-                    ? "Verified Market"
-                    : "Unverified Market"}
-                </TooltipContent>,
-                document.body
-              )}
-          </Tooltip>
+            <div className="ml-2">
+              <Tooltip>
+                <TooltipTrigger className="flex flex-col place-content-center items-center">
+                  {props.row.original.is_verified ? (
+                    <BadgeCheckIcon className="-mt-[0.15rem] h-7 w-7 fill-success text-white" />
+                  ) : (
+                    <BadgeAlertIcon className="-mt-[0.15rem] h-7 w-7 fill-error text-white" />
+                  )}
+                </TooltipTrigger>
+                {typeof window !== "undefined" &&
+                  createPortal(
+                    <TooltipContent className="z-9999">
+                      {props.row.original.is_verified
+                        ? "Verified Market"
+                        : "WARNING: UNVERIFIED MARKET"}
+                    </TooltipContent>,
+                    document.body
+                  )}
+              </Tooltip>
+            </div>
+          </div>
         </div>
       );
     },
@@ -243,6 +246,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               {props.row.original.market_type === 0 ? "Recipe" : "Vault"}
             </span>
           </div>
+
+          {/* {props.row.original.market_type === 0 ? "Recipe" : "Vault"} */}
         </div>
       );
     },
@@ -384,8 +389,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           <Tooltip>
-            {props.row.original.annual_change_ratio === Math.pow(10, 18) ? (
-              "N/D"
+            {props.row.original.annual_change_ratio >= Math.pow(10, 18) ? (
+              "0"
             ) : (
               <TooltipTrigger className={cn("cursor-pointer")}>
                 <SpringNumber
@@ -410,10 +415,14 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               </TooltipTrigger>
             )}
 
-            {props.row.original.incentive_tokens_data.length > 0 && (
+            {props.row.original.incentive_tokens_data.filter(
+              (token: any) => token.annual_change_ratio !== 0
+            ).length > 0 && (
               <AipBreakdown
                 noEdit
-                breakdown={props.row.original.incentive_tokens_data}
+                breakdown={props.row.original.incentive_tokens_data.filter(
+                  (token: any) => token.annual_change_ratio !== 0
+                )}
               />
             )}
           </Tooltip>

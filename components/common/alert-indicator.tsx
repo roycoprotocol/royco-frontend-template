@@ -11,10 +11,18 @@ export const AlertIndicator = React.forwardRef<
     iconClassName?: string;
     contentClassName?: string;
     type?: "error" | "success";
+    showIcon?: boolean;
   }
 >(
   (
-    { className, type = "error", iconClassName, contentClassName, ...props },
+    {
+      className,
+      type = "error",
+      iconClassName,
+      contentClassName,
+      showIcon = true,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -26,26 +34,28 @@ export const AlertIndicator = React.forwardRef<
         )}
         {...props}
       >
-        <SlideUpWrapper className="" delay={0}>
-          {type === "error" && (
-            <BadgeAlert
-              strokeWidth={1}
-              className={cn(
-                "h-6 w-6 text-secondary md:h-8 md:w-8",
-                iconClassName
-              )}
-            />
-          )}
-          {type === "success" && (
-            <BadgeCheckIcon
-              strokeWidth={1}
-              className={cn(
-                "h-6 w-6 text-secondary md:h-8 md:w-8",
-                iconClassName
-              )}
-            />
-          )}
-        </SlideUpWrapper>
+        {showIcon && (
+          <SlideUpWrapper className="" delay={0}>
+            {type === "error" && (
+              <BadgeAlert
+                strokeWidth={1}
+                className={cn(
+                  "h-6 w-6 text-secondary md:h-8 md:w-8",
+                  iconClassName
+                )}
+              />
+            )}
+            {type === "success" && (
+              <BadgeCheckIcon
+                strokeWidth={1}
+                className={cn(
+                  "h-6 w-6 text-secondary md:h-8 md:w-8",
+                  iconClassName
+                )}
+              />
+            )}
+          </SlideUpWrapper>
+        )}
 
         <SlideUpWrapper
           className="flex w-full flex-col place-content-center items-center"

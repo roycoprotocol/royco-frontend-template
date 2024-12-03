@@ -127,14 +127,17 @@ export const SelectionMenu = React.forwardRef<
   }, [totalPages]);
 
   return (
-    <div ref={ref} id="selection-menu" className="contents">
-      <h2 className="heading-3 pb-5">Contracts</h2>
+    <div ref={ref} id="selection-menu" className="flex h-full flex-col">
+      <h2 className="heading-3">Contracts</h2>
+      <p className="caption mt-2 pb-5 text-tertiary">
+        Select the contract of the function you want to incentivize.
+      </p>
 
       {/* {activeTab.id === "contracts" && <ContractTypeSelector />} */}
 
       <SearchBar className="" />
 
-      <div className="hide-scrollbar mt-5 w-full grow overflow-y-scroll rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
+      <div className="mt-5 flex w-full flex-1 flex-col overflow-hidden rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
         {isLoadingContractList && (
           <div className="flex w-full flex-col items-center p-5">
             <LoadingSpinner className="h-4 w-4" />
@@ -151,31 +154,6 @@ export const SelectionMenu = React.forwardRef<
                 : dataContractList
             }
           />
-        )}
-
-        {(placeholderContractList[1] === null ||
-          placeholderContractList[1].length === 0) && (
-          <AlertIndicator className="h-full">
-            {searchKey.length > 0 && searchKey.length < 3
-              ? "Search must be >= 3 letters"
-              : "No contracts found"}
-          </AlertIndicator>
-          // <div className="flex h-full w-full flex-col place-content-center items-center">
-          //   <MotionWrapper>
-          //     <div className="h-12 w-12">
-          //       <BadgeAlertIcon
-          //         strokeWidth={1}
-          //         className="h-12 w-12 text-tertiary"
-          //       />
-          //     </div>
-          //   </MotionWrapper>
-
-          //   <MotionWrapper delay={0.2}>
-          //     <div className="mt-2 text-center font-ortica text-3xl text-tertiary">
-          //       No Contracts Found
-          //     </div>
-          //   </MotionWrapper>
-          // </div>
         )}
       </div>
 

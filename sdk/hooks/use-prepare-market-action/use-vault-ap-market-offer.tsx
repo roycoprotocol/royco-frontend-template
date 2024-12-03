@@ -20,11 +20,18 @@ import { useReadVaultPreview } from "../use-read-vault-preview";
 export const isVaultAPMarketOfferValid = ({
   quantity,
   account,
+  enabled,
 }: {
   quantity: string | undefined;
   account: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -70,13 +77,23 @@ export const calculateVaultAPMarketOfferTokenData = ({
   propsTokenQuotes,
   propsReadVaultPreview,
   quantity,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
   propsReadVaultPreview: ReturnType<typeof useReadVaultPreview>;
   quantity: string;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -251,13 +268,14 @@ export const useVaultAPMarketOffer = ({
   const isValid = isVaultAPMarketOfferValid({
     quantity,
     account,
+    enabled,
   });
 
   // Get incentives after deposit
   const propsReadVaultPreview = useReadVaultPreview({
     market: enrichedMarket as EnrichedMarketDataType,
     quantity: quantity || "0",
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get token quotes
@@ -269,7 +287,7 @@ export const useVaultAPMarketOffer = ({
       ])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -280,6 +298,7 @@ export const useVaultAPMarketOffer = ({
       propsTokenQuotes,
       propsReadVaultPreview,
       quantity: quantity || "0",
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -311,7 +330,7 @@ export const useVaultAPMarketOffer = ({
     // Get approval transaction options
     const approvalTxOptions: TransactionOptionsType[] =
       getApprovalContractOptions({
-        market_type: RoycoMarketType.recipe.id,
+        market_type: RoycoMarketType.vault.id,
         token_ids: [inputTokenData.id],
         required_approval_amounts: [inputTokenData.raw_amount],
         spender: market_id,
@@ -329,6 +348,7 @@ export const useVaultAPMarketOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {

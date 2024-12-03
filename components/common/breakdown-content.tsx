@@ -188,10 +188,10 @@ export const IncentiveBreakdown = ({
                         currency: incentives_info.token_amount_usd
                           ? "USD"
                           : undefined,
-                        notation: "compact",
+                        notation: "standard",
                         useGrouping: true,
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }).format(
                         incentives_info.token_amount_usd ||
                           incentives_info.token_amount
@@ -287,6 +287,8 @@ export const AipBreakdown = ({
       {status === "info" && !!breakdown && (
         <div className="body-2 grid grid-cols-1 gap-3 px-3 py-3 font-gt text-secondary">
           {breakdown.map((aip_info: AipInfo, index: number) => {
+            if (aip_info.annual_change_ratio === 0) return null;
+
             return (
               <div
                 key={`breakdown:aip-info:${aip_info.id}`}
@@ -301,16 +303,13 @@ export const AipBreakdown = ({
                 <div className="flex flex-row items-center space-x-2">
                   <div className="h-5">
                     <span className="leading-5">
-                      {!!aip_info.annual_change_ratio &&
-                      aip_info.annual_change_ratio !== Math.pow(10, 18)
-                        ? Intl.NumberFormat("en-US", {
-                            style: "percent",
-                            notation: "compact",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }).format(aip_info.annual_change_ratio)
-                        : "N/D"}
+                      {Intl.NumberFormat("en-US", {
+                        style: "percent",
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }).format(aip_info.annual_change_ratio)}
                     </span>
                   </div>
 

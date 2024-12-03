@@ -142,7 +142,7 @@ const TokenDisplayer = React.forwardRef<
                        * @TODO Test remaining for font centering
                        */}
                       {/* <span className="">{token.symbol.toUpperCase()}</span> */}
-                      <div>{token.symbol.toUpperCase()}</div>
+                      <div>{token.symbol}</div>
                     </TooltipContent>,
                     document.body
                   )}

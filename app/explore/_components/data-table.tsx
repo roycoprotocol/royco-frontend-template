@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import { InfoGrid, InfoTip } from "@/components/common";
 
 import { FallMotion } from "@/components/animations";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 /**
  * @description DataTable component props
@@ -96,7 +97,7 @@ export function DataTable<TData, TValue>({
           "hide-scrollbar relative w-full overflow-y-scroll",
           view === "list" && "rounded-[1.25rem] border border-divider bg-white",
           view === "grid" &&
-            "grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3"
+            "grid grid-cols-1 gap-x-3 lg:grid-cols-2 xl:grid-cols-3"
         )}
       >
         {view === "grid" && (
@@ -129,16 +130,19 @@ export function DataTable<TData, TValue>({
               );
 
               return (
-                <motion.div
-                  onClick={() => {
-                    window.open(
-                      `/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`,
-                      "_self",
-                      "noopener,noreferrer"
-                    );
-                  }}
+                <motion.a
+                  target="_self"
+                  rel="noopener noreferrer"
+                  href={`/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`}
+                  // onClick={() => {
+                  //   window.open(
+                  //     `/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`,
+                  //     "_self",
+                  //     "noopener,noreferrer"
+                  //   );
+                  // }}
                   key={`grid:row:${row.id}`}
-                  className="relative w-full cursor-pointer rounded-[1.25rem] border border-divider bg-white p-5 transition-all duration-200 ease-in-out hover:shadow-md"
+                  className="relative mb-3 w-full cursor-pointer rounded-[1.25rem] border border-divider bg-white p-5 transition-all duration-200 ease-in-out hover:shadow-md"
                 >
                   {!!name && columnVisibility.name && (
                     <FallMotion
@@ -164,37 +168,39 @@ export function DataTable<TData, TValue>({
                       contentClassName="flex flex-row items-center space-x-2 place-content-start overflow-x-scroll hide-scrollbar"
                       height="2.45rem"
                     >
-                      {!!chainId &&
-                        columnVisibility.chain_id &&
-                        flexRender(chainId.column.columnDef.cell, {
-                          ...chainId.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                      <ScrollArea className="flex gap-x-2">
+                        {!!lockedQuantityUsd &&
+                          columnVisibility.locked_quantity_usd &&
+                          flexRender(lockedQuantityUsd.column.columnDef.cell, {
+                            ...lockedQuantityUsd.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!inputTokenId &&
-                        columnVisibility.input_token_id &&
-                        flexRender(inputTokenId.column.columnDef.cell, {
-                          ...inputTokenId.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!chainId &&
+                          columnVisibility.chain_id &&
+                          flexRender(chainId.column.columnDef.cell, {
+                            ...chainId.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!marketType &&
-                        columnVisibility.market_type &&
-                        flexRender(marketType.column.columnDef.cell, {
-                          ...marketType.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!inputTokenId &&
+                          columnVisibility.input_token_id &&
+                          flexRender(inputTokenId.column.columnDef.cell, {
+                            ...inputTokenId.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
 
-                      {!!lockedQuantityUsd &&
-                        columnVisibility.locked_quantity_usd &&
-                        flexRender(lockedQuantityUsd.column.columnDef.cell, {
-                          ...lockedQuantityUsd.getContext(),
-                          placeholderDatas,
-                          view,
-                        })}
+                        {!!marketType &&
+                          columnVisibility.market_type &&
+                          flexRender(marketType.column.columnDef.cell, {
+                            ...marketType.getContext(),
+                            placeholderDatas,
+                            view,
+                          })}
+                      </ScrollArea>
                     </FallMotion>
                   )}
 
@@ -225,11 +231,11 @@ export function DataTable<TData, TValue>({
                                 <span
                                   className={InfoGrid.Content.Secondary.Span}
                                 >
-                                  AIP
+                                  APR
                                 </span>
                               </div>
 
-                              <InfoTip>Annual Incentive Percent</InfoTip>
+                              <InfoTip>Annual Percentage Rate</InfoTip>
                             </InfoGrid.Content.Secondary>
 
                             <FallMotion
@@ -284,7 +290,7 @@ export function DataTable<TData, TValue>({
                         )}
                     </InfoGrid.Container>
                   )}
-                </motion.div>
+                </motion.a>
               );
             })}
           </div>

@@ -7,21 +7,26 @@ import { type TypedArrayDistinctAsset, useDistinctAssets } from "@/sdk/hooks";
 import { FilterWrapper } from "../composables";
 import { sepolia } from "viem/chains";
 import { AlertIndicator } from "@/components/common";
+import { getSupportedChain } from "@/sdk/utils";
 
 export const AssetsFilter = () => {
   const { data, isLoading, isError, isRefetching } = useDistinctAssets({
     output: "array",
   });
 
-  const totalAssets = !!data
+  const tokens = !!data
     ? (data as TypedArrayDistinctAsset[]).filter((token) => {
         if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
-          return !token.ids.some((id) => id.startsWith(`${sepolia.id}`));
+          return !token.ids.every((id) => {
+            const [chain_id, token_address] = id.split("-");
+            const chain = getSupportedChain(parseInt(chain_id));
+            return chain?.testnet === true;
+          });
         } else {
           return true;
         }
-      }).length
-    : 0;
+      })
+    : [];
 
   if (isLoading)
     return (
@@ -30,24 +35,17 @@ export const AssetsFilter = () => {
       </div>
     );
 
-  if (!isLoading && totalAssets === 0) {
+  if (!isLoading && tokens.length === 0) {
     return <AlertIndicator className="py-2">No tokens yet</AlertIndicator>;
   }
 
   if (data) {
     return (
       <Fragment>
-        {(data as Array<TypedArrayDistinctAsset>).map((token, index) => {
-          const shouldHide =
-            process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET" &&
-            token.ids.some((id) => id.startsWith(`${sepolia.id}`));
-
+        {tokens.map((token, index) => {
           if (token) {
             return (
-              <div
-                className={cn(shouldHide && "hidden")}
-                key={`filter-wrapper:assets:${token.symbol}`}
-              >
+              <div key={`filter-wrapper:assets:${token.symbol}`}>
                 <FilterWrapper
                   filter={{
                     id: "input_token_id",

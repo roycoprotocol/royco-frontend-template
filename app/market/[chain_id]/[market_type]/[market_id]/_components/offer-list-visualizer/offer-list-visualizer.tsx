@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp } from "lucide-react";
 import {
@@ -39,19 +39,9 @@ import {
 } from "../composables";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
+import { MarketType } from "../../../../../../../store";
 
 export const description = "A bar chart with an active bar";
-
-const chartConfig = {
-  ap_offer: {
-    label: "AP Offer",
-    color: "#EB3C27",
-  },
-  ip_offer: {
-    label: "IP Offer",
-    color: "#3CC27A",
-  },
-} satisfies ChartConfig;
 
 export const OfferListVisualizer = React.forwardRef<
   HTMLDivElement,
@@ -64,6 +54,23 @@ export const OfferListVisualizer = React.forwardRef<
     currentMarketData,
     previousMarketData,
   } = useActiveMarket();
+
+  const chartConfig = useMemo(() => {
+    return {
+      ap_offer: {
+        label: "AP Offer",
+        color:
+          currentMarketData &&
+          currentMarketData.market_type === MarketType.recipe.value
+            ? "#4AE7A8"
+            : "#F7F7F6",
+      },
+      ip_offer: {
+        label: "IP Offer",
+        color: "#4AE75A",
+      },
+    };
+  }, [currentMarketData]);
 
   const currentChangeRatioDepth = Math.abs(
     currentHighestOffers
@@ -92,6 +99,9 @@ export const OfferListVisualizer = React.forwardRef<
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ap_offer.color,
+            offer_side: offer.offer_side,
+            quantity: offer.quantity,
+            input_token_data: offer.input_token_data,
           };
         }),
         ...currentHighestOffers.ip_offers.map((offer) => {
@@ -99,6 +109,9 @@ export const OfferListVisualizer = React.forwardRef<
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ip_offer.color,
+            offer_side: offer.offer_side,
+            quantity: offer.quantity,
+            input_token_data: offer.input_token_data,
           };
         }),
       ] // Sort the data by `change_ratio` (X-axis key)
@@ -117,7 +130,7 @@ export const OfferListVisualizer = React.forwardRef<
           BASE_PADDING_TOP
         )}
       >
-        DEPTH
+        INCENTIVE DEPTH
       </TertiaryLabel>
 
       <PrimaryLabel
@@ -129,10 +142,13 @@ export const OfferListVisualizer = React.forwardRef<
         )}
       >
         <SpringNumber
-          previousValue={previousChangeRatioDepth}
-          currentValue={currentChangeRatioDepth}
+          previousValue={previousMarketData?.annual_change_ratio ?? 0}
+          currentValue={currentMarketData?.annual_change_ratio ?? 0}
           numberFormatOptions={{
             style: "percent",
+            notation: "compact",
+            useGrouping: true,
+            compactDisplay: "short",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }}
@@ -161,6 +177,7 @@ export const OfferListVisualizer = React.forwardRef<
                   const formattedValue = Intl.NumberFormat("en-US", {
                     style: "percent",
                     notation: "compact",
+                    useGrouping: true,
                     compactDisplay: "short",
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -173,23 +190,24 @@ export const OfferListVisualizer = React.forwardRef<
                 orientation="right"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
+                tickMargin={0}
                 tickFormatter={(value) => {
                   const formattedValue = Intl.NumberFormat("en-US", {
-                    style: "decimal",
-                    // currency: "USD",
+                    style: "currency",
+                    currency: "USD",
                     useGrouping: true,
                     notation: "compact",
-                    compactDisplay: "short",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                   }).format(value as number);
 
                   return formattedValue;
                 }}
               />
-              {/* <ChartTooltip
-cursor={false}
-content={<ChartTooltipContent hideLabel />}
-/> */}
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
               <Bar
                 maxBarSize={60}
                 dataKey="quantity_value_usd"

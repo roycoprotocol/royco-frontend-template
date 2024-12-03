@@ -43,14 +43,17 @@ export const TopNavigator = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("flex w-full flex-col items-center gap-12", className)}
+      className={cn(
+        "flex w-full items-center gap-x-4 md:flex-col md:gap-12",
+        className
+      )}
       {...props}
     >
       <Button
         onClick={() => handlePrevStep()}
         disabled={activeStep === MarketBuilderSteps.info.id}
         className={cn(
-          "flex w-fit cursor-pointer flex-col place-content-start items-start self-start bg-transparent p-0 text-tertiary transition-all duration-200 ease-in-out hover:text-secondary"
+          "flex w-fit cursor-pointer flex-col place-content-start items-start bg-transparent p-0 text-tertiary transition-all duration-200 ease-in-out hover:text-secondary md:self-start"
         )}
       >
         <ChevronLeftIcon className="h-6 w-6" />
@@ -70,7 +73,7 @@ export const TopNavigator = React.forwardRef<
 
         <MotionWrapper
           key={`top-navigator:${activeStep}:title`}
-          className="heading-3 flex-wrap text-primary"
+          className="heading-3 flex-wrap text-primary "
         >
           {activeTitle}
         </MotionWrapper>
@@ -78,8 +81,8 @@ export const TopNavigator = React.forwardRef<
         {activeStep === MarketBuilderSteps.review.id && (
           <MotionWrapper>
             <div className="body-1 mt-3 text-secondary">
-              Please review the following details as Royco markets are
-              immutable.
+              Review your Incentivized Action script. Users will execute these
+              functions and earn rewards.
             </div>
           </MotionWrapper>
         )}

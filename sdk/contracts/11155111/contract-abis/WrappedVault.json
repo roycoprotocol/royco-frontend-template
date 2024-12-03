@@ -1,43 +1,10 @@
 {
   "abi": [
     {
-      "type": "constructor",
-      "inputs": [
-        { "name": "_owner", "type": "address", "internalType": "address" },
-        { "name": "_name", "type": "string", "internalType": "string" },
-        { "name": "_symbol", "type": "string", "internalType": "string" },
-        { "name": "vault", "type": "address", "internalType": "address" },
-        {
-          "name": "initialFrontendFee",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "pointsFactory",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "nonpayable"
-    },
-    {
       "type": "function",
       "name": "DOMAIN_SEPARATOR",
       "inputs": [],
       "outputs": [{ "name": "", "type": "bytes32", "internalType": "bytes32" }],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "ERC4626I_FACTORY",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "contract WrappedVaultFactory"
-        }
-      ],
       "stateMutability": "view"
     },
     {
@@ -50,13 +17,6 @@
     {
       "type": "function",
       "name": "MIN_CAMPAIGN_DURATION",
-      "inputs": [],
-      "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "MIN_CAMPAIGN_EXTENSION",
       "inputs": [],
       "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
       "stateMutability": "view"
@@ -76,6 +36,13 @@
     },
     {
       "type": "function",
+      "name": "RPT_PRECISION",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
       "name": "VAULT",
       "inputs": [],
       "outputs": [
@@ -83,6 +50,19 @@
           "name": "",
           "type": "address",
           "internalType": "contract IWrappedVault"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "WRAPPED_VAULT_FACTORY",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract WrappedVaultFactory"
         }
       ],
       "stateMutability": "view"
@@ -134,6 +114,13 @@
     },
     {
       "type": "function",
+      "name": "cancelOwnershipHandover",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
       "name": "claim",
       "inputs": [
         { "name": "to", "type": "address", "internalType": "address" }
@@ -166,6 +153,15 @@
       "inputs": [
         { "name": "to", "type": "address", "internalType": "address" },
         { "name": "reward", "type": "address", "internalType": "address" }
+      ],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "completeOwnershipHandover",
+      "inputs": [
+        { "name": "pendingOwner", "type": "address", "internalType": "address" }
       ],
       "outputs": [],
       "stateMutability": "payable"
@@ -259,6 +255,28 @@
     },
     {
       "type": "function",
+      "name": "initialize",
+      "inputs": [
+        { "name": "_owner", "type": "address", "internalType": "address" },
+        { "name": "_name", "type": "string", "internalType": "string" },
+        { "name": "_symbol", "type": "string", "internalType": "string" },
+        { "name": "vault", "type": "address", "internalType": "address" },
+        {
+          "name": "initialFrontendFee",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "pointsFactory",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "isReward",
       "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
       "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
@@ -285,7 +303,9 @@
     {
       "type": "function",
       "name": "maxRedeem",
-      "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "inputs": [
+        { "name": "owner", "type": "address", "internalType": "address" }
+      ],
       "outputs": [
         { "name": "maxShares", "type": "uint256", "internalType": "uint256" }
       ],
@@ -294,7 +314,9 @@
     {
       "type": "function",
       "name": "maxWithdraw",
-      "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "inputs": [
+        { "name": "owner", "type": "address", "internalType": "address" }
+      ],
       "outputs": [
         { "name": "maxAssets", "type": "uint256", "internalType": "uint256" }
       ],
@@ -330,7 +352,9 @@
       "type": "function",
       "name": "owner",
       "inputs": [],
-      "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "outputs": [
+        { "name": "result", "type": "address", "internalType": "address" }
+      ],
       "stateMutability": "view"
     },
     {
@@ -342,6 +366,17 @@
       ],
       "outputs": [],
       "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "ownershipHandoverExpiresAt",
+      "inputs": [
+        { "name": "pendingOwner", "type": "address", "internalType": "address" }
+      ],
+      "outputs": [
+        { "name": "result", "type": "uint256", "internalType": "uint256" }
+      ],
+      "stateMutability": "view"
     },
     {
       "type": "function",
@@ -431,6 +466,20 @@
       "inputs": [
         { "name": "reward", "type": "address", "internalType": "address" }
       ],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "renounceOwnership",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "requestOwnershipHandover",
+      "inputs": [],
       "outputs": [],
       "stateMutability": "payable"
     },
@@ -581,7 +630,7 @@
         { "name": "newOwner", "type": "address", "internalType": "address" }
       ],
       "outputs": [],
-      "stateMutability": "nonpayable"
+      "stateMutability": "payable"
     },
     {
       "type": "function",
@@ -717,10 +766,49 @@
     },
     {
       "type": "event",
+      "name": "Initialized",
+      "inputs": [
+        {
+          "name": "version",
+          "type": "uint64",
+          "indexed": false,
+          "internalType": "uint64"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipHandoverCanceled",
+      "inputs": [
+        {
+          "name": "pendingOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipHandoverRequested",
+      "inputs": [
+        {
+          "name": "pendingOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
       "name": "OwnershipTransferred",
       "inputs": [
         {
-          "name": "user",
+          "name": "oldOwner",
           "type": "address",
           "indexed": true,
           "internalType": "address"
@@ -908,20 +996,29 @@
       ],
       "anonymous": false
     },
+    { "type": "error", "name": "AlreadyInitialized", "inputs": [] },
+    { "type": "error", "name": "CannotShortenInterval", "inputs": [] },
     { "type": "error", "name": "DuplicateRewardToken", "inputs": [] },
     { "type": "error", "name": "FrontendFeeBelowMinimum", "inputs": [] },
+    { "type": "error", "name": "IntervalEndBeforeStart", "inputs": [] },
+    { "type": "error", "name": "IntervalEndInPast", "inputs": [] },
     { "type": "error", "name": "IntervalInProgress", "inputs": [] },
     { "type": "error", "name": "IntervalScheduled", "inputs": [] },
-    { "type": "error", "name": "InvalidInterval", "inputs": [] },
+    { "type": "error", "name": "IntervalStartIsZero", "inputs": [] },
+    { "type": "error", "name": "InvalidInitialization", "inputs": [] },
     { "type": "error", "name": "InvalidIntervalDuration", "inputs": [] },
     { "type": "error", "name": "InvalidReward", "inputs": [] },
     { "type": "error", "name": "InvalidWithdrawal", "inputs": [] },
     { "type": "error", "name": "MaxRewardsReached", "inputs": [] },
+    { "type": "error", "name": "NewOwnerIsZeroAddress", "inputs": [] },
+    { "type": "error", "name": "NoHandoverRequest", "inputs": [] },
     { "type": "error", "name": "NoIntervalInProgress", "inputs": [] },
     { "type": "error", "name": "NoZeroRateAllowed", "inputs": [] },
+    { "type": "error", "name": "NotInitializing", "inputs": [] },
     { "type": "error", "name": "NotOwnerOfVaultOrApproved", "inputs": [] },
     { "type": "error", "name": "RateCannotDecrease", "inputs": [] },
     { "type": "error", "name": "TooFewShares", "inputs": [] },
+    { "type": "error", "name": "Unauthorized", "inputs": [] },
     {
       "type": "error",
       "name": "VaultNotAuthorizedToRewardPoints",

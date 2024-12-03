@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { MarketStatsView, MarketType, useMarketManager } from "@/store";
+import {
+  MarketStatsView,
+  MarketType,
+  MarketUserType,
+  useMarketManager,
+} from "@/store";
 import React from "react";
 import { OfferTable } from "./offer-table";
 import { useAccount } from "wagmi";
@@ -14,15 +19,31 @@ import {
 } from "../composables";
 import { PositionsRecipeTable } from "./positions-recipe-table";
 import { useActiveMarket } from "../hooks";
+import { PositionsVaultTable } from "./positions-vault-table";
+import { useEnrichedOffers } from "../../../../../../../sdk/hooks";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { statsView, setStatsView } = useMarketManager();
+  const { statsView, setStatsView, userType } = useMarketManager();
   const { address, isConnected } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
+
+  const { data: offers } = useEnrichedOffers({
+    chain_id: marketMetadata.chain_id,
+    market_id: marketMetadata.market_id,
+    creator: (address?.toLowerCase() as string) ?? "",
+    market_type: marketMetadata.market_type === MarketType.recipe.id ? 0 : 1,
+    filters: [
+      { id: "is_cancelled", value: false },
+      {
+        id: "offer_side",
+        value: userType === MarketUserType.ap.id ? 0 : 1,
+      },
+    ],
+  });
 
   return (
     <div ref={ref} className={cn("flex w-full flex-col", className)}>
@@ -34,25 +55,27 @@ export const StatsTables = React.forwardRef<
         )}
       >
         <TertiaryLabel
-          onClick={() => setStatsView(MarketStatsView.offers.id)}
-          className={cn(
-            BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent",
-            statsView === MarketStatsView.offers.id && "decoration-tertiary"
-          )}
-        >
-          OFFERS
-        </TertiaryLabel>
-        <TertiaryLabel>/</TertiaryLabel>
-        <TertiaryLabel
           onClick={() => setStatsView(MarketStatsView.positions.id)}
           className={cn(
             BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent",
+            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
             statsView === MarketStatsView.positions.id && "decoration-tertiary"
           )}
         >
           POSITIONS
+        </TertiaryLabel>
+
+        <TertiaryLabel>/</TertiaryLabel>
+
+        <TertiaryLabel
+          onClick={() => setStatsView(MarketStatsView.offers.id)}
+          className={cn(
+            BASE_UNDERLINE.MD,
+            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
+            statsView === MarketStatsView.offers.id && "decoration-tertiary"
+          )}
+        >
+          {`OFFERS ${offers?.count ? `(${offers?.count})` : ""}`}
         </TertiaryLabel>
       </div>
 
@@ -62,7 +85,7 @@ export const StatsTables = React.forwardRef<
           marketMetadata.market_type === MarketType.recipe.id ? (
             <PositionsRecipeTable />
           ) : (
-            <div>Vault positions table</div>
+            <PositionsVaultTable />
           )
         ) : (
           <OfferTable />

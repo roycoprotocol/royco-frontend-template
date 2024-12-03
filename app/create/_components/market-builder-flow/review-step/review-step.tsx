@@ -98,12 +98,12 @@ export const ReviewStep = React.forwardRef<
                   {ActionTypeMap[marketBuilderForm.watch("action_type")].label}
                 </span>
               </div>
-              <InfoTip>
+              {/* <InfoTip>
                 {
                   ActionTypeMap[marketBuilderForm.watch("action_type")]
                     .description
                 }
-              </InfoTip>
+              </InfoTip> */}
             </InfoCard.Row.Value>
           </InfoCard.Row>
 

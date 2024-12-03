@@ -16,7 +16,7 @@ export const SecondaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit items-center font-gt text-sm font-normal leading-tight text-secondary",
+        "flex h-fit items-center break-all font-gt text-sm font-normal leading-tight text-secondary",
         className
       )}
       {...props}
@@ -60,7 +60,9 @@ export const PrimaryLabel = React.forwardRef<
       {...props}
     >
       <div className="flex h-8 max-w-full grow overflow-hidden truncate text-ellipsis">
-        <span className="leading-9">{props.children}</span>
+        <span className="truncate text-ellipsis leading-9">
+          {props.children}
+        </span>
       </div>
       {isVerified !== undefined && (
         <Tooltip>
@@ -74,7 +76,7 @@ export const PrimaryLabel = React.forwardRef<
           {typeof window !== "undefined" &&
             createPortal(
               <TooltipContent className="z-9999">
-                {isVerified ? "Verified Market" : "Unverified Market"}
+                {isVerified ? "Verified Market" : "WARNING: UNVERIFIED MARKET"}
               </TooltipContent>,
               document.body
             )}

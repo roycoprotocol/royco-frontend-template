@@ -13,8 +13,7 @@ import { isEqual } from "lodash";
 import { produce } from "immer";
 
 import { MarketType } from "@/store";
-import { EnrichedMarketDataType, EnrichedOfferDataType } from "@/sdk/queries";
-import { isVerifiedMarket } from "@/sdk/constants";
+import { EnrichedMarketDataType } from "@/sdk/queries";
 
 export const useActiveMarket = () => {
   const params = useParams();
@@ -154,7 +153,7 @@ export const useActiveMarket = () => {
   const isLoading =
     propsEnrichedMarket.isLoading ||
     propsHighestOffers.isLoading ||
-    propsReadMarket.isLoading ||
+    // propsReadMarket.isLoading ||
     propsActionsDecoderEnterMarket.isLoading ||
     propsActionsDecoderExitMarket.isLoading;
 
@@ -182,13 +181,14 @@ export const useActiveMarket = () => {
         ? // @ts-ignore
           (placeholderDatasEnrichedMarket[0][0] as EnrichedMarketDataType)
         : undefined,
-    currentMarketData:
-      !!placeholderDatasEnrichedMarket[1] &&
-      // @ts-ignore
-      placeholderDatasEnrichedMarket[1].length > 0
-        ? // @ts-ignore
-          (placeholderDatasEnrichedMarket[1][0] as EnrichedMarketDataType)
-        : undefined,
+    currentMarketData: propsEnrichedMarket.data?.[0] as EnrichedMarketDataType,
+    // currentMarketData:
+    //   !!placeholderDatasEnrichedMarket[1] &&
+    //   // @ts-ignore
+    //   placeholderDatasEnrichedMarket[1].length > 0
+    //     ? // @ts-ignore
+    //       (placeholderDatasEnrichedMarket[1][0] as EnrichedMarketDataType)
+    //     : undefined,
     propsHighestOffers,
     previousHighestOffers: placeholderDatasHighestOffers[0],
     currentHighestOffers: placeholderDatasHighestOffers[1],

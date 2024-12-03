@@ -136,12 +136,8 @@ export const FormAsset = React.forwardRef<
       control={marketBuilderForm.control}
       name="asset"
       render={({ field }) => (
-        <FormItem>
-          <FormInputLabel
-            className="mb-2"
-            label="Input Asset"
-            info="Input asset will be auto-fetched for vault action"
-          />
+        <FormItem className={cn("", className)}>
+          <FormInputLabel className="mb-2" label="Input Asset" />
 
           <FormControl>
             <div className="relative h-10">
@@ -389,7 +385,7 @@ export const FormAsset = React.forwardRef<
           </FormControl>
 
           <FormDescription className="mt-2">
-            What can be deposited into the market
+            Asset that users will provide.
           </FormDescription>
 
           <FormMessage />

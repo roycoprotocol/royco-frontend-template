@@ -1,6 +1,7 @@
 import { type Chain, type Address } from "viem";
 import { createPublicClient, http, erc20Abi } from "viem";
 import { getChain } from "@/sdk/utils";
+import { RPC_API_KEYS } from "@/components/constants";
 
 export const getTokenBalance = async (
   chain_id: number,
@@ -12,7 +13,7 @@ export const getTokenBalance = async (
 
   const publicClient = createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_API_KEYS[chain_id]),
   });
 
   const contracts = [

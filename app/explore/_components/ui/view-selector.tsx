@@ -52,7 +52,7 @@ export const ViewSelector = React.forwardRef<
           >
             <div className="z-20 flex h-10 w-10 shrink-0 flex-col place-content-center items-center text-inherit opacity-0"></div>
 
-            <div className="absolute inset-0 z-50 flex h-10 w-10 flex-col place-content-center items-center text-inherit">
+            <div className="absolute inset-0 z-10 flex h-10 w-10 flex-col place-content-center items-center text-inherit">
               {tab.icon}
             </div>
 

@@ -40,7 +40,7 @@ export const FormLockupTime = React.forwardRef<
         <FormItem className={cn("", className)}>
           <FormInputLabel
             className="mb-2"
-            label="Lockup Time"
+            label="TimeLock"
             info="Only required for Recipe Action"
           />
 
@@ -110,7 +110,7 @@ export const FormLockupTime = React.forwardRef<
             </div>
           </FormControl>
           <FormDescription className="mt-2">
-            How long assets must be deposited for
+            Time the input asset will be locked for.
           </FormDescription>
           <FormMessage />
         </FormItem>

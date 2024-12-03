@@ -265,7 +265,8 @@ export const TransactionStep = React.forwardRef<
         key={`tx-status:subtitle:${txStatus}`}
         className="mt-2 w-full text-center font-gt text-base font-300 text-secondary"
       >
-        {txStatus === "pending" && "Please wait, this might take a while."}
+        {txStatus === "pending" &&
+          "Please wait, this might take a while. Do not navigate off this page until confirmation."}
         {txStatus === "success" &&
           "Your market should be live on dashboard within a few minutes."}
         {txStatus === "error" && "Error while deploying market."}

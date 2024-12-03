@@ -2,7 +2,7 @@
 
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { cn } from "@/lib/utils";
-import { useEnrichedRoycoStats, useRoycoStats } from "@/sdk/hooks";
+import { useEnrichedRoycoStats } from "@/sdk/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { produce } from "immer";
 import { isEqual } from "lodash";
@@ -54,7 +54,7 @@ export const RoycoStats = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex flex-row flex-nowrap place-content-center items-center gap-3 lg:w-fit",
+        "grid grid-cols-2 flex-nowrap place-content-center items-center gap-3 sm:grid-cols-3 lg:w-fit",
         // "md:w-1/2",
         className
       )}
@@ -77,7 +77,7 @@ export const RoycoStats = React.forwardRef<
         return (
           <div
             key={`stats:${item.key}`}
-            className="flex w-[9.375rem] flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1"
+            className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1"
           >
             <div className="caption text-secondary">{item.name}</div>
             <div className="money-3 mt-1 w-full text-primary">

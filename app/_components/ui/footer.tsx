@@ -75,6 +75,18 @@ const FooterMap: {
       },
     ],
   },
+  legal: {
+    index: 3,
+    id: "legal",
+    title: "Legal",
+    labels: [
+      {
+        id: "terms-of-service",
+        label: "Terms of Service",
+        link: "https://docs.google.com/document/d/14TcJRR-MnJOVBsT_lGOaM0mfElhE_p9tYOwvSXU9kyQ/edit?usp=sharing",
+      },
+    ],
+  },
 };
 
 export const Footer = React.forwardRef<

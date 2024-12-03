@@ -7,7 +7,25 @@ import { EnrichedOfferDataType } from "@/sdk/queries";
 
 import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
-import { RewardStyleMap } from "@/store";
+import {
+  MarketType,
+  MarketUserType,
+  RewardStyleMap,
+  useMarketManager,
+} from "@/store";
+import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
+import { useActiveMarket } from "../hooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ContractMap } from "@/sdk/contracts";
+import { getExplorerUrl } from "@/sdk/utils";
+import { BigNumber } from "ethers";
+import { getRecipeForfeitTransactionOptions } from "@/sdk/hooks";
 
 /**
  * @description Column definitions for the table
@@ -30,34 +48,45 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
   //     return <div>{props.row.original.name}</div>;
   //   },
   // },
+
+  /**
+   * @note Below code represents the side of the offer
+   */
+  // {
+  //   accessorKey: "offer_side",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Side",
+  //   meta: {
+  //     className: "min-w-24",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "font-gt text-sm font-300",
+  //           props.row.original.offer_side ===
+  //             RoycoMarketUserType.ap.value.toString()
+  //             ? "text-success"
+  //             : "text-error"
+  //         )}
+  //       >
+  //         {props.row.original.offer_side ===
+  //         RoycoMarketUserType.ap.value.toString()
+  //           ? MarketUserType.ap.label
+  //           : MarketUserType.ip.label}
+  //       </div>
+  //     );
+  //   },
+  // },
+
   {
-    accessorKey: "offer_side",
+    accessorKey: "annual_change_ratio",
     enableResizing: false,
     enableSorting: false,
-    header: "Side",
+    header: "APR",
     meta: {
       className: "min-w-24",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "font-gt text-sm font-300",
-            props.row.original.offer_side === 0 ? "text-success" : "text-error"
-          )}
-        >
-          {props.row.original.offer_side === 0 ? "Supply" : "Withdraw"}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "change_ratio",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Annual Incentive Percent",
-    meta: {
-      // className: "min-w-52",
     },
     cell: (props: any) => {
       return (
@@ -70,6 +99,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "percent",
               notation: "compact",
+              useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }).format(props.row.original.annual_change_ratio)}
@@ -84,7 +114,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Incentive Payout",
     meta: {
-      // className: "min-w-18",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -154,7 +184,9 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     cell: (props: any) => {
       return (
         <div
-          className={cn("flex flex-col gap-[0.2rem] font-gt text-sm font-300")}
+          className={cn(
+            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
+          )}
         >
           {props.row.original.tokens_data.map(
             (
@@ -169,10 +201,10 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
                         style: "decimal",
+                        notation: "standard",
                         useGrouping: true,
-                        notation: "compact",
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                        maximumFractionDigits: 8,
                       }).format(token.token_amount)}
                     </span>
                   </div>
@@ -192,7 +224,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Cost",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
@@ -205,7 +237,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
         if (props.row.original.is_withdrawn === true) {
           costText = "Withdrawn";
         } else if (unlockDate < new Date()) {
-          costText = "Withdraw";
+          costText = "Can Withdraw";
         } else {
           costText = "Locked";
         }
@@ -221,20 +253,21 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-              notation: "compact",
+              notation: "standard",
+              useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
 
           <div className="flex flex-row items-center space-x-2">
             <SecondaryLabel className="text-tertiary">
               {Intl.NumberFormat("en-US", {
-                useGrouping: true,
                 style: "decimal",
-                notation: "compact",
+                notation: "standard",
+                useGrouping: true,
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+                maximumFractionDigits: 8,
               }).format(props.row.original.input_token_data.token_amount)}{" "}
               {props.row.original.input_token_data.symbol.toUpperCase()}
             </SecondaryLabel>
@@ -257,7 +290,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     enableSorting: false,
     header: "Input Token",
     meta: {
-      // className: "min-w-18",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       let text = "";
@@ -292,7 +325,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             }
           )}`;
         } else {
-          text = `Payment ${formatDistanceToNow(
+          text = `Pay ${formatDistanceToNow(
             new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
             {
               addSuffix: true,
@@ -305,12 +338,12 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "token_amounts",
     enableResizing: false,
     enableSorting: false,
     header: "Unclaimed Incentives",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-48",
     },
     cell: (props: any) => {
       let unclaimed_incentives_usd = 0;
@@ -343,9 +376,10 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
               {Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
-                notation: "compact",
+                notation: "standard",
+                useGrouping: true,
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+                maximumFractionDigits: 8,
               }).format(unclaimed_incentives_usd)}
             </SecondaryLabel>
 
@@ -354,7 +388,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                 (token: any, tokenIndex: number) => {
                   const isClaimed = props.row.original.is_claimed[tokenIndex];
 
-                  let claimText = isClaimed ? "Claimed" : "Claim";
+                  let claimText = isClaimed ? "Claimed" : "Can Claim";
 
                   const unlockDate = new Date(
                     parseInt(props.row.original.unlock_timestamp) * 1000
@@ -368,11 +402,11 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
                     <div className="flex flex-row items-center space-x-2">
                       <SecondaryLabel className="text-tertiary">
                         {Intl.NumberFormat("en-US", {
-                          useGrouping: true,
                           style: "decimal",
-                          notation: "compact",
+                          notation: "standard",
+                          useGrouping: true,
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(token.token_amount)}{" "}
                         {token.symbol.toUpperCase()}
                       </SecondaryLabel>
@@ -396,12 +430,12 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "input_token_id",
     enableResizing: false,
     enableSorting: false,
     header: "Market Value",
     meta: {
-      // className: "min-w-52",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const input_token_value =
@@ -424,12 +458,93 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-              notation: "compact",
+              notation: "standard",
+              useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(market_value)}
           </SecondaryLabel>
         </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    meta: {},
+    cell: (props: any) => {
+      const { transactions, setTransactions } = useMarketManager();
+
+      const { currentMarketData, marketMetadata } = useActiveMarket();
+
+      let can_be_forfeited = false;
+
+      if (
+        !!currentMarketData &&
+        currentMarketData.reward_style === 2 && // "2" represents forfeitable position
+        props.row.original.is_forfeited === false &&
+        props.row.original.is_claimed.every(
+          (isClaimed: boolean) => isClaimed === false
+        ) &&
+        props.row.original.is_withdrawn === false &&
+        BigNumber.from(props.row.original.unlock_timestamp).gt(
+          BigNumber.from(Math.floor(Date.now() / 1000))
+        )
+      ) {
+        can_be_forfeited = true;
+      }
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <DotsHorizontalIcon className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {can_be_forfeited && (
+              <DropdownMenuItem
+                onClick={() => {
+                  const txOptions = getRecipeForfeitTransactionOptions({
+                    position: props.row.original,
+                  });
+
+                  setTransactions([...transactions, txOptions]);
+                }}
+              >
+                Forfeit position
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.weiroll_wallet,
+                  type: "address",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              Weiroll Wallet
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.transaction_hash,
+                  type: "tx",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              Creation Transaction
+            </DropdownMenuItem>
+
+            {/* <DropdownMenuSeparator /> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },

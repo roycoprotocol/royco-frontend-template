@@ -95,6 +95,7 @@ export const Protector = ({
               onChange={(e: string) => {
                 setProtectorKey(e.toUpperCase());
               }}
+              inputMode="text"
             >
               <InputOTPGroup>
                 <InputOTPSlot index={0} />

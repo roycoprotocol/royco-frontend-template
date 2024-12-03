@@ -1,41 +1,46 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useMarketManager } from "@/store";
-import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
+import {
+  MarketSteps,
+  MarketType,
+  MarketUserType,
+  MarketViewType,
+  TypedMarketViewType,
+} from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { MarketForm, MarketFormSchema } from "../market-form";
+import { MarketActionForm } from "../market-action-form";
 import { useActiveMarket } from "../hooks";
-import { LoadingSpinner, TransactionModal } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { MarketInfo } from "../market-info";
 import { IncentiveInfo } from "../incentive-info";
 import { AlertIndicator } from "@/components/common";
 import { OfferList } from "../offer-list";
 import { SlideUpWrapper } from "@/components/animations";
-import {
-  BASE_PADDING,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  BASE_UNDERLINE,
-  PrimaryLabel,
-  SecondaryLabel,
-} from "../composables";
-import { ChevronLeft } from "lucide-react";
+import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
+import { ChevronLeftIcon } from "lucide-react";
 import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
-import { motion, AnimatePresence } from "framer-motion";
-import { OfferTable } from "../stats-tables";
+import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { useAccount } from "wagmi";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { viewType, setViewType, marketStep, setMarketStep } =
-    useMarketManager();
+  const {
+    viewType,
+    setViewType,
+    marketStep,
+    setMarketStep,
+    userType,
+    setUserType,
+  } = useMarketManager();
 
   const {
     isLoading,
@@ -45,14 +50,43 @@ export const MarketManager = React.forwardRef<
     marketMetadata,
   } = useActiveMarket();
 
-  // console.log("currentMarketData", currentMarketData);
+  const { address: walletAddress } = useAccount();
+  const [connectWalletAddress, setConnectWalletAddress] = useState<
+    `0x${string}` | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const updateViewType =
+        (localStorage.getItem(
+          "royco_market_view_type"
+        ) as TypedMarketViewType) || MarketViewType.simple.id;
+      setViewType(updateViewType);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!!currentMarketData && walletAddress !== connectWalletAddress) {
+      setConnectWalletAddress(walletAddress);
+    }
+  }, [walletAddress, currentMarketData]);
+
+  useEffect(() => {
+    if (
+      !!currentMarketData &&
+      !!currentMarketData.owner &&
+      !!connectWalletAddress &&
+      currentMarketData.market_type === MarketType.vault.value &&
+      connectWalletAddress.toLowerCase() ===
+        currentMarketData.owner.toLowerCase()
+    ) {
+      setUserType(MarketUserType.ip.id);
+    }
+  }, [connectWalletAddress]);
 
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
-  } else if (
-    !currentMarketData ||
-    process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET"
-  ) {
+  } else if (!currentMarketData) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center">
         <AlertIndicator
@@ -61,7 +95,8 @@ export const MarketManager = React.forwardRef<
             MAX_SCREEN_WIDTH
           )}
         >
-          Market dashboard isn't live yet. Check back later.
+          Market dashboard isn't live yet. Check back later. This takes a few
+          minutes if you've just deployed your market.
         </AlertIndicator>
       </SlideUpWrapper>
     );
@@ -69,40 +104,98 @@ export const MarketManager = React.forwardRef<
     return (
       <Fragment>
         {currentMarketData.is_verified === false && (
-          <WarningBox
-            className={cn(
-              MAX_SCREEN_WIDTH,
-              viewType === MarketViewType.simple.id && "",
-              viewType === MarketViewType.advanced.id && "mb-10"
-            )}
-            text="This is an unverified market and may lead to loss of assets upon interaction. Please make sure that you understand the risks before interacting with this market."
-          />
+          <SlideUpWrapper className="w-fit">
+            <WarningBox
+              className={cn(
+                MAX_SCREEN_WIDTH,
+                viewType === MarketViewType.simple.id && "mb-10",
+                viewType === MarketViewType.advanced.id && "mb-10"
+              )}
+              title="THIS MARKET MAY LEAD TO LOSS OF FUNDS. IT IS UNVERIFIED."
+              text="This market may be malicious or not function as expected, it has not yet been verified."
+            />
+          </SlideUpWrapper>
         )}
 
         <div
           className={cn(
-            "relative flex w-full shrink-0 flex-row place-content-end items-center gap-3 pb-3",
-            viewType === MarketViewType.simple.id && "opacity-0",
-            MAX_SCREEN_WIDTH
+            "flex w-full max-w-lg flex-col gap-y-3 pb-3 md:flex-row md:items-center md:justify-between md:gap-y-0",
+            viewType === MarketViewType.advanced.id && MAX_SCREEN_WIDTH
           )}
         >
-          {viewType === MarketViewType.simple.id && (
-            <div className="absolute left-0 top-0 h-full w-full"></div>
-          )}
+          <div
+            onClick={() => window.open("/", "_self", "noopener noreferrer")}
+            className={cn(
+              "flex cursor-pointer flex-row items-center gap-0 font-gt text-sm font-light text-secondary",
+              "transition-all duration-200 ease-in-out hover:opacity-80"
+            )}
+          >
+            <ChevronLeftIcon
+              strokeWidth={1.5}
+              className="-ml-2 h-6 w-6 text-secondary"
+            />
 
-          <div className="font-gt text-sm font-light text-secondary">
-            Advanced Mode
+            <div className="flex h-4 items-center">
+              <span className={cn("leading-5")}>Explore</span>
+            </div>
           </div>
-          <Switch
-            checked={viewType === MarketViewType.advanced.id}
-            onCheckedChange={() => {
-              setViewType(
-                viewType === MarketViewType.advanced.id
-                  ? MarketViewType.simple.id
-                  : MarketViewType.advanced.id
-              );
-            }}
-          />
+
+          <div
+            className={cn(
+              "relative flex shrink-0 flex-row justify-between md:w-fit md:items-center md:justify-end md:gap-3",
+              viewType === MarketViewType.simple.id && "opacity-0"
+            )}
+          >
+            {viewType === MarketViewType.simple.id && (
+              <div className="absolute left-0 top-0 h-full w-full"></div>
+            )}
+
+            {/**
+             * User Type Switch
+             */}
+            <div className="flex flex-row items-center gap-2">
+              <div className="font-gt text-sm font-light text-secondary">
+                Incentive Provider
+              </div>
+              <Switch
+                checked={userType === MarketUserType.ip.id}
+                onCheckedChange={() => {
+                  setUserType(
+                    userType === MarketUserType.ap.id
+                      ? MarketUserType.ip.id
+                      : MarketUserType.ap.id
+                  );
+                }}
+              />
+            </div>
+
+            {/**
+             * Advanced View Switch
+             */}
+            <div className="ml-3 flex flex-row items-center gap-2">
+              <div className="font-gt text-sm font-light text-secondary">
+                Advanced Mode
+              </div>
+              <Switch
+                checked={viewType === MarketViewType.advanced.id}
+                onCheckedChange={() => {
+                  const updateViewType =
+                    viewType === MarketViewType.advanced.id
+                      ? MarketViewType.simple.id
+                      : MarketViewType.advanced.id;
+
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem(
+                      "royco_market_view_type",
+                      updateViewType
+                    );
+                  }
+
+                  setViewType(updateViewType);
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         <motion.div
@@ -113,12 +206,12 @@ export const MarketManager = React.forwardRef<
           key={`market-manager:${viewType}`}
           className={cn(
             "flex items-center rounded-2xl border border-divider bg-white",
-            "w-full overflow-hidden",
+            "w-full overflow-hidden md:overflow-y-scroll",
             MAX_SCREEN_WIDTH,
             viewType === MarketViewType.advanced.id &&
               "h-fit flex-col md:h-[70rem] md:flex-row md:divide-x",
             viewType === MarketViewType.simple.id &&
-              "h-fit max-w-lg flex-col md:h-[70rem]",
+              "h-fit max-w-lg flex-col md:min-h-[800px]",
             "flex-0"
           )}
         >
@@ -126,7 +219,7 @@ export const MarketManager = React.forwardRef<
             <Fragment>
               {marketStep === MarketSteps.params.id && <MarketInfo />}
 
-              <MarketForm
+              <MarketActionForm
                 key={`market-form:simple`}
                 className={cn(
                   marketStep === MarketSteps.params.id &&
@@ -134,84 +227,107 @@ export const MarketManager = React.forwardRef<
                 )}
               />
 
-              {/**
-               * Temporarily disabled advanced mode on live networks
-               */}
-              {process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" && (
-                <div
-                  className={cn(
-                    "flex-0",
-                    "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
-                    BASE_PADDING_LEFT,
-                    BASE_PADDING_RIGHT,
-                    "py-3"
-                  )}
-                >
-                  <div className="font-gt text-sm font-light text-secondary">
-                    Advanced Mode
-                  </div>
-                  <Switch
-                    checked={viewType === MarketViewType.advanced.id}
-                    onCheckedChange={() => {
-                      setViewType(
-                        viewType === MarketViewType.advanced.id
-                          ? MarketViewType.simple.id
-                          : MarketViewType.advanced.id
-                      );
-                    }}
-                  />
+              <div
+                className={cn(
+                  "flex-0",
+                  "flex w-full shrink-0 flex-row items-center justify-between border-t border-divider",
+                  BASE_PADDING_LEFT,
+                  BASE_PADDING_RIGHT,
+                  "py-3"
+                )}
+              >
+                <div className="font-gt text-sm font-light text-secondary">
+                  Advanced Mode
                 </div>
-              )}
+                <Switch
+                  checked={viewType === MarketViewType.advanced.id}
+                  onCheckedChange={() => {
+                    const updateViewType =
+                      viewType === MarketViewType.advanced.id
+                        ? MarketViewType.simple.id
+                        : MarketViewType.advanced.id;
+
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem(
+                        "royco_market_view_type",
+                        updateViewType
+                      );
+                    }
+                    setViewType(updateViewType);
+                  }}
+                />
+              </div>
             </Fragment>
           ) : (
             // <MarketForm />
             <Fragment>
-              {/**
-               * @info Left section
-               */}
-              <div
-                className={cn(
-                  "flex h-full shrink-0 flex-col divide-y divide-divider",
-                  "w-full md:w-[50%] xl:w-[25%]"
-                )}
-              >
-                <MarketInfo />
+              <div className="h-full w-full divide-y md:flex md:flex-col">
+                <div className="flex h-full w-full flex-col divide-x md:flex-row">
+                  {/**
+                   * @info Left section
+                   */}
+                  <div
+                    className={cn(
+                      "flex h-full shrink-0 flex-col divide-y divide-divider",
+                      "w-full md:w-[50%] xl:w-[25%]"
+                    )}
+                  >
+                    <MarketInfo />
 
-                <IncentiveInfo />
+                    <IncentiveInfo />
 
-                <OfferList />
-              </div>
+                    <OfferList />
+                  </div>
 
-              {/**
-               * @info Middle section
-               */}
-              <div
-                className={cn(
-                  "border-t border-divider md:border-t-0",
-                  "h-full shrink-0 flex-col divide-y divide-divider md:hidden xl:flex",
-                  "w-full md:w-[40%] xl:w-[50%]",
-                  "flex h-full grow flex-col",
-                  MAX_SCREEN_WIDTH
-                )}
-              >
-                <OfferListVisualizer className="h-1/2 w-full" />
+                  {/**
+                   * @info Middle section
+                   */}
+                  <div
+                    className={cn(
+                      "border-t border-divider md:border-t-0",
+                      "h-full shrink-0 flex-col divide-y divide-divider md:hidden xl:flex",
+                      "w-full md:w-[40%] xl:w-[50%]",
+                      "flex h-full grow flex-col",
+                      MAX_SCREEN_WIDTH
+                    )}
+                  >
+                    <OfferListVisualizer className="h-1/2 w-full" />
 
-                <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
-              </div>
+                    <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
+                  </div>
 
-              {/**
-               * @info Right section
-               */}
-              <div
-                className={cn(
-                  "border-t border-divider md:border-t-0",
-                  "flex h-full shrink-0 flex-col divide-y divide-divider",
-                  "w-full md:w-[50%] xl:w-[25%]"
-                )}
-              >
-                <BalanceIndicator />
+                  {/**
+                   * @info Right section
+                   */}
+                  <div
+                    className={cn(
+                      "border-t border-divider md:border-t-0",
+                      "flex h-full shrink-0 flex-col divide-y divide-divider",
+                      "w-full md:w-[50%] xl:w-[25%]"
+                    )}
+                  >
+                    <BalanceIndicator />
 
-                <MarketForm />
+                    <MarketActionForm />
+                  </div>
+                </div>
+
+                {/**
+                 * @info Middle section
+                 */}
+                <div
+                  className={cn(
+                    "border-t border-divider md:border-t-0",
+                    "divide-y divide-divider ",
+                    "h-full w-full",
+                    "hidden shrink-0 grow flex-col md:flex xl:hidden",
+                    MAX_SCREEN_WIDTH
+                  )}
+                >
+                  <OfferListVisualizer className="w-full flex-1" />
+
+                  <StatsTables className="flex w-full flex-col overflow-hidden" />
+                </div>
               </div>
             </Fragment>
           )}

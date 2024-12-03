@@ -1,12 +1,22 @@
 import { RoycoMarketType } from "@/sdk/market";
-import { isSolidityAddressValid, isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityAddressValid,
+  isSolidityIntValid,
+  parseRawAmountToTokenAmount,
+  parseTokenAmountToTokenAmountUsd,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { getTokenQuote, useTokenQuotes } from "../use-token-quotes";
 import { NULL_ADDRESS } from "@/sdk/constants";
 import { ContractMap } from "@/sdk/contracts";
 import { TransactionOptionsType } from "@/sdk/types";
-import { getApprovalContractOptions, refineTransactionOptions } from "./utils";
+import {
+  getApprovalContractOptions,
+  getVaultApprovalContractOptions,
+  refineTransactionOptions,
+  refineVaultTransactionOptions,
+} from "./utils";
 import { useTokenAllowance } from "../use-token-allowance";
 import { Address } from "abitype";
 import {
@@ -15,6 +25,7 @@ import {
 } from "./types";
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
+import { useVaultAllowance } from "../use-vault-allowance";
 
 export const isRecipeAPLimitOfferValid = ({
   quantity,
@@ -22,14 +33,21 @@ export const isRecipeAPLimitOfferValid = ({
   token_ids,
   token_amounts,
   expiry,
+  enabled,
 }: {
   quantity: string | undefined;
   funding_vault: string | undefined;
   token_ids: string[] | undefined;
   token_amounts: string[] | undefined;
   expiry: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -43,6 +61,11 @@ export const isRecipeAPLimitOfferValid = ({
     // Check quantity is greater than 0
     if (BigNumber.from(quantity).lte(0)) {
       throw new Error("Quantity must be greater than 0");
+    }
+
+    // Check quantity is greater than 10^6 wei
+    if (BigNumber.from(quantity).lte(BigNumber.from("1000000"))) {
+      throw new Error("Quantity must be greater than 10^6 wei");
     }
 
     // Check funding vault
@@ -134,6 +157,7 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   tokenIds,
   tokenAmounts,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
@@ -141,7 +165,16 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   tokenIds: string[];
   tokenAmounts: string[];
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -156,15 +189,15 @@ export const calculateRecipeAPLimitOfferTokenData = ({
   // Get input token data
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
-    raw_amount: quantity === "" ? "0" : quantity ?? "0",
-    token_amount: parseFloat(
-      ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
+    raw_amount: quantity === "" ? "0" : (quantity ?? "0"),
+    token_amount: parseRawAmountToTokenAmount(
+      quantity ?? "0",
+      input_token_quote.decimals
     ),
-    token_amount_usd:
-      input_token_quote.price *
-      parseFloat(
-        ethers.utils.formatUnits(quantity || "0", input_token_quote.decimals)
-      ),
+    token_amount_usd: parseTokenAmountToTokenAmountUsd(
+      parseRawAmountToTokenAmount(quantity ?? "0", input_token_quote.decimals),
+      input_token_quote.price
+    ),
   };
 
   if (!!enrichedMarket) {
@@ -199,13 +232,14 @@ export const calculateRecipeAPLimitOfferTokenData = ({
         // Get annual change ratio
         let annual_change_ratio = 0;
 
-        // Calculate annual change ratio
-        if (!enrichedMarket.lockup_time || enrichedMarket.lockup_time === "0") {
-          annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
-        } else {
+        const lockup_time = Number(enrichedMarket.lockup_time ?? "0");
+        const quantity_value_usd = input_token_data.token_amount_usd;
+        const incentive_value_usd = incentive_token_amount_usd;
+
+        if (quantity_value_usd > 0 && !isNaN(lockup_time) && lockup_time > 0) {
           annual_change_ratio =
-            (incentive_token_amount_usd / input_token_data.token_amount_usd) *
-            ((365 * 24 * 60 * 60) / parseInt(enrichedMarket.lockup_time));
+            (incentive_value_usd / quantity_value_usd) *
+            ((365 * 24 * 60 * 60) / lockup_time);
         }
 
         // Get incentive token data
@@ -347,6 +381,7 @@ export const useRecipeAPLimitOffer = ({
     token_ids,
     token_amounts,
     expiry,
+    enabled,
   });
 
   // Get token quotes
@@ -355,7 +390,7 @@ export const useRecipeAPLimitOffer = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -367,6 +402,7 @@ export const useRecipeAPLimitOffer = ({
       tokenIds: token_ids ?? [],
       tokenAmounts: token_amounts ?? [],
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -407,8 +443,24 @@ export const useRecipeAPLimitOffer = ({
             .address,
       });
 
-    // Set approval transaction options
-    preContractOptions = approvalTxOptions;
+    // Get vault approval transaction options
+    const vaultApprovalTxOptions: TransactionOptionsType[] =
+      getVaultApprovalContractOptions({
+        market_type: RoycoMarketType.recipe.id,
+        token_ids: [inputTokenData.id],
+        required_approval_amounts: [inputTokenData.raw_amount],
+        funding_vault: funding_vault ?? NULL_ADDRESS,
+        spender:
+          ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+            .address,
+      });
+
+    // Set pre contract options
+    if (funding_vault !== NULL_ADDRESS) {
+      preContractOptions = [...vaultApprovalTxOptions];
+    } else {
+      preContractOptions = [...approvalTxOptions];
+    }
   }
 
   // Get token allowance
@@ -421,21 +473,43 @@ export const useRecipeAPLimitOffer = ({
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
-  if (!propsTokenAllowance.isLoading) {
-    // Refine transaction options
-    writeContractOptions = refineTransactionOptions({
-      propsTokenAllowance,
-      preContractOptions,
-      postContractOptions,
-    });
+  // Get vault allowance
+  const propsVaultAllowance = useVaultAllowance({
+    chain_id,
+    account: account ?? "",
+    vault_address: funding_vault ?? "",
+    spender:
+      ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
+        .address,
+    enabled: isValid.status,
+  });
+
+  if (!propsTokenAllowance.isLoading && !propsVaultAllowance.isLoading) {
+    if (funding_vault !== NULL_ADDRESS) {
+      // Refine vault transaction options
+      writeContractOptions = refineVaultTransactionOptions({
+        propsVaultAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    } else {
+      // Refine wallet transaction options
+      writeContractOptions = refineTransactionOptions({
+        propsTokenAllowance,
+        preContractOptions,
+        postContractOptions,
+      });
+    }
   }
 
   // Check if loading
   const isLoading =
     isLoadingDefaultMarketData ||
     propsTokenAllowance.isLoading ||
+    propsVaultAllowance.isLoading ||
     propsTokenQuotes.isLoading;
 
   // Check if ready

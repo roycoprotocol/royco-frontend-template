@@ -5,8 +5,9 @@ import "./header.css";
 import { cn } from "@/lib/utils";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { GetUpdatesStrip } from "./composables";
+import { FadeInMotionWrapper, GetUpdatesStrip } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
+import { Button } from "../../../components/ui/button";
 
 export const Header = React.forwardRef<
   HTMLDivElement,
@@ -15,6 +16,13 @@ export const Header = React.forwardRef<
   const { scrollYProgress } = useScroll();
 
   const scaleBanner = useTransform(scrollYProgress, [0, 1], [1, 1]);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <div
@@ -70,47 +78,87 @@ export const Header = React.forwardRef<
        * @description Cta Button
        */}
 
-      <div className="mt-1 xl:mt-4">
-        <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" />
+      <div className="mt-5 xl:mt-10">
+        <Button
+          onClick={() => scrollToSection("access-protocol")}
+          className={cn(
+            "flex w-fit flex-col items-center justify-center font-gt font-400 hover:opacity-100",
+            "text-sm md:text-base",
+            "rounded-md md:rounded-[0.4375rem]",
+            "px-4 py-2 md:px-5 md:py-3",
+            className
+          )}
+          // {...props}
+        >
+          <span className="leading-5 md:leading-5">Access Royco</span>
+        </Button>
+        {/* <GetUpdatesStrip className="mt-5 md:mt-[1.75rem]" /> */}
       </div>
 
-      <div className="px-5 md:px-12 lg:px-[10.44rem] xl:px-[12.44rem]">
-        <MaxWidthWrapper>
-          {/**
-           * @descriptioon Banner
-           */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{
-              opacity: 1,
-            }}
-            viewport={{
-              once: true,
-            }}
-            transition={{
-              delay: 0,
-              duration: 1,
-              ease: "easeOut",
-            }}
+      {/**
+       * @descriptioon Banner
+       */}
+      <FadeInMotionWrapper
+        className={cn("mt-10 w-full overflow-hidden md:mt-[3.41rem]", "-z-10")}
+      >
+        <div className="-mx-20 flex h-[250px] space-x-[-62px] md:h-[320px] md:space-x-[-80px] lg:h-[400px] lg:space-x-[-100px]">
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
             className={cn(
-              "overflow-hidden",
-              "rounded-t-lg md:rounded-t-xl lg:rounded-t-[1.25675rem]",
-              "border border-b-0 border-divider",
-              "aspect-[63.1875/26.9375]",
-              "mt-10 md:mt-[3.41rem]",
-              "-z-10"
+              "object-cover object-top transition-all duration-500 ease-in-out"
             )}
-          >
-            <img
-              src="/home/banner.png"
-              alt="home:banner"
-              className={cn(
-                "h-full w-full object-cover object-top transition-all duration-500 ease-in-out"
-              )}
-            />
-          </motion.div>
-        </MaxWidthWrapper>
-      </div>
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "object-cover object-top transition-all duration-500 ease-in-out"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "object-cover object-top transition-all duration-500 ease-in-out"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+
+          <img
+            src="/home/banner2.png"
+            alt="home:banner"
+            className={cn(
+              "hidden object-cover object-top transition-all duration-500 ease-in-out xl:flex"
+            )}
+          />
+        </div>
+      </FadeInMotionWrapper>
     </div>
   );
 });

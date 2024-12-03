@@ -38,6 +38,13 @@ export const GetUpdatesButton = React.forwardRef<
     },
   });
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const onSubmit = (data: z.infer<typeof subscribeFormSchema>) => {
     window.open(
       `https://paragraph.xyz/@royco/subscribe?email=${encodeURIComponent(
@@ -49,24 +56,25 @@ export const GetUpdatesButton = React.forwardRef<
 
   return (
     <Popover>
-      <PopoverTrigger>
-        {/* <MotionWrapper> */}
-        <Button
-          className={cn(
-            "flex w-fit flex-col items-center justify-center font-gt font-400 hover:opacity-100",
-            "text-xs md:text-sm",
-            "rounded-md md:rounded-[0.4375rem]",
-            "px-3 py-1 md:px-[0.98rem] md:py-[0.45rem]",
-            className
-          )}
-          // {...props}
-        >
-          <div className="h-5 md:h-5">
-            <span className="leading-5 md:leading-5">Get Updates</span>
-          </div>
-        </Button>
-        {/* </MotionWrapper> */}
-      </PopoverTrigger>
+      {/* <PopoverTrigger> */}
+      {/* <MotionWrapper> */}
+      <Button
+        onClick={() => scrollToSection("access-protocol")}
+        className={cn(
+          "flex w-fit flex-col items-center justify-center font-gt font-400 hover:opacity-100",
+          "text-xs md:text-sm",
+          "rounded-md md:rounded-[0.4375rem]",
+          "px-3 py-1 md:px-[0.98rem] md:py-[0.45rem]",
+          className
+        )}
+        // {...props}
+      >
+        <div className="h-5 md:h-5">
+          <span className="leading-5 md:leading-5">Access Royco</span>
+        </div>
+      </Button>
+      {/* </MotionWrapper> */}
+      {/* </PopoverTrigger> */}
       <PopoverContent className="z-[999] flex w-80 flex-col rounded-xl">
         <Form {...subscribeForm}>
           <form onSubmit={subscribeForm.handleSubmit(onSubmit)}>

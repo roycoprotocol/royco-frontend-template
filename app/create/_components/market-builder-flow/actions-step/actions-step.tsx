@@ -6,11 +6,18 @@ import { cn } from "@/lib/utils";
 import { MotionWrapper } from "../animations";
 import { useMarketBuilderManager } from "@/store";
 import { MarketBuilderSteps } from "@/store";
-import { ExternalLinkIcon, GripVerticalIcon, Trash2Icon } from "lucide-react";
+import {
+  CheckCheck,
+  CheckIcon,
+  CopyIcon,
+  ExternalLinkIcon,
+  GripVerticalIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { getExplorerUrl } from "@/sdk/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FallMotion } from "@/components/animations";
 
 import { isEqual } from "lodash";
@@ -19,6 +26,7 @@ import { NoActionsIndicator } from "./empty-state-indicator";
 import { InputOutputLists } from "./input-output-lists";
 import { FillQuantity } from "./fill-quantity";
 import { BuilderSectionWrapper } from "../../composables";
+import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
 
 export const ActionsStep = React.forwardRef<
   HTMLDivElement,
@@ -360,11 +368,19 @@ export const ActionsStep = React.forwardRef<
                                             ? "Unknown"
                                             : action.contract_function.name}
                                         </div>
-                                        <div className="text-xs leading-5 text-tertiary">
-                                          {action.contract_address.slice(0, 6)}
-                                          ...
-                                          {action.contract_address.slice(-4)}
-                                        </div>
+                                        <CopyWrapper
+                                          text={action.contract_address}
+                                          iconSize="xs"
+                                        >
+                                          <div className="text-xs leading-5 text-tertiary">
+                                            {action.contract_address.slice(
+                                              0,
+                                              6
+                                            )}
+                                            ...
+                                            {action.contract_address.slice(-4)}
+                                          </div>
+                                        </CopyWrapper>
                                       </div>
                                     </div>
 

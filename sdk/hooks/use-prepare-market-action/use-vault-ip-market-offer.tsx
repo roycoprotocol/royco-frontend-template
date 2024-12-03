@@ -1,9 +1,10 @@
-/**
- * @TODO Fix this
- */
-
 import { RoycoMarketType, RoycoMarketUserType } from "@/sdk/market";
-import { isSolidityIntValid } from "@/sdk/utils";
+import {
+  isSolidityIntValid,
+  parseRawAmountToTokenAmount,
+  parseRawAmountToTokenAmountUsd,
+  parseTokenAmountToTokenAmountUsd,
+} from "@/sdk/utils";
 import { BigNumber, ethers } from "ethers";
 import { EnrichedMarketDataType } from "@/sdk/queries";
 import { useMarketOffers } from "../use-market-offers";
@@ -20,13 +21,22 @@ import {
 } from "./types";
 import { useDefaultMarketData } from "./use-default-market-data";
 import { ReadMarketDataType } from "../use-read-market";
+import { useMarketOffersValidator } from "../use-market-offers-validator";
+import React from "react";
 
 export const isVaultIPMarketOfferValid = ({
   quantity,
+  enabled,
 }: {
   quantity: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -61,12 +71,22 @@ export const calculateVaultIPMarketOfferTokenData = ({
   enrichedMarket,
   propsMarketOffers,
   propsTokenQuotes,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
   propsMarketOffers: ReturnType<typeof useMarketOffers>;
   propsTokenQuotes: ReturnType<typeof useTokenQuotes>;
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   const total_quantity_filled: string =
     propsMarketOffers.data
       ?.reduce(
@@ -117,20 +137,15 @@ export const calculateVaultIPMarketOfferTokenData = ({
   const input_token_data: TypedMarketActionInputTokenData = {
     ...input_token_quote,
     raw_amount: total_quantity_filled ?? "0",
-    token_amount: parseFloat(
-      ethers.utils.formatUnits(
-        total_quantity_filled,
-        input_token_quote.decimals
-      )
+    token_amount: parseRawAmountToTokenAmount(
+      total_quantity_filled ?? "0",
+      input_token_quote.decimals
     ),
-    token_amount_usd:
-      input_token_quote.price *
-      parseFloat(
-        ethers.utils.formatUnits(
-          total_quantity_filled,
-          input_token_quote.decimals
-        )
-      ),
+    token_amount_usd: parseRawAmountToTokenAmountUsd(
+      total_quantity_filled ?? "0",
+      input_token_quote.decimals,
+      input_token_quote.price
+    ),
   };
 
   if (!!enrichedMarket) {
@@ -147,16 +162,16 @@ export const calculateVaultIPMarketOfferTokenData = ({
         token_id_to_amount_map[incentive_token_id].toString();
 
       // Get incentive token amount
-      const incentive_token_amount = parseFloat(
-        ethers.utils.formatUnits(
-          incentive_token_raw_amount,
-          incentive_token_quote.decimals
-        )
+      const incentive_token_amount = parseRawAmountToTokenAmount(
+        incentive_token_raw_amount ?? "0",
+        incentive_token_quote.decimals
       );
 
       // Get incentive token amount in USD
-      const incentive_token_amount_usd =
-        incentive_token_quote.price * incentive_token_amount;
+      const incentive_token_amount_usd = parseTokenAmountToTokenAmountUsd(
+        incentive_token_amount,
+        incentive_token_quote.price
+      );
 
       // Get per input token
       const per_input_token =
@@ -165,11 +180,12 @@ export const calculateVaultIPMarketOfferTokenData = ({
       // Get annual change ratio
       let annual_change_ratio = 0;
 
-      if (input_token_data.token_amount_usd <= 0) {
-        annual_change_ratio = Math.pow(10, 18); // 10^18 refers to N/D
-      } else {
+      let rate_usd = incentive_token_amount_usd;
+      let locked_quantity_usd = enrichedMarket.locked_quantity_usd ?? 0;
+
+      if (locked_quantity_usd > 0) {
         annual_change_ratio =
-          incentive_token_amount_usd / input_token_data.token_amount_usd;
+          (rate_usd / locked_quantity_usd) * (365 * 24 * 60 * 60);
       }
 
       // Get incentive token data
@@ -217,14 +233,14 @@ export const getVaultIPMarketOfferTransactionOptions = ({
 
   // Get transaction options
   const txOptions: TransactionOptionsType = {
-    contractId: "RecipeMarketHub",
+    contractId: "VaultMarketHub",
     chainId: chain_id,
     id: "allocate_ap_offers",
     label: "Allocate AP Offers",
-    address: address,
-    abi: abi,
+    address,
+    abi,
     functionName: "allocateOffers",
-    marketType: RoycoMarketType.recipe.id,
+    marketType: RoycoMarketType.vault.id,
     args: [offers, fill_amounts],
     txStatus: "idle",
     txHash: null,
@@ -239,6 +255,8 @@ export const useVaultIPMarketOffer = ({
   market_id,
   quantity,
   custom_token_data,
+  frontend_fee_recipient,
+  offer_validation_url,
   enabled,
 }: {
   account: string | undefined;
@@ -251,6 +269,8 @@ export const useVaultIPMarketOffer = ({
     fdv?: string;
     total_supply?: string;
   }>;
+  frontend_fee_recipient?: string;
+  offer_validation_url: string;
   enabled?: boolean;
 }) => {
   let preContractOptions: TransactionOptionsType[] = [];
@@ -266,24 +286,45 @@ export const useVaultIPMarketOffer = ({
   } = useDefaultMarketData({
     chain_id,
     market_id,
-    market_type: RoycoMarketType.recipe.id,
+    market_type: RoycoMarketType.vault.id,
     enabled,
   });
 
   // Check if market action is valid
   const isValid = isVaultIPMarketOfferValid({
     quantity,
+    enabled,
   });
 
   // Get market offers
   const propsMarketOffers = useMarketOffers({
     chain_id,
-    market_type: RoycoMarketType.recipe.value,
+    market_type: RoycoMarketType.vault.value,
     market_id,
     offer_side: RoycoMarketUserType.ap.value,
     quantity: quantity ?? "0",
-    enabled: isValid.status && enabled,
+    incentive_ids: enrichedMarket?.base_incentive_ids ?? undefined,
+    incentive_amounts: enrichedMarket?.base_incentive_rates ?? undefined,
+    enabled: isValid.status,
   });
+
+  // Get market offers validator
+  const propsMarketOffersValidator = useMarketOffersValidator({
+    offer_ids: propsMarketOffers.data?.map((offer) => offer.id) ?? [],
+    offerValidationUrl: offer_validation_url,
+    enabled: isValid.status,
+  });
+
+  // Trigger refetch when validator returns non-empty array
+  React.useEffect(() => {
+    if (
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data &&
+      propsMarketOffersValidator.data.length > 0
+    ) {
+      propsMarketOffers.refetch();
+    }
+  }, [propsMarketOffersValidator.isLoading, propsMarketOffersValidator.data]);
 
   // Get token quotes
   const propsTokenQuotes = useTokenQuotes({
@@ -294,7 +335,11 @@ export const useVaultIPMarketOffer = ({
       ])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled:
+      isValid.status &&
+      // Only proceed if validation is complete and returned empty array (all offers valid)
+      !propsMarketOffersValidator.isLoading &&
+      propsMarketOffersValidator.data?.length === 0,
   });
 
   // Get incentive data
@@ -304,6 +349,7 @@ export const useVaultIPMarketOffer = ({
       enrichedMarket,
       propsMarketOffers,
       propsTokenQuotes,
+      enabled: isValid.status,
     });
 
   // Create transaction options
@@ -314,42 +360,6 @@ export const useVaultIPMarketOffer = ({
     !!incentiveData &&
     !!inputTokenData
   ) {
-    // Get incentive data with fees
-    const incentiveDataWithFees = incentiveData.map((incentive, index) => {
-      // Get base raw amount without fees
-      const base_raw_amount: BigNumber = BigNumber.from(incentive.raw_amount);
-
-      // Get protocol fee
-      const protocol_fee = base_raw_amount
-        .mul(BigNumber.from(baseMarket?.protocol_fee ?? 0))
-        .div(BigNumber.from(10).pow(18));
-
-      // Get frontend fee
-      const frontend_fee = base_raw_amount
-        .mul(BigNumber.from(baseMarket?.frontend_fee ?? 0))
-        .div(BigNumber.from(10).pow(18));
-
-      // Get raw amount with fees
-      const raw_amount: BigNumber = base_raw_amount
-        .add(protocol_fee)
-        .add(frontend_fee);
-
-      // Get token amount
-      const token_amount: number = parseFloat(
-        ethers.utils.formatUnits(raw_amount, incentive.decimals)
-      );
-
-      // Get token amount in USD
-      const token_amount_usd = incentive.price * token_amount;
-
-      return {
-        ...incentive,
-        raw_amount: raw_amount.toString(),
-        token_amount: token_amount,
-        token_amount_usd: token_amount_usd,
-      };
-    });
-
     // Get offer transaction options
     const offerTxOptions: TransactionOptionsType =
       getVaultIPMarketOfferTransactionOptions({
@@ -357,21 +367,18 @@ export const useVaultIPMarketOffer = ({
         offers:
           propsMarketOffers.data?.map((offer) => ({
             offerID: offer.offer_id,
-            targetMarketHash: offer.market_id,
+            targetVault: offer.market_id,
             ap: offer.creator,
             fundingVault: offer.funding_vault,
-            quantity: offer.quantity,
             expiry: offer.expiry,
             incentivesRequested: offer.token_ids.map((token_id) => {
               const token_address = token_id.split("-")[1];
               return token_address;
             }),
-            incentiveAmountsRequested: offer.token_amounts,
+            incentivesRatesRequested: offer.token_amounts,
           })) ?? [],
         fill_amounts:
           propsMarketOffers.data?.map((offer) => offer.fill_quantity) ?? [],
-        frontend_fee_recipient:
-          frontend_fee_recipient ?? baseMarket.protocol_fee_recipient,
       });
 
     // Set offer transaction options
@@ -379,53 +386,19 @@ export const useVaultIPMarketOffer = ({
       {
         ...offerTxOptions,
         tokensIn: [inputTokenData],
-        tokensOut: incentiveDataWithFees,
       },
     ];
-
-    // Get approval transaction options
-    const approvalTxOptions: TransactionOptionsType[] =
-      getApprovalContractOptions({
-        market_type: RoycoMarketType.recipe.id,
-        token_ids: incentiveDataWithFees.map((incentive) => incentive.id),
-        required_approval_amounts: incentiveDataWithFees.map(
-          (incentive) => incentive.raw_amount
-        ),
-        spender:
-          ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
-            .address,
-      });
-
-    // Set approval transaction options
-    preContractOptions = approvalTxOptions;
   }
 
-  // Get token allowance
-  const propsTokenAllowance = useTokenAllowance({
-    chain_id: chain_id,
-    account: account ? (account as Address) : NULL_ADDRESS,
-    spender:
-      ContractMap[chain_id as keyof typeof ContractMap]["RecipeMarketHub"]
-        .address,
-    tokens: preContractOptions.map((option) => {
-      return option.address as Address;
-    }),
-  });
-
-  if (!propsTokenAllowance.isLoading) {
+  if (postContractOptions.length > 0) {
     // Refine transaction options
-    writeContractOptions = refineTransactionOptions({
-      propsTokenAllowance,
-      preContractOptions,
-      postContractOptions,
-    });
+    writeContractOptions = [...postContractOptions];
   }
 
   // Check if loading
   const isLoading =
     isLoadingDefaultMarketData ||
     propsMarketOffers.isLoading ||
-    propsTokenAllowance.isLoading ||
     propsTokenQuotes.isLoading;
 
   // Check if ready
@@ -433,11 +406,11 @@ export const useVaultIPMarketOffer = ({
 
   // Check if offer can be performed completely or partially
   if (isReady) {
-    if (BigNumber.from(inputTokenData.raw_amount).lte(0)) {
+    if (BigNumber.from(inputTokenData?.raw_amount ?? 0).lte(0)) {
       canBePerformedCompletely = false;
       canBePerformedPartially = false;
     } else if (
-      BigNumber.from(inputTokenData.raw_amount).eq(
+      BigNumber.from(inputTokenData?.raw_amount ?? 0).eq(
         BigNumber.from(quantity ?? 0)
       )
     ) {

@@ -42,8 +42,8 @@ const Input = React.forwardRef<HTMLInputElement, CombinedInputProps>(
       >
         {Prefix && <Prefix />}
 
-        <div className={cn("h-9 grow", newHeight)}>
-          <span className={cn("leading-10", newLeading)}>
+        <div className={cn("flex h-9 grow items-center", newHeight)}>
+          <span className={cn("grow leading-[20px]", newLeading)}>
             <input
               type={type}
               className={cn(

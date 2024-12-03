@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   RoycoMarketActionType,
+  RoycoMarketFundingType,
   RoycoMarketIncentiveType,
   RoycoMarketOfferType,
   RoycoMarketRewardStyle,
@@ -8,13 +9,16 @@ import {
   RoycoMarketScriptType,
   RoycoMarketType,
   RoycoMarketUserType,
+  RoycoMarketVaultIncentiveAction,
   RoycoTransactionType,
   TypedRoycoMarketActionType,
+  TypedRoycoMarketFundingType,
   TypedRoycoMarketIncentiveType,
   TypedRoycoMarketOfferType,
   TypedRoycoMarketRewardStyle,
   TypedRoycoMarketScriptType,
   TypedRoycoMarketUserType,
+  TypedRoycoMarketVaultIncentiveAction,
 } from "@/sdk/market";
 import { ScrollTextIcon, VaultIcon } from "lucide-react";
 
@@ -46,7 +50,7 @@ export const MarketType = {
     label: "Recipe",
     tag: "",
     description:
-      'Offer incentives to perform any onchain transaction or series of transactions-aka a "recipe."',
+      "Offer incentives to perform any onchain transaction or series of transactions. Best for actions with lump sum rewards and timelocks.",
     icon: ScrollTextIcon,
   },
   [RoycoMarketType.vault.id]: {
@@ -54,7 +58,7 @@ export const MarketType = {
     label: "Vault",
     tag: "",
     description:
-      "Offer incentives to deposit into an underlying ERC4626 Vault.",
+      "Offer incentives to deposit into an underlying ERC4626 Vault. Best for streaming rewards pro-rated to depositors and for actions easily represented by a 4646 vault.",
     icon: VaultIcon,
   },
 };
@@ -112,6 +116,29 @@ export const MarketIncentiveType = {
   [RoycoMarketIncentiveType.ip.id]: {
     ...RoycoMarketIncentiveType.ip,
     label: "Offered",
+  },
+};
+
+/**
+ * @info Market Vault Incentive Action
+ * @note Currently, increase and extend are in the same action
+ */
+export const MarketVaultIncentiveAction = {
+  [RoycoMarketVaultIncentiveAction.add.id]: {
+    ...RoycoMarketVaultIncentiveAction.add,
+    label: "Add Incentives",
+  },
+  // [RoycoMarketVaultIncentiveAction.increase.id]: {
+  //   ...RoycoMarketVaultIncentiveAction.increase,
+  //   label: "Increase Incentives",
+  // },
+  [RoycoMarketVaultIncentiveAction.extend.id]: {
+    ...RoycoMarketVaultIncentiveAction.extend,
+    label: "Extend Incentives",
+  },
+  [RoycoMarketVaultIncentiveAction.refund.id]: {
+    ...RoycoMarketVaultIncentiveAction.refund,
+    label: "Refund Incentives",
   },
 };
 
@@ -204,7 +231,7 @@ export const MarketSteps: Record<
   },
   preview: {
     id: "preview",
-    label: "PREVIEW",
+    label: "REVIEW",
     description: "Select the action you want to perform.",
   },
   transaction: {
@@ -244,6 +271,17 @@ export const MarketWithdrawType: Record<
   incentives: {
     id: "incentives",
     label: "Incentives",
+  },
+};
+
+export const MarketFundingType = {
+  [RoycoMarketFundingType.wallet.id]: {
+    ...RoycoMarketFundingType.wallet,
+    label: "Wallet",
+  },
+  [RoycoMarketFundingType.vault.id]: {
+    ...RoycoMarketFundingType.vault,
+    label: "Royco Verified Vault",
   },
 };
 
@@ -294,20 +332,23 @@ export type MarketManagerState = {
 
   withdrawSectionPage: number;
   setWithdrawSectionPage: (withdrawSectionPage: number) => void;
+
+  offerType: TypedRoycoMarketOfferType;
+  setOfferType: (offerType: TypedRoycoMarketOfferType) => void;
+
+  vaultIncentiveActionType: TypedRoycoMarketVaultIncentiveAction;
+  setVaultIncentiveActionType: (
+    vaultIncentiveActionType: TypedRoycoMarketVaultIncentiveAction
+  ) => void;
+
+  fundingType: TypedRoycoMarketFundingType;
+  setFundingType: (fundingType: TypedRoycoMarketFundingType) => void;
 };
 
 export const createMarketManagerStore = () => {
   return create<MarketManagerState>((set) => ({
-    viewType: MarketViewType.simple.id,
-    // viewType: MarketViewType.advanced.id,
+    viewType: MarketViewType.simple.id as TypedMarketViewType,
     setViewType: (viewType: TypedMarketViewType) => set({ viewType }),
-
-    actionType: MarketActionType.supply.id,
-    setActionType: (actionType: TypedRoycoMarketActionType) =>
-      set({ actionType }),
-
-    userType: MarketUserType.ap.id,
-    setUserType: (userType: TypedRoycoMarketUserType) => set({ userType }),
 
     incentiveType: MarketIncentiveType.ap.id,
     setIncentiveType: (incentiveType: TypedRoycoMarketIncentiveType) =>
@@ -332,7 +373,7 @@ export const createMarketManagerStore = () => {
       balanceIncentiveType: TypedRoycoMarketIncentiveType
     ) => set({ balanceIncentiveType }),
 
-    statsView: MarketStatsView.offers.id,
+    statsView: MarketStatsView.positions.id,
     setStatsView: (statsView: MarketStatsViewType) => set({ statsView }),
 
     offerTablePage: 0,
@@ -349,6 +390,25 @@ export const createMarketManagerStore = () => {
     withdrawSectionPage: 0,
     setWithdrawSectionPage: (withdrawSectionPage: number) =>
       set({ withdrawSectionPage }),
+
+    actionType: MarketActionType.supply.id,
+    setActionType: (actionType: TypedRoycoMarketActionType) =>
+      set({ actionType }),
+
+    userType: MarketUserType.ap.id,
+    setUserType: (userType: TypedRoycoMarketUserType) => set({ userType }),
+
+    offerType: MarketOfferType.market.id,
+    setOfferType: (offerType: TypedRoycoMarketOfferType) => set({ offerType }),
+
+    vaultIncentiveActionType: MarketVaultIncentiveAction.add.id,
+    setVaultIncentiveActionType: (
+      vaultIncentiveActionType: TypedRoycoMarketVaultIncentiveAction
+    ) => set({ vaultIncentiveActionType }),
+
+    fundingType: RoycoMarketFundingType.wallet.id,
+    setFundingType: (fundingType: TypedRoycoMarketFundingType) =>
+      set({ fundingType }),
   }));
 };
 

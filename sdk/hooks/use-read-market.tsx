@@ -1,11 +1,10 @@
-import { useReadContract, useReadContracts } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { ContractMap } from "../contracts";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "../constants";
 import {
   RoycoMarketRewardStyle,
   RoycoMarketType,
-  TypedRoycoMarketRewardStyle,
   TypedRoycoMarketType,
 } from "../market";
 import { Abi, Address } from "abitype";
@@ -121,12 +120,20 @@ export const useReadMarket = ({
   const propsReadContracts = useReadContracts({
     // @ts-ignore
     contracts: enabled ? contractsToRead : [],
+    enabled,
   });
 
-  if (enabled && !propsReadContracts.isLoading && !!propsReadContracts?.data) {
+  if (
+    enabled &&
+    !propsReadContracts.isLoading &&
+    !propsReadContracts.isError &&
+    !!propsReadContracts.data &&
+    Array.isArray(propsReadContracts.data[0]?.result)
+  ) {
     try {
       if (market_type === RoycoMarketType.recipe.id) {
         // Read Recipe Market
+        const marketData = propsReadContracts.data[0]?.result;
 
         const [
           marketID,
@@ -136,17 +143,15 @@ export const useReadMarket = ({
           enterMarket,
           exitMarket,
           rewardStyle,
-        ] =
-          // @ts-ignore
-          propsReadContracts.data[0].result as [
-            BigNumber,
-            string,
-            BigNumber,
-            BigNumber,
-            object,
-            object,
-            number,
-          ];
+        ] = marketData as [
+          BigNumber,
+          string,
+          BigNumber,
+          BigNumber,
+          object,
+          object,
+          number,
+        ];
 
         // @ts-ignore
         const protocolFee = propsReadContracts.data[1].result as BigNumber;
@@ -197,17 +202,12 @@ export const useReadMarket = ({
         // Read Vault Market
 
         // @ts-ignore
-        // const frontendFee = propsReadContracts.data[0].result as BigNumber;
-
-        const frontendFee = BigNumber.from(0);
-        const protocolFee = BigNumber.from(0);
-        const protocolFeeRecipient = NULL_ADDRESS;
-
+        const frontendFee = propsReadContracts.data[0].result as BigNumber;
         // @ts-ignore
-        // const protocolFee = propsReadContracts.data[1].result as BigNumber;
-        // // @ts-ignore
-        // const protocolFeeRecipient = propsReadContracts.data[2]
-        //   .result as Address;
+        const protocolFee = propsReadContracts.data[1].result as BigNumber;
+        // @ts-ignore
+        const protocolFeeRecipient = propsReadContracts.data[2]
+          .result as Address;
 
         data = {
           protocol_fee: BigNumber.from(protocolFee).toString(),
@@ -225,7 +225,13 @@ export const useReadMarket = ({
         };
       }
     } catch (error) {
-      console.log("useReadMarket error", error);
+      console.error("useReadMarket error:", error);
+      // Return default data on error
+      return {
+        ...propsReadContracts,
+        data,
+        error,
+      };
     }
   }
 

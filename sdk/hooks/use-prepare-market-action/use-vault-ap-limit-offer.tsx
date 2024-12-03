@@ -24,14 +24,21 @@ export const isVaultAPLimitOfferValid = ({
   token_ids,
   token_rates,
   funding_vault,
+  enabled,
 }: {
   quantity: string | undefined;
   expiry: string | undefined;
   token_ids: string[] | undefined;
   token_rates: string[] | undefined;
   funding_vault: string | undefined;
+  enabled?: boolean;
 }) => {
   try {
+    // Check if enabled
+    if (!enabled) {
+      throw new Error("Market action is not enabled");
+    }
+
     // Check quantity
     if (!quantity) {
       throw new Error("Quantity is missing");
@@ -45,6 +52,11 @@ export const isVaultAPLimitOfferValid = ({
     // Check quantity is greater than 0
     if (BigNumber.from(quantity).lte(0)) {
       throw new Error("Quantity must be greater than 0");
+    }
+
+    // Check quantity is greater than 10^6 wei
+    if (BigNumber.from(quantity).lte(BigNumber.from("1000000"))) {
+      throw new Error("Quantity must be greater than 10^6 wei");
     }
 
     // Check funding vault
@@ -132,6 +144,7 @@ export const calculateVaultAPLimitOfferTokenData = ({
   propsTokenQuotes,
   propsReadVaultPreview,
   quantity,
+  enabled,
 }: {
   baseMarket: ReadMarketDataType | undefined;
   enrichedMarket: EnrichedMarketDataType | undefined;
@@ -140,7 +153,16 @@ export const calculateVaultAPLimitOfferTokenData = ({
   quantity: string;
   tokenIds: string[];
   tokenRates: string[];
+  enabled?: boolean;
 }) => {
+  // Check if enabled
+  if (!enabled) {
+    return {
+      incentiveData: [],
+      inputTokenData: undefined,
+    };
+  }
+
   let incentiveData: Array<TypedMarketActionIncentiveDataElement> = [];
 
   // Get the unique token IDs
@@ -359,13 +381,14 @@ export const useVaultAPLimitOffer = ({
     token_ids,
     token_rates,
     expiry,
+    enabled,
   });
 
   // Get incentives after deposit
   const propsReadVaultPreview = useReadVaultPreview({
     market: enrichedMarket as EnrichedMarketDataType,
     quantity: quantity ?? "0",
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get token quotes
@@ -374,7 +397,7 @@ export const useVaultAPLimitOffer = ({
       new Set([enrichedMarket?.input_token_id ?? "", ...(token_ids ?? [])])
     ),
     custom_token_data,
-    enabled: isValid.status && enabled,
+    enabled: isValid.status,
   });
 
   // Get incentive data
@@ -387,6 +410,7 @@ export const useVaultAPLimitOffer = ({
       quantity: quantity ?? "0",
       tokenIds: token_ids ?? [],
       tokenRates: token_rates ?? [],
+      enabled: isValid.status,
     }
   );
 
@@ -421,10 +445,12 @@ export const useVaultAPLimitOffer = ({
     // Get approval transaction options
     const approvalTxOptions: TransactionOptionsType[] =
       getApprovalContractOptions({
-        market_type: RoycoMarketType.recipe.id,
+        market_type: RoycoMarketType.vault.id,
         token_ids: [inputTokenData.id],
         required_approval_amounts: [inputTokenData.raw_amount],
-        spender: market_id,
+        spender:
+          ContractMap[chain_id as keyof typeof ContractMap]["VaultMarketHub"]
+            .address,
       });
 
     // Set approval transaction options
@@ -435,10 +461,13 @@ export const useVaultAPLimitOffer = ({
   const propsTokenAllowance = useTokenAllowance({
     chain_id: chain_id,
     account: account ? (account as Address) : NULL_ADDRESS,
-    spender: market_id as Address,
+    spender:
+      ContractMap[chain_id as keyof typeof ContractMap]["VaultMarketHub"]
+        .address,
     tokens: preContractOptions.map((option) => {
       return option.address as Address;
     }),
+    enabled: isValid.status,
   });
 
   if (!propsTokenAllowance.isLoading) {

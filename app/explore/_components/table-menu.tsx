@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { isEqual } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,12 +16,26 @@ import {
   IncentivesFilter,
   ViewSelector,
 } from "./ui";
+import { Switch } from "../../../components/ui/switch";
+import { useParams, usePathname } from "next/navigation";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
   ({ className }, ref) => {
-    const { exploreView: view, setExploreView } = useExplore();
+    const pathname = usePathname();
+
+    const showVerifiedMarket = useMemo(
+      () => (pathname === "/" ? true : false),
+      [pathname]
+    );
+
+    const {
+      exploreView: view,
+      setExploreView,
+      exploreIsVerified,
+      setExploreIsVerified,
+    } = useExplore();
 
     /**
      * @description Placeholder data state
@@ -36,6 +50,15 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       exploreCustomPoolParams: customPoolParams,
     } = useExplore();
 
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const updateIsVerified = localStorage.getItem(
+          "royco_verified_market_filter_type"
+        );
+        setExploreIsVerified(updateIsVerified === "false" ? false : true);
+      }
+    }, []);
+
     // const { isLoading, isError, isRefetching, count } = usePoolTable({
     //   sorting,
     //   filters,
@@ -48,6 +71,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       filters,
       page_index: pageIndex,
       search_key: searchKey,
+      is_verified: showVerifiedMarket ? true : exploreIsVerified,
     });
 
     /**
@@ -82,7 +106,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           className
         )}
       >
-        <div className="body-2 sticky top-0 z-10 flex h-16 shrink-0 flex-row place-content-center items-center justify-between border-b border-divider bg-white px-5 text-primary">
+        <div className="body-2 sticky top-0 z-20 flex h-16 shrink-0 flex-row place-content-center items-center justify-between border-b border-divider bg-white px-5 text-primary">
           <h3 className="flex flex-row items-center gap-2">
             <div className="tabular-nums">
               {isLoading ? (
@@ -135,11 +159,30 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
         <div className="flex flex-col px-5 py-4">
           <h4 className="badge text-tertiary">FILTER</h4>
 
+          {!showVerifiedMarket && (
+            <div className="body-2 mt-4 flex justify-between text-primary">
+              <h5 className="">Show Unverified Markets</h5>
+
+              <Switch
+                checked={!exploreIsVerified}
+                onCheckedChange={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem(
+                      "royco_verified_market_filter_type",
+                      !exploreIsVerified ? "true" : "false"
+                    );
+                  }
+                  setExploreIsVerified(!exploreIsVerified);
+                }}
+              />
+            </div>
+          )}
+
           {/**
            * @description Asset filter
            */}
           <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
-            <h5 className="">Base Asset</h5>
+            <h5 className="">Input Asset</h5>
 
             <div className="flex flex-wrap gap-2">
               <AssetsFilter />

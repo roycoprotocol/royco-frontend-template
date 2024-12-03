@@ -25,37 +25,38 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 /**
  * @description GT Font
  */
-const gt = localFont({
-  src: [
-    {
-      path: "../public/fonts/GT-America-Standard-Ultra-Light-Trial.otf",
-      weight: "200",
-      style: "extralight",
-    },
-    {
-      path: "../public/fonts/GT-America-Standard-Light-Trial.otf",
-      weight: "300",
-      style: "light",
-    },
-    {
-      path: "../public/fonts/GT-America-Standard-Regular-Trial.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/GT-America-Standard-Medium-Trial.otf",
-      weight: "500",
-      style: "medium",
-    },
-    {
-      path: "../public/fonts/GT-America-Standard-Bold-Trial.otf",
-      weight: "700",
-      style: "bold",
-    },
-  ],
-  display: "swap",
-  variable: "--font-gt",
-});
+const gt = Inter({ subsets: ["latin"], variable: "--font-gt" });
+// const gt = localFont({
+//   src: [
+//     {
+//       path: "../public/fonts/GT-America-Standard-Ultra-Light-Trial.otf",
+//       weight: "200",
+//       style: "extralight",
+//     },
+//     {
+//       path: "../public/fonts/GT-America-Standard-Light-Trial.otf",
+//       weight: "300",
+//       style: "light",
+//     },
+//     {
+//       path: "../public/fonts/GT-America-Standard-Regular-Trial.otf",
+//       weight: "400",
+//       style: "normal",
+//     },
+//     {
+//       path: "../public/fonts/GT-America-Standard-Medium-Trial.otf",
+//       weight: "500",
+//       style: "medium",
+//     },
+//     {
+//       path: "../public/fonts/GT-America-Standard-Bold-Trial.otf",
+//       weight: "700",
+//       style: "bold",
+//     },
+//   ],
+//   display: "swap",
+//   variable: "--font-gt",
+// });
 
 /**
  * @description Ortica Font

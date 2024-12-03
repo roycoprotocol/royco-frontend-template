@@ -226,7 +226,7 @@ export const MarketEditorPanel = ({
                 <div className="mt-1 flex flex-col space-y-0 font-mono text-sm tabular-nums">
                   <div className="">Rewards: FDV * netowrk allocation (%)</div>
                   <div className="">Annualized Rewards: rewards * (12 / h)</div>
-                  <div className="">AIP: (rewards_annualized / z) * 100</div>
+                  <div className="">Yield: (rewards_annualized / z) * 100</div>
                 </div>
               </div>
             </motion.div>
@@ -290,7 +290,7 @@ export const MarketEditorPanel = ({
                         containerClassName="border-none shrink-0 flex-grow"
                         placeholder={`${Intl.NumberFormat("en-US", {
                           minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          maximumFractionDigits: 8,
                         }).format(tokenDetails?.fdv || 0)}`}
                         value={watch("fdv") || ""}
                         onChange={(e) => {

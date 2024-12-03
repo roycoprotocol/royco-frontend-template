@@ -32,19 +32,20 @@ export const FormMarketDescription = React.forwardRef<
       name="market_description"
       render={({ field }) => (
         <FormItem className={cn("", className)}>
-          <FormInputLabel className="mb-2" label="Market Description" />
+          <FormInputLabel className="mb-2" label="Description" />
 
           <FormControl>
             <Textarea
               rows={4}
               className=""
-              placeholder="i.e. When assets are supplied to the market, they are sent to an escrow contract and locked for three months."
+              placeholder="i.e. When USDC is supplied to the market, it is deposited into Compound Finance USDC Mainnet Pool. Users may withdraw at any time."
               {...field}
             />
           </FormControl>
 
           <FormDescription className="mt-2">
-            Describe how you'll manage the assets
+            Detailed description of the action. This should tell users what you
+            are incentivizing.
           </FormDescription>
           <FormMessage />
         </FormItem>

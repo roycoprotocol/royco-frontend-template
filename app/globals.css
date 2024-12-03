@@ -92,7 +92,7 @@
   }
 
   .heading-3 {
-    @apply font-ortica text-4xl font-light;
+    @apply font-ortica text-2xl font-light md:text-4xl;
   }
 
   .subtitle-1 {

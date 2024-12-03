@@ -13,10 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { getExplorerUrl } from "@/sdk/utils";
-import { MarketType, useMarketManager } from "@/store";
+import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { TransactionOptionsType } from "@/sdk/types";
 import { useActiveMarket } from "../hooks";
 import { ContractMap } from "@/sdk/contracts";
+import { BigNumber } from "ethers";
+import {
+  getRecipeCancelAPOfferTransactionOptions,
+  getRecipeCancelIPOfferTransactionOptions,
+} from "@/sdk/hooks";
+import { getVaultCancelAPOfferTransactionOptions } from "@/sdk/hooks/use-vault-offer-contract-options";
+import { RoycoMarketType } from "@/sdk/market";
 
 /**
  * @description Column definitions for the table
@@ -39,27 +46,33 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
   //     return <div>{props.row.original.name}</div>;
   //   },
   // },
-  {
-    accessorKey: "offer_side",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Side",
-    meta: {
-      className: "min-w-24",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "font-gt text-sm font-300",
-            props.row.original.offer_side === 0 ? "text-success" : "text-error"
-          )}
-        >
-          {props.row.original.offer_side === 0 ? "AP" : "IP"}
-        </div>
-      );
-    },
-  },
+
+  /**
+   * @note Commented out for now because we are filtering offers by user type
+   */
+  // {
+  //   accessorKey: "offer_side",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Side",
+  //   meta: {
+  //     className: "min-w-24",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "font-gt text-sm font-300",
+  //           props.row.original.offer_side === "0"
+  //             ? "text-success"
+  //             : "text-error"
+  //         )}
+  //       >
+  //         {props.row.original.offer_side === "0" ? "AP" : "IP"}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "tokens_data",
     enableResizing: false,
@@ -86,15 +99,33 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                     <span className="leading-5">
                       {Intl.NumberFormat("en-US", {
                         style: "decimal",
+                        notation: "standard",
                         useGrouping: true,
-                        notation: "compact",
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(token.token_amount)}
+                        maximumFractionDigits: 8,
+                      }).format(
+                        props.row.original.market_type ===
+                          MarketType.recipe.value
+                          ? token.token_amount
+                          : token.rate_per_year
+                      )}
                     </span>
                   </div>
 
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
+                  <TokenDisplayer
+                    size={4}
+                    tokens={[
+                      {
+                        ...token,
+                        symbol:
+                          props.row.original.market_type ===
+                          MarketType.recipe.value
+                            ? token.symbol
+                            : `${token.symbol}/year`,
+                      },
+                    ]}
+                    symbols={true}
+                  />
                 </div>
               );
             }
@@ -122,19 +153,20 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-              notation: "compact",
+              notation: "standard",
+              useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
 
           <SecondaryLabel className="text-tertiary">
             {Intl.NumberFormat("en-US", {
-              useGrouping: true,
               style: "decimal",
-              notation: "compact",
+              notation: "standard",
+              useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 8,
             }).format(props.row.original.input_token_data.token_amount)}{" "}
             {props.row.original.input_token_data.symbol.toUpperCase()}
           </SecondaryLabel>
@@ -153,7 +185,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
     cell: (props: any) => {
       return (
         <div className={cn("font-gt text-sm font-300")}>
-          {props.row.original.expiry === 0
+          {props.row.original.expiry === "0"
             ? "Never"
             : formatDistanceToNow(
                 new Date(parseInt(props.row.original.expiry) * 1000),
@@ -178,11 +210,15 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
 
       if (props.row.original.is_cancelled) {
         status = "Cancelled";
-      } else if (props.row.original.quantity_remaining === 0) {
+      } else if (
+        BigNumber.from(props.row.original.quantity_remaining).isZero()
+      ) {
         status = "Filled";
       } else if (
-        props.row.original.expiry !== 0 &&
-        new Date(parseInt(props.row.original.expiry) * 1000) < new Date()
+        !BigNumber.from(props.row.original.expiry).eq(0) &&
+        BigNumber.from(props.row.original.expiry).lt(
+          BigNumber.from(Math.floor(Date.now() / 1000))
+        )
       ) {
         status = "Expired";
       } else if (props.row.original.is_valid === false) {
@@ -197,7 +233,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
     enableHiding: false,
     meta: {},
     cell: (props: any) => {
-      const { transactions, setTransactions } = useMarketManager();
+      const { transactions, setTransactions, userType } = useMarketManager();
 
       const { marketMetadata } = useActiveMarket();
 
@@ -207,70 +243,41 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
             <DotsHorizontalIcon className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {!props.row.original.is_cancelled && (
-              <DropdownMenuItem
-                onClick={() => {
-                  const contract =
-                    marketMetadata.market_type === MarketType.recipe.id
-                      ? ContractMap[
-                          marketMetadata.chain_id as keyof typeof ContractMap
-                        ]["RecipeMarketHub"]
-                      : ContractMap[
-                          marketMetadata.chain_id as keyof typeof ContractMap
-                        ]["VaultMarketHub"];
+            {!props.row.original.is_cancelled &&
+              !BigNumber.from(
+                props.row.original.quantity_remaining
+              ).isZero() && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    let txOptions: TransactionOptionsType | null = null;
 
-                  const address = contract.address;
-                  const abi = contract.abi;
+                    if (marketMetadata.market_type === MarketType.recipe.id) {
+                      if (userType === MarketUserType.ap.id) {
+                        // Cancel Recipe AP Offer
+                        txOptions = getRecipeCancelAPOfferTransactionOptions({
+                          offer: props.row.original,
+                        });
+                      } else {
+                        // Cancel Recipe IP Offer
+                        txOptions = getRecipeCancelIPOfferTransactionOptions({
+                          offer: props.row.original,
+                        });
+                      }
+                    } else {
+                      // Cancel Vault AP Offer
+                      txOptions = getVaultCancelAPOfferTransactionOptions({
+                        offer: props.row.original,
+                      });
+                    }
 
-                  const functionName =
-                    props.row.original.offer_side === 0
-                      ? "cancelAPOffer"
-                      : "cancelIPOffer";
-
-                  const marketType = marketMetadata.market_type;
-
-                  const args =
-                    props.row.original.offer_side === 0
-                      ? [
-                          props.row.original.offer_id,
-                          marketMetadata.market_id,
-                          props.row.original.creator,
-                          props.row.original.funding_vault,
-                          props.row.original.quantity,
-                          props.row.original.expiry,
-                          props.row.original.token_ids.map(
-                            (tokenId: string, tokenIndex: number) => {
-                              const [chainId, contractAddress] =
-                                tokenId.split("-");
-
-                              return contractAddress;
-                            }
-                          ),
-
-                          props.row.original.token_amounts,
-                        ]
-                      : [props.row.original.offer_id];
-
-                  const txOptions: TransactionOptionsType = {
-                    contractId: "",
-                    chainId: props.row.original.chain_id,
-                    id: `cancel_offer_${props.row.original.id}`,
-                    label: `Cancel Limit Offer`,
-                    address,
-                    abi,
-                    functionName,
-                    marketType,
-                    args,
-                    txStatus: "idle",
-                    txHash: null,
-                  };
-
-                  setTransactions([txOptions]);
-                }}
-              >
-                Cancel offer
-              </DropdownMenuItem>
-            )}
+                    if (txOptions) {
+                      setTransactions([txOptions]);
+                    }
+                  }}
+                >
+                  Cancel offer
+                </DropdownMenuItem>
+              )}
 
             <DropdownMenuItem
               onClick={() => {
@@ -283,7 +290,7 @@ export const offerColumns: ColumnDef<EnrichedOfferDataType> = [
                 window.open(explorerUrl, "_blank", "noopener,noreferrer");
               }}
             >
-              View on explorer
+              Creation Transaction
             </DropdownMenuItem>
 
             {/* <DropdownMenuSeparator /> */}

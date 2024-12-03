@@ -79,6 +79,32 @@ export const RoycoMarketOfferType: Record<
   },
 };
 
+/**
+ * @note Currently, increase and extend are in the same action, feel free to change if you would like to separate both actions
+ */
+export type TypedRoycoMarketVaultIncentiveAction =
+  | "add"
+  // | "increase"
+  | "extend"
+  | "refund";
+export const RoycoMarketVaultIncentiveAction: Record<
+  TypedRoycoMarketVaultIncentiveAction,
+  { id: TypedRoycoMarketVaultIncentiveAction }
+> = {
+  add: {
+    id: "add",
+  },
+  // increase: {
+  //   id: "increase",
+  // },
+  extend: {
+    id: "extend",
+  },
+  refund: {
+    id: "refund",
+  },
+};
+
 export type TypedRoycoMarketUserType = "ap" | "ip";
 export const RoycoMarketUserType: Record<
   TypedRoycoMarketUserType,
@@ -91,6 +117,19 @@ export const RoycoMarketUserType: Record<
   ip: {
     id: "ip",
     value: 1,
+  },
+};
+
+export type TypedRoycoMarketFundingType = "wallet" | "vault";
+export const RoycoMarketFundingType: Record<
+  TypedRoycoMarketFundingType,
+  { id: TypedRoycoMarketFundingType }
+> = {
+  wallet: {
+    id: "wallet",
+  },
+  vault: {
+    id: "vault",
   },
 };
 

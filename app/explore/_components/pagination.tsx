@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useExplore } from "@/store";
 import { useEnrichedMarkets } from "@/sdk/hooks";
+import { useParams, usePathname } from "next/navigation";
+import { useMemo } from "react";
 
 export const Pagination = () => {
   const {
@@ -13,12 +15,20 @@ export const Pagination = () => {
     explorePageIndex: pageIndex,
     exploreCustomPoolParams: customPoolParams,
     setExplorePageIndex: setPageIndex,
+    exploreIsVerified: isVerified,
   } = useExplore();
+
+  const pathname = usePathname();
+  const showVerifiedMarket = useMemo(
+    () => (pathname === "/" ? true : false),
+    [pathname]
+  );
 
   const { count, isLoading } = useEnrichedMarkets({
     sorting,
     filters,
     page_index: pageIndex,
+    is_verified: showVerifiedMarket ? true : isVerified,
   });
 
   const totalPages = Math.ceil((count ?? 0) / 20); // marketPerPage = 20

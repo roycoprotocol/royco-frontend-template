@@ -1,0 +1,45 @@
+name: Trigger Action Sync Royco Template
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Every hour
+
+jobs:
+  sync-template:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Trigger Code Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Add Template Remote
+        run: |
+          git remote add template https://github.com/roycoprotocol/royco-frontend-template.git
+          git fetch template main
+
+      - name: Check Updates
+        id: check-updates
+        run: |
+          git fetch template main
+          git diff --quiet HEAD template/main -- ':!.github' || echo "updates-available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Pull and Merge Updates
+        if: steps.check-updates.outputs.updates-available == 'true'
+        run: |
+          git checkout -b temp-branch
+          git checkout main
+          git checkout temp-branch -- .github
+          git reset --hard template/main
+          git checkout temp-branch -- .github
+          git add .
+          git commit -m "sync: royco template"
+          git push -f origin main
+          git branch -D temp-branch

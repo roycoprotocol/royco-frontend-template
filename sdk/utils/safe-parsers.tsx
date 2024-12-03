@@ -12,7 +12,9 @@ export const parseNumber = (value: number | undefined | null): number => {
   }
 };
 
-export const parseRawAmount = (value: string | undefined | null): string => {
+export const parseRawAmount = (
+  value: string | number | bigint | undefined | null
+): string => {
   try {
     if (!value) throw new Error("Value is undefined");
 
@@ -78,6 +80,17 @@ export const parseTokenAmountToTokenAmountUsd = (
   } catch (err) {
     return 0;
   }
+};
+
+export const parseRawAmountToTokenAmountUsd = (
+  value: string | undefined | null,
+  decimals: number,
+  price: number
+): number => {
+  return parseTokenAmountToTokenAmountUsd(
+    parseRawAmountToTokenAmount(value, decimals),
+    price
+  );
 };
 
 export const parseTextToFormattedValue = (

@@ -2,6 +2,7 @@ import { MarketFilter } from "@/sdk/queries";
 import { BaseSortingFilter } from "@/sdk/types";
 import { sepolia } from "viem/chains";
 import { create } from "zustand";
+import { SupportedChainlist } from "../sdk/constants";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -38,6 +39,8 @@ interface ExploreState {
   setExploreCustomPoolParams: (
     exploreCustomPoolParams: Array<ExploreCustomPoolParam>
   ) => void;
+  exploreIsVerified: boolean;
+  setExploreIsVerified: (exploreIsVerified: boolean) => void;
 }
 
 export const exploreColumnNames = {
@@ -47,7 +50,7 @@ export const exploreColumnNames = {
   market_type: "Type",
   total_incentive_amounts_usd: "Incentives",
   locked_quantity_usd: "TVL",
-  annual_change_ratio: "AIP",
+  annual_change_ratio: "Yield",
   chain: "Chain",
 };
 
@@ -73,12 +76,17 @@ export const useExplore = create<ExploreState>((set) => ({
           },
         ]
       : []),
+    // @note: we have a filter in .env, we want testnet to have all chains
+    // ...SupportedChainlist.filter((chain) => !chain.testnet).map((chain) => ({
+    //   id: "chain_id",
+    //   value: chain.id,
+    // })),
   ] as Array<MarketFilter>,
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
   exploreSort: [
     {
-      id: "total_incentive_amounts_usd",
+      id: "locked_quantity_usd",
       desc: true,
     },
   ],
@@ -106,4 +114,7 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreCustomPoolParams: [],
   setExploreCustomPoolParams: (exploreCustomPoolParams) =>
     set({ exploreCustomPoolParams }),
+  exploreIsVerified: true,
+  setExploreIsVerified: (exploreIsVerified: boolean) =>
+    set({ exploreIsVerified }),
 }));

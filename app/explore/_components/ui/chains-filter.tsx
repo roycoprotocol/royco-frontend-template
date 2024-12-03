@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { useBaseChains } from "@/sdk/hooks";
 
 import { FilterWrapper } from "../composables";
-import { sepolia } from "viem/chains";
 
 export const ChainsFilter = () => {
   const { data } = useBaseChains();
@@ -15,7 +14,7 @@ export const ChainsFilter = () => {
       {data.map((chain) => {
         const shouldHide =
           process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET" &&
-          chain.id === sepolia.id;
+          chain?.testnet === true;
 
         return (
           <div

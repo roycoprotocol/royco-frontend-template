@@ -1,24 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
-import { http, createConfig } from "@wagmi/core";
-import { mainnet, sepolia } from "@wagmi/core/chains";
-import { prepareTransactionRequest } from "@wagmi/core";
+import { http } from "@wagmi/core";
 import { TransactionOptionsType } from "@/sdk/types";
 import { Address } from "abitype";
-import { constructBaseSortingFilterClauses, getChain } from "@/sdk/utils";
+import { getChain } from "@/sdk/utils";
 import { ContractMap } from "@/sdk/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
-import { RPC_API_KEYS } from "../evm/contract/rpc-constants";
-import { BigNumber } from "ethers";
+import { RPC_API_KEYS } from "@/components/constants";
 
 export const dynamic = true;
-
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
-});
 
 export const simulateTransaction = async ({
   chainId,
@@ -86,6 +74,7 @@ export const simulateTransaction = async ({
 
     return {
       status: "success",
+      // data: simulations,
       data: response,
     };
   } catch (error) {
@@ -155,6 +144,7 @@ async function simulateBundle(transactionsToSimulate: Array<any>) {
     }
 
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.error("Error sending simulation bundle:", error);

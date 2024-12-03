@@ -327,10 +327,12 @@ export const FunctionForm = React.forwardRef<
           </div>
         </div> */}
 
-      <h2 className="heading-3 pb-5">
-        {" "}
+      <h2 className="heading-3">
         {activeStep === "assets" ? "Dynamic Price" : "Functions"}
       </h2>
+      <p className="caption mt-2 pb-5 text-tertiary">
+        Choose the function (i.e. action) you want to incentivize.
+      </p>
 
       {/* <div className="mb-5 w-full px-5">
         <div className="group flex w-full cursor-pointer flex-row items-center justify-between rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">

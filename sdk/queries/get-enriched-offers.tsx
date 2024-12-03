@@ -13,6 +13,48 @@ import {
   parseRawAmountToTokenAmount,
   parseTokenAmountToTokenAmountUsd,
 } from "../utils";
+import { RoycoMarketType } from "../market";
+
+const constructOfferFilterClauses = (
+  filters: BaseQueryFilter[] | undefined
+): string | undefined => {
+  if (!filters) return undefined;
+
+  let offerSideFilter = "";
+  let isCancelledFilter = "";
+
+  filters.forEach((filter) => {
+    switch (filter.id) {
+      case "offer_side":
+        if (offerSideFilter) offerSideFilter += " OR ";
+        if (filter.condition === "NOT") {
+          offerSideFilter += `offer_side <> ${filter.value}`;
+        } else {
+          offerSideFilter += `offer_side = ${filter.value}`;
+        }
+        break;
+      case "is_cancelled":
+        if (isCancelledFilter) isCancelledFilter += " OR ";
+        if (filter.condition === "NOT") {
+          isCancelledFilter += `is_cancelled <> ${filter.value}`;
+        } else {
+          isCancelledFilter += `is_cancelled = ${filter.value}`;
+        }
+        break;
+    }
+  });
+
+  let filterClauses = "";
+
+  if (offerSideFilter) filterClauses += `(${offerSideFilter}) AND `;
+  if (isCancelledFilter) filterClauses += `(${isCancelledFilter}) AND `;
+
+  if (filterClauses) {
+    filterClauses = filterClauses.slice(0, -5); // Remove the trailing " AND "
+  }
+
+  return filterClauses;
+};
 
 export type EnrichedOfferDataType =
   Database["public"]["CompositeTypes"]["enriched_offer_data_type"] & {
@@ -24,6 +66,9 @@ export type EnrichedOfferDataType =
         price: number;
         fdv: number;
         total_supply: number;
+        annual_change_ratio: number;
+        per_input_token: number;
+        rate_per_year: number;
       }
     >;
     input_token_data: SupportedToken & {
@@ -39,14 +84,14 @@ export type EnrichedOfferDataType =
 export const getEnrichedOffersQueryOptions = (
   client: TypedRoycoClient,
   chain_id: number,
-  market_type: number | undefined,
-  market_id: string | undefined,
-  creator: string | undefined,
-  can_be_filled: boolean | undefined,
-  page_index: number | undefined,
-  filters: Array<BaseQueryFilter> | undefined,
-  sorting: Array<BaseSortingFilter> | undefined,
-  custom_token_data: CustomTokenData | undefined
+  market_type?: number,
+  market_id?: string,
+  creator?: string,
+  can_be_filled?: boolean,
+  page_index?: number,
+  filters?: Array<BaseQueryFilter>,
+  sorting?: Array<BaseSortingFilter>,
+  custom_token_data?: CustomTokenData
 ) => ({
   queryKey: [
     "enriched-offers",
@@ -61,7 +106,7 @@ export const getEnrichedOffersQueryOptions = (
     ),
   ],
   queryFn: async () => {
-    const filterClauses = constructBaseQueryFilterClauses(filters);
+    const filterClauses = constructOfferFilterClauses(filters);
     const sortingClauses = constructBaseSortingFilterClauses(sorting);
 
     const result = await client.rpc("get_enriched_offers", {
@@ -87,44 +132,6 @@ export const getEnrichedOffersQueryOptions = (
           !!row.protocol_fee_amounts &&
           !!row.frontend_fee_amounts
         ) {
-          const tokens_data = row.token_ids.map((tokenId, tokenIndex) => {
-            const token_price: number = row.token_price_values
-              ? row.token_price_values[tokenIndex]
-              : 0;
-            const token_fdv: number = row.token_fdv_values
-              ? row.token_fdv_values[tokenIndex]
-              : 0;
-            const token_total_supply: number = row.token_total_supply_values
-              ? row.token_total_supply_values[tokenIndex]
-              : 0;
-
-            const token_info: SupportedToken = getSupportedToken(tokenId);
-
-            const raw_amount: string = parseRawAmount(
-              row.token_amounts?.[tokenIndex]
-            );
-
-            const token_amount: number = parseRawAmountToTokenAmount(
-              row.token_amounts?.[tokenIndex],
-              token_info.decimals
-            );
-
-            const token_amount_usd = parseTokenAmountToTokenAmountUsd(
-              token_amount,
-              token_price
-            );
-
-            return {
-              ...token_info,
-              raw_amount,
-              token_amount,
-              token_amount_usd,
-              price: token_price,
-              fdv: token_fdv,
-              total_supply: token_total_supply,
-            };
-          });
-
           const input_token_info: SupportedToken = getSupportedToken(
             row.input_token_id
           );
@@ -155,6 +162,70 @@ export const getEnrichedOffersQueryOptions = (
             fdv: input_token_fdv,
             total_supply: input_token_total_supply,
           };
+
+          const tokens_data = row.token_ids.map((tokenId, tokenIndex) => {
+            const token_price: number = row.token_price_values
+              ? row.token_price_values[tokenIndex]
+              : 0;
+            const token_fdv: number = row.token_fdv_values
+              ? row.token_fdv_values[tokenIndex]
+              : 0;
+            const token_total_supply: number = row.token_total_supply_values
+              ? row.token_total_supply_values[tokenIndex]
+              : 0;
+
+            const token_info: SupportedToken = getSupportedToken(tokenId);
+
+            const raw_amount: string = parseRawAmount(
+              row.token_amounts?.[tokenIndex]
+            );
+
+            const token_amount: number = parseRawAmountToTokenAmount(
+              row.token_amounts?.[tokenIndex],
+              token_info.decimals
+            );
+
+            const token_amount_usd = parseTokenAmountToTokenAmountUsd(
+              token_amount,
+              token_price
+            );
+
+            let per_input_token = 0;
+
+            if (market_type === RoycoMarketType.recipe.value) {
+              // Recipe Market
+              per_input_token = token_amount / input_token_data.token_amount;
+            } else {
+              // Vault Market
+              per_input_token = token_amount; // @note: This is rate per second
+            }
+
+            const annual_change_ratio =
+              row.annual_change_ratios?.[tokenIndex] ?? 0;
+
+            let rate_per_year = 0;
+
+            if (market_type === RoycoMarketType.recipe.value) {
+              // Recipe Market
+              rate_per_year = 0;
+            } else {
+              // Vault Market
+              rate_per_year = token_amount * (365 * 24 * 60 * 60);
+            }
+
+            return {
+              ...token_info,
+              raw_amount,
+              token_amount,
+              token_amount_usd,
+              price: token_price,
+              fdv: token_fdv,
+              total_supply: token_total_supply,
+              annual_change_ratio,
+              per_input_token,
+              rate_per_year,
+            };
+          });
 
           return {
             ...row,

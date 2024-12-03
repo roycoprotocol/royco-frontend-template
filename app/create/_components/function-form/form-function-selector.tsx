@@ -23,6 +23,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { FunctionFormSchema } from "./function-form-schema";
 import { toFunctionSelector } from "viem";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const FormFunctionSelector = React.forwardRef<
   HTMLDivElement,
@@ -111,24 +112,28 @@ export const FormFunctionSelector = React.forwardRef<
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <ul className="list gap-0">
-                  {availableFunctions.map((contractFunction, index) => {
-                    const BASE_KEY = toFunctionSelector(contractFunction);
-                    // const BASE_KEY = `${index}:${contractFunction.name}`;
+                <ScrollArea className={cn("h-[200px] w-full")}>
+                  <ul className="list gap-0">
+                    {availableFunctions.map((contractFunction, index) => {
+                      const BASE_KEY = toFunctionSelector(contractFunction);
+                      // const BASE_KEY = `${index}:${contractFunction.name}`;
 
-                    return (
-                      <SelectItem
-                        key={BASE_KEY}
-                        className={cn(
-                          "body-2 z-10 transition-colors duration-200 ease-in-out"
-                        )}
-                        value={BASE_KEY}
-                      >
-                        {contractFunction.name}
-                      </SelectItem>
-                    );
-                  })}
-                </ul>
+                      return (
+                        <SelectItem
+                          key={BASE_KEY}
+                          className={cn(
+                            "body-2 z-10 transition-colors duration-200 ease-in-out"
+                          )}
+                          value={BASE_KEY}
+                        >
+                          {contractFunction.name}{" "}
+                          {contractFunction.inputs.length > 0 &&
+                            `(${contractFunction.inputs.map((input) => input.type).join(", ")})`}
+                        </SelectItem>
+                      );
+                    })}
+                  </ul>
+                </ScrollArea>
               </SelectContent>
             </Select>
             <FormMessage />

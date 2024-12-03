@@ -4,17 +4,23 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
 import { SupportedChainMap } from "@/sdk/constants";
+import { useConnectWallet } from "../provider/connect-wallet-provider";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
-  const { open, close } = useWeb3Modal();
   const { address, isConnected, isConnecting, isDisconnected } = useAccount();
   const { selectedNetworkId } = useWeb3ModalState();
+
+  const {
+    connectWallet,
+    isConnectWalletAlertOpen,
+    setIsConnectWalletAlertOpen,
+  } = useConnectWallet();
 
   /**
    * @description Bug in exported type of selectedNetworkId
@@ -32,9 +38,7 @@ export const ConnectWalletButton = React.forwardRef<
         isConnected && !isChainSupported && "bg-error",
         className
       )}
-      onClick={() => {
-        open();
-      }}
+      onClick={() => connectWallet()}
       {...props}
     >
       {isConnected && !isChainSupported && (
@@ -44,7 +48,7 @@ export const ConnectWalletButton = React.forwardRef<
       )}
 
       {isConnected && !isChainSupported && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           Unsupported Chain
         </div>
       )}
@@ -57,13 +61,13 @@ export const ConnectWalletButton = React.forwardRef<
       )}
 
       {isConnected && isChainSupported && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           {address && address.slice(0, 6) + "..." + address.slice(-4)}
         </div>
       )}
 
       {(isDisconnected || isConnecting) && (
-        <div className="mt-[0.15rem] flex h-5 flex-col place-content-center items-center">
+        <div className="flex h-5 flex-col place-content-center items-center">
           Connect Wallet
         </div>
       )}

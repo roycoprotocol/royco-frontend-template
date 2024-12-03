@@ -4,6 +4,9 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import { BigNumber } from "ethers";
+import { MarketIncentiveType, MarketOfferType } from "../../store";
+import { formatUnits } from "viem";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -226,22 +229,60 @@ const ChartTooltipContent = React.forwardRef<
                         />
                       )
                     )}
-                    <div
-                      className={cn(
-                        "flex flex-1 justify-between leading-none",
-                        nestLabel ? "items-end" : "items-center"
-                      )}
-                    >
-                      <div className="grid gap-1.5">
+                    <div className={cn("flex flex-col gap-y-2 leading-none")}>
+                      {/* <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-tertiary">
                           {itemConfig?.label || item.name}
                         </span>
-                      </div>
-                      {item.value && (
-                        <span className="font-mono font-medium tabular-nums text-secondary">
-                          {item.value.toLocaleString()}
-                        </span>
+                      </div> */}
+                      {item.payload && (
+                        <div className="flex justify-between">
+                          <div className="mr-2 text-tertiary">Offer Type:</div>
+                          <div className="font-mono font-medium tabular-nums text-secondary">
+                            {item.payload.offer_side === 0
+                              ? MarketIncentiveType.ap.label
+                              : MarketIncentiveType.ip.label}
+                          </div>
+                        </div>
+                      )}
+                      {item.value !== undefined &&
+                        item.payload?.quantity !== undefined && (
+                          <div className="flex justify-between">
+                            <div className="mr-2 text-tertiary">Quantity:</div>
+                            <div>
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {item.value.toLocaleString() + " USD"}
+                              </div>
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {formatUnits(
+                                  BigNumber.from(
+                                    item.payload.quantity
+                                  ).toBigInt(),
+                                  item.payload.input_token_data.decimals
+                                ) +
+                                  " " +
+                                  item.payload.input_token_data.symbol}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      {item.payload && (
+                        <div className="flex justify-between">
+                          <div className="mr-2 text-tertiary">APY:</div>
+                          <div className="font-mono font-medium tabular-nums text-secondary">
+                            {Intl.NumberFormat("en-US", {
+                              style: "percent",
+                              notation: "compact",
+                              useGrouping: true,
+                              compactDisplay: "short",
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }).format(
+                              item.payload.annual_change_ratio as number
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </>
