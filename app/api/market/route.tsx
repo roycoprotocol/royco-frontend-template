@@ -29,7 +29,7 @@ Market Details:
 
 export const getContent = (marketData: any) => {
   return Buffer.from(
-    `import { defineMarket } from "royco/constants";
+    `import { defineMarket } from "@/sdk/constants";
 
 export default defineMarket({
   id: "${marketData.id}",
