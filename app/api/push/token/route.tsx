@@ -205,7 +205,7 @@ export default defineToken({
   ).toString("base64");
 };
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
     const body = await request.json();
     let { chain_id, contract_address: raw_contract_address } = body;
