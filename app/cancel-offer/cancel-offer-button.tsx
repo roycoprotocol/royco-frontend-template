@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { ContractMap } from "royco/contracts";
-import { RoycoMarketType } from "royco/market/utils";
-import { TransactionOptionsType } from "royco/types/transaction";
+import { RoycoMarketType } from "royco/market";
+import { TransactionOptionsType } from "royco/types";
 import { useMarketManager } from "@/store";
 
 export const CancelOfferButton = () => {
