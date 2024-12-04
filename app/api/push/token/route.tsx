@@ -207,8 +207,12 @@ export default defineToken({
 
 export async function GET(request: Request) {
   try {
-    const body = await request.json();
-    let { chain_id, contract_address: raw_contract_address } = body;
+    const url = new URL(request.url);
+    const chain_id = parseInt(url.searchParams.get("chain_id") || "0");
+    const raw_contract_address = url.searchParams.get("contract_address");
+
+    // const body = await request.json();
+    // let { chain_id, contract_address: raw_contract_address } = body;
 
     // Check if chain id is provided
     if (!chain_id) {
@@ -275,6 +279,7 @@ export async function GET(request: Request) {
 
     // Create public client
     const publicClient = createPublicClient({
+      // @ts-ignore
       chain: getChain(chain_id),
       transport: http(RPC_API_KEYS[chain_id]),
     });
