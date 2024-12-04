@@ -13,9 +13,7 @@ export const RoycoStats = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data, isLoading, isRefetching } = useEnrichedRoycoStats({
-    testnet: process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? true : false,
-  });
+  const { data, isLoading, isRefetching } = useEnrichedRoycoStats();
 
   const [placeholderDatas, setPlaceholderDatas] = useImmer([
     {

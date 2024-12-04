@@ -383,6 +383,10 @@ export const WithdrawSection = React.forwardRef<
                                           account:
                                             address?.toLowerCase() as string,
                                           position: {
+                                            /**
+                                             * @TODO Strictly type this
+                                             */
+                                            // @ts-ignore
                                             token_data:
                                               position.input_token_data,
                                           },
