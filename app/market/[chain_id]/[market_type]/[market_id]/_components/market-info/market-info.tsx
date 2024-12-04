@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
@@ -9,30 +9,11 @@ import {
   TertiaryLabel,
 } from "../composables";
 import { useActiveMarket } from "../hooks";
-import {
-  ActionFlow,
-  HorizontalTabs,
-  LoadingSpinner,
-  SpringNumber,
-} from "@/components/composables";
-import {
-  MarketRewardStyle,
-  MarketScriptType,
-  MarketViewType,
-  useMarketManager,
-} from "@/store";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { ActionFlow, SpringNumber } from "@/components/composables";
+import { MarketRewardStyle, MarketViewType, useMarketManager } from "@/store";
+
 import { MarketType } from "@/store";
-import {
-  BadgeLink,
-  InfoCard,
-  InfoTip,
-  TokenDisplayer,
-} from "@/components/common";
+import { InfoCard, InfoTip } from "@/components/common";
 import { getExplorerUrl, getSupportedChain, shortAddress } from "@/sdk/utils";
 import { formatDuration } from "date-fns";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form";
@@ -44,9 +25,21 @@ import {
   useEnrichedAccountBalancesRecipeInMarket,
   useEnrichedAccountBalancesVaultInMarket,
 } from "@/sdk/hooks";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { produce } from "immer";
 import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+
+const stkGHO_MARKET_ID =
+  "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b";
+const aaveGhoContract = "0xb12e82DF057BF16ecFa89D7D089dc7E5C1Dc057B";
+const aaveGhoStakedAsset = "0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d";
+const aaveGhoOracle = "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -61,16 +54,147 @@ export const MarketInfo = React.forwardRef<
   const {
     isLoading,
     marketMetadata,
-    propsEnrichedMarket,
+
     currentMarketData,
     previousMarketData,
     propsReadMarket,
     propsActionsDecoderEnterMarket,
     propsActionsDecoderExitMarket,
-    currentHighestOffers,
   } = useActiveMarket();
 
-  const { scriptType, setScriptType, viewType } = useMarketManager();
+  const { data: stkGhoAPR } =
+    currentMarketData.id === stkGHO_MARKET_ID
+      ? useQuery({
+          queryKey: ["stkgho-apr"],
+          queryFn: async () => {
+            const response = await fetch(
+              "https://apps.aavechan.com/api/merit/aprs"
+            );
+            if (!response.ok) {
+              throw new Error("Failed to fetch stkGHO APR data.");
+            }
+            return response.json();
+          },
+        })
+      : { data: undefined };
+
+  const { data: aaveStkGhoAPR } =
+    currentMarketData.id === stkGHO_MARKET_ID
+      ? useReadContract({
+          chainId: 1,
+          address: aaveGhoContract,
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "stakedAsset",
+                  type: "address",
+                },
+                { internalType: "address", name: "oracle", type: "address" },
+              ],
+              name: "getStakedAssetData",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+
+                      name: "stakedTokenTotalSupply",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "stakedTokenTotalRedeemableAmount",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "stakeCooldownSeconds",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "stakeUnstakeWindow",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "stakedTokenPriceUsd",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "rewardTokenPriceUsd",
+
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+                      name: "stakeApy",
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint128",
+
+                      name: "distributionPerSecond",
+
+                      type: "uint128",
+                    },
+
+                    {
+                      internalType: "bool",
+                      name: "inPostSlashingPeriod",
+                      type: "bool",
+                    },
+
+                    {
+                      internalType: "uint256",
+                      name: "distributionEnd",
+                      type: "uint256",
+                    },
+
+                    {
+                      internalType: "uint256",
+
+                      name: "maxSlashablePercentage",
+
+                      type: "uint256",
+                    },
+                  ],
+                  internalType:
+                    "struct IStakedTokenDataProvider.StakedTokenData",
+                  name: "",
+                  type: "tuple",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+          functionName: "getStakedAssetData",
+          args: [aaveGhoStakedAsset, aaveGhoOracle],
+        })
+      : { data: undefined };
+
+  const { viewType } = useMarketManager();
 
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
 
@@ -144,6 +268,18 @@ export const MarketInfo = React.forwardRef<
     }
   }, [isLoadingVault, isRefetchingVault, dataVault]);
 
+  const netAPR = useMemo(() => {
+    let apr = currentMarketData.annual_change_ratio ?? 0;
+    if (currentMarketData.id === stkGHO_MARKET_ID && stkGhoAPR) {
+      apr +=
+        (Number(stkGhoAPR.currentAPR.actionsAPR["ethereum-stkgho"]) ?? 0) / 100;
+    }
+    if (currentMarketData.id === stkGHO_MARKET_ID && aaveStkGhoAPR) {
+      apr += Number(aaveStkGhoAPR.stakeApy ?? 0) / (100 * 100);
+    }
+    return apr;
+  }, [currentMarketData, stkGhoAPR, aaveStkGhoAPR]);
+
   if (
     !isLoading &&
     !!currentMarketData &&
@@ -179,7 +315,7 @@ export const MarketInfo = React.forwardRef<
               : "Unknown Market"}
           </PrimaryLabel>
 
-          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS)}>
+          <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS, "break-normal")}>
             {currentMarketData.description ?? "No description available"}
           </SecondaryLabel>
         </div>
@@ -210,8 +346,7 @@ export const MarketInfo = React.forwardRef<
                   <PrimaryLabel
                     className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                   >
-                    {(currentMarketData.annual_change_ratio ?? 0) >=
-                    Math.pow(10, 18) ? (
+                    {netAPR >= Math.pow(10, 18) ? (
                       `0`
                     ) : (
                       <SpringNumber
@@ -241,13 +376,12 @@ export const MarketInfo = React.forwardRef<
             )}
 
             <div className="flex flex-1 rounded-xl border bg-z2">
-              <div className="hide-scrollbar flex-1 overflow-x-scroll p-3">
+              <div className="hide-scrollbar relative flex-1 overflow-x-scroll p-3">
                 <SecondaryLabel>APR</SecondaryLabel>
                 <PrimaryLabel
                   className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                 >
-                  {(currentMarketData.annual_change_ratio ?? 0) >=
-                  Math.pow(10, 18) ? (
+                  {netAPR >= Math.pow(10, 18) ? (
                     `0`
                   ) : (
                     <SpringNumber
@@ -257,7 +391,7 @@ export const MarketInfo = React.forwardRef<
                           ? previousMarketData.annual_change_ratio
                           : 0
                       }
-                      currentValue={currentMarketData.annual_change_ratio ?? 0}
+                      currentValue={netAPR}
                       numberFormatOptions={{
                         style: "percent",
                         notation: "compact",
@@ -268,6 +402,62 @@ export const MarketInfo = React.forwardRef<
                     />
                   )}
                 </PrimaryLabel>
+
+                {(stkGhoAPR || aaveStkGhoAPR) && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      className={cn("absolute right-3 top-3 cursor-pointer")}
+                    >
+                      ✨
+                    </TooltipTrigger>
+                    <TooltipContent
+                      className={cn(
+                        "bg-white",
+                        "text-sm leading-snug",
+                        "max-w-80"
+                      )}
+                    >
+                      <div className="flex justify-between gap-8">
+                        <div>APR:</div>
+                        <div>
+                          {Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(currentMarketData.annual_change_ratio ?? 0)}
+                        </div>
+                      </div>
+                      <div className="flex justify-between gap-8">
+                        <div>stkGHO APR:</div>
+                        <div>
+                          {Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(
+                            Number(
+                              stkGhoAPR?.currentAPR?.actionsAPR?.[
+                                "ethereum-stkgho"
+                              ] ?? 0
+                            ) / 100
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between gap-8">
+                        <div>Aave APR:</div>
+                        <div>
+                          {Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(
+                            Number(aaveStkGhoAPR?.stakeApy ?? 0) / (100 * 100)
+                          )}
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
 
               {marketMetadata.market_type === MarketType.recipe.id &&
