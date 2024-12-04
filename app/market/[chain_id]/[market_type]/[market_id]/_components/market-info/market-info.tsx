@@ -417,8 +417,8 @@ export const MarketInfo = React.forwardRef<
                         "max-w-80"
                       )}
                     >
-                      <div className="flex justify-between gap-8">
-                        <div>APR:</div>
+                      <div className="flex gap-2">
+                        <div>Royco APR:</div>
                         <div>
                           {Intl.NumberFormat("en-US", {
                             style: "percent",
@@ -427,8 +427,8 @@ export const MarketInfo = React.forwardRef<
                           }).format(currentMarketData.annual_change_ratio ?? 0)}
                         </div>
                       </div>
-                      <div className="flex justify-between gap-8">
-                        <div>stkGHO APR:</div>
+                      <div className="flex gap-2">
+                        <div>stkGHO APR (from Merit):</div>
                         <div>
                           {Intl.NumberFormat("en-US", {
                             style: "percent",
@@ -443,8 +443,8 @@ export const MarketInfo = React.forwardRef<
                           )}
                         </div>
                       </div>
-                      <div className="flex justify-between gap-8">
-                        <div>Aave APR:</div>
+                      <div className="flex gap-2">
+                        <div>AAVE APR (from Aave):</div>
                         <div>
                           {Intl.NumberFormat("en-US", {
                             style: "percent",
