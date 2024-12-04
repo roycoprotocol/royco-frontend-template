@@ -6,7 +6,7 @@ import {
   // isSolidityAddressValid,
   isSolidityAddressValid,
   isERC4626VaultAddressValid,
-} from "@/sdk/utils";
+} from "royco/utils";
 import {
   AbiParameter as ZodAbiParameter,
   AbiFunction as ZodAbiFunction,
@@ -18,16 +18,17 @@ import {
   isFixedValueValid,
   isMarketActionScriptValid,
   isMarketActionValid,
-} from "@/sdk/market";
+} from "royco/market";
 import { arbitrum, base, mainnet, sepolia } from "viem/chains";
 import {
+  getSupportedToken,
   SupportedChainMap,
   TokenMap1,
   TokenMap11155111,
   TokenMap42161,
   TokenMap8453,
-} from "@/sdk/constants";
-import { isSolidityStringValid } from "@/sdk/utils";
+} from "royco/constants";
+import { isSolidityStringValid } from "royco/utils";
 
 export const TypedZodAbiFunction = z.object({
   type: z.literal("function"),
@@ -311,8 +312,9 @@ export const PoolFormDefaults = {
     market_name: "",
     market_description: "",
     chain: SupportedChainMap[sepolia.id],
-    asset:
-      TokenMap11155111["11155111-0x3f85506f500cb02d141bafe467cc52ad5a9d7d5a"],
+    asset: getSupportedToken(
+      "11155111-0x3f85506f500cb02d141bafe467cc52ad5a9d7d5a"
+    ),
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",

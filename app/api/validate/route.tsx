@@ -1,12 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
-import { getChain } from "@/sdk/utils";
-import { ContractMap } from "@/sdk/contracts";
+import { getChain } from "royco/utils";
+import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { BigNumber } from "ethers";
-import { NULL_ADDRESS } from "@/sdk/constants";
+import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi } from "viem";
 
 export const dynamic = true;

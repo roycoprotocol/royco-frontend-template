@@ -3,9 +3,9 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { EnrichedOfferDataType } from "@/sdk/queries";
+import { EnrichedOfferDataType } from "royco/queries";
 
-import { getChain } from "@/sdk/utils";
+import { getChain } from "royco/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { MarketType } from "@/store/market-manager-props";
 import Link from "next/link";

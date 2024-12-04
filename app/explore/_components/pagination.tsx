@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useExplore } from "@/store";
-import { useEnrichedMarkets } from "@/sdk/hooks";
+import { useEnrichedMarkets } from "royco/hooks";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 

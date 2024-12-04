@@ -11,7 +11,7 @@ import { FallMotion } from "@/components/animations";
 import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
-import { getTokenQuote, useSupportedTokens, useTokenQuotes } from "@/sdk/hooks";
+import { getTokenQuote, useSupportedTokens, useTokenQuotes } from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { AnimatePresence } from "framer-motion";
 import { SpringNumber } from "@/components/composables";

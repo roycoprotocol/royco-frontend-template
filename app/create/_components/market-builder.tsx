@@ -15,7 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { TopNavigator } from "./market-builder-manager";
-import { useSearchContracts } from "@/sdk/hooks";
+import { useSearchContracts } from "royco/hooks";
 import { MarketBuilderSteps } from "@/store/";
 import { AlertIndicator } from "@/components/common";
 import { mainnet, sepolia } from "viem/chains";

@@ -7,7 +7,7 @@ import {
   TertiaryLabel,
 } from "../../composables";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useTransactionSimulation } from "@/sdk/hooks";
+import { useTransactionSimulation } from "royco/hooks";
 import { useMarketFormDetails } from "../use-market-form-details";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";

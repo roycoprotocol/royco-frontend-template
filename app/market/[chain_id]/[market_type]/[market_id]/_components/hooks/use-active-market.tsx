@@ -6,14 +6,14 @@ import {
   useHighestOffers,
   useEnrichedMarkets,
   useReadMarket,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { useImmer } from "use-immer";
 import { useEffect } from "react";
 import { isEqual } from "lodash";
 import { produce } from "immer";
 
 import { MarketType } from "@/store";
-import { EnrichedMarketDataType } from "@/sdk/queries";
+import { EnrichedMarketDataType } from "royco/queries";
 
 export const useActiveMarket = () => {
   const params = useParams();

@@ -1,10 +1,10 @@
-import { getChain, shortAddress } from "@/sdk/utils";
+import { getChain, shortAddress } from "royco/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Chain } from "@wagmi/core/chains";
 import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
-import { getMarketIdFromEventLog } from "@/sdk/market";
+import { getMarketIdFromEventLog } from "royco/market";
 import { Octokit } from "@octokit/rest";
 
 export const dynamic = true;
@@ -29,7 +29,7 @@ Market Details:
 
 export const getContent = (marketData: any) => {
   return Buffer.from(
-    `import { defineMarket } from "@/sdk/constants";
+    `import { defineMarket } from "royco/constants";
 
 export default defineMarket({
   id: "${marketData.id}",
@@ -45,7 +45,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { chain_id, market_type, tx_hash, id, name, description } = body;
 
-    const chain: Chain = getChain(chain_id);
+    const chain = getChain(chain_id);
+    if (!chain) {
+      return Response.json({ data: "Chain not found", status: false });
+    }
+
     const viemClient = createPublicClient({
       chain,
       transport: http(RPC_API_KEYS[chain_id]),

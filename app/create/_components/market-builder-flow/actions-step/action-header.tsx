@@ -4,7 +4,7 @@ import React from "react";
 import { PoolFormUtilities } from "../../market-builder-form";
 
 import { ExternalLinkIcon, GripVerticalIcon, Trash2Icon } from "lucide-react";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 
 export const ActionHeader = React.forwardRef<
   HTMLDivElement,

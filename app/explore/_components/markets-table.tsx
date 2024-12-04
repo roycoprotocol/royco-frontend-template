@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 import { columns } from "./columns";
 import { useExplore } from "@/store";
-import { useEnrichedMarkets } from "@/sdk/hooks";
+import { useEnrichedMarkets } from "royco/hooks";
 
 import { AnimatePresence, motion } from "framer-motion";
 

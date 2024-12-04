@@ -8,7 +8,7 @@ import {
   SolidityAddress as ZodSolidityAddress,
 } from "abitype/zod";
 
-import { isAbiValid, isSolidityAddressValid } from "@/sdk/utils";
+import { isAbiValid, isSolidityAddressValid } from "royco/utils";
 
 export const FunctionFormSchema = z.object({
   chain_id: z.number(),

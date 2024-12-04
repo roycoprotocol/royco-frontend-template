@@ -6,7 +6,7 @@ import { useSelectionMenu } from "@/store";
 // import { ContractTypeSelector } from "./contract-type-selector"; // @notice currently removed
 import { SearchBar } from "./search-bar";
 import { ContractList } from "./contract-list";
-import { useSearchContracts } from "@/sdk/hooks";
+import { useSearchContracts } from "royco/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { isEqual } from "lodash";
 import { FunctionFormSchema } from "../function-form";
@@ -16,7 +16,7 @@ import { MarketBuilderFormSchema } from "../market-builder-form";
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { AlertIndicator } from "@/components/common";
-import { isSolidityAddressValid } from "@/sdk/utils";
+import { isSolidityAddressValid } from "royco/utils";
 
 export const SelectionMenu = React.forwardRef<
   HTMLDivElement,

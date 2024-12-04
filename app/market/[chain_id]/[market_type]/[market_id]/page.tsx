@@ -1,3 +1,5 @@
+"use client";
+
 import "./local.css";
 import { cn } from "@/lib/utils";
 import { MarketManager } from "./_components";

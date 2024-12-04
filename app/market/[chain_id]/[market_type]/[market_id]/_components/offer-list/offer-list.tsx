@@ -13,10 +13,10 @@ import {
 import { SpringNumber } from "@/components/composables";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { FallMotion } from "@/components/animations";
-import { RoycoMarketType } from "@/sdk/market";
-import { EnrichedOfferDataType } from "@/sdk/queries";
+import { RoycoMarketType } from "royco/market";
+import { EnrichedOfferDataType } from "royco/queries";
 import { MarketUserType } from "@/store";
-import { parseRawAmountToTokenAmount } from "@/sdk/utils";
+import { parseRawAmountToTokenAmount } from "royco/utils";
 
 export const CentralBar = React.forwardRef<
   HTMLDivElement,

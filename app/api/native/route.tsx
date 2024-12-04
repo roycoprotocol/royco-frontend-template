@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
-import { getChain } from "@/sdk/utils";
+import { getChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 

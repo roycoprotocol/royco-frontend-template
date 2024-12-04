@@ -20,7 +20,7 @@ import {
 import { PositionsRecipeTable } from "./positions-recipe-table";
 import { useActiveMarket } from "../hooks";
 import { PositionsVaultTable } from "./positions-vault-table";
-import { useEnrichedOffers } from "../../../../../../../sdk/hooks";
+import { useEnrichedOffers } from "royco/hooks";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useActiveMarket } from "../../../hooks";
-import { parseRawAmount, parseRawAmountToTokenAmount } from "@/sdk/utils";
+import { parseRawAmount, parseRawAmountToTokenAmount } from "royco/utils";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { z } from "zod";
 import { InfoIcon } from "lucide-react";

@@ -6,7 +6,7 @@ import { InputAmountWrapper, IPQuantityIndicator } from "../composables";
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { UseFormReturn } from "react-hook-form";
 import { BigNumber } from "ethers";
-import { parseRawAmount } from "@/sdk/utils";
+import { parseRawAmount } from "royco/utils";
 import { SlideUpWrapper } from "@/components/animations";
 
 export const IPMarketOfferUI = React.forwardRef<
