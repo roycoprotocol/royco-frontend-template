@@ -1,7 +1,7 @@
 import type { Chain, Address, Abi as TypedAbi } from "viem";
 
 import { createPublicClient, http } from "viem";
-import { getChain } from "@/sdk/utils";
+import { getChain } from "royco/utils";
 
 import {
   getMetadata,

@@ -1,9 +1,9 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { isSolidityAddressValid, parseFormattedValueToText } from "@/sdk/utils";
-import { parseTextToFormattedValue } from "@/sdk/utils";
+import { isSolidityAddressValid, parseFormattedValueToText } from "royco/utils";
+import { parseTextToFormattedValue } from "royco/utils";
 import { Input } from "@/components/ui/input";
-import { useErc4626VaultChecker } from "@/sdk/hooks";
+import { useErc4626VaultChecker } from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { BadgeAlertIcon } from "lucide-react";

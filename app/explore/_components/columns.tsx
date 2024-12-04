@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { SpringNumber } from "@/components/composables";
-import { EnrichedMarketDataType } from "@/sdk/queries";
+import { EnrichedMarketDataType } from "royco/queries";
 import {
   AipBreakdown,
   AssetBreakdown,

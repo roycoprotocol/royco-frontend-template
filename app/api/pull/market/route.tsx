@@ -1,4 +1,4 @@
-import { getSupportedChain, shortAddress } from "@/sdk/utils";
+import { getSupportedChain, shortAddress } from "royco/utils";
 import { Octokit } from "@octokit/rest";
 
 export const dynamic = true;
@@ -43,7 +43,7 @@ export const checkMarketFileExists = async (
 
 export const getContent = (marketData: any) => {
   return Buffer.from(
-    `import { defineMarket } from "@/sdk/constants";
+    `import { defineMarket } from "royco/constants";
 
 export default defineMarket({
   id: "${marketData.id}",

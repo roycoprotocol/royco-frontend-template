@@ -4,8 +4,8 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { FunctionFormSchema } from "../function-form";
 import { MarketBuilderFormSchema } from "../market-builder-form";
-import { useSearchContracts } from "@/sdk/hooks";
-import { ContractMap } from "@/sdk/contracts";
+import { useSearchContracts } from "royco/hooks";
+import { ContractMap } from "royco/contracts";
 import { ContractRow } from "./contract-row";
 
 export const PinnedContracts = React.forwardRef<

@@ -3,7 +3,7 @@
 import React from "react";
 
 import { cn } from "@/lib/utils";
-import type { MarketFilter } from "@/sdk/queries";
+import type { MarketFilter } from "royco/queries";
 import { TokenBadge } from "@/components/common";
 
 import { useExplore } from "@/store";

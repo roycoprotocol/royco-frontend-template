@@ -1,8 +1,8 @@
 import { http } from "@wagmi/core";
-import { TransactionOptionsType } from "@/sdk/types";
+import { TransactionOptionsType } from "royco/types";
 import { Address } from "abitype";
-import { getChain } from "@/sdk/utils";
-import { ContractMap } from "@/sdk/contracts";
+import { getChain } from "royco/utils";
+import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 

@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { isFixedValueValid } from "@/sdk/market";
+import { isFixedValueValid } from "royco/market";
 
 export const InputOutputLists = React.forwardRef<
   HTMLDivElement,

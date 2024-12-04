@@ -10,7 +10,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { FallMotion } from "@/components/animations";
-import { TypedRoycoMarketVaultIncentiveAction } from "@/sdk/market";
+import { TypedRoycoMarketVaultIncentiveAction } from "royco/market";
 import { useActiveMarket } from "../../../hooks";
 import { BigNumber } from "ethers";
 

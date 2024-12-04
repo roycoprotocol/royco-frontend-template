@@ -3,7 +3,7 @@
 import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
-import { useEnrichedOffers } from "@/sdk/hooks";
+import { useEnrichedOffers } from "royco/hooks";
 import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { offerColumns } from "./offer-columns";
 import { StatsDataTable } from "./stats-data-table";

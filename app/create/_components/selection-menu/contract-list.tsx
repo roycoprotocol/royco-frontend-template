@@ -19,10 +19,11 @@ import { MarketBuilderFormSchema } from "../market-builder-form";
 import { useFunctionForm } from "@/store/use-function-form";
 import { ContractRow } from "./contract-row";
 import { PinnedContracts } from "./pinned-contracts";
-import { useContract, useSearchContracts } from "../../../../sdk/hooks";
-import { ContractMap } from "../../../../sdk/contracts";
+import { useContract, useSearchContracts } from "royco/hooks";
+import { ContractMap } from "royco/contracts";
 import { AlertIndicator } from "../../../../components/common";
 
+// @ts-ignore
 export function getStyle(style, snapshot) {
   if (!snapshot.isDragging) return {};
   if (!snapshot.isDropAnimating) {
@@ -68,7 +69,12 @@ export const ContractList = React.forwardRef<
 
   const { data: weirollContract } = useContract({
     chain_id: marketBuilderForm.watch("chain").id,
+    /**
+     * @TODO Strictly type this
+     */
+    // @ts-ignore
     contract_address:
+      // @ts-ignore
       ContractMap[
         marketBuilderForm.watch("chain").id as keyof typeof ContractMap
       ]["WeirollWalletHelper"].address.toLowerCase(),
@@ -124,6 +130,10 @@ export const ContractList = React.forwardRef<
   const changeDragData = () => {
     if (draggingId !== null && dragData === null) {
       const newDragData: any = data.find(
+        /**
+         * @TODO Strictly type this
+         */
+        // @ts-ignore
         (contract) => `contract-list:${contract.id}` === draggingId
       );
 

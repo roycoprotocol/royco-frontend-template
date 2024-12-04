@@ -9,7 +9,7 @@ import { UseFormReturn } from "react-hook-form";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
-import { parseTokenAmountToRawAmount } from "@/sdk/utils";
+import { parseTokenAmountToRawAmount } from "royco/utils";
 import { useMarketManager } from "@/store";
 
 export const IncentivesAmountSelector = React.forwardRef<

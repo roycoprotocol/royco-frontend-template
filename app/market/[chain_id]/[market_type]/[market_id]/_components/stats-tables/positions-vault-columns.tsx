@@ -3,12 +3,12 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { EnrichedOfferDataType } from "@/sdk/queries";
+import { EnrichedOfferDataType } from "royco/queries";
 
 import { BASE_UNDERLINE, SecondaryLabel } from "../composables";
 import { formatDistanceToNow } from "date-fns";
 import { MarketUserType, RewardStyleMap } from "@/store";
-import { RoycoMarketOfferType, RoycoMarketUserType } from "@/sdk/market";
+import { RoycoMarketOfferType, RoycoMarketUserType } from "royco/market";
 
 /**
  * @description Column definitions for the table

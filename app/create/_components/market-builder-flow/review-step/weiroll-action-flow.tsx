@@ -10,7 +10,7 @@ import {
   ExternalLinkIcon,
   FileQuestionIcon,
 } from "lucide-react";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 import {
   Tooltip,
   TooltipContent,

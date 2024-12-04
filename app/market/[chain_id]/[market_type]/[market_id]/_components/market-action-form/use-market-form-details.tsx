@@ -2,7 +2,7 @@ import {
   getTokenQuote,
   usePrepareMarketAction,
   useTokenQuotes,
-} from "@/sdk/hooks";
+} from "royco/hooks";
 import { useActiveMarket } from "../hooks";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -16,9 +16,9 @@ import {
   useMarketManager,
 } from "@/store";
 import { useAccount } from "wagmi";
-import { RoycoMarketOfferType } from "@/sdk/market";
-import { parseRawAmount, parseTokenAmountToRawAmount } from "@/sdk/utils";
-import { NULL_ADDRESS } from "@/sdk/constants";
+import { RoycoMarketOfferType } from "royco/market";
+import { parseRawAmount, parseTokenAmountToRawAmount } from "royco/utils";
+import { NULL_ADDRESS } from "royco/constants";
 import { BigNumber } from "ethers";
 
 export const useMarketFormDetails = (

@@ -1,4 +1,4 @@
-import { ContractMap } from "@/sdk/contracts";
+import { ContractMap } from "royco/contracts";
 
 export const dynamic = true;
 

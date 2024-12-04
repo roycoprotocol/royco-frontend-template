@@ -19,12 +19,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { isAbiValid, isSolidityAddressValid } from "@/sdk/utils";
+import { isAbiValid, isSolidityAddressValid } from "royco/utils";
 
 import type { Abi as TypedAbi } from "abitype";
 import { ErrorAlert, LoadingSpinner } from "@/components/composables";
 import { isEqual } from "lodash";
-import { useContract } from "@/sdk/hooks";
+import { useContract } from "royco/hooks";
 import { FormContractAddress } from "./form-contract-address";
 import { FormContractAbi } from "./form-contract-abi";
 import {
