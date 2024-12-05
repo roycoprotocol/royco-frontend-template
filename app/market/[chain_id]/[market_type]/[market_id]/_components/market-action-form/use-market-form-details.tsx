@@ -121,6 +121,7 @@ export const useMarketFormDetails = (
       .watch("incentive_tokens")
       .map((incentiveData) => {
         try {
+          // Distribution is incentive token per year
           const distribution = parseFloat(incentiveData.distribution ?? "0");
 
           const distributionInWei = BigNumber.from(
@@ -129,13 +130,14 @@ export const useMarketFormDetails = (
               incentiveData.decimals
             )
           )
-            .mul(BigNumber.from(10).pow(incentiveData.decimals))
+            .mul(BigNumber.from(10).pow(18)) // Scale up to 18 decimals
+            .mul(BigNumber.from(10).pow(incentiveData.decimals)) // Multiply by incentive token decimals
             .div(
               BigNumber.from(10).pow(
                 currentMarketData?.input_token_data.decimals ?? 0
               )
-            )
-            .div(365 * 24 * 60 * 60);
+            ) // Divide by input token decimals
+            .div(365 * 24 * 60 * 60); // Divide by seconds in a year
 
           const rateInWei = distributionInWei.toString();
 
