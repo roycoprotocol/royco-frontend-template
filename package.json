@@ -75,6 +75,7 @@
     "date-fns": "^3.6.0",
     "detect-browser": "^5.3.0",
     "dotenv": "^16.4.5",
+    "esbuild-wasm": "^0.24.0",
     "ethers": "^5.4.4",
     "framer-motion": "^11.2.10",
     "immer": "^10.1.1",
@@ -99,11 +100,10 @@
     "react-use-measure": "^2.1.1",
     "react-waypoint": "^10.3.0",
     "recharts": "^2.12.7",
-    "royco": "^0.7.12",
+    "royco": "^0.8.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.4.5",
     "unique-names-generator": "^4.7.1",
     "use-immer": "^0.10.0",
     "use-resize-observer": "^9.1.0",
@@ -130,6 +130,6 @@
     "tailwindcss": "^3.4.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.11.2",
-    "typescript": "^5"
+    "typescript": "^5.7.2"
   }
 }

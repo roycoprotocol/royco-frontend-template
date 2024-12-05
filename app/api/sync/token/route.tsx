@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { SupportedMarketMap } from "royco/constants";
+import { SupportedTokenMap } from "royco/constants";
 
 export const dynamic = true;
 
@@ -10,24 +10,29 @@ export async function GET(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );
 
-    // Calculate batch size for the SupportedMarketMap entries
-    const mapEntries = Object.values(SupportedMarketMap);
+    // Calculate batch size for the SupportedTokenMap entries
+    const mapEntries = Object.values(SupportedTokenMap);
     const batchSize = 100;
     const currentMinute = new Date().getUTCMinutes();
     const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
-    const batchMarkets = mapEntries.slice(
+    const batchTokens = mapEntries.slice(
       batchIndex * batchSize,
       (batchIndex + 1) * batchSize
     );
 
-    // Process markets in the current batch
-    for (const market of batchMarkets) {
-      await supabaseClient.from("market_userdata").upsert({
-        id: market.id,
-        name: market.name,
-        description: market.description,
-        is_verified: market.is_verified,
+    // Process tokens in the current batch
+    for (const token of batchTokens) {
+      await supabaseClient.from("token_userdata").upsert({
+        token_id: token.id,
+        chain_id: token.chain_id,
+        contract_address: token.contract_address,
+        source: token.source,
+        name: token.name,
+        symbol: token.symbol,
+        is_active: true,
         last_updated: new Date(),
+        search_id: token.search_id,
+        decimals: token.decimals,
       });
     }
 
