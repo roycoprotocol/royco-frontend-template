@@ -119,17 +119,17 @@ export const fetchTokenFromCoingecko = async ({
 
   const fetchResponse = await fetch(
     // Public API endpoint (can be used with Demo API key on free plan)
-    `https://api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
+    // `https://api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
 
     // Pro API endpoint (requires paid plan)
-    // `https://pro-api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`
+    `https://pro-api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
     {
       headers: {
         // Demo API key
-        "x-cg-demo-api-key": process.env.COINGECKO_API_KEY!,
+        // "x-cg-demo-api-key": process.env.COINGECKO_API_KEY!,
 
         // Pro API key
-        // "x-cg-pro-api-key": process.env.COINGECKO_API_KEY!,
+        "x-cg-pro-api-key": process.env.COINGECKO_API_KEY!,
       },
     }
   );
