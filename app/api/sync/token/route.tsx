@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     // Process tokens in the current batch
     for (const token of batchTokens) {
-      await supabaseClient.from("token_userdata").upsert({
+      await supabaseClient.from("token_index").upsert({
         token_id: token.id,
         chain_id: token.chain_id,
         contract_address: token.contract_address,
