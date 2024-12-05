@@ -188,7 +188,7 @@ export const checkTokenFileExists = async (
 
 export const getContent = (enrichedTokenData: any) => {
   return Buffer.from(
-    `import { defineToken } from "royco/constants";
+    `import { defineToken } from "@/sdk/constants";
 
 export default defineToken({
   id: "${enrichedTokenData.id}",
