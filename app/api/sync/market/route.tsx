@@ -27,7 +27,6 @@ export async function GET(request: Request) {
         name: market.name,
         description: market.description,
         is_verified: market.is_verified,
-        last_updated: new Date(),
       });
     }
 

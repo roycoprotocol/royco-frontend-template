@@ -30,7 +30,6 @@ export async function GET(request: Request) {
         name: token.name,
         symbol: token.symbol,
         is_active: true,
-        last_updated: new Date(),
         search_id: token.search_id,
         decimals: token.decimals,
       });
