@@ -32,7 +32,7 @@ export const TransactionRow = React.forwardRef<
           <div
             className={cn("flex h-4", "font-gt text-sm font-light text-black")}
           >
-            <span className="leading-5">{transactionIndex}</span>
+            <span className="leading-4">{transactionIndex}</span>
           </div>
         </div>
 
