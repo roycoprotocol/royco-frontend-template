@@ -38,8 +38,14 @@ jobs:
 
           # Compare versions and update if needed
           if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-            # Update package.json with new version
-            npm install --save royco@latest
+            # Update package.json with new version (ignore scripts and suppress warnings)
+            npm install --save royco@latest --no-audit --ignore-scripts
+
+            # Check if there are actually changes to commit
+            if git diff --quiet package.json package-lock.json; then
+              echo "No changes to commit despite version difference"
+              exit 0
+            fi
             
             # Configure Git
             git config --global user.name 'GitHub Actions Bot'
@@ -51,4 +57,5 @@ jobs:
             git push
           else
             echo "Royco package is already up to date (${CURRENT_VERSION})"
+            exit 0
           fi
