@@ -28,6 +28,7 @@ export const Pagination = () => {
     sorting,
     filters,
     page_index: pageIndex,
+    search_key: searchKey,
     is_verified: showVerifiedMarket ? true : isVerified,
   });
 
