@@ -43,7 +43,7 @@ jobs:
 
             # Check if there are actually changes to commit
             if git diff --quiet package.json package-lock.json; then
-              echo "No changes to commit despite version difference"
+              echo "No changes to commit"
               exit 0
             fi
             
