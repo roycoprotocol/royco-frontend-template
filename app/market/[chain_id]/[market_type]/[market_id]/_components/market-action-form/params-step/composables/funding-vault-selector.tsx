@@ -1,20 +1,20 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { MarketUserType, useMarketManager } from "@/store";
+import { MarketType, useMarketManager } from "@/store";
 import { RoycoMarketFundingType } from "royco/market";
 import { useAccount } from "wagmi";
 import { FundingTypeSelector } from "./funding-type-selector";
 import { FallMotion, SlideUpWrapper } from "@/components/animations";
-import { NULL_ADDRESS } from "royco/constants";
+import { NULL_ADDRESS, SupportedMarketMap } from "royco/constants";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { useEnrichedPositionsVault } from "royco/hooks";
-import { EnrichedPositionsVaultDataType } from "royco/queries";
+import { useVaultBalances } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
+import { useActiveMarket } from "../../../hooks";
 
 export const FundingVaultSelector = React.forwardRef<
   HTMLDivElement,
@@ -27,58 +27,54 @@ export const FundingVaultSelector = React.forwardRef<
   const { address } = useAccount();
   const { fundingType } = useMarketManager();
 
-  const [pageIndex, setPageIndex] = useState(0);
+  const { currentMarketData } = useActiveMarket();
 
-  const [vaults, setVaults] = useState<EnrichedPositionsVaultDataType[]>([]);
+  const vaultMarkets = useMemo(() => {
+    if (!currentMarketData) return [];
 
-  const { isLoading, data } = useEnrichedPositionsVault({
-    chain_id: undefined,
-    market_id: undefined,
-    account_address: (address?.toLowerCase() as string) ?? "",
-    page_index: pageIndex,
-    filters: [
-      {
-        id: "offer_side",
-        value: MarketUserType.ap.value,
-      },
-    ],
+    return Object.values(SupportedMarketMap)
+      .filter((market) => {
+        const [chainId, marketType] = market.id.split("_").map(Number);
+        return (
+          chainId === currentMarketData.chain_id &&
+          market.is_verified === true &&
+          marketType === MarketType.vault.value
+        );
+      })
+      .map((market) => {
+        const [chainId, _, vaultAddress] = market.id.split("_");
+        return {
+          name: market.name,
+          chain_id: Number(chainId),
+          vault_address: vaultAddress,
+        };
+      });
+  }, [SupportedMarketMap, currentMarketData]);
+
+  const { data: vaultBalances, isLoading } = useVaultBalances({
+    account: address?.toLowerCase() as string,
+    vaults: vaultMarkets.map((vault) => ({
+      chain_id: vault.chain_id,
+      vault_address: vault.vault_address,
+    })),
   });
 
-  useEffect(() => {
-    if (data && data.data && data.count) {
-      setVaults((prevVaults) => {
-        const newVaults =
-          data.data as unknown as EnrichedPositionsVaultDataType[];
-        const uniqueVaults = [...prevVaults];
+  const vaults = useMemo(() => {
+    if (!vaultBalances) return [];
 
-        newVaults.forEach((vault) => {
-          const exists = uniqueVaults.some(
-            (existing) =>
-              existing.underlying_vault_address ===
-              vault.underlying_vault_address
-          );
-          if (!exists) {
-            uniqueVaults.push(vault);
-          }
-        });
+    return vaultMarkets.filter((vault) => {
+      const vaultBalance = vaultBalances.find(
+        (v) => v.vault_address === vault.vault_address
+      );
+      return (
+        vaultBalance &&
+        vaultBalance.token_id === currentMarketData?.input_token_data.id &&
+        BigInt(vaultBalance.raw_amount) > BigInt(0)
+      );
+    });
+  }, [vaultMarkets, vaultBalances, currentMarketData]);
 
-        return uniqueVaults;
-      });
-    }
-  }, [data]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const bottom =
-      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
-      e.currentTarget.clientHeight;
-    if (bottom && !isLoading && vaults.length < (data?.count || 0)) {
-      setPageIndex((prev) => prev + 1);
-    }
-  };
-
-  const selectedVault = vaults.find(
-    (v) => v.underlying_vault_address === currentValue
-  );
+  const selectedVault = vaults.find((v) => v.vault_address === currentValue);
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
@@ -97,7 +93,7 @@ export const FundingVaultSelector = React.forwardRef<
             onValueChange={(e) => {
               setCurrentValue(e);
             }}
-            value={selectedVault?.underlying_vault_address ?? ""}
+            value={selectedVault?.vault_address ?? ""}
           >
             <SelectTrigger
               className={cn(
@@ -116,15 +112,12 @@ export const FundingVaultSelector = React.forwardRef<
               </div>
             </SelectTrigger>
 
-            <SelectContent
-              className="max-h-[200px] w-full overflow-auto"
-              onScroll={handleScroll}
-            >
+            <SelectContent className="max-h-[200px] w-full overflow-auto">
               {vaults.map((vault) => (
                 <SelectItem
                   className="text-sm"
-                  key={vault.id}
-                  value={vault.underlying_vault_address as string}
+                  key={vault.vault_address}
+                  value={vault.vault_address}
                 >
                   {vault.name}
                 </SelectItem>
