@@ -1,0 +1,48 @@
+name: Update Royco SDK
+
+on:
+  schedule:
+    # Runs every 15 minutes
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    # Only run on main branch
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check for package updates
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').dependencies.royco || '0.0.0'")
+
+          # Get latest version from npm
+          LATEST_VERSION=$(npm view royco version)
+
+          # Compare versions and update if needed
+          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+            # Update package.json with new version
+            npm install --save royco@latest
+            
+            # Configure Git
+            git config --global user.name 'GitHub Actions Bot'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            
+            # Commit and push changes
+            git add package.json package-lock.json
+            git commit -m "chore(sdk): update royco to version ${LATEST_VERSION}"
+            git push
+          else
+            echo "Royco package is already up to date (${CURRENT_VERSION})"
+          fi
