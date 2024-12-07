@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { SlideUpWrapper } from "@/components/animations";
@@ -11,6 +11,10 @@ import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "royco/utils";
 import { useMarketManager } from "@/store";
+import { RoycoMarketType } from "royco/market";
+import { useActiveMarket } from "../../../hooks";
+import { useMarketFormDetails } from "../../use-market-form-details";
+import { WarningAlert } from "./warning-alert";
 
 export const IncentivesAmountSelector = React.forwardRef<
   HTMLDivElement,
@@ -25,6 +29,36 @@ export const IncentivesAmountSelector = React.forwardRef<
     ref
   ) => {
     const { userType } = useMarketManager();
+
+    const { marketMetadata, currentHighestOffers } = useActiveMarket();
+    const currentIncentives =
+      marketMetadata.market_type === RoycoMarketType.recipe.id &&
+      !!currentHighestOffers &&
+      currentHighestOffers.ip_offers.length > 0
+        ? currentHighestOffers.ip_offers[0].tokens_data
+        : [];
+
+    const { incentiveData } = useMarketFormDetails(marketActionForm);
+
+    const hasLowerAPR = useMemo(() => {
+      return marketActionForm.watch("incentive_tokens").some((token) => {
+        const currentIncentive = currentIncentives.find(
+          (i) => i.id === token.id
+        );
+        const incentive = incentiveData.find((i) => i.token_id === token.id);
+
+        if (currentIncentive && incentive) {
+          return (
+            incentive.annual_change_ratio < currentIncentive.annual_change_ratio
+          );
+        }
+        return false;
+      });
+    }, [
+      marketActionForm.watch("incentive_tokens"),
+      currentIncentives,
+      incentiveData,
+    ]);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -73,6 +107,19 @@ export const IncentivesAmountSelector = React.forwardRef<
             className="mt-2"
           />
         </SlideUpWrapper>
+
+        {hasLowerAPR && (
+          <SlideUpWrapper
+            layout="position"
+            layoutId="motion:market:warning-alert:withdraw"
+            className="mt-3"
+            delay={0.4}
+          >
+            <WarningAlert>
+              WARNING: Your offered APR is below market rate
+            </WarningAlert>
+          </SlideUpWrapper>
+        )}
 
         <SlideUpWrapper
           layout="position"

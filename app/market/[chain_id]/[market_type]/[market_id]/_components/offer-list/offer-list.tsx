@@ -117,10 +117,10 @@ const OfferListRow = React.forwardRef<
         customKey={customKey}
         height="1rem"
         className={cn("w-full", className)}
-        contentClassName="flex flex-row items-center justify-between w-full h-4 text-sm"
+        contentClassName="flex flex-row items-center justify-between w-full h-4 text-sm hide-scrollbar overflow-x-scroll"
         {...props}
       >
-        <SecondaryLabel>
+        <SecondaryLabel className="shrink-0 whitespace-nowrap break-normal">
           <SpringNumber
             defaultColor={type === "ap" ? "text-success" : "text-error"}
             previousValue={keyInfo.previousValue}
@@ -145,7 +145,7 @@ const OfferListRow = React.forwardRef<
             </div>
           )}
         </SecondaryLabel>
-        <SecondaryLabel>
+        <SecondaryLabel className="shrink-0 whitespace-nowrap break-normal">
           {!!offer && (
             <div className="mr-0">
               <TokenDisplayer
