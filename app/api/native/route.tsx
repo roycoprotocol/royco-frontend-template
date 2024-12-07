@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       .lt("retries", 100)
       .lt("last_updated", new Date(Date.now() - 60 * 1000).toISOString())
       .order("last_updated", { ascending: true })
-      .limit(20);
+      .limit(100);
 
     if (error) throw error;
 
