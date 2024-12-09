@@ -258,7 +258,8 @@ export const TransactionStep = React.forwardRef<
         className="mt-10 w-full text-center font-gt text-lg font-500 text-black"
       >
         {txStatus === "pending" && "Awaiting Confirmation"}
-        {txStatus === "success" && "Market Created"}
+        {txStatus === "success" &&
+          `Congrats ${marketBuilderForm.watch("market_name")} created!`}
         {txStatus === "error" && "Deployment Error"}
       </div>
       <div
@@ -267,8 +268,37 @@ export const TransactionStep = React.forwardRef<
       >
         {txStatus === "pending" &&
           "Please wait, this might take a while. Do not navigate off this page until confirmation."}
-        {txStatus === "success" &&
-          "Your market should be live on dashboard within a few minutes."}
+        {txStatus === "success" && (
+          <div className="max-w-[600px]">
+            Newly deployed markets must be verified before becoming available to
+            depositors.{" "}
+            <motion.a
+              href={`/market/${marketBuilderForm.watch("chain").id}/${
+                marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1
+              }/${market_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative"
+              whileHover="hover"
+              initial="initial"
+              animate="initial"
+            >
+              <motion.span>View your market link here.</motion.span>
+              <motion.div
+                className="absolute bottom-0 left-0 h-[1px] w-full origin-right bg-current"
+                variants={{
+                  initial: {
+                    scaleX: 1,
+                  },
+                  hover: {
+                    scaleX: 0,
+                  },
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              />
+            </motion.a>
+          </div>
+        )}
         {txStatus === "error" && "Error while deploying market."}
       </div>
 
@@ -293,7 +323,7 @@ export const TransactionStep = React.forwardRef<
       </div>
 
       <div>
-        {txStatus !== "pending" && (
+        {txStatus === "error" && (
           <Button
             onClick={() => {
               setActiveStep(MarketBuilderSteps.info.id);
@@ -301,6 +331,16 @@ export const TransactionStep = React.forwardRef<
             className="mt-10 w-44"
           >
             Close
+          </Button>
+        )}
+        {txStatus === "success" && (
+          <Button
+            onClick={() =>
+              window.open("https://forms.gle/FzP4opTucTqHLD9v8", "_blank")
+            }
+            className="mt-10 px-5"
+          >
+            Next: Verify My Market
           </Button>
         )}
       </div>

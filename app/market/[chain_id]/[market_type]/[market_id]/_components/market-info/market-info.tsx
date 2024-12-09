@@ -463,7 +463,21 @@ export const MarketInfo = React.forwardRef<
               {marketMetadata.market_type === MarketType.recipe.id &&
                 currentMarketData.lockup_time !== "0" && (
                   <div className="hide-scrollbar flex-1 overflow-x-scroll border-l p-3">
-                    <SecondaryLabel>Lockup</SecondaryLabel>
+                    <SecondaryLabel>
+                      {currentMarketData.reward_style ===
+                      MarketRewardStyle.forfeitable.value ? (
+                        <div className="flex items-center gap-1">
+                          Forfeitable
+                          <InfoTip {...INFO_TIP_PROPS} className="break-normal">
+                            Rewards paid out after time period. Exit allowed at
+                            anytime, but ALL rewards will be forfeited for early
+                            exit.
+                          </InfoTip>
+                        </div>
+                      ) : (
+                        "Lockup"
+                      )}
+                    </SecondaryLabel>
                     <PrimaryLabel
                       className={cn(
                         BASE_MARGIN_TOP.SM,
