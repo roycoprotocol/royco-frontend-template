@@ -5,7 +5,9 @@ import { getChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export async function POST(request: Request) {
   try {

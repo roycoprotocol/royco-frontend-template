@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { SupportedMarketMap } from "royco/constants";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export async function GET(request: Request) {
   try {

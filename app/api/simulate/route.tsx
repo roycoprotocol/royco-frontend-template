@@ -6,7 +6,9 @@ import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export const simulateTransaction = async ({
   chainId,

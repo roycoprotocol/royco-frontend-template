@@ -12,7 +12,11 @@ import { RPC_API_KEYS } from "@/components/constants";
 import { erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
 
-export const dynamic = true;
+import { type NextRequest } from "next/server";
+
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 /**
  * Chain ID to slug mapping
@@ -205,11 +209,11 @@ export default defineToken({
   ).toString("base64");
 };
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const chain_id = parseInt(url.searchParams.get("chain_id") || "0");
-    const raw_contract_address = url.searchParams.get("contract_address");
+    const searchParams = request.nextUrl.searchParams;
+    const chain_id = parseInt(searchParams.get("chain_id") || "0");
+    const raw_contract_address = searchParams.get("contract_address");
 
     // const body = await request.json();
     // let { chain_id, contract_address: raw_contract_address } = body;
