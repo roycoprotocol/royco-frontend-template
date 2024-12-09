@@ -313,13 +313,13 @@ export const TransactionStep = React.forwardRef<
           text="View on Explorer"
         />
 
-        {!!market_id && (
+        {/* {!!market_id && (
           <BadgeLink
             target="_blank"
             href={`/market/${marketBuilderForm.watch("chain").id}/${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}/${market_id}`}
             text="Market Dashboard"
           />
-        )}
+        )} */}
       </div>
 
       <div>
