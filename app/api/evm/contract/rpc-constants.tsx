@@ -17,5 +17,5 @@ export const ETHERSCAN_API_KEYS: {
   42161: `https://api.arbiscan.io/api?apikey=${process.env.ETHERSCAN_API_KEY_42161!}`,
   8453: `https://api.basescan.org/api?apikey=${process.env.ETHERSCAN_API_KEY_8453!}`,
   21000000: `https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan/api?apikey=${process.env.ETHERSCAN_API_KEY_21000000!}`,
-  98865: ``,
+  98865: `https://phoenix-explorer.plumenetwork.xyz/api?apikey=${process.env.ETHERSCAN_API_KEY_98865!}`,
 };
