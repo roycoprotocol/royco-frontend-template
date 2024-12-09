@@ -5,7 +5,7 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { EnrichedOfferDataType } from "royco/queries";
 
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { MarketType } from "@/store/market-manager-props";
 import Link from "next/link";
@@ -42,7 +42,8 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
             </SecondaryLabel>
 
             <SecondaryLabel className="text-tertiary">
-              {getChain(props.row.original.chain_id).name}
+              {getSupportedChain(props.row.original.chain_id)?.name ||
+                "Unknown Chain"}
             </SecondaryLabel>
           </div>
         </Link>

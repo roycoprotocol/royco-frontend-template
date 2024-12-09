@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 
@@ -31,7 +31,8 @@ export async function POST(request: Request) {
     await Promise.all(
       (vaults || []).map(async (vault) => {
         try {
-          const chain = getChain(Number(vault.chain_id));
+          const chain = getSupportedChain(Number(vault.chain_id));
+          if (!chain) throw new Error("Chain not found");
           const publicClient = createPublicClient({
             chain,
             transport: http(RPC_API_KEYS[chain.id]),
