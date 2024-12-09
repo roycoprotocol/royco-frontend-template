@@ -1,6 +1,8 @@
 import { ContractMap } from "royco/contracts";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export async function GET(request: Request) {
   try {

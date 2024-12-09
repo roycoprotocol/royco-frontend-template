@@ -9,7 +9,9 @@ import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi } from "viem";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export type OfferValidationDataType = {
   id: string; // Global offer ID [ <CHAIN_ID>_<MARKET_TYPE>_<OFFER_SIDE>_<OFFER_ID> ]
@@ -131,7 +133,7 @@ async function getInvalidApOffers(
           data: encodeFunctionData({
             abi: erc20Abi,
             functionName: "allowance",
-            args: [offer.creator as Address, allowedAddress],
+            args: [offer.creator as Address, allowedAddress as Address],
           }),
           to:
             offer.funding_vault === NULL_ADDRESS

@@ -3,7 +3,9 @@ import { getContract } from "./contract-getter";
 import { Abi } from "abitype";
 import { toFunctionHash } from "viem";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export async function POST(request: Request) {
   try {

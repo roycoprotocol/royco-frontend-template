@@ -1,7 +1,9 @@
 import { getSupportedChain, shortAddress } from "royco/utils";
 import { Octokit } from "@octokit/rest";
 
-export const dynamic = true;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const fetchCache = "force-no-store";
 
 export const createCommitMessage = ({
   chainId,
