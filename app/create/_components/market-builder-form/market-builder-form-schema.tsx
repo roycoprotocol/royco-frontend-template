@@ -312,9 +312,8 @@ export const PoolFormDefaults = {
     market_name: "",
     market_description: "",
     chain: SupportedChainMap[sepolia.id],
-    asset: getSupportedToken(
-      "11155111-0x3f85506f500cb02d141bafe467cc52ad5a9d7d5a"
-    ),
+    asset:
+      TokenMap11155111["11155111-0x5839b25b55380bc3c701b2c808331e34e92161fe"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",
