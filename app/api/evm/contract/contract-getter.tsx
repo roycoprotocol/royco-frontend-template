@@ -1,7 +1,7 @@
 import type { Chain, Address, Abi as TypedAbi } from "viem";
 
 import { createPublicClient, http } from "viem";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 
 import {
   getMetadata,
@@ -33,7 +33,7 @@ export const getContract = async ({
     let contract_metadata: getMetadataReturnType = null;
     let implementation_metadata: getMetadataReturnType = null;
 
-    const chain: Chain = getChain(chain_id);
+    const chain: Chain = getSupportedChain(chain_id);
 
     const client = createPublicClient({
       chain,
@@ -101,6 +101,8 @@ export const getContract = async ({
 
     return contracts;
   } catch (error) {
+    console.log("error", error);
+
     return [];
   }
 };

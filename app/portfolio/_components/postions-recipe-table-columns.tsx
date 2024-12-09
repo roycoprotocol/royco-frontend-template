@@ -11,7 +11,7 @@ import {
   BASE_UNDERLINE,
   SecondaryLabel,
 } from "../../market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import Link from "next/link";
 
 /**
@@ -47,7 +47,8 @@ export const positionsRecipeColumns: ColumnDef<EnrichedPositionsRecipeDataType> 
               </SecondaryLabel>
 
               <SecondaryLabel className="text-tertiary">
-                {getChain(props.row.original.chain_id).name}
+                {getSupportedChain(props.row.original.chain_id)?.name ||
+                  "Unknown Chain"}
               </SecondaryLabel>
             </div>
           </Link>

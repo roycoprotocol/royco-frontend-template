@@ -1,7 +1,7 @@
 import { http } from "@wagmi/core";
 import { TransactionOptionsType } from "royco/types";
 import { Address } from "abitype";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
@@ -21,7 +21,8 @@ export const simulateTransaction = async ({
 }) => {
   try {
     // Get latest block number for the current chain
-    const chain: Chain = getChain(chainId);
+    const chain = getSupportedChain(chainId);
+    if (!chain) throw new Error("Chain not found");
     const client = createPublicClient({
       chain,
       transport: http(RPC_API_KEYS[chainId]),

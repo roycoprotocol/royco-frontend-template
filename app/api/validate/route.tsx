@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
@@ -89,7 +89,8 @@ async function getInvalidApOffers(
 
       try {
         // Get latest block number for the current chain
-        const chain: Chain = getChain(offer.chain_id);
+        const chain = getSupportedChain(offer.chain_id);
+        if (!chain) throw new Error("Chain not found");
         const client = createPublicClient({
           chain,
           transport: http(RPC_API_KEYS[offer.chain_id]),
