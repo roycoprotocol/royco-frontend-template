@@ -54,7 +54,6 @@ export const MarketInfo = React.forwardRef<
   const {
     isLoading,
     marketMetadata,
-
     currentMarketData,
     previousMarketData,
     propsReadMarket,
