@@ -33,8 +33,7 @@ const Page = () => {
             <h2 className="heading-2 text-black">Explore</h2>
 
             <div className="body-1 mt-2 text-secondary">
-              Browse Action Markets. Negotiate for incentives to complete
-              onchain actions.
+              Explore Royco Markets & bid for more liquidity incentives today.
             </div>
           </div>
 

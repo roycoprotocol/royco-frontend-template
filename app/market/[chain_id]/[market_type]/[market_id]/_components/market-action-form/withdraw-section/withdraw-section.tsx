@@ -6,13 +6,12 @@ import {
   MarketWithdrawType,
   useMarketManager,
 } from "@/store";
-import React, { Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { SelectWithdrawType } from "./select-withdraw-type";
 import {
   getRecipeIncentiveTokenWithdrawalTransactionOptions,
   getVaultIncentiveTokenWithdrawalTransactionOptions,
   getRecipeInputTokenWithdrawalTransactionOptions,
-  getVaultInputTokenWithdrawalTransactionOptions,
   useEnrichedPositionsRecipe,
   useEnrichedPositionsVault,
 } from "royco/hooks";
@@ -20,10 +19,11 @@ import { useActiveMarket } from "../../hooks";
 import { useAccount } from "wagmi";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { Button } from "@/components/ui/button";
-import { PrimaryLabel, SecondaryLabel } from "../../composables";
+import { SecondaryLabel } from "../../composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { RoycoMarketUserType } from "royco/market";
 import { BigNumber } from "ethers";
+import { VaultWithdrawModal } from "./vault-withdraw-modal";
 
 export const WithdrawIncentiveTokenRow = React.forwardRef<
   HTMLDivElement,
@@ -202,6 +202,11 @@ export const WithdrawSection = React.forwardRef<
 
   const isLoading = isLoadingPositionsRecipe || isLoadingPositionsVault;
 
+  // state for vault withdraw modal
+  const [isVaultWithdrawModalOpen, setIsVaultWithdrawModalOpen] =
+    useState(false);
+  const [selectedVaultPosition, setSelectedVaultPosition] = useState<any>(null);
+
   return (
     <div
       ref={ref}
@@ -375,25 +380,8 @@ export const WithdrawSection = React.forwardRef<
 
                                     setTransactions([contractOptions]);
                                   } else {
-                                    const contractOptions =
-                                      getVaultInputTokenWithdrawalTransactionOptions(
-                                        {
-                                          chain_id: marketMetadata.chain_id,
-                                          market_id: marketMetadata.market_id,
-                                          account:
-                                            address?.toLowerCase() as string,
-                                          position: {
-                                            /**
-                                             * @TODO Strictly type this
-                                             */
-                                            // @ts-ignore
-                                            token_data:
-                                              position.input_token_data,
-                                          },
-                                        }
-                                      );
-
-                                    setTransactions([contractOptions]);
+                                    setSelectedVaultPosition(position);
+                                    setIsVaultWithdrawModalOpen(true);
                                   }
                                 }
                               }}
@@ -416,6 +404,18 @@ export const WithdrawSection = React.forwardRef<
             <AlertIndicator>Only AP can withdraw</AlertIndicator>
           </div>
         </Fragment>
+      )}
+
+      {selectedVaultPosition && (
+        <VaultWithdrawModal
+          isOpen={isVaultWithdrawModalOpen}
+          onOpenChange={setIsVaultWithdrawModalOpen}
+          position={{
+            token_data: selectedVaultPosition.input_token_data,
+          }}
+          marketId={marketMetadata.market_id}
+          chainId={marketMetadata.chain_id}
+        />
       )}
     </div>
   );

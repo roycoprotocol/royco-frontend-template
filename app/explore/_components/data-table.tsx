@@ -256,7 +256,9 @@ export function DataTable<TData, TValue>({
                         )}
 
                       {!!totalIncentivesAmountUsd &&
-                        columnVisibility.total_incentive_amounts_usd && (
+                        columnVisibility.total_incentive_amounts_usd &&
+                        (totalIncentivesAmountUsd.row.original as any)
+                          .total_incentive_amounts_usd > 0 && (
                           <InfoGrid.Item>
                             <InfoGrid.Content.Secondary>
                               <div
