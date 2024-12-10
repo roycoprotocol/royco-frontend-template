@@ -93,7 +93,10 @@ const Page = () => {
     );
   };
 
-  if (process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE") {
+  if (
+    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
+    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
+  ) {
     return <Content />;
   } else {
     return <Protector children={<Content />} />;
