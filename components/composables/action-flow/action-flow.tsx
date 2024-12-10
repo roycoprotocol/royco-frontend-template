@@ -25,7 +25,7 @@ export const ActionFlow = React.forwardRef<
       className={cn(
         "flex w-full flex-col gap-3 font-gt text-base font-light text-black",
         size === "sm" && "text-sm",
-        size === "xs" && "text-xs",
+        size === "xs" && "gap-1 text-xs",
         className
       )}
       {...props}

@@ -274,8 +274,6 @@ export const MarketManager = React.forwardRef<
                   >
                     <MarketInfo />
 
-                    <IncentiveInfo />
-
                     <OfferList />
                   </div>
 
