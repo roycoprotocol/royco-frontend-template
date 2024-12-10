@@ -100,11 +100,7 @@
     "react-use-measure": "^2.1.1",
     "react-waypoint": "^10.3.0",
     "recharts": "^2.12.7",
-<<<<<<< HEAD
-    "royco": "^0.9.13",
-=======
     "royco": "^0.9.14",
->>>>>>> 0a83212b0bf753d6f919e01d24a81f6bc0116134
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
