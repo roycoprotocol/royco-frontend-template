@@ -33,7 +33,11 @@ export const getContract = async ({
     let contract_metadata: getMetadataReturnType = null;
     let implementation_metadata: getMetadataReturnType = null;
 
-    const chain: Chain = getSupportedChain(chain_id);
+    const chain = getSupportedChain(chain_id);
+
+    if (!chain) {
+      return [];
+    }
 
     const client = createPublicClient({
       chain,
@@ -59,6 +63,7 @@ export const getContract = async ({
       return [];
     } else {
       // If metadata found, add to contracts array
+      // @ts-ignore
       contracts.push({
         id: `${chain_id}-${contract_address}`,
         chain_id,
@@ -90,6 +95,7 @@ export const getContract = async ({
 
       // If metadata found, add to contracts array
       if (implementation_metadata !== null) {
+        // @ts-ignore
         contracts.push({
           id: `${chain_id}-${implementation.address}`,
           chain_id,
