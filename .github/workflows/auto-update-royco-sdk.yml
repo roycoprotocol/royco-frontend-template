@@ -15,8 +15,10 @@ on:
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
-    # Only run on main branch
-    if: github.ref == 'refs/heads/main'
+    # Only run on main branch and specific repository
+    if: |
+      github.ref == 'refs/heads/main' && 
+      github.repository == 'roycoprotocol/royco-frontend-template'
 
     steps:
       - uses: actions/checkout@v4
