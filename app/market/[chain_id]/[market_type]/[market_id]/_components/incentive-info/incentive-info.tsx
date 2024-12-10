@@ -14,6 +14,7 @@ import { SpringNumber } from "@/components/composables";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
+import { SupportedToken } from "royco/constants";
 
 const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
@@ -93,10 +94,23 @@ const InfoValueElementClone = React.forwardRef<
   }
 );
 
+type DetailAPRData = {
+  id: string;
+  name: string;
+  description: string;
+  value: number;
+  token_data?: SupportedToken;
+};
+
 export const IncentiveInfo = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {
+    detailAPRData?: {
+      data: DetailAPRData[];
+      netAPR: number;
+    };
+  }
+>(({ className, detailAPRData, ...props }, ref) => {
   const {
     marketMetadata,
     currentMarketData,
@@ -118,29 +132,10 @@ export const IncentiveInfo = React.forwardRef<
           }
         );
 
-  const previousIncentives =
-    marketMetadata.market_type === RoycoMarketType.recipe.id
-      ? !!previousHighestOffers && previousHighestOffers.ip_offers.length > 0
-        ? previousHighestOffers.ip_offers[0].tokens_data
-        : []
-      : previousMarketData?.incentive_tokens_data.filter(
-          (incentive_token_data) => {
-            return BigNumber.from(incentive_token_data.raw_amount ?? "0").gt(0);
-          }
-        );
-
-  const currentNetAPR = currentMarketData?.native_annual_change_ratio ?? 0;
-  const previousNetAPR = previousMarketData?.native_annual_change_ratio ?? 0;
-
-  // const currentNetAPR = currentIncentives?.reduce(
-  //   (acc, curr) => acc + (curr.annual_change_ratio || 0),
-  //   0
-  // ) + (currentMarketData?.native_annual_change_ratio ?? 0) ?? 0;
-
-  // const previousNetAPR = (previousIncentives?.reduce(
-  //   (acc, curr) => acc + (curr.annual_change_ratio || 0),
-  //   0
-  // ) + (previousMarketData?.native_annual_change_ratio ?? 0)) ?? 0;
+  const currentNetAPR = detailAPRData
+    ? detailAPRData.netAPR
+    : (currentMarketData?.annual_change_ratio ?? 0);
+  const previousNetAPR = previousMarketData?.annual_change_ratio ?? 0;
 
   if (!!currentMarketData && !!marketMetadata) {
     return (
@@ -153,7 +148,7 @@ export const IncentiveInfo = React.forwardRef<
         )}
         {...props}
       >
-        <TertiaryLabel>CURRENT INCENTIVE RATE</TertiaryLabel>
+        <TertiaryLabel>Incentives Offered via Royco</TertiaryLabel>
 
         {!currentIncentives ||
           (currentIncentives.length === 0 && (
@@ -229,6 +224,53 @@ export const IncentiveInfo = React.forwardRef<
           </InfoCard>
         )}
 
+        {detailAPRData && detailAPRData.data.length > 0 && (
+          <InfoCard
+            className={cn("flex h-fit flex-col gap-3 overflow-y-scroll py-2")}
+          >
+            <TertiaryLabel>Underlying Incentives</TertiaryLabel>
+
+            {detailAPRData.data.map((item) => {
+              return (
+                <InfoCard.Row
+                  key={item.id}
+                  className={cn(INFO_ROW_CLASSES, "grid grid-cols-2")}
+                >
+                  <InfoCard.Row.Key className="relative h-fit w-fit">
+                    <div className="flex flex-row items-center">
+                      <TokenDisplayer
+                        tokens={[item.token_data as any]}
+                        size={4}
+                        symbols={false}
+                      />
+                      <SecondaryLabel className={cn("text-black", className)}>
+                        <span className="font-normal">{item.name}</span>
+                      </SecondaryLabel>
+                    </div>
+                    <TertiaryLabel className="ml-5">
+                      {item.description}
+                    </TertiaryLabel>
+                  </InfoCard.Row.Key>
+
+                  <InfoCard.Row.Value className="relative flex h-fit w-full flex-col items-end gap-0">
+                    <SecondaryLabel className={cn("text-black", className)}>
+                      {item.value === Math.pow(10, 18)
+                        ? `N/D`
+                        : Intl.NumberFormat("en-US", {
+                            style: "percent",
+                            notation: "standard",
+                            useGrouping: true,
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 8,
+                          }).format(item.value)}{" "}
+                    </SecondaryLabel>
+                  </InfoCard.Row.Value>
+                </InfoCard.Row>
+              );
+            })}
+          </InfoCard>
+        )}
+
         {!!currentMarketData.native_annual_change_ratio && (
           <div
             className={cn(
@@ -266,7 +308,7 @@ export const IncentiveInfo = React.forwardRef<
 
         <div
           className={cn(
-            "flex w-full flex-row items-center justify-between",
+            " flex w-full flex-row items-center justify-between border-t border-divider pt-4",
             BASE_MARGIN_TOP.SM
           )}
         >
