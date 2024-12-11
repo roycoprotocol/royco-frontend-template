@@ -32,11 +32,11 @@ import { useQuery } from "@tanstack/react-query";
 import { IncentiveInfo } from "../incentive-info";
 import { SupportedTokenMap } from "royco/constants";
 
-const stkGHO_MARKET_ID =
+export const stkGHO_MARKET_ID =
   "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b";
-const aaveGhoContract = "0xb12e82DF057BF16ecFa89D7D089dc7E5C1Dc057B";
-const aaveGhoStakedAsset = "0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d";
-const aaveGhoOracle = "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc";
+export const aaveGhoContract = "0xb12e82DF057BF16ecFa89D7D089dc7E5C1Dc057B";
+export const aaveGhoStakedAsset = "0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d";
+export const aaveGhoOracle = "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
