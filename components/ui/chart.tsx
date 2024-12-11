@@ -238,52 +238,98 @@ const ChartTooltipContent = React.forwardRef<
                       </div> */}
                       {item.payload && (
                         <div className="flex justify-between">
-                          <div className="mr-2 text-tertiary">Offer Type:</div>
+                          <div className="mr-2 text-tertiary">Type:</div>
                           <div className="font-mono font-medium tabular-nums text-secondary">
                             {item.payload.offer_side === 0
-                              ? MarketIncentiveType.ap.label
-                              : MarketIncentiveType.ip.label}
+                              ? "Incentive Request"
+                              : "Incentive Offer"}
                           </div>
                         </div>
                       )}
                       {item.value !== undefined &&
                         item.payload?.quantity !== undefined && (
                           <div className="flex justify-between">
-                            <div className="mr-2 text-tertiary">Quantity:</div>
-                            <div>
+                            <div className="mr-2 text-tertiary">Offered:</div>
+                            {item.payload.offer_side === 0 ? (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                {item.value.toLocaleString() + " USD"}
-                              </div>
-                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                {formatUnits(
-                                  BigNumber.from(
-                                    item.payload.quantity
-                                  ).toBigInt(),
-                                  item.payload.input_token_data.decimals
+                                {Intl.NumberFormat("en-US", {
+                                  style: "decimal",
+                                  // notation: "compact",
+                                  useGrouping: true,
+                                  // compactDisplay: "short",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(
+                                  item.payload.input_token_data.token_amount
                                 ) +
                                   " " +
                                   item.payload.input_token_data.symbol}
                               </div>
-                            </div>
-                          </div>
-                        )}
-                      {item.payload && (
-                        <div className="flex justify-between">
-                          <div className="mr-2 text-tertiary">APY:</div>
-                          <div className="font-mono font-medium tabular-nums text-secondary">
-                            {Intl.NumberFormat("en-US", {
-                              style: "percent",
-                              notation: "compact",
-                              useGrouping: true,
-                              compactDisplay: "short",
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }).format(
-                              item.payload.annual_change_ratio as number
+                            ) : (
+                              <div>
+                                {item.payload.tokens_data.map((item: any) => {
+                                  return (
+                                    <>
+                                      <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                        {Intl.NumberFormat("en-US", {
+                                          style: "decimal",
+                                          // notation: "compact",
+                                          useGrouping: true,
+                                          // compactDisplay: "short",
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2,
+                                        }).format(item.token_amount) +
+                                          " " +
+                                          item.symbol}
+                                      </div>
+                                    </>
+                                  );
+                                })}
+                              </div>
                             )}
                           </div>
-                        </div>
-                      )}
+                        )}
+                      {item.value !== undefined &&
+                        item.payload?.quantity !== undefined && (
+                          <div className="flex justify-between">
+                            <div className="mr-2 text-tertiary">Requested:</div>
+                            {item.payload.offer_side === 1 ? (
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {Intl.NumberFormat("en-US", {
+                                  style: "decimal",
+                                  // notation: "compact",
+                                  useGrouping: true,
+                                  // compactDisplay: "short",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(
+                                  item.payload.input_token_data.token_amount
+                                ) +
+                                  " " +
+                                  item.payload.input_token_data.symbol}
+                              </div>
+                            ) : (
+                              <div>
+                                {item.payload.tokens_data.map((item: any) => {
+                                  return (
+                                    <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                      {Intl.NumberFormat("en-US", {
+                                        style: "decimal",
+                                        // notation: "compact",
+                                        useGrouping: true,
+                                        // compactDisplay: "short",
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      }).format(item.token_amount) +
+                                        " " +
+                                        item.symbol}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        )}
                     </div>
                   </>
                 )}

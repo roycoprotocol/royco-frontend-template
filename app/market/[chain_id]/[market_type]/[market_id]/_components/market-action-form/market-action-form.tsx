@@ -61,6 +61,7 @@ export const MarketActionForm = React.forwardRef<
     viewType,
     offerType,
     setOfferType,
+    setViewType,
     vaultIncentiveActionType,
   } = useMarketManager();
   const { address, isConnected } = useAccount();
@@ -374,6 +375,15 @@ export const MarketActionForm = React.forwardRef<
                   disabled={offerType === MarketOfferType.limit.id}
                   onClick={async () => {
                     setOfferType(MarketOfferType.limit.id);
+
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem(
+                        "royco_market_view_type",
+                        MarketViewType.advanced.id
+                      );
+                    }
+
+                    setViewType(MarketViewType.advanced.id);
                   }}
                   size="sm"
                   type="button"
