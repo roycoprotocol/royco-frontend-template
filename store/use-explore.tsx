@@ -55,7 +55,7 @@ export const exploreColumnNames = {
 };
 
 export const useExplore = create<ExploreState>((set) => ({
-  exploreView: "grid" as string,
+  exploreView: "list" as string,
   setExploreView: (exploreView: string) => set({ exploreView }),
   exploreSortKey: "total_incentive_amounts_usd" as string,
   setExploreSortKey: (exploreSortKey: string) => set({ exploreSortKey }),

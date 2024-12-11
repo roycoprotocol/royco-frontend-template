@@ -101,7 +101,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       return <HeaderWrapper column={column} />;
     },
     meta: {
-      className: "min-w-60 shrink-0",
+      className: "min-w-60 shrink-0 w-full",
     },
     cell: (props: any) => {
       return (
@@ -263,7 +263,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
 
     meta: {
-      className: "min-w-40",
+      className: "min-w-32",
     },
     cell: (props: any) => {
       const rowIndex = props.row.index;
@@ -416,13 +416,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     props.view === "list" && "leading-5"
                   )}
                 />
-                {props.row.original.id === stkGHO_MARKET_ID && (
-                  <div className="text-3xl leading-8 text-black">+</div>
-                )}
               </TooltipTrigger>
             )}
 
-            {props.row.original.incentive_tokens_data.filter(
+            {/* {props.row.original.incentive_tokens_data.filter(
               (token: any) => token.annual_change_ratio !== 0
             ).length > 0 && (
               <AipBreakdown
@@ -431,7 +428,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   (token: any) => token.annual_change_ratio !== 0
                 )}
               />
-            )}
+            )} */}
           </Tooltip>
 
           {/* <PoolEditor market={props.row.original} /> */}
