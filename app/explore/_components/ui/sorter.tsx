@@ -51,6 +51,10 @@ export const Sorter = () => {
         </SelectTrigger>
         <SelectContent className="rounded-xl border border-divider">
           {Object.entries(SortingStates).map(([key, value]) => {
+            if (key === "market_type") {
+              return null;
+            }
+
             return (
               <SelectItem
                 key={`sorter:${key}`}
