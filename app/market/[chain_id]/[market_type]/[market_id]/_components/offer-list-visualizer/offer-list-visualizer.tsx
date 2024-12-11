@@ -2,26 +2,9 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { TrendingUp } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Rectangle,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -29,17 +12,12 @@ import {
 import { useActiveMarket } from "../hooks";
 import {
   BASE_MARGIN_TOP,
-  BASE_PADDING,
   BASE_PADDING_LEFT,
   BASE_PADDING_RIGHT,
-  BASE_PADDING_TOP,
   PrimaryLabel,
-  SecondaryLabel,
-  TertiaryLabel,
 } from "../composables";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
-import { MarketType } from "../../../../../../../store";
 
 export const description = "A bar chart with an active bar";
 
@@ -59,15 +37,11 @@ export const OfferListVisualizer = React.forwardRef<
     return {
       ap_offer: {
         label: "AP Offer",
-        color:
-          currentMarketData &&
-          currentMarketData.market_type === MarketType.recipe.value
-            ? "#4AE7A8"
-            : "#F7F7F6",
+        color: "#BE2525",
       },
       ip_offer: {
         label: "IP Offer",
-        color: "#4AE75A",
+        color: "#25BE25",
       },
     };
   }, [currentMarketData]);
@@ -102,6 +76,8 @@ export const OfferListVisualizer = React.forwardRef<
             offer_side: offer.offer_side,
             quantity: offer.quantity,
             input_token_data: offer.input_token_data,
+            incentive_value_usd: offer.incentive_value_usd,
+            tokens_data: offer.tokens_data,
           };
         }),
         ...currentHighestOffers.ip_offers.map((offer) => {
@@ -112,17 +88,19 @@ export const OfferListVisualizer = React.forwardRef<
             offer_side: offer.offer_side,
             quantity: offer.quantity,
             input_token_data: offer.input_token_data,
+            incentive_value_usd: offer.incentive_value_usd,
+            tokens_data: offer.tokens_data,
           };
         }),
       ] // Sort the data by `change_ratio` (X-axis key)
         .sort(
-          (a, b) => (a.annual_change_ratio ?? 0) - (b.annual_change_ratio ?? 0)
+          (a, b) => (a.incentive_value_usd ?? 0) - (b.incentive_value_usd ?? 0)
         )
     : [];
 
   return (
     <div ref={ref} className={cn("flex flex-col", className)} {...props}>
-      <PrimaryLabel
+      {/* <PrimaryLabel
         className={cn(
           "text-3xl font-light",
           BASE_PADDING_LEFT,
@@ -142,7 +120,7 @@ export const OfferListVisualizer = React.forwardRef<
             maximumFractionDigits: 2,
           }}
         />
-      </PrimaryLabel>
+      </PrimaryLabel> */}
 
       {propsHighestOffers.isLoading && (
         <div className="flex grow flex-col place-content-center items-center">
@@ -156,29 +134,50 @@ export const OfferListVisualizer = React.forwardRef<
             className={cn("mt-5 flex grow flex-col", "pb-4 pl-5 pr-1")}
             config={chartConfig}
           >
-            <BarChart accessibilityLayer data={chartData}>
+            <BarChart
+              margin={{ left: 30, bottom: 30 }}
+              accessibilityLayer
+              data={chartData}
+            >
               <XAxis
-                dataKey="annual_change_ratio"
+                dataKey="incentive_value_usd"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tickFormatter={(value) => {
-                  const formattedValue = Intl.NumberFormat("en-US", {
-                    style: "percent",
-                    notation: "compact",
-                    useGrouping: true,
-                    compactDisplay: "short",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }).format(value as number);
+                label={{
+                  value: "Incentives via Royco",
+                  position: "insideBottom",
+                  offset: -20,
+                }}
+                tickFormatter={(value, index) => {
+                  const token_data = chartData[index]?.tokens_data ?? [];
 
-                  return formattedValue;
+                  const incentive_token_data =
+                    Intl.NumberFormat("en-US", {
+                      style: "decimal",
+                      notation: "compact",
+                      useGrouping: true,
+                      compactDisplay: "short",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(token_data[0]?.token_amount ?? 0) +
+                    " " +
+                    (token_data[0]?.symbol ?? "") +
+                    (token_data.length > 1 ? " + ..." : "");
+
+                  return incentive_token_data;
                 }}
               />
               <YAxis
-                orientation="right"
+                orientation="left"
                 tickLine={false}
                 axisLine={false}
+                label={{
+                  value: "Fillable Size",
+                  position: "left",
+                  offset: 20,
+                  angle: -90,
+                }}
                 tickMargin={0}
                 tickFormatter={(value) => {
                   const formattedValue = Intl.NumberFormat("en-US", {

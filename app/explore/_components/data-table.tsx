@@ -278,6 +278,7 @@ export function DataTable<TData, TValue>({
                               noContentWidth
                               customKey={`grid:content:${row.original.id}:rewards`}
                               height="2.438rem"
+                              className="hide-scrollbar overflow-x-scroll"
                             >
                               {flexRender(
                                 totalIncentivesAmountUsd.column.columnDef.cell,
