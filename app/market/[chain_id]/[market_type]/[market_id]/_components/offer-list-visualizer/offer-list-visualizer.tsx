@@ -122,17 +122,6 @@ export const OfferListVisualizer = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("flex flex-col", className)} {...props}>
-      <TertiaryLabel
-        className={cn(
-          "flex-none shrink-0",
-          BASE_PADDING_LEFT,
-          BASE_PADDING_RIGHT,
-          BASE_PADDING_TOP
-        )}
-      >
-        INCENTIVE DEPTH
-      </TertiaryLabel>
-
       <PrimaryLabel
         className={cn(
           "text-3xl font-light",

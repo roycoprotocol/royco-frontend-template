@@ -3,6 +3,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useMarketManager } from "@/store";
 import {
+  MarketStatsView,
   MarketSteps,
   MarketType,
   MarketUserType,
@@ -28,6 +29,7 @@ import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { useAccount } from "wagmi";
+import { OfferVisualizer } from "../offer-list-visualizer/offer-visualizer";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -274,7 +276,7 @@ export const MarketManager = React.forwardRef<
                   >
                     <MarketInfo />
 
-                    <OfferList />
+                    {/* <OfferList /> */}
                   </div>
 
                   {/**
@@ -289,7 +291,7 @@ export const MarketManager = React.forwardRef<
                       MAX_SCREEN_WIDTH
                     )}
                   >
-                    <OfferListVisualizer className="h-1/2 w-full" />
+                    <OfferVisualizer className="h-1/2 w-full" />
 
                     <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
                   </div>
@@ -322,7 +324,7 @@ export const MarketManager = React.forwardRef<
                     MAX_SCREEN_WIDTH
                   )}
                 >
-                  <OfferListVisualizer className="w-full flex-1" />
+                  <OfferVisualizer className="w-full flex-1" />
 
                   <StatsTables className="flex w-full flex-col overflow-hidden" />
                 </div>

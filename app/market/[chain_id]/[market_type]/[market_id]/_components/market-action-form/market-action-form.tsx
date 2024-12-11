@@ -136,7 +136,7 @@ export const MarketActionForm = React.forwardRef<
     ) {
       return "Switch chain";
     } else if (marketStep === MarketSteps.params.id) {
-      return "Preview offer";
+      return "Supply Now";
     } else if (marketStep === MarketSteps.preview.id) {
       return "Confirm offer";
     } else {
@@ -180,7 +180,7 @@ export const MarketActionForm = React.forwardRef<
         key={`market-action-form:container:${marketStep}:${viewType}`}
         ref={ref}
         className={cn(
-          "flex w-full shrink-0 grow flex-col",
+          "flex w-full shrink-0 flex-col",
           "overflow-hidden",
           className
         )}
@@ -367,6 +367,25 @@ export const MarketActionForm = React.forwardRef<
             >
               {nextLabel()}
             </Button>
+
+            {offerType === MarketOfferType.market.id &&
+              userType === MarketUserType.ap.id && (
+                <Button
+                  disabled={offerType === MarketOfferType.limit.id}
+                  onClick={async () => {
+                    setOfferType(MarketOfferType.limit.id);
+                  }}
+                  size="sm"
+                  type="button"
+                  variant="secondary"
+                  className={cn(
+                    BASE_MARGIN_TOP.SM,
+                    "w-full shrink-0 place-content-center"
+                  )}
+                >
+                  Bid for More Incentives
+                </Button>
+              )}
 
             {userType === MarketUserType.ip.id &&
               marketStep === MarketSteps.preview.id && (
