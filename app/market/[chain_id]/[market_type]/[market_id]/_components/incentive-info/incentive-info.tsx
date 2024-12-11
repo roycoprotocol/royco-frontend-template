@@ -20,11 +20,13 @@ const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     token_data: any;
+    symbolClassName?: string;
   }
->(({ className, token_data, ...props }, ref) => {
+>(({ className, token_data, symbolClassName, ...props }, ref) => {
   return (
     <TokenDisplayer
       className={cn("", className)}
+      symbolClassName={cn("", symbolClassName)}
       tokens={[token_data]}
       size={4}
       symbols={true}
@@ -196,6 +198,7 @@ export const IncentiveInfo = React.forwardRef<
                      */}
                     <InfoKeyElementClone
                       className="mb-1"
+                      symbolClassName="text-black font-normal"
                       token_data={token_data}
                     />
 
