@@ -409,6 +409,8 @@ export function DataTable<TData, TValue>({
                                 customKey={`list:content:${row.original.id}`}
                                 height="3rem"
                                 delay={rowIndex * 0.02}
+                                className="h-full"
+                                contentClassName="flex flex-col justify-center"
                               >
                                 {flexRender(cell.column.columnDef.cell, {
                                   ...cell.getContext(),

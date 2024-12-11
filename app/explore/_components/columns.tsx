@@ -106,7 +106,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       return <HeaderWrapper column={column} />;
     },
     meta: {
-      className: "min-w-60 shrink-0 w-[400px]",
+      className: "min-w-60 shrink-0 w-full",
     },
     cell: (props: any) => {
       return (
