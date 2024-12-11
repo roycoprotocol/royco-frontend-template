@@ -215,7 +215,9 @@ export function DataTable<TData, TValue>({
                           ? "mt-6"
                           : "mt-0",
                         columnVisibility.annual_change_ratio &&
-                          columnVisibility.total_incentive_amounts_usd
+                          columnVisibility.total_incentive_amounts_usd &&
+                          (totalIncentivesAmountUsd?.row?.original as any)
+                            ?.total_incentive_amounts_usd > 0
                           ? "grid-cols-2"
                           : "grid-cols-1",
                         "bg-z2"
@@ -257,8 +259,8 @@ export function DataTable<TData, TValue>({
 
                       {!!totalIncentivesAmountUsd &&
                         columnVisibility.total_incentive_amounts_usd &&
-                        (totalIncentivesAmountUsd.row.original as any)
-                          .total_incentive_amounts_usd > 0 && (
+                        (totalIncentivesAmountUsd?.row?.original as any)
+                          ?.total_incentive_amounts_usd > 0 && (
                           <InfoGrid.Item>
                             <InfoGrid.Content.Secondary>
                               <div
