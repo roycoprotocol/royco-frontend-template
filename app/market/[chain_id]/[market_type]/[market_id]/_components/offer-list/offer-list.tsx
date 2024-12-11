@@ -98,32 +98,40 @@ export const OfferListRow = React.forwardRef<
         className
       )}
     >
-      <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pr-1">
-        <SpringNumber
-          previousValue={valueInfo.previousValue}
-          currentValue={valueInfo.currentValue}
-          numberFormatOptions={{
-            notation: "standard",
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 8,
-          }}
-        />
+      {type === "ip" && (
+        <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pr-1">
+          <SpringNumber
+            previousValue={valueInfo.previousValue}
+            currentValue={valueInfo.currentValue}
+            numberFormatOptions={{
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            }}
+          />
 
-        {!!offer && (
-          <div className="ml-1 flex items-center gap-1">
-            <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
+          {!!offer && (
+            <div className="ml-1 flex items-center gap-1">
+              <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
 
-            <TokenDisplayer
-              size={4}
-              tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
-              symbols={false}
-            />
-          </div>
+              <TokenDisplayer
+                size={4}
+                tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                symbols={false}
+              />
+            </div>
+          )}
+        </SecondaryLabel>
+      )}
+
+      <SecondaryLabel
+        className={cn(
+          "hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1",
+          type === "ip" && "pl-1",
+          type === "ap" && "pr-1"
         )}
-      </SecondaryLabel>
-
-      <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pl-1">
+      >
         <SpringNumber
           previousValue={keyInfo.previousValue}
           currentValue={keyInfo.currentValue}
@@ -147,6 +155,33 @@ export const OfferListRow = React.forwardRef<
           </div>
         )}
       </SecondaryLabel>
+
+      {type === "ap" && (
+        <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pl-1">
+          <SpringNumber
+            previousValue={valueInfo.previousValue}
+            currentValue={valueInfo.currentValue}
+            numberFormatOptions={{
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            }}
+          />
+
+          {!!offer && (
+            <div className="ml-1 flex items-center gap-1">
+              <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
+
+              <TokenDisplayer
+                size={4}
+                tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                symbols={false}
+              />
+            </div>
+          )}
+        </SecondaryLabel>
+      )}
     </div>
   );
 });
