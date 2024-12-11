@@ -30,6 +30,7 @@ import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
 import { capitalize } from "lodash";
+import { stkGHO_MARKET_ID } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-info/market-info";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -377,6 +378,9 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       }
 
       let currentValue = props.row.original.annual_change_ratio;
+      if (props.row.original.id === stkGHO_MARKET_ID) {
+        currentValue = parseInt(String((currentValue + 0.18) * 100)) / 100;
+      }
 
       return (
         <div
@@ -392,7 +396,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             {props.row.original.annual_change_ratio >= Math.pow(10, 18) ? (
               "0"
             ) : (
-              <TooltipTrigger className={cn("cursor-pointer")}>
+              <TooltipTrigger className={cn("flex cursor-pointer items-end")}>
                 <SpringNumber
                   previousValue={previousValue}
                   currentValue={currentValue}
@@ -412,6 +416,9 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     props.view === "list" && "leading-5"
                   )}
                 />
+                {props.row.original.id === stkGHO_MARKET_ID && (
+                  <div className="text-3xl leading-8 text-black">+</div>
+                )}
               </TooltipTrigger>
             )}
 
