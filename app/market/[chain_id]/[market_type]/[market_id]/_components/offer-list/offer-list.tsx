@@ -112,11 +112,11 @@ export const OfferListRow = React.forwardRef<
 
         {!!offer && (
           <div className="ml-1 flex items-center gap-1">
-            <SecondaryLabel>{offer?.tokens_data[0].symbol}</SecondaryLabel>
+            <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
 
             <TokenDisplayer
               size={4}
-              tokens={[offer?.tokens_data[0]] ?? []}
+              tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
               symbols={false}
             />
           </div>
@@ -137,11 +137,11 @@ export const OfferListRow = React.forwardRef<
 
         {!!offer && (
           <div className="ml-1 flex items-center gap-1">
-            <SecondaryLabel>{offer?.input_token_data.symbol}</SecondaryLabel>
+            <SecondaryLabel>{offer?.input_token_data?.symbol}</SecondaryLabel>
 
             <TokenDisplayer
               size={4}
-              tokens={[offer?.input_token_data] ?? []}
+              tokens={offer?.input_token_data ? [offer?.input_token_data] : []}
               symbols={false}
             />
           </div>

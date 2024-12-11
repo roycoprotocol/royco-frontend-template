@@ -64,16 +64,10 @@ export const OfferVisualizer = React.forwardRef<
         </TertiaryLabel>
       </div>
 
-      {isConnected ? (
-        offerVisualizerView === MarketOfferVisualizerView.chart.id ? (
-          <OfferListVisualizer />
-        ) : (
-          <OfferListBook className={cn(BASE_MARGIN_TOP.MD)} />
-        )
+      {offerVisualizerView === MarketOfferVisualizerView.chart.id ? (
+        <OfferListVisualizer />
       ) : (
-        <AlertIndicator className="w-full grow bg-white">
-          Wallet not connected
-        </AlertIndicator>
+        <OfferListBook className={cn(BASE_MARGIN_TOP.MD)} />
       )}
     </div>
   );
