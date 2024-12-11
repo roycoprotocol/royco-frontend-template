@@ -285,7 +285,7 @@ export const MarketManager = React.forwardRef<
                       MAX_SCREEN_WIDTH
                     )}
                   >
-                    <OfferVisualizer className="h-1/2 w-full" />
+                    <OfferVisualizer className="w-full" />
 
                     <StatsTables className="flex h-[18rem] w-full flex-col overflow-hidden xl:h-1/2" />
                   </div>
@@ -313,7 +313,7 @@ export const MarketManager = React.forwardRef<
                   className={cn(
                     "border-t border-divider md:border-t-0",
                     "divide-y divide-divider ",
-                    "h-full w-full",
+                    "w-full",
                     "hidden shrink-0 grow flex-col md:flex xl:hidden",
                     MAX_SCREEN_WIDTH
                   )}
