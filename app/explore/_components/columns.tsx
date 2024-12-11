@@ -39,6 +39,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
     return (
       <div
         onClick={() => {
+          if (column.id === "market_type") {
+            return;
+          }
+
           if (column.getCanSort()) {
             setExploreSort([
               {
@@ -52,6 +56,7 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
         className={cn(
           "flex flex-row items-center",
           column.getCanSort() &&
+            column.id !== "market_type" &&
             "cursor-pointer text-primary transition-all duration-200 ease-in-out hover:text-black",
           className
         )}
@@ -65,7 +70,7 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
             }
           </span>
         </div>
-        {column.getCanSort() && (
+        {column.getCanSort() && column.id !== "market_type" && (
           <div className="body-2 ml-[6px] h-4 w-4 opacity-90">
             {exploreSort[0].id === column.id ? (
               exploreSort[0].desc ? (
@@ -228,7 +233,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     cell: (props: any) => {
       return (
         <div
-          key={`${props.view}:market:${props.row.original.id}:market-type`}
+          key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
           className={cn(
             props.view === "list" && props.column.columnDef.meta.className,
             "flex h-fit capitalize",
@@ -244,7 +249,13 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             )}
           >
             <span className="leading-5">
-              {props.row.original.market_type === 0 ? "Recipe" : "Vault"}
+              {props.row.original.market_type === 0
+                ? props.row.original.reward_style === 0
+                  ? "Immediate"
+                  : props.row.original.reward_style === 1
+                    ? "Post-Lockup"
+                    : "Forfeitable"
+                : "Streamed"}
             </span>
           </div>
 

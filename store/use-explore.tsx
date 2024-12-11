@@ -47,7 +47,7 @@ export const exploreColumnNames = {
   name: "Title",
   input_token_id: "Asset",
   chain_id: "Chain",
-  market_type: "Type",
+  market_type: "Payout",
   total_incentive_amounts_usd: "Incentives",
   locked_quantity_usd: "TVL",
   annual_change_ratio: "Yield",
