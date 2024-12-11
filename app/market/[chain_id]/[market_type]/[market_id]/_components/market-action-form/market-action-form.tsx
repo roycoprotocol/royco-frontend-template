@@ -370,9 +370,22 @@ export const MarketActionForm = React.forwardRef<
             </Button>
 
             {offerType === MarketOfferType.market.id &&
-              userType === MarketUserType.ap.id && (
+              userType === MarketUserType.ap.id &&
+              !(
+                marketMetadata.market_type === MarketType.vault.id &&
+                !!currentMarketData &&
+                !!currentMarketData.base_incentive_ids &&
+                currentMarketData.base_incentive_ids.length < 1
+              ) && (
                 <Button
-                  disabled={offerType === MarketOfferType.limit.id}
+                  disabled={
+                    offerType === MarketOfferType.limit.id ||
+                    userType === MarketUserType.ip.id ||
+                    (marketMetadata.market_type === MarketType.vault.id &&
+                      !!currentMarketData &&
+                      !!currentMarketData.base_incentive_ids &&
+                      currentMarketData.base_incentive_ids.length < 1)
+                  }
                   onClick={async () => {
                     setOfferType(MarketOfferType.limit.id);
 
