@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { Fragment } from "react";
+import React from "react";
 import { useActiveMarket } from "../hooks";
 import {
   BASE_MARGIN_TOP,
@@ -15,7 +15,6 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { FallMotion } from "@/components/animations";
 import { RoycoMarketType } from "royco/market";
 import { EnrichedOfferDataType } from "royco/queries";
-import { MarketUserType } from "@/store";
 import { parseRawAmountToTokenAmount } from "royco/utils";
 
 export const CentralBar = React.forwardRef<
@@ -77,12 +76,10 @@ export const CentralBar = React.forwardRef<
   );
 });
 
-const OfferListRow = React.forwardRef<
+export const OfferListRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     type: "ap" | "ip";
-    indexKey: string;
-    customKey: string;
     keyInfo: {
       previousValue: number;
       currentValue: number;
@@ -92,86 +89,67 @@ const OfferListRow = React.forwardRef<
       currentValue: number;
     };
     offer?: EnrichedOfferDataType;
-    delay?: number;
   }
->(
-  (
-    {
-      className,
-      delay,
-      indexKey,
-      type,
-      customKey,
-      keyInfo,
-      valueInfo,
-      offer,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <FallMotion
-        delay={delay}
-        key={indexKey}
-        ref={ref}
-        customKey={customKey}
-        height="1rem"
-        className={cn("w-full", className)}
-        contentClassName="flex flex-row items-center justify-between w-full h-4 text-sm hide-scrollbar overflow-x-scroll"
-        {...props}
-      >
-        <SecondaryLabel className="shrink-0 whitespace-nowrap break-normal">
-          <SpringNumber
-            defaultColor={type === "ap" ? "text-success" : "text-error"}
-            previousValue={keyInfo.previousValue}
-            currentValue={keyInfo.currentValue}
-            numberFormatOptions={{
-              // style: "currency",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-              // currency: "USD",
-            }}
-          />
+>(({ className, type, keyInfo, valueInfo, offer }, ref) => {
+  return (
+    <div
+      className={cn(
+        "grid w-full grid-cols-2 items-center divide-x divide-divider text-sm text-black",
+        className
+      )}
+    >
+      <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pr-1">
+        <SpringNumber
+          previousValue={valueInfo.previousValue}
+          currentValue={valueInfo.currentValue}
+          numberFormatOptions={{
+            notation: "standard",
+            useGrouping: true,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 8,
+          }}
+        />
 
-          {!!offer && (
-            <div className="ml-1">
-              <TokenDisplayer
-                size={4}
-                tokens={[offer?.input_token_data] ?? []}
-                symbols={false}
-              />
-            </div>
-          )}
-        </SecondaryLabel>
-        <SecondaryLabel className="shrink-0 whitespace-nowrap break-normal">
-          {!!offer && (
-            <div className="mr-0">
-              <TokenDisplayer
-                size={4}
-                tokens={[offer?.tokens_data[0]] ?? []}
-                symbols={false}
-              />
-            </div>
-          )}
+        {!!offer && (
+          <div className="ml-1 flex items-center gap-1">
+            <SecondaryLabel>{offer?.tokens_data[0].symbol}</SecondaryLabel>
 
-          <SpringNumber
-            previousValue={valueInfo.previousValue}
-            currentValue={valueInfo.currentValue}
-            numberFormatOptions={{
-              // style: "percent",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }}
-          />
-        </SecondaryLabel>
-      </FallMotion>
-    );
-  }
-);
+            <TokenDisplayer
+              size={4}
+              tokens={[offer?.tokens_data[0]] ?? []}
+              symbols={false}
+            />
+          </div>
+        )}
+      </SecondaryLabel>
+
+      <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pl-1">
+        <SpringNumber
+          previousValue={keyInfo.previousValue}
+          currentValue={keyInfo.currentValue}
+          numberFormatOptions={{
+            notation: "standard",
+            useGrouping: true,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 8,
+          }}
+        />
+
+        {!!offer && (
+          <div className="ml-1 flex items-center gap-1">
+            <SecondaryLabel>{offer?.input_token_data.symbol}</SecondaryLabel>
+
+            <TokenDisplayer
+              size={4}
+              tokens={[offer?.input_token_data] ?? []}
+              symbols={false}
+            />
+          </div>
+        )}
+      </SecondaryLabel>
+    </div>
+  );
+});
 
 export const OfferList = React.forwardRef<
   HTMLDivElement,

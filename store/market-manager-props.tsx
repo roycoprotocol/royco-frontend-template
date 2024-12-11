@@ -256,6 +256,21 @@ export const MarketStatsView: Record<
   },
 };
 
+export type MarketOfferVisualizerViewType = "chart" | "book";
+export const MarketOfferVisualizerView: Record<
+  MarketOfferVisualizerViewType,
+  {
+    id: MarketOfferVisualizerViewType;
+  }
+> = {
+  chart: {
+    id: "chart",
+  },
+  book: {
+    id: "book",
+  },
+};
+
 export type TypedMarketWithdrawType = "input_token" | "incentives";
 export const MarketWithdrawType: Record<
   TypedMarketWithdrawType,
@@ -321,6 +336,11 @@ export type MarketManagerState = {
   statsView: MarketStatsViewType;
   setStatsView: (statsView: MarketStatsViewType) => void;
 
+  offerVisualizerView: MarketOfferVisualizerViewType;
+  setOfferVisualizerView: (
+    offerVisualizerView: MarketOfferVisualizerViewType
+  ) => void;
+
   offerTablePage: number;
   setOfferTablePage: (offerTablePage: number) => void;
 
@@ -375,6 +395,11 @@ export const createMarketManagerStore = () => {
 
     statsView: MarketStatsView.positions.id,
     setStatsView: (statsView: MarketStatsViewType) => set({ statsView }),
+
+    offerVisualizerView: MarketOfferVisualizerView.chart.id,
+    setOfferVisualizerView: (
+      offerVisualizerView: MarketOfferVisualizerViewType
+    ) => set({ offerVisualizerView }),
 
     offerTablePage: 0,
     setOfferTablePage: (offerTablePage: number) => set({ offerTablePage }),
