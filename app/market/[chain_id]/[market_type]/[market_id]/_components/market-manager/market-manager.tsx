@@ -3,7 +3,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useMarketManager } from "@/store";
 import {
-  MarketStatsView,
   MarketSteps,
   MarketType,
   MarketUserType,
@@ -16,13 +15,10 @@ import { useActiveMarket } from "../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { MarketInfo } from "../market-info";
-import { IncentiveInfo } from "../incentive-info";
 import { AlertIndicator } from "@/components/common";
-import { OfferList } from "../offer-list";
 import { SlideUpWrapper } from "@/components/animations";
 import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
 import { ChevronLeftIcon } from "lucide-react";
-import { OfferListVisualizer } from "../offer-list-visualizer";
 import { BalanceIndicator } from "../balance-indicator";
 import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
@@ -275,8 +271,6 @@ export const MarketManager = React.forwardRef<
                     )}
                   >
                     <MarketInfo />
-
-                    {/* <OfferList /> */}
                   </div>
 
                   {/**

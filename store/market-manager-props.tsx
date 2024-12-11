@@ -396,7 +396,7 @@ export const createMarketManagerStore = () => {
     statsView: MarketStatsView.positions.id,
     setStatsView: (statsView: MarketStatsViewType) => set({ statsView }),
 
-    offerVisualizerView: MarketOfferVisualizerView.book.id,
+    offerVisualizerView: MarketOfferVisualizerView.chart.id,
     setOfferVisualizerView: (
       offerVisualizerView: MarketOfferVisualizerViewType
     ) => set({ offerVisualizerView }),
