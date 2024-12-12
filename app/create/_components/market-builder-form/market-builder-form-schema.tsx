@@ -19,7 +19,17 @@ import {
   isMarketActionScriptValid,
   isMarketActionValid,
 } from "royco/market";
-import { arbitrum, base, mainnet, sepolia } from "viem/chains";
+// import { arbitrum, base, mainnet, sepolia } from "viem/chains";
+
+import {
+  EthereumMainnet,
+  EthereumSepolia,
+  ArbitrumOne,
+  Base,
+  Corn,
+  Plume,
+} from "royco/constants";
+
 import {
   getSupportedToken,
   SupportedChainMap,
@@ -27,6 +37,8 @@ import {
   TokenMap11155111,
   TokenMap42161,
   TokenMap8453,
+  TokenMap98865,
+  TokenMap21000000,
 } from "royco/constants";
 import { isSolidityStringValid } from "royco/utils";
 
@@ -190,6 +202,10 @@ export const ZodAction = z
 export const ZodActions = z.array(ZodAction).refine(
   (actions) => {
     const { status, message } = isMarketActionScriptValid({
+      /**
+       * @TODO Strictly type this
+       */
+      // @ts-ignore
       marketActions: actions,
     });
 
@@ -308,13 +324,12 @@ export type PoolFormType = UseFormReturn<
 >;
 
 export const PoolFormDefaults = {
-  [sepolia.id]: {
+  [EthereumSepolia.id]: {
     market_name: "",
     market_description: "",
-    chain: SupportedChainMap[sepolia.id],
-    asset: getSupportedToken(
-      "11155111-0x3f85506f500cb02d141bafe467cc52ad5a9d7d5a"
-    ),
+    chain: SupportedChainMap[EthereumSepolia.id],
+    asset:
+      TokenMap11155111["11155111-0x5839b25b55380bc3c701b2c808331e34e92161fe"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",
@@ -324,10 +339,10 @@ export const PoolFormDefaults = {
       duration_type: "months",
     },
   },
-  [mainnet.id]: {
+  [EthereumMainnet.id]: {
     market_name: "",
     market_description: "",
-    chain: SupportedChainMap[mainnet.id],
+    chain: SupportedChainMap[EthereumMainnet.id],
     asset: TokenMap1["1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"],
     enter_actions: [],
     exit_actions: [],
@@ -338,10 +353,10 @@ export const PoolFormDefaults = {
       duration_type: "months",
     },
   },
-  [arbitrum.id]: {
+  [ArbitrumOne.id]: {
     market_name: "",
     market_description: "",
-    chain: SupportedChainMap[arbitrum.id],
+    chain: SupportedChainMap[ArbitrumOne.id],
     asset: TokenMap42161["42161-0xa0b862f60edef4452f25b4160f177db44deb6cf1"],
     enter_actions: [],
     exit_actions: [],
@@ -352,11 +367,40 @@ export const PoolFormDefaults = {
       duration_type: "months",
     },
   },
-  [base.id]: {
+  [Base.id]: {
     market_name: "",
     market_description: "",
-    chain: SupportedChainMap[base.id],
+    chain: SupportedChainMap[Base.id],
     asset: TokenMap8453["8453-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+  },
+  [Plume.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[Plume.id],
+    asset: TokenMap98865["98865-0x28e0f0eed8d6a6a96033feee8b2d7f32eb5ccc48"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+  },
+  [Corn.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[Corn.id],
+    asset:
+      TokenMap21000000["21000000-0xdf0b24095e15044538866576754f3c964e902ee6"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",

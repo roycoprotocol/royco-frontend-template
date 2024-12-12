@@ -1,7 +1,6 @@
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
 import {
-  getChain,
   getSupportedChain,
   isSolidityAddressValid,
   refineSolidityAddress,
@@ -284,7 +283,7 @@ export async function GET(request: NextRequest) {
     // Create public client
     const publicClient = createPublicClient({
       // @ts-ignore
-      chain: getChain(chain_id),
+      chain: getSupportedChain(chain_id),
       transport: http(RPC_API_KEYS[chain_id]),
     });
 

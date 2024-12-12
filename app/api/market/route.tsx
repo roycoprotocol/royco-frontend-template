@@ -1,4 +1,4 @@
-import { getChain, shortAddress } from "royco/utils";
+import { getSupportedChain, shortAddress } from "royco/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Chain } from "@wagmi/core/chains";
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { chain_id, market_type, tx_hash, id, name, description } = body;
 
-    const chain = getChain(chain_id);
+    const chain = getSupportedChain(chain_id);
     if (!chain) {
       return Response.json({ data: "Chain not found", status: false });
     }

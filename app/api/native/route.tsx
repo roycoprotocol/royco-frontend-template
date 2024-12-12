@@ -1,9 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { Address } from "abitype";
-import { getChain } from "royco/utils";
+import { getSupportedChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
+import { BigNumber } from "ethers";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );
 
-    // 1. Fetch first 20 rows with conditions
+    // 1. Fetch first 100 rows with conditions
     const { data: vaults, error } = await client
       .from("raw_underlying_vaults")
       .select("*")
@@ -31,7 +32,8 @@ export async function POST(request: Request) {
     await Promise.all(
       (vaults || []).map(async (vault) => {
         try {
-          const chain = getChain(Number(vault.chain_id));
+          const chain = getSupportedChain(Number(vault.chain_id));
+          if (!chain) throw new Error("Chain not found");
           const publicClient = createPublicClient({
             chain,
             transport: http(RPC_API_KEYS[chain.id]),
@@ -61,21 +63,48 @@ export async function POST(request: Request) {
             (r) => r.result?.toString() || "0"
           );
 
-          // 3. Update
-          await client
-            .from("raw_underlying_vaults")
-            .update({
-              prev_total_assets: vault.curr_total_assets,
-              prev_total_supply: vault.curr_total_supply,
-              prev_block_timestamp: vault.curr_block_timestamp,
-              curr_total_assets: totalAssets,
-              curr_total_supply: totalSupply,
-              curr_block_timestamp: blockTimestamp,
-              last_updated: new Date().toISOString(),
-              retries: 0,
-            })
-            .eq("chain_id", vault.chain_id)
-            .eq("underlying_vault_address", vault.underlying_vault_address);
+          // Modified comparison logic using BigNumber for all comparisons
+          const timestampDiff = BigNumber.from(blockTimestamp).sub(
+            BigNumber.from(vault.curr_block_timestamp || "0")
+          );
+          const isTimestampStale = timestampDiff.gt(
+            BigNumber.from(24 * 60 * 60)
+          );
+          const hasValuesChanged =
+            !BigNumber.from(totalAssets).eq(
+              BigNumber.from(vault.curr_total_assets || "0")
+            ) ||
+            !BigNumber.from(totalSupply).eq(
+              BigNumber.from(vault.curr_total_supply || "0")
+            );
+
+          // If values haven't changed and timestamp is fresh, just update last_updated
+          if (!hasValuesChanged && !isTimestampStale) {
+            await client
+              .from("raw_underlying_vaults")
+              .update({
+                last_updated: new Date().toISOString(),
+                retries: 0,
+              })
+              .eq("chain_id", vault.chain_id)
+              .eq("underlying_vault_address", vault.underlying_vault_address);
+          } else {
+            // Proceed with full update
+            await client
+              .from("raw_underlying_vaults")
+              .update({
+                prev_total_assets: vault.curr_total_assets,
+                prev_total_supply: vault.curr_total_supply,
+                prev_block_timestamp: vault.curr_block_timestamp,
+                curr_total_assets: totalAssets,
+                curr_total_supply: totalSupply,
+                curr_block_timestamp: blockTimestamp,
+                last_updated: new Date().toISOString(),
+                retries: 0,
+              })
+              .eq("chain_id", vault.chain_id)
+              .eq("underlying_vault_address", vault.underlying_vault_address);
+          }
         } catch (error) {
           // 4. Increment retries on error
           await client

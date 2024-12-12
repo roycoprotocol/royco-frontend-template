@@ -28,7 +28,7 @@ import { TransactionOptionsType } from "@/sdk/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";
-import { config } from "@/components/web3-modal/modal-config";
+import { config } from "@/components/rainbow-modal/modal-config";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -279,6 +279,10 @@ export const TransactionModal = React.forwardRef<
                 onClick={async () => {
                   try {
                     await switchChain(config, {
+                      /**
+                       * @TODO strictly type this
+                       */
+                      // @ts-ignore
                       chainId: transactions[0]?.chainId,
                     });
                   } catch (error) {

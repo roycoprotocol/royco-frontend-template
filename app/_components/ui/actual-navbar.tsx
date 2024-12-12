@@ -8,6 +8,9 @@ import { AlignJustifyIcon, XIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ConnectWalletButton } from "./connect-wallet-button";
+
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 import { GetUpdatesButton } from "./composables";
 import { MaxWidthWrapper } from "./composables/max-width-wrapper";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
