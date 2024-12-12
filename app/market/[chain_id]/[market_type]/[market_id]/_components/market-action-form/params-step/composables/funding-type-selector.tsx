@@ -50,7 +50,8 @@ export const FundingTypeSelector = React.forwardRef<
               customKey={`market:funding:funding-type-selector:${fundingType}`}
               height="2rem"
               motionClassName="flex flex-col items-start"
-              contentClassName="text-left"
+              contentClassName="text-left flex flex-col justify-center"
+              className="h-full"
             >
               {MarketFundingType[fundingType]
                 ? MarketFundingType[fundingType].label
