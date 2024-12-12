@@ -173,6 +173,14 @@ export const MarketActionForm = React.forwardRef<
     resetCurrentIncentivesArray();
   }, [vaultIncentiveActionType]);
 
+  useEffect(() => {
+    marketActionForm.reset({
+      funding_vault: "" as string,
+      incentive_tokens: [],
+      no_expiry: true,
+    });
+  }, [userType, offerType]);
+
   if (!!currentMarketData) {
     return (
       <div

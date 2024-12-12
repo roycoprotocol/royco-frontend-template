@@ -32,11 +32,6 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
 
   const { currentMarketData } = useActiveMarket();
 
-  console.log(
-    "currentMarketData base_start_timestamps",
-    currentMarketData?.base_start_timestamps
-  );
-
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <SlideUpWrapper
@@ -130,7 +125,11 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
             } else {
               marketActionForm.setValue("incentive_tokens", [
                 ...incentiveTokens,
-                token,
+                {
+                  ...token,
+                  start_timestamp: new Date(),
+                  end_timestamp: new Date(),
+                },
               ]);
             }
           }}
@@ -258,17 +257,36 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                        * Start Timestamp Selector
                        */}
                       <TimestampSelector
-                        currentValue={token.start_timestamp || new Date()}
+                        currentValue={token.start_timestamp}
                         setCurrentValue={(date) => {
                           marketActionForm.setValue(
                             "incentive_tokens",
                             marketActionForm
                               .watch("incentive_tokens")
-                              .map((t) =>
-                                t.id === token.id
-                                  ? { ...t, start_timestamp: date }
-                                  : t
-                              )
+                              .map((t) => {
+                                if (t.id === token.id) {
+                                  const startTimestamp =
+                                    date?.getTime() ??
+                                    t.start_timestamp?.getTime() ??
+                                    new Date().getTime();
+
+                                  const endTimestamp =
+                                    t.end_timestamp?.getTime() ??
+                                    new Date().getTime();
+
+                                  if (startTimestamp > endTimestamp) {
+                                    return {
+                                      ...t,
+                                      start_timestamp: date,
+                                      end_timestamp: date,
+                                    };
+                                  }
+
+                                  return { ...t, start_timestamp: date };
+                                } else {
+                                  return t;
+                                }
+                              })
                           );
                         }}
                       />
@@ -292,17 +310,35 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                        * End Timestamp Selector
                        */}
                       <TimestampSelector
-                        currentValue={token.end_timestamp || new Date()}
+                        currentValue={token.end_timestamp}
                         setCurrentValue={(date) => {
                           marketActionForm.setValue(
                             "incentive_tokens",
                             marketActionForm
                               .watch("incentive_tokens")
-                              .map((t) =>
-                                t.id === token.id
-                                  ? { ...t, end_timestamp: date }
-                                  : t
-                              )
+                              .map((t) => {
+                                if (t.id === token.id) {
+                                  const startTimestamp =
+                                    t.start_timestamp?.getTime() ??
+                                    new Date().getTime();
+                                  const endTimestamp =
+                                    date?.getTime() ??
+                                    t.end_timestamp?.getTime() ??
+                                    new Date().getTime();
+
+                                  if (startTimestamp > endTimestamp) {
+                                    return {
+                                      ...t,
+                                      start_timestamp: date,
+                                      end_timestamp: date,
+                                    };
+                                  }
+
+                                  return { ...t, end_timestamp: date };
+                                } else {
+                                  return t;
+                                }
+                              })
                           );
                         }}
                       />
