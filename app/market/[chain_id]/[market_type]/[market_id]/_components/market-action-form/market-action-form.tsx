@@ -27,10 +27,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ErrorAlert, HorizontalTabs } from "@/components/composables";
 import toast from "react-hot-toast";
-import { useAccount } from "wagmi";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+import { useAccount, useChainId } from "wagmi";
+
 import { switchChain } from "@wagmi/core";
-import { config } from "@/components/web3-modal/modal-config";
+import { config } from "@/components/rainbow-modal/modal-config";
 import { ParamsStep } from "./params-step";
 import { PreviewStep } from "./preview-step";
 import { ChevronLeftIcon } from "lucide-react";
@@ -43,7 +43,8 @@ import { SlideUpWrapper } from "@/components/animations";
 import { OfferTypeSelector } from "./offer-type-selector";
 import { NULL_ADDRESS } from "royco/constants";
 import { MarketActionFormSchema } from "./market-action-form-schema";
-import { useConnectWallet } from "../../../../../../_components/provider/connect-wallet-provider";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+// import { useConnectWallet } from "../../../../../../_components/provider/connect-wallet-provider";
 
 export const MarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -65,12 +66,12 @@ export const MarketActionForm = React.forwardRef<
     vaultIncentiveActionType,
   } = useMarketManager();
   const { address, isConnected } = useAccount();
-  const { open, close } = useWeb3Modal();
-  const { selectedNetworkId, open: isModalOpen } = useWeb3ModalState();
+
+  const chainId = useChainId();
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
-  const { connectWallet } = useConnectWallet();
+  const { openConnectModal } = useConnectModal();
 
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
@@ -101,13 +102,14 @@ export const MarketActionForm = React.forwardRef<
   const handleNextStep = async () => {
     try {
       if (!isConnected) {
-        connectWallet();
-      } else if (
-        // @ts-ignore
-        selectedNetworkId !== marketMetadata.chain_id
-      ) {
+        openConnectModal?.();
+      } else if (chainId !== marketMetadata.chain_id) {
         try {
           await switchChain(config, {
+            /**
+             * @TODO strictly type this
+             */
+            // @ts-ignore
             chainId: marketMetadata.chain_id,
           });
         } catch (error) {}
@@ -131,10 +133,7 @@ export const MarketActionForm = React.forwardRef<
   const nextLabel = () => {
     if (!address) {
       return "Connect wallet";
-    } else if (
-      // @ts-ignore
-      selectedNetworkId !== marketMetadata.chain_id
-    ) {
+    } else if (chainId !== marketMetadata.chain_id) {
       return "Switch chain";
     } else if (marketStep === MarketSteps.params.id) {
       return "Supply Now";

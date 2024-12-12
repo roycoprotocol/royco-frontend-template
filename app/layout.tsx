@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./_components";
+import "@rainbow-me/rainbowkit/styles.css";
 
 import { Toaster } from "react-hot-toast";
 
@@ -11,12 +12,13 @@ import { Toaster } from "react-hot-toast";
  * @see {@link https://docs.walletconnect.com/web3modal/nextjs/about}
  */
 import { headers } from "next/headers";
-import AppKitProvider from "@/components/web3-modal/context-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { RoycoProvider } from "royco";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { RoycoClientProvider } from "./royco-client-provider";
+import RainbowKitProvider from "@/components/rainbow-modal/context-provider";
+import WalletProvider from "@/components/rainbow-modal/context-provider";
 
 /**
  * @description Inter Font
@@ -118,10 +120,12 @@ export default function RootLayout({
               "bg-white"
             )}
           >
-            <AppKitProvider cookies={cookies}>
+            {/* <AppKitProvider cookies={cookies}> */}
+            <WalletProvider>
               <Navbar />
               {children}
-            </AppKitProvider>
+            </WalletProvider>
+            {/* </AppKitProvider> */}
 
             <BrowserDetector />
 
