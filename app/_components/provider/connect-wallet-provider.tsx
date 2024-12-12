@@ -4,16 +4,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import { ConnectWalletAlertModal } from "../ui/connect-wallet-alert-modal";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 
-export const restrictedCountries = [
-  "US",
-  "CU",
-  "IR",
-  "KP",
-  "RU",
-  "SY",
-  "IQ",
-  "CA",
-];
+export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
 interface ConnectWalletContextType {
   connectWalletModal: () => Promise<void>;
