@@ -33,7 +33,7 @@ const Page = () => {
             <h2 className="heading-2 text-black">Explore</h2>
 
             <div className="body-1 mt-2 text-secondary">
-              Explore Royco Markets & bid for more liquidity incentives today.
+              Explore Royco Markets & bid for more incentives today.
             </div>
           </div>
 

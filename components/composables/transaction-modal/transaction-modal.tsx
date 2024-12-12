@@ -102,7 +102,7 @@ export const TransactionModal = React.forwardRef<
 
   const getNextLabel = () => {
     if (!allTransactionsExecuted && !!currentTransaction) {
-      return "Confirm Transaction";
+      return modalContent.action;
     } else {
       return "Close";
     }
@@ -193,6 +193,26 @@ export const TransactionModal = React.forwardRef<
     }
   }, [transactions]);
 
+  const modalContent = useMemo(() => {
+    let content = {
+      title: "Transaction Progress",
+      description:
+        "Do not close this window when the transaction is in progress.",
+      action: "Confirm Transaction",
+    };
+
+    if (!!currentTransaction && currentTransaction.id === "forfeit") {
+      content = {
+        title: "Transaction Complete",
+        description:
+          "This market is Forfeitable, meaning that you can withdraw assets early; but ALL current and future incentives will be forfeited.",
+        action: "Forfeit All Assets",
+      };
+    }
+
+    return content;
+  }, [currentTransaction]);
+
   const handleClose = () => {
     setIsOpen(false);
     setTransactions([]);
@@ -235,10 +255,8 @@ export const TransactionModal = React.forwardRef<
           }}
         >
           <DialogHeader>
-            <DialogTitle>Transaction Progress</DialogTitle>
-            <DialogDescription>
-              Do not close this window when the transaction is in progress.
-            </DialogDescription>
+            <DialogTitle>{modalContent.title}</DialogTitle>
+            <DialogDescription>{modalContent.description}</DialogDescription>
           </DialogHeader>
           <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-scroll py-3">
             <div className={cn("flex flex-col gap-2")}>
