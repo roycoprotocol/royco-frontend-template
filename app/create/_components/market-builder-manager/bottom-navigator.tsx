@@ -10,16 +10,22 @@ import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
 import { MotionWrapper } from "../market-builder-flow/animations";
 import { ErrorAlert, LoadingSpinner } from "@/components/composables";
-import { useAccount, useConnectorClient, useSimulateContract } from "wagmi";
-import { config } from "@/components/web3-modal/modal-config";
+import {
+  useAccount,
+  useChainId,
+  useConnectorClient,
+  useSimulateContract,
+} from "wagmi";
+import { config } from "@/components/rainbow-modal/modal-config";
 import { switchChain } from "@wagmi/core";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+
 import toast from "react-hot-toast";
 import { ContractMap } from "royco/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
 import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
-import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+// import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 
 export const BottomNavigator = React.forwardRef<
   HTMLDivElement,
@@ -42,18 +48,20 @@ export const BottomNavigator = React.forwardRef<
     const { activeStep, setActiveStep, setForceClose } =
       useMarketBuilderManager();
 
-    const { open, close } = useWeb3Modal();
-    const { selectedNetworkId, open: isModalOpen } = useWeb3ModalState();
+    const chainId = useChainId();
+
     const { address, isConnected, isConnecting, isDisconnected } = useAccount();
 
-    const { connectWallet } = useConnectWallet();
+    const { openConnectModal } = useConnectModal();
 
     const {
       isReady: isReadyRecipe,
       writeContractOptions: writeContractOptionsRecipe,
     } = useCreateRecipeMarket({
       chainId: marketBuilderForm.watch("chain").id,
+      // @ts-ignore
       enterMarketActions: marketBuilderForm.watch("enter_actions"),
+      // @ts-ignore
       exitMarketActions: marketBuilderForm.watch("exit_actions"),
       lockupTime: (
         parseInt(marketBuilderForm.watch("lockup_time").duration ?? "0") *
@@ -97,15 +105,18 @@ export const BottomNavigator = React.forwardRef<
       } else {
         // wallet not connected
         if (!isConnected) {
-          connectWallet();
+          openConnectModal?.();
         }
 
         // wrong chain
-        // @ts-ignore
-        else if (selectedNetworkId !== marketBuilderForm.watch("chain").id) {
+        else if (chainId !== marketBuilderForm.watch("chain").id) {
           setForceLoader(true);
           try {
             await switchChain(config, {
+              /**
+               * @TODO strictly type this
+               */
+              // @ts-ignore
               chainId: marketBuilderForm.watch("chain").id,
             });
           } catch (error) {
@@ -161,10 +172,7 @@ export const BottomNavigator = React.forwardRef<
 
         if (isDisconnected || isConnecting) {
           return "Connect Wallet";
-        }
-
-        // @ts-ignore
-        else if (selectedNetworkId !== marketBuilderForm.watch("chain").id) {
+        } else if (chainId !== marketBuilderForm.watch("chain").id) {
           return "Switch Chain";
         } else {
           return "Submit";

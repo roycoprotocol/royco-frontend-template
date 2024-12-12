@@ -3,32 +3,35 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useChainId, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
 import { SupportedChainMap } from "royco/constants";
-import { useConnectWallet } from "../provider/connect-wallet-provider";
+// import { useConnectWallet } from "../provider/connect-wallet-provider";
+import {
+  useAccountModal,
+  useChainModal,
+  useConnectModal,
+} from "@rainbow-me/rainbowkit";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
   const { address, isConnected, isConnecting, isDisconnected } = useAccount();
-  const { selectedNetworkId } = useWeb3ModalState();
 
-  const {
-    connectWallet,
-    isConnectWalletAlertOpen,
-    setIsConnectWalletAlertOpen,
-  } = useConnectWallet();
+  const chainId = useChainId();
 
-  /**
-   * @description Bug in exported type of selectedNetworkId
-   */
-  // @ts-ignore
-  const isChainSupported =
-    // @ts-ignore
-    selectedNetworkId && SupportedChainMap[selectedNetworkId];
+  // const {
+  //   connectWallet,
+  //   isConnectWalletAlertOpen,
+  //   setIsConnectWalletAlertOpen,
+  // } = useConnectWallet();
+
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal();
+
+  const isChainSupported = chainId && SupportedChainMap[chainId];
 
   return (
     <Button
@@ -38,7 +41,7 @@ export const ConnectWalletButton = React.forwardRef<
         isConnected && !isChainSupported && "bg-error",
         className
       )}
-      onClick={() => connectWallet()}
+      onClick={isConnected ? openAccountModal : openConnectModal}
       {...props}
     >
       {isConnected && !isChainSupported && (
