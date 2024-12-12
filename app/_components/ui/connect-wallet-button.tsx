@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAccount, useChainId, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
 import { SupportedChainMap } from "royco/constants";
-// import { useConnectWallet } from "../provider/connect-wallet-provider";
-import {
-  useAccountModal,
-  useChainModal,
-  useConnectModal,
-} from "@rainbow-me/rainbowkit";
+import { useConnectWallet } from "../provider/connect-wallet-provider";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
@@ -21,15 +16,7 @@ export const ConnectWalletButton = React.forwardRef<
 
   const chainId = useChainId();
 
-  // const {
-  //   connectWallet,
-  //   isConnectWalletAlertOpen,
-  //   setIsConnectWalletAlertOpen,
-  // } = useConnectWallet();
-
-  const { openConnectModal } = useConnectModal();
-  const { openAccountModal } = useAccountModal();
-  const { openChainModal } = useChainModal();
+  const { connectWalletModal, connectAccountModal } = useConnectWallet();
 
   const isChainSupported = chainId && SupportedChainMap[chainId];
 
@@ -41,7 +28,7 @@ export const ConnectWalletButton = React.forwardRef<
         isConnected && !isChainSupported && "bg-error",
         className
       )}
-      onClick={isConnected ? openAccountModal : openConnectModal}
+      onClick={isConnected ? connectAccountModal : connectWalletModal}
       {...props}
     >
       {isConnected && !isChainSupported && (

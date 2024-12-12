@@ -15,7 +15,7 @@ import { headers } from "next/headers";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { RoycoProvider } from "royco";
-import { BrowserDetector } from "@/store/use-general-stats";
+import { BrowserDetector, GeoDetector } from "@/store/use-general-stats";
 import { RoycoClientProvider } from "./royco-client-provider";
 import RainbowKitProvider from "@/components/rainbow-modal/context-provider";
 import WalletProvider from "@/components/rainbow-modal/context-provider";
@@ -122,6 +122,8 @@ export default function RootLayout({
           >
             {/* <AppKitProvider cookies={cookies}> */}
             <WalletProvider>
+              <GeoDetector />
+
               <Navbar />
               {children}
             </WalletProvider>
