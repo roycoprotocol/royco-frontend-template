@@ -390,7 +390,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
 
       let currentValue = props.row.original.annual_change_ratio;
       if (props.row.original.id === stkGHO_MARKET_ID) {
-        currentValue = parseInt(String((currentValue + 0.18) * 100)) / 100;
+        currentValue = parseInt(String((currentValue + 0.2) * 100)) / 100;
       }
 
       return (
