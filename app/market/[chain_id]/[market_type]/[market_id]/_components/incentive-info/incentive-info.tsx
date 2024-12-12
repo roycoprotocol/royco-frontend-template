@@ -64,7 +64,8 @@ const InfoValueElementClone = React.forwardRef<
                 notation: "standard",
                 useGrouping: true,
                 minimumFractionDigits: 0, // Ensures at least 2 decimal places
-                maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+                maximumFractionDigits:
+                  token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
               }).format(token_data.annual_change_ratio)}{" "}
         </SecondaryLabel>
 
@@ -73,7 +74,7 @@ const InfoValueElementClone = React.forwardRef<
             notation: "standard",
             useGrouping: true,
             minimumFractionDigits: 0, // Ensures at least 2 decimal places
-            maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+            maximumFractionDigits: 2, // Limits to exactly 2 decimal places
           }).format(token_data.per_input_token)}{" "}
           {token_data.symbol} per{" "}
           {currentMarketData.input_token_data.symbol.toUpperCase()}
@@ -264,7 +265,7 @@ export const IncentiveInfo = React.forwardRef<
                             notation: "standard",
                             useGrouping: true,
                             minimumFractionDigits: 0,
-                            maximumFractionDigits: 8,
+                            maximumFractionDigits: item.value > 0.0001 ? 2 : 8,
                           }).format(item.value)}{" "}
                     </SecondaryLabel>
                   </InfoCard.Row.Value>
