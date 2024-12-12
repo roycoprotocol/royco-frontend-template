@@ -1,22 +1,23 @@
 "use client";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react";
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { ConnectWalletAlertModal } from "../ui/connect-wallet-alert-modal";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 
-export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
+export const restrictedCountries = [
+  "US",
+  "CU",
+  "IR",
+  "KP",
+  "RU",
+  "SY",
+  "IQ",
+  "CA",
+];
 
 interface ConnectWalletContextType {
-  connectWallet: () => Promise<void>;
-  isConnectWalletAlertOpen: boolean;
-  setIsConnectWalletAlertOpen: (open: boolean) => void;
+  connectWalletModal: () => Promise<void>;
+  connectAccountModal: () => Promise<void>;
 }
 
 const ConnectWalletContext = createContext<
@@ -28,42 +29,13 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const { open } = useWeb3Modal();
-  const { isConnected, connector } = useAccount();
-  const { disconnect } = useDisconnect();
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+
   const [isConnectWalletAlertOpen, setIsConnectWalletAlertOpen] =
     useState(false);
 
-  useEffect(() => {
-    if (isConnected && !connector) {
-      disconnect();
-    }
-  }, [isConnected, connector, disconnect]);
-
-  useEffect(() => {
-    const checkRestriction = async () => {
-      if (isConnected && process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
-        try {
-          const response = await fetch("https://freeipapi.com/api/json/");
-          const data = await response.json();
-
-          if (
-            data.countryCode &&
-            restrictedCountries.includes(data.countryCode)
-          ) {
-            setIsConnectWalletAlertOpen(true);
-            disconnect();
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    };
-
-    checkRestriction();
-  }, [isConnected]);
-
-  const connectWallet = async () => {
+  const connectWalletModal = async () => {
     try {
       if (process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
         const response = await fetch("https://freeipapi.com/api/json/");
@@ -78,18 +50,21 @@ export const ConnectWalletProvider = ({
         }
       }
 
-      open();
+      openConnectModal?.();
     } catch (e) {
       console.log(e);
     }
   };
 
+  const connectAccountModal = async () => {
+    openAccountModal?.();
+  };
+
   return (
     <ConnectWalletContext.Provider
       value={{
-        connectWallet,
-        isConnectWalletAlertOpen,
-        setIsConnectWalletAlertOpen,
+        connectWalletModal,
+        connectAccountModal,
       }}
     >
       {children}

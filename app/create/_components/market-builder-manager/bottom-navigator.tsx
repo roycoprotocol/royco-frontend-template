@@ -24,8 +24,7 @@ import { ContractMap } from "royco/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
 import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-// import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
+import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 
 export const BottomNavigator = React.forwardRef<
   HTMLDivElement,
@@ -52,7 +51,7 @@ export const BottomNavigator = React.forwardRef<
 
     const { address, isConnected, isConnecting, isDisconnected } = useAccount();
 
-    const { openConnectModal } = useConnectModal();
+    const { connectWalletModal } = useConnectWallet();
 
     const {
       isReady: isReadyRecipe,
@@ -105,7 +104,7 @@ export const BottomNavigator = React.forwardRef<
       } else {
         // wallet not connected
         if (!isConnected) {
-          openConnectModal?.();
+          connectWalletModal();
         }
 
         // wrong chain

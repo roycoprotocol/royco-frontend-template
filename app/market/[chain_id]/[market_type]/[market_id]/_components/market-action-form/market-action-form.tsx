@@ -43,8 +43,7 @@ import { SlideUpWrapper } from "@/components/animations";
 import { OfferTypeSelector } from "./offer-type-selector";
 import { NULL_ADDRESS } from "royco/constants";
 import { MarketActionFormSchema } from "./market-action-form-schema";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-// import { useConnectWallet } from "../../../../../../_components/provider/connect-wallet-provider";
+import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 
 export const MarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -71,7 +70,7 @@ export const MarketActionForm = React.forwardRef<
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
-  const { openConnectModal } = useConnectModal();
+  const { connectWalletModal } = useConnectWallet();
 
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
@@ -102,7 +101,7 @@ export const MarketActionForm = React.forwardRef<
   const handleNextStep = async () => {
     try {
       if (!isConnected) {
-        openConnectModal?.();
+        connectWalletModal();
       } else if (chainId !== marketMetadata.chain_id) {
         try {
           await switchChain(config, {
