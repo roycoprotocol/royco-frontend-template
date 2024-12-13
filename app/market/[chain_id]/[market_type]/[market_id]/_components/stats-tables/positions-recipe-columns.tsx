@@ -80,15 +80,135 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
   //   },
   // },
 
+  // {
+  //   accessorKey: "annual_change_ratio",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "APR",
+  //   meta: {
+  //     className: "min-w-24",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+  //         )}
+  //       >
+  //         <SecondaryLabel className="text-black">
+  //           {Intl.NumberFormat("en-US", {
+  //             style: "percent",
+  //             notation: "compact",
+  //             useGrouping: true,
+  //             minimumFractionDigits: 2,
+  //             maximumFractionDigits: 2,
+  //           }).format(props.row.original.annual_change_ratio)}
+  //         </SecondaryLabel>
+  //       </div>
+  //     );
+  //   },
+  // },
+
   {
-    accessorKey: "annual_change_ratio",
+    id: "actions",
+    enableHiding: false,
+    meta: {},
+    cell: (props: any) => {
+      const { transactions, setTransactions } = useMarketManager();
+
+      const { currentMarketData, marketMetadata } = useActiveMarket();
+
+      let can_be_forfeited = false;
+
+      if (
+        !!currentMarketData &&
+        currentMarketData.reward_style === 2 && // "2" represents forfeitable position
+        props.row.original.is_forfeited === false &&
+        props.row.original.is_claimed.every(
+          (isClaimed: boolean) => isClaimed === false
+        ) &&
+        props.row.original.is_withdrawn === false &&
+        BigNumber.from(props.row.original.unlock_timestamp).gt(
+          BigNumber.from(Math.floor(Date.now() / 1000))
+        )
+      ) {
+        can_be_forfeited = true;
+      }
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <DotsHorizontalIcon className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {can_be_forfeited && (
+              <DropdownMenuItem
+                onClick={() => {
+                  const txOptions = getRecipeForfeitTransactionOptions({
+                    position: props.row.original,
+                  });
+
+                  setTransactions([...transactions, txOptions]);
+                }}
+              >
+                Forfeit All Royco Incentives for Input Asset
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.weiroll_wallet,
+                  type: "address",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              View Position on Etherscan
+            </DropdownMenuItem>
+
+            {/* 
+            <DropdownMenuItem
+              onClick={() => {
+                const explorerUrl = getExplorerUrl({
+                  chainId: props.row.original.chain_id,
+                  value: props.row.original.transaction_hash,
+                  type: "tx",
+                });
+
+                window.open(explorerUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              Creation Transaction
+            </DropdownMenuItem> */}
+
+            {/* <DropdownMenuSeparator /> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+  {
+    accessorKey: "input_token_id",
     enableResizing: false,
     enableSorting: false,
-    header: "APR",
+    header: "Market Value",
     meta: {
-      className: "min-w-24",
+      className: "min-w-32",
     },
     cell: (props: any) => {
+      const input_token_value =
+        props.row.original.input_token_data.token_amount_usd;
+
+      const tokens_value = props.row.original.tokens_data.reduce(
+        (acc: number, token: any) => acc + token.token_amount_usd,
+        0
+      );
+
+      const market_value = input_token_value + tokens_value;
+
       return (
         <div
           className={cn(
@@ -97,22 +217,23 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
         >
           <SecondaryLabel className="text-black">
             {Intl.NumberFormat("en-US", {
-              style: "percent",
-              notation: "compact",
+              style: "currency",
+              currency: "USD",
+              notation: "standard",
               useGrouping: true,
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(props.row.original.annual_change_ratio)}
+              maximumFractionDigits: 8,
+            }).format(market_value)}
           </SecondaryLabel>
         </div>
       );
     },
   },
   {
-    accessorKey: "reward_style",
+    accessorKey: "input_token_data",
     enableResizing: false,
     enableSorting: false,
-    header: "Incentive Payout",
+    header: "Asset Supplied",
     meta: {
       className: "min-w-32",
     },
@@ -120,42 +241,17 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
       const unlockDate = new Date(
         parseInt(props.row.original.unlock_timestamp) * 1000
       );
-      const currentDate = new Date();
 
-      let isOpenToClaim = false;
-      let isAlreadyClaimed = false;
+      let costText = null;
 
-      if (props.row.original.reward_style === 0) {
-        isOpenToClaim = true;
-      } else if (unlockDate < currentDate) {
-        isOpenToClaim = true;
-      }
-
-      if (
-        props.row.original.is_claimed.every((claim: boolean) => claim === true)
-      ) {
-        isAlreadyClaimed = true;
-      }
-
-      let text = "";
-
-      if (props.row.original.is_forfeited === true) {
-        text = "Forfeited";
-      } else if (isAlreadyClaimed) {
-        if (props.row.original.offer_side === 0) {
-          text = "Already claimed";
+      if (props.row.original.offer_side === 0) {
+        if (props.row.original.is_withdrawn === true) {
+          costText = "Withdrawn";
+        } else if (unlockDate < new Date()) {
+          costText = "Can Withdraw";
         } else {
-          text = "Already paid";
+          costText = "Locked";
         }
-      } else if (isOpenToClaim) {
-        text = "Open for claims";
-      } else {
-        text = formatDistanceToNow(
-          new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-          {
-            addSuffix: true,
-          }
-        );
       }
 
       return (
@@ -165,10 +261,36 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
           )}
         >
           <SecondaryLabel className="text-black">
-            {RewardStyleMap[props.row.original.reward_style].label}
+            {Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
 
-          <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
+          <div className="flex flex-row items-center space-x-2">
+            <SecondaryLabel className="text-tertiary">
+              {Intl.NumberFormat("en-US", {
+                style: "decimal",
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8,
+              }).format(props.row.original.input_token_data.token_amount)}{" "}
+              {props.row.original.input_token_data.symbol.toUpperCase()}
+            </SecondaryLabel>
+
+            {/* {costText && (
+              <SecondaryLabel
+                className={cn("text-tertiary", BASE_UNDERLINE.SM)}
+              >
+                {costText}
+              </SecondaryLabel>
+            )} */}
+          </div>
         </div>
       );
     },
@@ -219,28 +341,54 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "input_token_data",
+    accessorKey: "reward_style",
     enableResizing: false,
     enableSorting: false,
-    header: "Cost",
+    header: "Incentive Payout",
     meta: {
-      className: "min-w-32",
+      className: "min-w-40",
     },
     cell: (props: any) => {
       const unlockDate = new Date(
         parseInt(props.row.original.unlock_timestamp) * 1000
       );
+      const currentDate = new Date();
 
-      let costText = null;
+      let isOpenToClaim = false;
+      let isAlreadyClaimed = false;
 
-      if (props.row.original.offer_side === 0) {
-        if (props.row.original.is_withdrawn === true) {
-          costText = "Withdrawn";
-        } else if (unlockDate < new Date()) {
-          costText = "Can Withdraw";
+      if (props.row.original.reward_style === 0) {
+        isOpenToClaim = true;
+      } else if (unlockDate < currentDate) {
+        isOpenToClaim = true;
+      }
+
+      if (
+        props.row.original.is_claimed.every((claim: boolean) => claim === true)
+      ) {
+        isAlreadyClaimed = true;
+      }
+
+      let text = "";
+
+      if (props.row.original.is_forfeited === true) {
+        text = "Forfeited";
+      } else if (isAlreadyClaimed) {
+        if (props.row.original.offer_side === 0) {
+          text = "Already claimed";
         } else {
-          costText = "Locked";
+          text = "Already paid";
         }
+      } else if (isOpenToClaim) {
+        text = "Open for claims";
+      } else {
+        text =
+          formatDistanceToNow(
+            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+            {
+              addSuffix: false,
+            }
+          ) + " to unlock";
       }
 
       return (
@@ -250,93 +398,67 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
           )}
         >
           <SecondaryLabel className="text-black">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(props.row.original.input_token_data.token_amount_usd)}
+            {RewardStyleMap[props.row.original.reward_style].label}
           </SecondaryLabel>
 
-          <div className="flex flex-row items-center space-x-2">
-            <SecondaryLabel className="text-tertiary">
-              {Intl.NumberFormat("en-US", {
-                style: "decimal",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(props.row.original.input_token_data.token_amount)}{" "}
-              {props.row.original.input_token_data.symbol.toUpperCase()}
-            </SecondaryLabel>
-
-            {costText && (
-              <SecondaryLabel
-                className={cn("text-tertiary", BASE_UNDERLINE.SM)}
-              >
-                {costText}
-              </SecondaryLabel>
-            )}
-          </div>
+          <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
         </div>
       );
     },
   },
-  {
-    accessorKey: "unlock_timestamp",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Input Token",
-    meta: {
-      className: "min-w-32",
-    },
-    cell: (props: any) => {
-      let text = "";
+  // {
+  //   accessorKey: "unlock_timestamp",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Input Token",
+  //   meta: {
+  //     className: "min-w-32",
+  //   },
+  //   cell: (props: any) => {
+  //     let text = "";
 
-      let unlockDate = new Date(
-        parseInt(props.row.original.unlock_timestamp) * 1000
-      );
+  //     let unlockDate = new Date(
+  //       parseInt(props.row.original.unlock_timestamp) * 1000
+  //     );
 
-      let currentDate = new Date();
+  //     let currentDate = new Date();
 
-      if (props.row.original.is_withdrawn === true) {
-        if (props.row.original.offer_side === 0) {
-          text = "Already Withdrawn";
-        } else {
-          text = "Already Paid";
-        }
-      } else if (
-        props.row.original.is_forfeited === true ||
-        unlockDate < currentDate
-      ) {
-        if (props.row.original.offer_side === 0) {
-          text = "Open for Withdrawal";
-        } else {
-          text = "To be Paid";
-        }
-      } else {
-        if (props.row.original.offer_side === 0) {
-          text = `Withdrawal ${formatDistanceToNow(
-            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-            {
-              addSuffix: true,
-            }
-          )}`;
-        } else {
-          text = `Pay ${formatDistanceToNow(
-            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-            {
-              addSuffix: true,
-            }
-          )}`;
-        }
-      }
+  //     if (props.row.original.is_withdrawn === true) {
+  //       if (props.row.original.offer_side === 0) {
+  //         text = "Already Withdrawn";
+  //       } else {
+  //         text = "Already Paid";
+  //       }
+  //     } else if (
+  //       props.row.original.is_forfeited === true ||
+  //       unlockDate < currentDate
+  //     ) {
+  //       if (props.row.original.offer_side === 0) {
+  //         text = "Open for Withdrawal";
+  //       } else {
+  //         text = "To be Paid";
+  //       }
+  //     } else {
+  //       if (props.row.original.offer_side === 0) {
+  //         text = `Withdrawal ${formatDistanceToNow(
+  //           new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+  //           {
+  //             addSuffix: true,
+  //           }
+  //         )}`;
+  //       } else {
+  //         text = `Pay ${formatDistanceToNow(
+  //           new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+  //           {
+  //             addSuffix: true,
+  //           }
+  //         )}`;
+  //       }
+  //     }
 
-      return <div className={cn("font-gt text-sm font-300")}>{text}</div>;
-    },
-  },
+  //     return <div className={cn("font-gt text-sm font-300")}>{text}</div>;
+  //   },
+  // },
   {
     accessorKey: "token_amounts",
     enableResizing: false,
@@ -427,125 +549,6 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
           </div>
         );
       }
-    },
-  },
-  {
-    accessorKey: "input_token_id",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Market Value",
-    meta: {
-      className: "min-w-32",
-    },
-    cell: (props: any) => {
-      const input_token_value =
-        props.row.original.input_token_data.token_amount_usd;
-
-      const tokens_value = props.row.original.tokens_data.reduce(
-        (acc: number, token: any) => acc + token.token_amount_usd,
-        0
-      );
-
-      const market_value = input_token_value + tokens_value;
-
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(market_value)}
-          </SecondaryLabel>
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    meta: {},
-    cell: (props: any) => {
-      const { transactions, setTransactions } = useMarketManager();
-
-      const { currentMarketData, marketMetadata } = useActiveMarket();
-
-      let can_be_forfeited = false;
-
-      if (
-        !!currentMarketData &&
-        currentMarketData.reward_style === 2 && // "2" represents forfeitable position
-        props.row.original.is_forfeited === false &&
-        props.row.original.is_claimed.every(
-          (isClaimed: boolean) => isClaimed === false
-        ) &&
-        props.row.original.is_withdrawn === false &&
-        BigNumber.from(props.row.original.unlock_timestamp).gt(
-          BigNumber.from(Math.floor(Date.now() / 1000))
-        )
-      ) {
-        can_be_forfeited = true;
-      }
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <DotsHorizontalIcon className="h-4 w-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {can_be_forfeited && (
-              <DropdownMenuItem
-                onClick={() => {
-                  const txOptions = getRecipeForfeitTransactionOptions({
-                    position: props.row.original,
-                  });
-
-                  setTransactions([...transactions, txOptions]);
-                }}
-              >
-                Forfeit position
-              </DropdownMenuItem>
-            )}
-
-            <DropdownMenuItem
-              onClick={() => {
-                const explorerUrl = getExplorerUrl({
-                  chainId: props.row.original.chain_id,
-                  value: props.row.original.weiroll_wallet,
-                  type: "address",
-                });
-
-                window.open(explorerUrl, "_blank", "noopener,noreferrer");
-              }}
-            >
-              Weiroll Wallet
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() => {
-                const explorerUrl = getExplorerUrl({
-                  chainId: props.row.original.chain_id,
-                  value: props.row.original.transaction_hash,
-                  type: "tx",
-                });
-
-                window.open(explorerUrl, "_blank", "noopener,noreferrer");
-              }}
-            >
-              Creation Transaction
-            </DropdownMenuItem>
-
-            {/* <DropdownMenuSeparator /> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
     },
   },
 ];
