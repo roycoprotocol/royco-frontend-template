@@ -32,12 +32,6 @@ import { useQuery } from "@tanstack/react-query";
 import { IncentiveInfo } from "../incentive-info";
 import { SupportedTokenMap } from "royco/constants";
 
-export const stkGHO_MARKET_ID =
-  "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b";
-export const aaveGhoContract = "0xb12e82DF057BF16ecFa89D7D089dc7E5C1Dc057B";
-export const aaveGhoStakedAsset = "0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d";
-export const aaveGhoOracle = "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc";
-
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
   type: "secondary" as "secondary",
@@ -57,138 +51,6 @@ export const MarketInfo = React.forwardRef<
     propsActionsDecoderEnterMarket,
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
-
-  const { data: stkGhoAPR } =
-    currentMarketData.id === stkGHO_MARKET_ID
-      ? useQuery({
-          queryKey: ["stkgho-apr"],
-          queryFn: async () => {
-            const response = await fetch(
-              "https://apps.aavechan.com/api/merit/aprs"
-            );
-            if (!response.ok) {
-              throw new Error("Failed to fetch stkGHO APR data.");
-            }
-            return response.json();
-          },
-        })
-      : { data: undefined };
-
-  const { data: aaveStkGhoAPR } =
-    currentMarketData.id === stkGHO_MARKET_ID
-      ? useReadContract({
-          chainId: 1,
-          address: aaveGhoContract,
-          abi: [
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "stakedAsset",
-                  type: "address",
-                },
-                { internalType: "address", name: "oracle", type: "address" },
-              ],
-              name: "getStakedAssetData",
-              outputs: [
-                {
-                  components: [
-                    {
-                      internalType: "uint256",
-
-                      name: "stakedTokenTotalSupply",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "stakedTokenTotalRedeemableAmount",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "stakeCooldownSeconds",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "stakeUnstakeWindow",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "stakedTokenPriceUsd",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "rewardTokenPriceUsd",
-
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-                      name: "stakeApy",
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint128",
-
-                      name: "distributionPerSecond",
-
-                      type: "uint128",
-                    },
-
-                    {
-                      internalType: "bool",
-                      name: "inPostSlashingPeriod",
-                      type: "bool",
-                    },
-
-                    {
-                      internalType: "uint256",
-                      name: "distributionEnd",
-                      type: "uint256",
-                    },
-
-                    {
-                      internalType: "uint256",
-
-                      name: "maxSlashablePercentage",
-
-                      type: "uint256",
-                    },
-                  ],
-                  internalType:
-                    "struct IStakedTokenDataProvider.StakedTokenData",
-                  name: "",
-                  type: "tuple",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-          ],
-          functionName: "getStakedAssetData",
-          args: [aaveGhoStakedAsset, aaveGhoOracle],
-        })
-      : { data: undefined };
 
   const { viewType } = useMarketManager();
 
@@ -263,50 +125,6 @@ export const MarketInfo = React.forwardRef<
       });
     }
   }, [isLoadingVault, isRefetchingVault, dataVault]);
-
-  const detailAPR = useMemo(() => {
-    const data = [];
-
-    const marketAPR = currentMarketData.annual_change_ratio ?? 0;
-
-    if (currentMarketData.id === stkGHO_MARKET_ID) {
-      const stkGhoAPRValue =
-        currentMarketData.id === stkGHO_MARKET_ID && stkGhoAPR
-          ? (Number(stkGhoAPR.currentAPR.actionsAPR["ethereum-stkgho"]) ?? 0) /
-            100
-          : 0;
-
-      data.push({
-        id: "stkgho",
-        value: stkGhoAPRValue,
-        name: "stkGHO",
-        description: "Aave Merit Rewards Incentives",
-        token_data:
-          SupportedTokenMap["1-0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f"],
-      });
-    }
-
-    if (currentMarketData.id === stkGHO_MARKET_ID) {
-      const aaveAPRValue =
-        currentMarketData.id === stkGHO_MARKET_ID && aaveStkGhoAPR
-          ? Number(aaveStkGhoAPR.stakeApy ?? 0) / (100 * 100)
-          : 0;
-
-      data.push({
-        id: "aave",
-        value: aaveAPRValue,
-        name: "Aave",
-        description: "Native Vault Incentives",
-        token_data:
-          SupportedTokenMap["1-0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"],
-      });
-    }
-
-    return {
-      data,
-      netAPR: marketAPR + data.reduce((acc, item) => acc + item.value, 0),
-    };
-  }, [currentMarketData, stkGhoAPR, aaveStkGhoAPR]);
 
   if (
     !isLoading &&
@@ -732,30 +550,26 @@ export const MarketInfo = React.forwardRef<
                   <PrimaryLabel
                     className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                   >
-                    {detailAPR.netAPR >= Math.pow(10, 18) ? (
-                      `0`
-                    ) : (
-                      <SpringNumber
-                        previousValue={
-                          placeholderData[0]
-                            ? placeholderData[0].balance_usd_ap
-                            : 0
-                        }
-                        currentValue={
-                          placeholderData[1]
-                            ? placeholderData[1].balance_usd_ap
-                            : 0
-                        }
-                        numberFormatOptions={{
-                          style: "currency",
-                          currency: "USD",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }}
-                      />
-                    )}
+                    <SpringNumber
+                      previousValue={
+                        placeholderData[0]
+                          ? placeholderData[0].balance_usd_ap
+                          : 0
+                      }
+                      currentValue={
+                        placeholderData[1]
+                          ? placeholderData[1].balance_usd_ap
+                          : 0
+                      }
+                      numberFormatOptions={{
+                        style: "currency",
+                        currency: "USD",
+                        notation: "compact",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }}
+                    />
                   </PrimaryLabel>
                 </div>
               </div>
@@ -770,26 +584,22 @@ export const MarketInfo = React.forwardRef<
                 <PrimaryLabel
                   className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
                 >
-                  {detailAPR.netAPR >= Math.pow(10, 18) ? (
-                    `0`
-                  ) : (
-                    <SpringNumber
-                      previousValue={
-                        previousMarketData &&
-                        previousMarketData.annual_change_ratio
-                          ? previousMarketData.annual_change_ratio
-                          : 0
-                      }
-                      currentValue={detailAPR.netAPR}
-                      numberFormatOptions={{
-                        style: "percent",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-                  )}
+                  <SpringNumber
+                    previousValue={
+                      previousMarketData &&
+                      previousMarketData.annual_change_ratio
+                        ? previousMarketData.annual_change_ratio
+                        : 0
+                    }
+                    currentValue={currentMarketData.annual_change_ratio ?? 0}
+                    numberFormatOptions={{
+                      style: "percent",
+                      notation: "compact",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }}
+                  />
                 </PrimaryLabel>
               </div>
 
@@ -837,7 +647,7 @@ export const MarketInfo = React.forwardRef<
             </div>
           </div>
 
-          <IncentiveInfo className="px-0" detailAPRData={detailAPR} />
+          <IncentiveInfo className="px-0" />
 
           {/**
            * Currently hidden
