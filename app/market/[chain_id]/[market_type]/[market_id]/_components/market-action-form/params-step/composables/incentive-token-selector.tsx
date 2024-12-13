@@ -198,7 +198,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                       key={`container:input-asset-select:${index}`}
                       className="contents"
                     >
-                      <FallMotion height="1.75rem" customKey={baseKey}>
+                      <FallMotion height="2rem" customKey={baseKey}>
                         <div
                           onClick={() => {
                             const token_quote = getTokenQuote({
@@ -210,7 +210,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                           }}
                           key={`fall-motion:${baseKey}`}
                           tabIndex={0}
-                          className="relative h-7 w-full cursor-pointer rounded-md px-1 py-1 text-center text-primary transition-all duration-200 ease-in-out hover:bg-focus hover:text-black"
+                          className="relative h-8 w-full cursor-pointer rounded-md px-1 py-1 text-center text-primary transition-all duration-200 ease-in-out hover:bg-focus hover:text-black"
                         >
                           <div
                             key={index}
