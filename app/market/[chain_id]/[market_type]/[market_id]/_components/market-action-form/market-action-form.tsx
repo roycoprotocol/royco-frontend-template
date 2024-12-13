@@ -420,7 +420,15 @@ export const MarketActionForm = React.forwardRef<
               marketStep === MarketSteps.preview.id && (
                 <p className="mt-5 text-center text-sm text-tertiary">
                   Royco takes a fee only when an offer is filled. See more on
-                  fee breakdown here
+                  fee breakdown{" "}
+                  <a
+                    href="https://docs.royco.org/for-incentive-providers/fees-on-royco"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary"
+                  >
+                    here
+                  </a>
                 </p>
               )}
           </div>
