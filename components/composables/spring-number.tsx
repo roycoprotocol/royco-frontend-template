@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useSpring, animated } from "react-spring";
 import { BigNumber } from "ethers"; // Import BigNumber from ethers.js (or use BigNumber.js)
 import { Waypoint } from "react-waypoint";
@@ -111,20 +111,28 @@ export const SpringNumber = ({
         className={cn(
           "tabular-nums transition-colors duration-200 ease-in-out",
           className,
+          "h-fit",
+          // "leading-normal",
           color === "text-black" ? defaultColor : color,
           { "animate-blink": isBlinking }
         )}
       >
-        {isBlinking &&
+        {/* {isBlinking &&
           (noSpan ? (
             number.to((n: any) => formatNumber(n))
           ) : (
             <animated.span className={cn("", spanClassName)}>
               {number.to((n: any) => formatNumber(n))}
             </animated.span>
-          ))}
+          ))} */}
 
-        {!isBlinking && formatNumber(currentValue)}
+        {isBlinking
+          ? number.to((n: any) => formatNumber(n))
+          : formatNumber(currentValue)}
+
+        {/* {isBlinking && number.to((n: any) => formatNumber(n))} */}
+
+        {/* {!isBlinking && formatNumber(currentValue)} */}
       </animated.div>
     </Waypoint>
   );
