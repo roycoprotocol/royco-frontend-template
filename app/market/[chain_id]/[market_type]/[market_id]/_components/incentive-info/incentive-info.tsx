@@ -57,41 +57,43 @@ const InfoValueElementClone = React.forwardRef<
     return (
       <Fragment>
         <SecondaryLabel className={cn("text-black", className)}>
-          {token_data.annual_change_ratio === Math.pow(10, 18)
-            ? `N/D`
-            : Intl.NumberFormat("en-US", {
-                style: "percent",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 0, // Ensures at least 2 decimal places
-                maximumFractionDigits:
-                  token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
-              }).format(token_data.annual_change_ratio)}{" "}
+          {Intl.NumberFormat("en-US", {
+            style: "percent",
+            notation: "standard",
+            useGrouping: true,
+            minimumFractionDigits: 0, // Ensures at least 2 decimal places
+            maximumFractionDigits:
+              token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
+          }).format(token_data.annual_change_ratio)}{" "}
         </SecondaryLabel>
 
-        <TertiaryLabel className={cn("", className)}>
-          {Intl.NumberFormat("en-US", {
-            notation: "standard",
-            useGrouping: true,
-            minimumFractionDigits: 0, // Ensures at least 2 decimal places
-            maximumFractionDigits: 2, // Limits to exactly 2 decimal places
-          }).format(token_data.per_input_token)}{" "}
-          {token_data.symbol} per{" "}
-          {currentMarketData.input_token_data.symbol.toUpperCase()}
-        </TertiaryLabel>
+        {!!token_data.per_input_token && (
+          <TertiaryLabel className={cn("", className)}>
+            {Intl.NumberFormat("en-US", {
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 0, // Ensures at least 2 decimal places
+              maximumFractionDigits: 2, // Limits to exactly 2 decimal places
+            }).format(token_data.per_input_token)}{" "}
+            {token_data.symbol} per{" "}
+            {currentMarketData.input_token_data.symbol.toUpperCase()}
+          </TertiaryLabel>
+        )}
 
-        <TertiaryLabel className={cn("", className)}>
-          @{" "}
-          {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            notation: "standard",
-            useGrouping: true,
-            minimumFractionDigits: 0, // Ensures at least 2 decimal places
-            maximumFractionDigits: 8, // Limits to exactly 2 decimal places
-          }).format(token_data.fdv)}{" "}
-          FDV
-        </TertiaryLabel>
+        {!!token_data.fdv && (
+          <TertiaryLabel className={cn("", className)}>
+            @{" "}
+            {Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 0, // Ensures at least 2 decimal places
+              maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+            }).format(token_data.fdv)}{" "}
+            FDV
+          </TertiaryLabel>
+        )}
       </Fragment>
     );
   }
@@ -135,9 +137,10 @@ export const IncentiveInfo = React.forwardRef<
           }
         );
 
-  const currentNetAPR = detailAPRData
-    ? detailAPRData.netAPR
-    : (currentMarketData?.annual_change_ratio ?? 0);
+  const currentNativeIncentives =
+    currentMarketData.native_yield?.native_annual_change_ratios;
+
+  const currentNetAPR = currentMarketData?.annual_change_ratio ?? 0;
   const previousNetAPR = previousMarketData?.annual_change_ratio ?? 0;
 
   if (!!currentMarketData && !!marketMetadata) {
@@ -228,7 +231,66 @@ export const IncentiveInfo = React.forwardRef<
           </InfoCard>
         )}
 
-        {detailAPRData && detailAPRData.data.length > 0 && (
+        {currentNativeIncentives && currentNativeIncentives.length !== 0 && (
+          <InfoCard
+            className={cn(
+              "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll py-2 pt-0",
+              BASE_MARGIN_TOP.MD
+            )}
+          >
+            <TertiaryLabel className={cn("", className)}>
+              Underlying Incentives
+            </TertiaryLabel>
+
+            {currentNativeIncentives.map((token_data, token_data_index) => {
+              const BASE_KEY = `market:native-incentive-info:${incentiveType}:${token_data.id}`;
+
+              return (
+                <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
+                  <InfoCard.Row.Key className="relative h-fit w-fit">
+                    {/* <AnimatePresence mode="popLayout">
+                      <FallMotion
+                        customKey={`${BASE_KEY}:${token_data.id}:token`}
+                        height="1rem"
+                        containerClassName="w-full absolute inset-0"
+                      >
+                        <InfoKeyElementClone token_data={token_data} />
+                      </FallMotion>
+                    </AnimatePresence> */}
+
+                    {/**
+                     * @notice Invisible
+                     */}
+                    <InfoKeyElementClone
+                      className="mb-1"
+                      symbolClassName="text-black font-normal"
+                      token_data={token_data}
+                    />
+
+                    <TertiaryLabel className={cn("", className)}>
+                      {token_data.label}
+                    </TertiaryLabel>
+                  </InfoCard.Row.Key>
+
+                  <InfoCard.Row.Value className="relative flex h-fit w-fit flex-col items-end gap-0">
+                    {/**
+                     * @notice Invisible
+                     */}
+                    <InfoValueElementClone
+                      className=""
+                      token_data={token_data}
+                      currentMarketData={currentMarketData}
+                      previousMarketData={previousMarketData}
+                      incentiveType={incentiveType}
+                    />
+                  </InfoCard.Row.Value>
+                </InfoCard.Row>
+              );
+            })}
+          </InfoCard>
+        )}
+
+        {/* {detailAPRData && detailAPRData.data.length > 0 && (
           <InfoCard
             className={cn("flex h-fit flex-col gap-3 overflow-y-scroll py-2")}
           >
@@ -273,7 +335,7 @@ export const IncentiveInfo = React.forwardRef<
               );
             })}
           </InfoCard>
-        )}
+        )} */}
 
         {!!currentMarketData.native_annual_change_ratio && (
           <div

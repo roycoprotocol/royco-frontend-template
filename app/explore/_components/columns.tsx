@@ -30,7 +30,6 @@ import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
 import { capitalize } from "lodash";
-import { stkGHO_MARKET_ID } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-info/market-info";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -389,9 +388,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       }
 
       let currentValue = props.row.original.annual_change_ratio;
-      if (props.row.original.id === stkGHO_MARKET_ID) {
-        currentValue = parseInt(String((currentValue + 0.2) * 100)) / 100;
-      }
 
       return (
         <div
