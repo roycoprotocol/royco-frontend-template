@@ -48,9 +48,9 @@ export const exploreColumnNames = {
   input_token_id: "Asset",
   chain_id: "Chain",
   market_type: "Payout",
-  total_incentive_amounts_usd: "Incentives",
+  total_incentive_amounts_usd: "Add. Incentives",
   locked_quantity_usd: "TVL",
-  annual_change_ratio: "Yield",
+  annual_change_ratio: "Net APR",
   chain: "Chain",
 };
 

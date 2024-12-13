@@ -163,7 +163,7 @@ export const IncentiveInfo = React.forwardRef<
               className="pb-3 pt-7"
               contentClassName={cn("text-sm")}
             >
-              No incentives offered
+              No add. incentives offered
             </AlertIndicator>
           ))}
 
