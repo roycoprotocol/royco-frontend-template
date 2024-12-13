@@ -69,14 +69,41 @@ const InfoValueElementClone = React.forwardRef<
 
         {!!token_data.per_input_token && (
           <TertiaryLabel className={cn("", className)}>
-            {Intl.NumberFormat("en-US", {
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 0, // Ensures at least 2 decimal places
-              maximumFractionDigits: 2, // Limits to exactly 2 decimal places
-            }).format(token_data.per_input_token)}{" "}
-            {token_data.symbol} per{" "}
-            {currentMarketData.input_token_data.symbol.toUpperCase()}
+            {(() => {
+              const value = token_data.per_input_token;
+
+              const decimals =
+                value < 1 ? Math.ceil(Math.abs(Math.log10(value))) : 0;
+
+              if (decimals > 1) {
+                const multiplier = Math.pow(10, decimals);
+                return (
+                  <>
+                    {Intl.NumberFormat("en-US", {
+                      notation: "standard",
+                      useGrouping: true,
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    }).format(value * multiplier)}{" "}
+                    {token_data.symbol} per {multiplier}{" "}
+                    {currentMarketData.input_token_data.symbol.toUpperCase()}
+                  </>
+                );
+              }
+
+              return (
+                <>
+                  {Intl.NumberFormat("en-US", {
+                    notation: "standard",
+                    useGrouping: true,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  }).format(value)}{" "}
+                  {token_data.symbol} per{" "}
+                  {currentMarketData.input_token_data.symbol.toUpperCase()}
+                </>
+              );
+            })()}
           </TertiaryLabel>
         )}
 
