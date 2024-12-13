@@ -241,15 +241,19 @@ const ChartTooltipContent = React.forwardRef<
                           <div className="mr-2 text-tertiary">Type:</div>
                           <div className="font-mono font-medium tabular-nums text-secondary">
                             {item.payload.offer_side === 0
-                              ? "Incentive Request"
-                              : "Incentive Offer"}
+                              ? "AP Offer"
+                              : "IP Offer"}
                           </div>
                         </div>
                       )}
                       {item.value !== undefined &&
                         item.payload?.quantity !== undefined && (
                           <div className="flex justify-between">
-                            <div className="mr-2 text-tertiary">Offered:</div>
+                            <div className="mr-2 text-tertiary">
+                              {item.payload.offer_side === 0
+                                ? "Offered:"
+                                : "Incentives:"}
+                            </div>
                             {item.payload.offer_side === 0 ? (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
                                 {Intl.NumberFormat("en-US", {
@@ -292,7 +296,11 @@ const ChartTooltipContent = React.forwardRef<
                       {item.value !== undefined &&
                         item.payload?.quantity !== undefined && (
                           <div className="flex justify-between">
-                            <div className="mr-2 text-tertiary">Requested:</div>
+                            <div className="mr-2 text-tertiary">
+                              {item.payload.offer_side === 0
+                                ? "Incentives Requested:"
+                                : "Assets Requested:"}
+                            </div>
                             {item.payload.offer_side === 1 ? (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
                                 {Intl.NumberFormat("en-US", {

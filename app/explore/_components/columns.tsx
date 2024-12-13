@@ -273,7 +273,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
 
     meta: {
-      className: "min-w-32",
+      className: "min-w-40",
     },
     cell: (props: any) => {
       const rowIndex = props.row.index;
