@@ -133,8 +133,8 @@ const TokenDisplayer = React.forwardRef<
                         "z-50 -mt-2 bg-white",
                         hover !== true &&
                           "pointer-events-none flex flex-col items-center justify-center opacity-0",
-                        browserType !== "webkit" && "h-9",
-                        size === 4 && "h-8",
+                        // browserType !== "webkit" && "h-9",
+                        // size === 4 && "h-8",
                         size === 4 && "text-sm"
                       )}
                     >
@@ -142,7 +142,8 @@ const TokenDisplayer = React.forwardRef<
                        * @TODO Test remaining for font centering
                        */}
                       {/* <span className="">{token.symbol.toUpperCase()}</span> */}
-                      <div>{token.symbol}</div>
+                      {/* <div>{token.symbol}</div> */}
+                      {token.symbol}
                     </TooltipContent>,
                     document.body
                   )}
@@ -156,9 +157,9 @@ const TokenDisplayer = React.forwardRef<
             "font-gt font-300 ",
             "flex flex-col items-center",
             symbolClassName,
-            browserType === "webkit" && "h-fit",
-            size === 5 && "h-5 text-base",
-            size === 4 && "h-4 text-sm"
+            // browserType === "webkit" && "h-fit",
+            size === 5 && "text-base",
+            size === 4 && "text-sm"
           )}
         >
           {/* {symbols && tokens.length >= 1 && (
@@ -173,7 +174,7 @@ const TokenDisplayer = React.forwardRef<
             </span>
           )} */}
 
-          <span
+          {/* <span
             className={cn(
               "",
               size === 5 && "leading-6", // leading-6 aligns properly
@@ -186,7 +187,14 @@ const TokenDisplayer = React.forwardRef<
                 {tokens.length > 1 && ` +${tokens.length - 1} more`}
               </Fragment>
             )}
-          </span>
+          </span> */}
+
+          {symbols && tokens.length >= 1 && (
+            <Fragment>
+              {name === true ? tokens[0].name : tokens[0].symbol}
+              {tokens.length > 1 && ` +${tokens.length - 1} more`}
+            </Fragment>
+          )}
         </div>
       </div>
     );
