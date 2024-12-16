@@ -83,7 +83,7 @@ export const PreviewStep = React.forwardRef<
     );
   } else if (canBePerformedPartially === false) {
     return (
-      <div className="flex h-12 w-full grow flex-col place-content-center items-center">
+      <div className="flex w-full grow flex-col place-content-center items-center">
         <AlertIndicator>
           {offerType === MarketOfferType.market.id &&
           userType === MarketUserType.ap.id

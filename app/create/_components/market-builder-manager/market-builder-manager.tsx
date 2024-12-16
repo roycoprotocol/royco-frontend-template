@@ -156,6 +156,17 @@ export const MarketBuilderManager = React.forwardRef<
             )}
           >
             <Form {...marketBuilderForm}>
+              {activeStep === "actions" && (
+                <BuilderSectionWrapper
+                  key={`market-manager:actions-list:container`}
+                >
+                  <h2 className="heading-3">Sequence</h2>
+                  <p className="caption mt-2 pb-5 text-tertiary">
+                    Order the functions as you want them to run. Customize
+                    parameters/inputs on the next screen
+                  </p>
+                </BuilderSectionWrapper>
+              )}
               <form
                 onSubmit={marketBuilderForm.handleSubmit(onSubmit)}
                 className={cn(
@@ -203,7 +214,6 @@ export const MarketBuilderManager = React.forwardRef<
                 )}
               </form>
             </Form>
-
             {activeStep !== MarketBuilderSteps.transaction.id && (
               <BuilderSectionWrapper
                 className="shrink-0"

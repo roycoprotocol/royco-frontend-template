@@ -87,6 +87,7 @@ export const ContractList = React.forwardRef<
       arr.push({
         ...(weirollContract as any)[0],
         id: (weirollContract as any)[0]?.contract_id,
+        // description: "Weiroll Wallet Helper.",
       });
     }
 
