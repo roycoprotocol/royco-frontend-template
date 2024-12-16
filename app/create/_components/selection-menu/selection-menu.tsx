@@ -135,9 +135,9 @@ export const SelectionMenu = React.forwardRef<
 
       {/* {activeTab.id === "contracts" && <ContractTypeSelector />} */}
 
-      <SearchBar className="" />
+      {/* <SearchBar className="" /> */}
 
-      <div className="mt-5 flex w-full flex-1 flex-col overflow-hidden rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
+      <div className="flex w-full flex-1 flex-col overflow-hidden rounded-xl rounded-b-none border border-b-0 border-t border-divider bg-z2">
         {isLoadingContractList && (
           <div className="flex w-full flex-col items-center p-5">
             <LoadingSpinner className="h-4 w-4" />

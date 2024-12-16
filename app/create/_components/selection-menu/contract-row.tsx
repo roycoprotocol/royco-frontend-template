@@ -159,10 +159,10 @@ export const ContractRow = React.forwardRef<
                     </div>
                   )}
                 </div>
-                <div className="h-5 grow overflow-hidden truncate text-ellipsis lowercase">
+                <div className="h-5 grow overflow-hidden truncate text-ellipsis">
                   <span className="text-xs leading-5 text-tertiary">
-                    {contract.address.slice(0, 4)}...
-                    {contract.address.slice(-4)}
+                    {contract.description ||
+                      `${contract.address.slice(0, 4)}...${contract.address.slice(-4)}`.toLowerCase()}
                   </span>
                 </div>
               </div>
