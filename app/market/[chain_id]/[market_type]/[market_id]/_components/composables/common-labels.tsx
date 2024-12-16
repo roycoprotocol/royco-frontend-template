@@ -59,7 +59,7 @@ export const PrimaryLabel = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex h-8 max-w-full grow overflow-hidden truncate text-ellipsis">
+      <div className="flex h-8 max-w-full grow text-ellipsis">
         <span className="truncate text-ellipsis leading-9">
           {props.children}
         </span>
