@@ -31,6 +31,7 @@ import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
 import { useQuery } from "@tanstack/react-query";
 import { IncentiveInfo } from "../incentive-info";
 import { SupportedTokenMap } from "royco/constants";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -544,8 +545,8 @@ export const MarketInfo = React.forwardRef<
              * Market Balance
              */}
             {placeholderData[1] && placeholderData[1].balance_usd_ap > 0 && (
-              <div className="flex flex-1">
-                <div className="hide-scrollbar flex-1 overflow-x-scroll rounded-xl border bg-z2 p-3">
+              <div className="hide-scrollbar flex flex-1 overflow-x-scroll">
+                <div className="hide-scrollbar flex-1 flex-col overflow-x-scroll rounded-xl border bg-z2 p-3">
                   <SecondaryLabel>Balance</SecondaryLabel>
                   <PrimaryLabel
                     className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}
@@ -575,11 +576,11 @@ export const MarketInfo = React.forwardRef<
               </div>
             )}
 
-            <div className="flex flex-1 rounded-xl border bg-z2">
+            <div className="hide-scrollbar flex flex-1 overflow-x-scroll rounded-xl border bg-z2">
               {/**
                * Market APR
                */}
-              <div className="hide-scrollbar relative flex-1 overflow-x-scroll p-3">
+              <div className="hide-scrollbar flex-1 overflow-x-scroll p-3">
                 <SecondaryLabel>APR</SecondaryLabel>
                 <PrimaryLabel
                   className={cn(BASE_MARGIN_TOP.SM, "text-3xl font-light")}

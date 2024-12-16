@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { MarketSteps, useMarketManager } from "@/store";
+import { MarketSteps, MarketTransactionType, useMarketManager } from "@/store";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
@@ -29,6 +29,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
+import confetti from "canvas-confetti";
+import { TypedRoycoTransactionType } from "@/sdk/market/utils";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -86,6 +88,38 @@ export const TransactionModal = React.forwardRef<
       }
     });
   }, [transactions]);
+
+  const triggerConfetti = () => {
+    const defaults = {
+      startVelocity: 14,
+      spread: 360,
+      ticks: 300,
+      zIndex: 9999,
+      particleCount: 30,
+      scalar: 0.8,
+      gravity: 0.5,
+      drift: 0,
+      decay: 0.96,
+    };
+
+    let animationFrame: number;
+    const shower = () => {
+      const particleCount = 8;
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: Math.random(), y: -0.1 },
+      });
+
+      animationFrame = requestAnimationFrame(shower);
+
+      setTimeout(() => {
+        cancelAnimationFrame(animationFrame);
+      }, 500);
+    };
+
+    shower();
+  };
 
   const findNextTransaction = () => {
     for (let i = 0; i < transactions.length; i++) {
@@ -167,9 +201,30 @@ export const TransactionModal = React.forwardRef<
       setTimeout(() => {
         queryClient.invalidateQueries();
         setIsTransactionTimeout(false);
-      }, 5 * 1000); // 10 seconds
+      }, 5 * 1000); // 5 seconds
     }
   }, [allTransactionsExecuted]);
+
+  useEffect(() => {
+    if (
+      transactions.length > 0 &&
+      allTransactionsExecuted &&
+      !isTransactionTimeout
+    ) {
+      const transactionId = currentTransaction?.id;
+      if (
+        transactionId &&
+        [
+          MarketTransactionType.fill_ap_offers.id,
+          MarketTransactionType.fill_ip_offers.id,
+          MarketTransactionType.create_ap_offer.id,
+          MarketTransactionType.create_ip_offer.id,
+        ].includes(transactionId as TypedRoycoTransactionType)
+      ) {
+        triggerConfetti();
+      }
+    }
+  }, [transactions.length, allTransactionsExecuted, isTransactionTimeout]);
 
   useEffect(() => {
     findNextTransaction();
