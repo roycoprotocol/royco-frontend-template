@@ -1,5 +1,8 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 // import { cookieStorage, createStorage, http } from "wagmi";
+import { fallback, http } from "wagmi";
+import { unstable_connector } from "wagmi";
+import { injected } from "wagmi/connectors";
 
 import {
   EthereumSepolia,
@@ -33,10 +36,39 @@ export const config = getDefaultConfig({
       : []),
   ],
   ssr: true,
-  // storage: createStorage({
-  //   storage:
-  //     typeof window !== "undefined" ? window.localStorage : cookieStorage,
-  // }),
+  multiInjectedProviderDiscovery: true,
+  transports: {
+    [EthereumMainnet.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_1),
+      http(),
+    ]),
+    [ArbitrumOne.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_42161),
+      http(),
+    ]),
+    [Base.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_8453),
+      http(),
+    ]),
+    [Corn.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_21000000),
+      http(),
+    ]),
+    [Plume.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_98865),
+      http(),
+    ]),
+    [EthereumSepolia.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_11155111),
+      http(),
+    ]),
+  },
   batch: {
     multicall: true,
   },
