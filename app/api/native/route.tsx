@@ -17,14 +17,14 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );
 
-    // 1. Fetch first 100 rows with conditions
+    // 1. Fetch first 10 rows with conditions
     const { data: vaults, error } = await client
       .from("raw_underlying_vaults")
       .select("*")
-      .lt("retries", 100)
+      .lt("retries", 10)
       .lt("last_updated", new Date(Date.now() - 60 * 1000).toISOString())
       .order("last_updated", { ascending: true })
-      .limit(100);
+      .limit(10);
 
     if (error) throw error;
 
