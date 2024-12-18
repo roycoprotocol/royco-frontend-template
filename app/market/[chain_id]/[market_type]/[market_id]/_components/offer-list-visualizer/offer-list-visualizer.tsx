@@ -159,7 +159,7 @@ export const OfferListVisualizer = React.forwardRef<
             config={chartConfig}
           >
             <BarChart
-              margin={{ left: 30, bottom: 36 }}
+              margin={{ left: 30, bottom: 20 }}
               accessibilityLayer
               data={chartData}
             >
@@ -169,11 +169,6 @@ export const OfferListVisualizer = React.forwardRef<
                 tickMargin={10}
                 axisLine={false}
                 interval={0}
-                label={{
-                  value: "Incentives via Royco",
-                  position: "insideBottom",
-                  offset: -34,
-                }}
                 tick={
                   <CustomizedXAxisTick
                     data={chartData}
