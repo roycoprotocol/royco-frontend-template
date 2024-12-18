@@ -38,10 +38,10 @@ export const PositionsVaultTable = React.forwardRef<
   });
 
   const positions = useMemo(() => {
-    if (data && data.data) {
+    if (data && data.count) {
       return data.data.slice(
         (internalPageIndex * 5) % 20,
-        (internalPageIndex * 5 + 5) % 20
+        ((internalPageIndex * 5 + 4) % 20) + 1
       );
     } else {
       return [];
