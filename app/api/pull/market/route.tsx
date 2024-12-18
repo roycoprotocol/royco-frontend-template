@@ -61,8 +61,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     let { chain_id, market_type, market_id } = body;
 
-    console.log(chain_id, market_type, market_id);
-
     // Check if chain id is provided
     if (!chain_id) {
       return Response.json({ status: "Chain ID is required" }, { status: 400 });

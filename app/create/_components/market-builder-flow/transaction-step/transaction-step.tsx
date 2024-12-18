@@ -50,22 +50,25 @@ export const TransactionStep = React.forwardRef<
   const updateMarketUserdata = async () => {
     try {
       if (!!market_id) {
-        const response = await fetch("/api/market", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chain_id: marketBuilderForm.watch("chain").id,
-            market_type:
-              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-            tx_hash: txHash,
-            id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
-            name: marketBuilderForm.watch("market_name"),
-            description: marketBuilderForm.watch("market_description"),
-            // Add other data you want to send in the request body
-          }),
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/pull/market`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chain_id: marketBuilderForm.watch("chain").id,
+              market_type:
+                marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
+              tx_hash: txHash,
+              id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
+              name: marketBuilderForm.watch("market_name"),
+              description: marketBuilderForm.watch("market_description"),
+              // Add other data you want to send in the request body
+            }),
+          }
+        );
 
         await response.json();
       }
