@@ -233,7 +233,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
     accessorKey: "input_token_data",
     enableResizing: false,
     enableSorting: false,
-    header: "Asset Supplied",
+    header: "Supplied Balance",
     meta: {
       className: "min-w-32",
     },
@@ -295,117 +295,117 @@ export const positionsRecipeColumns: ColumnDef<EnrichedOfferDataType> = [
       );
     },
   },
-  {
-    accessorKey: "tokens_data",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentives",
-    meta: {
-      className: "min-w-36",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
-          )}
-        >
-          {props.row.original.tokens_data.map(
-            (
-              // @ts-ignore
-              token,
-              // @ts-ignore
-              tokenIndex
-            ) => {
-              return (
-                <div key={tokenIndex} className="flex items-center space-x-2">
-                  <div className="h-4">
-                    <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }).format(token.token_amount)}
-                    </span>
-                  </div>
+  // {
+  //   accessorKey: "tokens_data",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Incentives",
+  //   meta: {
+  //     className: "min-w-36",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
+  //         )}
+  //       >
+  //         {props.row.original.tokens_data.map(
+  //           (
+  //             // @ts-ignore
+  //             token,
+  //             // @ts-ignore
+  //             tokenIndex
+  //           ) => {
+  //             return (
+  //               <div key={tokenIndex} className="flex items-center space-x-2">
+  //                 <div className="h-4">
+  //                   <span className="leading-5">
+  //                     {Intl.NumberFormat("en-US", {
+  //                       style: "decimal",
+  //                       notation: "standard",
+  //                       useGrouping: true,
+  //                       minimumFractionDigits: 2,
+  //                       maximumFractionDigits: 8,
+  //                     }).format(token.token_amount)}
+  //                   </span>
+  //                 </div>
 
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
-                </div>
-              );
-            }
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "reward_style",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentive Payout",
-    meta: {
-      className: "min-w-40",
-    },
-    cell: (props: any) => {
-      const unlockDate = new Date(
-        parseInt(props.row.original.unlock_timestamp) * 1000
-      );
-      const currentDate = new Date();
+  //                 <TokenDisplayer size={4} tokens={[token]} symbols={true} />
+  //               </div>
+  //             );
+  //           }
+  //         )}
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: "reward_style",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Incentive Payout",
+  //   meta: {
+  //     className: "min-w-40",
+  //   },
+  //   cell: (props: any) => {
+  //     const unlockDate = new Date(
+  //       parseInt(props.row.original.unlock_timestamp) * 1000
+  //     );
+  //     const currentDate = new Date();
 
-      let isOpenToClaim = false;
-      let isAlreadyClaimed = false;
+  //     let isOpenToClaim = false;
+  //     let isAlreadyClaimed = false;
 
-      if (props.row.original.reward_style === 0) {
-        isOpenToClaim = true;
-      } else if (unlockDate < currentDate) {
-        isOpenToClaim = true;
-      }
+  //     if (props.row.original.reward_style === 0) {
+  //       isOpenToClaim = true;
+  //     } else if (unlockDate < currentDate) {
+  //       isOpenToClaim = true;
+  //     }
 
-      if (
-        props.row.original.is_claimed.every((claim: boolean) => claim === true)
-      ) {
-        isAlreadyClaimed = true;
-      }
+  //     if (
+  //       props.row.original.is_claimed.every((claim: boolean) => claim === true)
+  //     ) {
+  //       isAlreadyClaimed = true;
+  //     }
 
-      let text = "";
+  //     let text = "";
 
-      if (props.row.original.is_forfeited === true) {
-        text = "Forfeited";
-      } else if (isAlreadyClaimed) {
-        if (props.row.original.offer_side === 0) {
-          text = "Already claimed";
-        } else {
-          text = "Already paid";
-        }
-      } else if (isOpenToClaim) {
-        text = "Open for claims";
-      } else {
-        text =
-          formatDistanceToNow(
-            new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
-            {
-              addSuffix: false,
-            }
-          ) + " to unlock";
-      }
+  //     if (props.row.original.is_forfeited === true) {
+  //       text = "Forfeited";
+  //     } else if (isAlreadyClaimed) {
+  //       if (props.row.original.offer_side === 0) {
+  //         text = "Already claimed";
+  //       } else {
+  //         text = "Already paid";
+  //       }
+  //     } else if (isOpenToClaim) {
+  //       text = "Open for claims";
+  //     } else {
+  //       text =
+  //         formatDistanceToNow(
+  //           new Date(parseInt(props.row.original.unlock_timestamp) * 1000),
+  //           {
+  //             addSuffix: false,
+  //           }
+  //         ) + " to unlock";
+  //     }
 
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">
-            {RewardStyleMap[props.row.original.reward_style].label}
-          </SecondaryLabel>
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+  //         )}
+  //       >
+  //         <SecondaryLabel className="text-black">
+  //           {RewardStyleMap[props.row.original.reward_style].label}
+  //         </SecondaryLabel>
 
-          <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
-        </div>
-      );
-    },
-  },
+  //         <SecondaryLabel className="text-tertiary">{text}</SecondaryLabel>
+  //       </div>
+  //     );
+  //   },
+  // },
   // {
   //   accessorKey: "unlock_timestamp",
   //   enableResizing: false,
