@@ -80,7 +80,7 @@ export const TransactionModal = React.forwardRef<
     status: confirmationStatus,
   } = useWaitForTransactionReceipt({
     hash: txHash,
-    confirmations: 2,
+    confirmations: 1,
     query: {
       retry: true,
     },
