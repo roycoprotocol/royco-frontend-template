@@ -28,6 +28,9 @@ export const TransactionStep = React.forwardRef<
     status: txStatus,
   } = useWaitForTransactionReceipt({
     hash: txHash,
+    query: {
+      retry: true,
+    },
   });
 
   const { activeStep, setActiveStep } = useMarketBuilderManager();

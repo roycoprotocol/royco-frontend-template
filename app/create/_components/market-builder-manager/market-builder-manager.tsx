@@ -74,7 +74,11 @@ export const MarketBuilderManager = React.forwardRef<
     isError: isTxError,
     error: txError,
     writeContract,
-  } = useWriteContract();
+  } = useWriteContract({
+    mutation: {
+      retry: true,
+    },
+  });
 
   // console.log("market creation txError", txError);
 
