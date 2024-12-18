@@ -30,7 +30,7 @@ import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
-import { TypedRoycoTransactionType } from "@/sdk/market/utils";
+import { TypedRoycoTransactionType } from "royco/market";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -67,7 +67,11 @@ export const TransactionModal = React.forwardRef<
     error: txError,
     writeContract,
     reset: resetTx,
-  } = useWriteContract();
+  } = useWriteContract({
+    mutation: {
+      retry: true,
+    },
+  });
 
   const {
     isLoading: isTxConfirming,
@@ -77,6 +81,9 @@ export const TransactionModal = React.forwardRef<
   } = useWaitForTransactionReceipt({
     hash: txHash,
     confirmations: 2,
+    query: {
+      retry: true,
+    },
   });
 
   const allTransactionsExecuted = useMemo(() => {
