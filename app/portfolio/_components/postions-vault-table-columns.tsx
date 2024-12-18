@@ -51,6 +51,45 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
+    accessorKey: "market_value",
+    enableResizing: false,
+    enableSorting: false,
+    header: "Market Value",
+    meta: {
+      className: "min-w-32",
+    },
+    cell: (props: any) => {
+      const input_token_value =
+        props.row.original.input_token_data.token_amount_usd;
+
+      const tokens_value = props.row.original.tokens_data.reduce(
+        (acc: number, token: any) => acc + token.token_amount_usd,
+        0
+      );
+
+      const market_value = input_token_value + tokens_value;
+
+      return (
+        <div
+          className={cn(
+            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+          )}
+        >
+          <SecondaryLabel className="text-black">
+            {Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            }).format(market_value)}
+          </SecondaryLabel>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "annual_change_ratio",
     enableResizing: false,
     enableSorting: false,
@@ -74,117 +113,6 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               maximumFractionDigits: 2,
             }).format(props.row.original.annual_change_ratio)}
           </SecondaryLabel>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "reward_style",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentive Payout",
-    meta: {
-      className: "min-w-32 w-52",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "tokens_data",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentives",
-    meta: {
-      className: "min-w-36",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
-          )}
-        >
-          {props.row.original.tokens_data.length === 0 && (
-            <div className="flex items-center space-x-2">None</div>
-          )}
-
-          {props.row.original.tokens_data.map(
-            (
-              // @ts-ignore
-              token,
-              // @ts-ignore
-              tokenIndex
-            ) => {
-              return (
-                <div key={tokenIndex} className="flex items-center space-x-2">
-                  <div className="h-4">
-                    <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }).format(token.token_amount)}
-                    </span>
-                  </div>
-
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
-                </div>
-              );
-            }
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "input_token_data",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Cost",
-    meta: {
-      className: "min-w-32 w-64",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(props.row.original.input_token_data.token_amount_usd)}
-          </SecondaryLabel>
-
-          <div className="flex flex-row items-center space-x-2">
-            <SecondaryLabel className="text-tertiary">
-              {Intl.NumberFormat("en-US", {
-                style: "decimal",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(props.row.original.input_token_data.token_amount)}{" "}
-              {props.row.original.input_token_data.symbol.toUpperCase()}
-            </SecondaryLabel>
-          </div>
         </div>
       );
     },
@@ -262,24 +190,83 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
-    accessorKey: "market_value",
+    accessorKey: "tokens_data",
     enableResizing: false,
     enableSorting: false,
-    header: "Market Value",
+    header: "Incentives",
     meta: {
-      className: "min-w-32",
+      className: "min-w-36",
     },
     cell: (props: any) => {
-      const input_token_value =
-        props.row.original.input_token_data.token_amount_usd;
+      return (
+        <div
+          className={cn(
+            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
+          )}
+        >
+          {props.row.original.tokens_data.length === 0 && (
+            <div className="flex items-center space-x-2">None</div>
+          )}
 
-      const tokens_value = props.row.original.tokens_data.reduce(
-        (acc: number, token: any) => acc + token.token_amount_usd,
-        0
+          {props.row.original.tokens_data.map(
+            (
+              // @ts-ignore
+              token,
+              // @ts-ignore
+              tokenIndex
+            ) => {
+              return (
+                <div key={tokenIndex} className="flex items-center space-x-2">
+                  <div className="h-4">
+                    <span className="leading-5">
+                      {Intl.NumberFormat("en-US", {
+                        style: "decimal",
+                        notation: "standard",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 8,
+                      }).format(token.token_amount)}
+                    </span>
+                  </div>
+
+                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
+                </div>
+              );
+            }
+          )}
+        </div>
       );
-
-      const market_value = input_token_value + tokens_value;
-
+    },
+  },
+  {
+    accessorKey: "reward_style",
+    enableResizing: false,
+    enableSorting: false,
+    header: "Reward Schedule",
+    meta: {
+      className: "min-w-32 w-52",
+    },
+    cell: (props: any) => {
+      return (
+        <div
+          className={cn(
+            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+          )}
+        >
+          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "input_token_data",
+    enableResizing: false,
+    enableSorting: false,
+    header: "Principal",
+    meta: {
+      className: "min-w-32 w-64",
+    },
+    cell: (props: any) => {
       return (
         <div
           className={cn(
@@ -294,8 +281,21 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
               useGrouping: true,
               minimumFractionDigits: 2,
               maximumFractionDigits: 8,
-            }).format(market_value)}
+            }).format(props.row.original.input_token_data.token_amount_usd)}
           </SecondaryLabel>
+
+          <div className="flex flex-row items-center space-x-2">
+            <SecondaryLabel className="text-tertiary">
+              {Intl.NumberFormat("en-US", {
+                style: "decimal",
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8,
+              }).format(props.row.original.input_token_data.token_amount)}{" "}
+              {props.row.original.input_token_data.symbol.toUpperCase()}
+            </SecondaryLabel>
+          </div>
         </div>
       );
     },
