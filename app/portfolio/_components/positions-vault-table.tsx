@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useEnrichedPositionsVault } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
@@ -19,6 +19,14 @@ export const PositionsVaultTable = React.forwardRef<
   const { address } = useAccount();
 
   const [pageIndex, setPageIndex] = useState(0);
+  const [internalPageIndex, setInternalPageIndex] = useState(0);
+
+  useEffect(() => {
+    if ((internalPageIndex + 1) * 5 > 20)
+      setPageIndex((state) => {
+        return state + 1;
+      });
+  }, [internalPageIndex]);
 
   const { isLoading, data, isError } = useEnrichedPositionsVault({
     chain_id: undefined,
@@ -35,6 +43,17 @@ export const PositionsVaultTable = React.forwardRef<
       },
     ],
   });
+
+  const positions = useMemo(() => {
+    if (data && data.count) {
+      return data.data.slice(
+        (internalPageIndex * 5) % 20,
+        ((internalPageIndex * 5 + 4) % 20) + 1
+      );
+    } else {
+      return [];
+    }
+  }, [data, internalPageIndex]);
 
   let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;
 
@@ -107,12 +126,12 @@ export const PositionsVaultTable = React.forwardRef<
     return (
       <StatsDataTable
         pagination={{
-          currentPage: pageIndex,
-          totalPages: Math.ceil(totalCount / 20),
-          setPage: setPageIndex,
+          currentPage: internalPageIndex,
+          totalPages: Math.ceil(totalCount / 5),
+          setPage: setInternalPageIndex,
         }}
         columns={positionsVaultColumns}
-        data={data && data.data ? data.data : []}
+        data={positions}
       />
     );
   }

@@ -130,7 +130,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     accessorKey: "input_token_data",
     enableResizing: false,
     enableSorting: false,
-    header: "Asset Supplied",
+    header: "Supplied Balance",
     meta: {
       className: "min-w-32",
     },
@@ -168,78 +168,78 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       );
     },
   },
-  {
-    accessorKey: "tokens_data",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentives",
-    meta: {
-      className: "min-w-36",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
-          )}
-        >
-          {props.row.original.tokens_data.length === 0 && (
-            <div className="flex items-center space-x-2">None</div>
-          )}
+  // {
+  //   accessorKey: "tokens_data",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Incentives",
+  //   meta: {
+  //     className: "min-w-36",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
+  //         )}
+  //       >
+  //         {props.row.original.tokens_data.length === 0 && (
+  //           <div className="flex items-center space-x-2">None</div>
+  //         )}
 
-          {props.row.original.tokens_data.map(
-            (
-              // @ts-ignore
-              token,
-              // @ts-ignore
-              tokenIndex
-            ) => {
-              return (
-                <div
-                  key={`${props.row.original.id}:incentives:${token.id}`}
-                  className="flex items-center space-x-2"
-                >
-                  <div className="h-4">
-                    <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }).format(token.token_amount)}
-                    </span>
-                  </div>
+  //         {props.row.original.tokens_data.map(
+  //           (
+  //             // @ts-ignore
+  //             token,
+  //             // @ts-ignore
+  //             tokenIndex
+  //           ) => {
+  //             return (
+  //               <div
+  //                 key={`${props.row.original.id}:incentives:${token.id}`}
+  //                 className="flex items-center space-x-2"
+  //               >
+  //                 <div className="h-4">
+  //                   <span className="leading-5">
+  //                     {Intl.NumberFormat("en-US", {
+  //                       style: "decimal",
+  //                       notation: "standard",
+  //                       useGrouping: true,
+  //                       minimumFractionDigits: 2,
+  //                       maximumFractionDigits: 8,
+  //                     }).format(token.token_amount)}
+  //                   </span>
+  //                 </div>
 
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
-                </div>
-              );
-            }
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "reward_style",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Incentive Payout",
-    meta: {
-      className: "min-w-32",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
-        </div>
-      );
-    },
-  },
+  //                 <TokenDisplayer size={4} tokens={[token]} symbols={true} />
+  //               </div>
+  //             );
+  //           }
+  //         )}
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: "reward_style",
+  //   enableResizing: false,
+  //   enableSorting: false,
+  //   header: "Incentive Payout",
+  //   meta: {
+  //     className: "min-w-32",
+  //   },
+  //   cell: (props: any) => {
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+  //         )}
+  //       >
+  //         <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "unclaimed_incentives",
     enableResizing: false,

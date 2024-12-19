@@ -10,61 +10,107 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useActiveMarket } from "../hooks";
-import {
-  BASE_MARGIN_TOP,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  PrimaryLabel,
-} from "../composables";
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
+import { MarketType } from "@/store";
 
 export const description = "A bar chart with an active bar";
+
+function CustomizedXAxisTick(props: any) {
+  const { x, y, payload, data, nativeIncentives } = props;
+
+  const apr = data[payload.index]?.annual_change_ratio ?? 0;
+  const token_data = data[payload.index]?.tokens_data ?? [];
+
+  const incentive_token_data = token_data.map((token: any) => {
+    return (
+      <tspan textAnchor="middle" x="0">
+        {Intl.NumberFormat("en-US", {
+          style: "decimal",
+          notation: "compact",
+          useGrouping: true,
+          compactDisplay: "short",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(token.token_amount ?? 0) +
+          " " +
+          (token.symbol ?? "")}
+      </tspan>
+    );
+  });
+
+  const formatted_apr = (
+    <tspan textAnchor="middle" x="0" dy="16">
+      {Intl.NumberFormat("en-US", {
+        style: "percent",
+        notation: "compact",
+        useGrouping: true,
+        compactDisplay: "short",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(apr + nativeIncentives.native_annual_change_ratio)}
+      <title>
+        {`Royco APR: ${Intl.NumberFormat("en-US", {
+          style: "percent",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(apr)}\n`}
+        {nativeIncentives.native_annual_change_ratios
+          .map(
+            (ratio: any) =>
+              ratio.label +
+              ": " +
+              Intl.NumberFormat("en-US", {
+                style: "percent",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(ratio.annual_change_ratio)
+          )
+          .join("\n")}
+      </title>
+    </tspan>
+  );
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={10} fill="#666">
+        {incentive_token_data}
+        {formatted_apr}
+      </text>
+    </g>
+  );
+}
 
 export const OfferListVisualizer = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const {
-    propsHighestOffers,
-    previousHighestOffers,
-    currentHighestOffers,
-    currentMarketData,
-    previousMarketData,
-  } = useActiveMarket();
+  const { propsHighestOffers, currentHighestOffers, currentMarketData } =
+    useActiveMarket();
+
+  const nativeIncentives = currentMarketData.native_yield ?? {
+    native_annual_change_ratio: 0,
+    native_annual_change_ratios: [],
+  };
 
   const chartConfig = useMemo(() => {
     return {
       ap_offer: {
         label: "AP Offer",
-        color: "#BE2525",
+        color:
+          currentMarketData.market_type === MarketType.vault.value
+            ? "#25BE25"
+            : "#BE2525",
       },
       ip_offer: {
         label: "IP Offer",
-        color: "#25BE25",
+        color:
+          currentMarketData.market_type === MarketType.vault.value
+            ? "#BE2525"
+            : "#25BE25",
       },
     };
   }, [currentMarketData]);
-
-  const currentChangeRatioDepth = Math.abs(
-    currentHighestOffers
-      ? currentHighestOffers.ap_offers.length > 0 &&
-        currentHighestOffers.ip_offers.length > 0
-        ? (currentHighestOffers.ip_offers[0].annual_change_ratio ?? 0) -
-          (currentHighestOffers.ap_offers[0].annual_change_ratio ?? 0)
-        : 0
-      : 0
-  );
-
-  const previousChangeRatioDepth = Math.abs(
-    previousHighestOffers
-      ? previousHighestOffers.ap_offers.length > 0 &&
-        previousHighestOffers.ip_offers.length > 0
-        ? (previousHighestOffers.ip_offers[0].annual_change_ratio ?? 0) -
-          (previousHighestOffers.ap_offers[0].annual_change_ratio ?? 0)
-        : 0
-      : 0
-  );
 
   const chartData = currentHighestOffers
     ? [
@@ -100,28 +146,6 @@ export const OfferListVisualizer = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("flex flex-col", className)} {...props}>
-      {/* <PrimaryLabel
-        className={cn(
-          "text-3xl font-light",
-          BASE_PADDING_LEFT,
-          BASE_PADDING_RIGHT,
-          BASE_MARGIN_TOP.SM
-        )}
-      >
-        <SpringNumber
-          previousValue={previousMarketData?.annual_change_ratio ?? 0}
-          currentValue={currentMarketData?.annual_change_ratio ?? 0}
-          numberFormatOptions={{
-            style: "percent",
-            notation: "compact",
-            useGrouping: true,
-            compactDisplay: "short",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }}
-        />
-      </PrimaryLabel> */}
-
       {propsHighestOffers.isLoading && (
         <div className="flex grow flex-col place-content-center items-center">
           <LoadingSpinner className="h-4 w-4" />
@@ -135,7 +159,7 @@ export const OfferListVisualizer = React.forwardRef<
             config={chartConfig}
           >
             <BarChart
-              margin={{ left: 30, bottom: 30 }}
+              margin={{ left: 30, bottom: 20 }}
               accessibilityLayer
               data={chartData}
             >
@@ -144,36 +168,20 @@ export const OfferListVisualizer = React.forwardRef<
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                label={{
-                  value: "Incentives via Royco",
-                  position: "insideBottom",
-                  offset: -20,
-                }}
-                tickFormatter={(value, index) => {
-                  const token_data = chartData[index]?.tokens_data ?? [];
-
-                  const incentive_token_data =
-                    Intl.NumberFormat("en-US", {
-                      style: "decimal",
-                      notation: "compact",
-                      useGrouping: true,
-                      compactDisplay: "short",
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(token_data[0]?.token_amount ?? 0) +
-                    " " +
-                    (token_data[0]?.symbol ?? "") +
-                    (token_data.length > 1 ? " + ..." : "");
-
-                  return incentive_token_data;
-                }}
+                interval={0}
+                tick={
+                  <CustomizedXAxisTick
+                    data={chartData}
+                    nativeIncentives={nativeIncentives}
+                  />
+                }
               />
               <YAxis
                 orientation="left"
                 tickLine={false}
                 axisLine={false}
                 label={{
-                  value: "Fillable Size",
+                  value: "Size",
                   position: "left",
                   offset: 20,
                   angle: -90,

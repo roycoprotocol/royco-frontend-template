@@ -51,6 +51,7 @@ interface DataTableProps<TData, TValue> {
     totalPages: number;
     setPage: (page: number) => void;
   };
+  className?: string;
 }
 
 export function StatsDataTable<TData, TValue>({
@@ -58,6 +59,7 @@ export function StatsDataTable<TData, TValue>({
   data,
   placeholderDatas,
   props,
+  className,
   pagination: { currentPage, totalPages, setPage },
 }: DataTableProps<TData, TValue>) {
   /**
@@ -97,7 +99,11 @@ export function StatsDataTable<TData, TValue>({
   return (
     <Fragment>
       <ScrollArea
-        className={cn("relative w-full grow overflow-y-scroll", "bg-white")}
+        className={cn(
+          "relative w-full grow overflow-y-scroll",
+          "bg-white",
+          className
+        )}
       >
         {/* <div
           className={cn("relative w-full grow overflow-y-scroll", "bg-white")}

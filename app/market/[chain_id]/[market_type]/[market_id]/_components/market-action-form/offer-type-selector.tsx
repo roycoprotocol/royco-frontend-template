@@ -110,33 +110,32 @@ export const OfferTypeSelector = React.forwardRef<
         <SelectContent className="w-full">
           {Object.values(MarketOfferType).map((option) => (
             <SelectItem
-              disabled={
-                // isMarketVault &&
-                // !isWalletVaultIP &&
-
-                marketMetadata.market_type === MarketType.vault.id &&
-                option.id === MarketOfferType.limit.id
-                  ? userType === MarketUserType.ip.id &&
-                    walletAddress?.toLowerCase() ===
-                      currentMarketData.owner?.toLowerCase()
-                    ? false
-                    : !!currentMarketData &&
+              disabled={(() => {
+                if (marketMetadata.market_type === MarketType.vault.id) {
+                  if (userType === MarketUserType.ip.id) {
+                    if (option.id === MarketOfferType.limit.id) {
+                      if (
+                        walletAddress?.toLowerCase() !==
+                        currentMarketData.owner?.toLowerCase()
+                      ) {
+                        return true;
+                      }
+                    }
+                  } else {
+                    // user type is AP
+                    if (option.id === MarketOfferType.limit.id) {
+                      if (
+                        !!currentMarketData &&
                         currentMarketData.base_incentive_ids &&
-                        currentMarketData.base_incentive_ids.length > 1
-                      ? false
-                      : true
-                  : false
-                // (marketMetadata.market_type === MarketType.vault.id &&
-                //   userType === MarketUserType.ip.id &&
-                //   walletAddress !== currentMarketData.owner &&
-                //   option.id === MarketOfferType.limit.id) ||
-                // (marketMetadata.market_type === MarketType.vault.id &&
-                //   option.id === MarketOfferType.limit.id &&
-                //   !!currentMarketData &&
-                //   !!currentMarketData.base_incentive_ids &&
-                //   currentMarketData.base_incentive_ids.length < 1 &&
-                //   walletAddress !== currentMarketData.owner)
-              }
+                        currentMarketData.base_incentive_ids.length < 1
+                      ) {
+                        return true;
+                      }
+                    }
+                  }
+                }
+                return false;
+              })()}
               className="text-sm"
               key={option.id}
               value={option.id}

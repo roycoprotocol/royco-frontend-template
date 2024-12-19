@@ -390,7 +390,11 @@ export const IncentiveInfo = React.forwardRef<
                     notation: "standard",
                     useGrouping: true,
                     minimumFractionDigits: 0, // Ensures at least 2 decimal places
-                    maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+                    maximumFractionDigits:
+                      (currentMarketData.native_annual_change_ratio ?? 0) >
+                      0.0001
+                        ? 2
+                        : 8,
                   }}
                   defaultColor="text-black"
                 />
@@ -419,7 +423,7 @@ export const IncentiveInfo = React.forwardRef<
                   notation: "standard",
                   useGrouping: true,
                   minimumFractionDigits: 0, // Ensures at least 2 decimal places
-                  maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+                  maximumFractionDigits: (currentNetAPR ?? 0) > 0.0001 ? 2 : 8,
                 }}
                 defaultColor="text-success"
               />
