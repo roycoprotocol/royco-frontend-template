@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronRightIcon } from "lucide-react";
 import { ChevronLeftIcon } from "lucide-react";
@@ -11,10 +11,19 @@ import { FallMotion } from "@/components/animations";
 import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
-import { getTokenQuote, useSupportedTokens, useTokenQuotes } from "royco/hooks";
+import {
+  getTokenQuote,
+  useSupportedTokens,
+  useTokenQuotes,
+  useAllowedTokens,
+} from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { AnimatePresence } from "framer-motion";
-import { SpringNumber } from "@/components/composables";
+import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { useMarketManager } from "@/store";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useAccount } from "wagmi";
 
 export const IncentiveTokenSelector = React.forwardRef<
   HTMLDivElement,
@@ -38,26 +47,35 @@ export const IncentiveTokenSelector = React.forwardRef<
     },
     ref
   ) => {
-    const { marketMetadata } = useActiveMarket();
+    const { marketMetadata, currentMarketData } = useActiveMarket();
+
+    const { address } = useAccount();
+
+    const { userType } = useMarketManager();
 
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
+    const [type, setType] = useState<"point" | "token">("token");
 
-    const { data, totalPages } = useSupportedTokens({
+    const { data, count, total_pages, isLoading } = useAllowedTokens({
       chain_id: marketMetadata.chain_id,
       page,
       search,
-      token_ids,
-      not_token_ids,
+      included_token_ids: token_ids,
+      excluded_token_ids: not_token_ids,
+      id: currentMarketData?.id ?? undefined,
+      user_type: userType,
+      type,
+      account_address: address?.toLowerCase(),
     });
 
     const propsTokenQuotes = useTokenQuotes({
       token_ids: data.map((token) => token.id),
     });
 
-    const canPrevPage = page > 1;
-    const canNextPage = page < totalPages;
+    const canPrevPage = page > 0;
+    const canNextPage = page < total_pages - 1;
 
     const handleNextPage = () => {
       if (canNextPage) {
@@ -72,11 +90,11 @@ export const IncentiveTokenSelector = React.forwardRef<
     };
 
     const [placeholderPage, setPlaceholderPage] = useState<Array<number>>([
-      1, 1,
+      0, 0,
     ]);
     const [placeholderTotalPages, setPlaceholderTotalPages] = useState<
       Array<number>
-    >([1, 1]);
+    >([0, 0]);
 
     const updatePlaceholderPage = () => {
       let newPlaceholderPage = [...placeholderPage, page];
@@ -87,7 +105,7 @@ export const IncentiveTokenSelector = React.forwardRef<
     };
 
     const updatePlaceholderTotalPages = () => {
-      let newPlaceholderTotalPages = [...placeholderTotalPages, totalPages];
+      let newPlaceholderTotalPages = [...placeholderTotalPages, total_pages];
       if (newPlaceholderTotalPages.length > 2) {
         newPlaceholderTotalPages.shift();
       }
@@ -97,7 +115,7 @@ export const IncentiveTokenSelector = React.forwardRef<
     const resetPlaceholders = () => {
       if (open === false) {
         setPlaceholderPage([page, page]);
-        setPlaceholderTotalPages([totalPages, totalPages]);
+        setPlaceholderTotalPages([total_pages, total_pages]);
       }
     };
 
@@ -107,7 +125,7 @@ export const IncentiveTokenSelector = React.forwardRef<
 
     useEffect(() => {
       updatePlaceholderTotalPages();
-    }, [totalPages]);
+    }, [total_pages]);
 
     useEffect(() => {
       resetPlaceholders();
@@ -157,143 +175,171 @@ export const IncentiveTokenSelector = React.forwardRef<
             side="bottom"
             align="end"
             className={cn(
-              "-mt-2 flex w-full flex-col p-1",
+              "-mt-2 flex h-72 w-full flex-col p-1",
               "max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width]"
             )}
           >
-            <Input
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              value={search}
-              Prefix={() => {
-                return (
-                  <div className="h-4 w-4 text-placeholder">
-                    <SearchIcon className="-mt-[0.05rem] h-4 w-4" />
-                  </div>
-                );
-              }}
-              className="mb-1 w-full"
-              containerClassName="h-8 font-light px-2 gap-2 bg-z2"
-              placeholder="Search Token"
-            />
+            {isLoading ? (
+              <div className="flex h-full w-full flex-col items-center justify-center">
+                <LoadingSpinner className="h-5 w-5" />
+              </div>
+            ) : (
+              <Fragment>
+                <div className="mb-2 flex flex-row items-center gap-1">
+                  <Badge
+                    variant={type === "token" ? "default" : "secondary"}
+                    onClick={() => {
+                      setType("token");
+                    }}
+                  >
+                    Tokens
+                  </Badge>
 
-            <ul className="list mt-1 flex h-44 w-full flex-col gap-0 overflow-x-hidden overflow-y-scroll">
-              {data.length === 0 && (
-                <AlertIndicator className="h-full">
-                  No tokens found
-                </AlertIndicator>
-              )}
+                  <Badge
+                    variant={type === "point" ? "default" : "secondary"}
+                    onClick={() => {
+                      setType("point");
+                    }}
+                  >
+                    Points
+                  </Badge>
+                </div>
 
-              <AnimatePresence mode="popLayout">
-                {data.map((token, index) => {
-                  const baseKey = `${key}:${index}:${token.id}`;
-                  const selected = selected_token_ids?.some(
-                    (selected_token_id) => selected_token_id === token.id
-                  );
+                <Input
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(0);
+                  }}
+                  value={search}
+                  Prefix={() => {
+                    return (
+                      <div className="h-4 w-4 text-placeholder">
+                        <SearchIcon className=" h-4 w-4" />
+                      </div>
+                    );
+                  }}
+                  className="w-full"
+                  containerClassName="h-8 font-light px-2 gap-2 bg-z2"
+                  placeholder="Search..."
+                />
 
-                  return (
-                    <div
-                      key={`container:input-asset-select:${index}`}
-                      className="contents"
-                    >
-                      <FallMotion height="2rem" customKey={baseKey}>
+                <ul className="list mt-1 flex w-full grow flex-col gap-0 overflow-x-hidden overflow-y-scroll">
+                  {data.length === 0 && (
+                    <AlertIndicator className="h-full">
+                      No {type === "token" ? "tokens" : "points"} found
+                    </AlertIndicator>
+                  )}
+
+                  <AnimatePresence mode="popLayout">
+                    {data.map((token, index) => {
+                      const baseKey = `${key}:${index}:${token.id}`;
+                      const selected = selected_token_ids?.some(
+                        (selected_token_id) => selected_token_id === token.id
+                      );
+
+                      return (
                         <div
-                          onClick={() => {
-                            const token_quote = getTokenQuote({
-                              token_id: token.id,
-                              token_quotes: propsTokenQuotes,
-                            });
-
-                            onSelect?.(token_quote);
-                          }}
-                          key={`fall-motion:${baseKey}`}
-                          tabIndex={0}
-                          className="relative h-8 w-full cursor-pointer rounded-md px-1 py-1 text-center text-primary transition-all duration-200 ease-in-out hover:bg-focus hover:text-black"
+                          key={`container:input-asset-select:${index}`}
+                          className="contents"
                         >
-                          <div
-                            key={index}
-                            className={cn(
-                              "body-2 z-10 grow overflow-hidden truncate text-ellipsis transition-colors duration-200 ease-in-out focus:bg-transparent",
-                              selected ? "text-black" : "text-primary"
-                            )}
-                          >
-                            <TokenDisplayer
-                              symbolClassName="truncate text-ellipsis"
-                              tokens={[token]}
-                              symbols={true}
-                            />
+                          <FallMotion height="2rem" customKey={baseKey}>
+                            <div
+                              onClick={() => {
+                                const token_quote = getTokenQuote({
+                                  token_id: token.id,
+                                  token_quotes: propsTokenQuotes,
+                                });
 
-                            {selected && (
-                              <div className="absolute right-0 top-0 mr-1 flex h-7 w-5 shrink-0 flex-col place-content-center items-center text-tertiary">
-                                <CheckIcon className="h-5 w-5" />
+                                onSelect?.(token_quote);
+                              }}
+                              key={`fall-motion:${baseKey}`}
+                              tabIndex={0}
+                              className="relative h-8 w-full cursor-pointer rounded-md px-1 py-1 text-center text-primary transition-all duration-200 ease-in-out hover:bg-focus hover:text-black"
+                            >
+                              <div
+                                key={index}
+                                className={cn(
+                                  "body-2 z-10 grow overflow-hidden truncate text-ellipsis transition-colors duration-200 ease-in-out focus:bg-transparent",
+                                  selected ? "text-black" : "text-primary"
+                                )}
+                              >
+                                <TokenDisplayer
+                                  symbolClassName="truncate text-ellipsis"
+                                  tokens={[token]}
+                                  symbols={true}
+                                />
+
+                                {selected && (
+                                  <div className="absolute right-0 top-0 mr-1 flex h-7 w-5 shrink-0 flex-col place-content-center items-center text-tertiary">
+                                    <CheckIcon className="h-5 w-5" />
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          </FallMotion>
                         </div>
-                      </FallMotion>
-                    </div>
-                  );
-                })}
-              </AnimatePresence>
-            </ul>
+                      );
+                    })}
+                  </AnimatePresence>
+                </ul>
 
-            <div className="mt-1 flex w-full flex-row items-center justify-between rounded-md border border-divider bg-z2 px-2 py-1 text-sm">
-              <div className="text-secondary">
-                Page
-                <SpringNumber
-                  defaultColor="text-secondary"
-                  className="mx-1 inline-block"
-                  numberFormatOptions={{
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }}
-                  // previousValue={placeholderPage[0]}
-                  previousValue={placeholderPage[1]}
-                  currentValue={placeholderPage[1]}
-                />
-                of{" "}
-                <SpringNumber
-                  defaultColor="text-secondary"
-                  numberFormatOptions={{
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }}
-                  previousValue={
-                    placeholderTotalPages[0] === 0
-                      ? 1
-                      : placeholderTotalPages[0]
-                  }
-                  currentValue={totalPages === 0 ? 1 : totalPages}
-                  className="mx-1 inline-block"
-                />
-              </div>
-              <div className="flex flex-row items-center gap-1">
-                <div
-                  onClick={handlePrevPage}
-                  className={cn(
-                    "h-5 w-5 rounded-md border border-divider bg-white text-tertiary transition-all duration-200 ease-in-out hover:bg-opacity-80 hover:text-secondary",
-                    canPrevPage
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <ChevronLeftIcon className="h-5 w-5 " />
+                <div className="mt-1 flex w-full flex-row items-center justify-between rounded-md border border-divider bg-z2 px-2 py-1 text-sm">
+                  <div className="text-secondary">
+                    Page
+                    <SpringNumber
+                      defaultColor="text-secondary"
+                      className="mx-1 inline-block"
+                      numberFormatOptions={{
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }}
+                      // previousValue={placeholderPage[0]}
+                      previousValue={placeholderPage[1] + 1}
+                      currentValue={placeholderPage[1] + 1}
+                    />
+                    of{" "}
+                    <SpringNumber
+                      defaultColor="text-secondary"
+                      numberFormatOptions={{
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }}
+                      previousValue={
+                        placeholderTotalPages[0] === 0
+                          ? 1
+                          : placeholderTotalPages[0]
+                      }
+                      currentValue={total_pages === 0 ? 1 : total_pages}
+                      className="mx-1 inline-block"
+                    />
+                  </div>
+                  <div className="flex flex-row items-center gap-1">
+                    <div
+                      onClick={handlePrevPage}
+                      className={cn(
+                        "h-5 w-5 rounded-md border border-divider bg-white text-tertiary transition-all duration-200 ease-in-out hover:bg-opacity-80 hover:text-secondary",
+                        canPrevPage
+                          ? "cursor-pointer"
+                          : "cursor-not-allowed opacity-50"
+                      )}
+                    >
+                      <ChevronLeftIcon className="h-5 w-5 " />
+                    </div>
+                    <div
+                      onClick={handleNextPage}
+                      className={cn(
+                        "h-5 w-5 rounded-md border border-divider bg-white text-tertiary transition-all duration-200 ease-in-out hover:bg-opacity-80 hover:text-secondary",
+                        canNextPage
+                          ? "cursor-pointer"
+                          : "cursor-not-allowed opacity-50"
+                      )}
+                    >
+                      <ChevronRightIcon className="h-5 w-5 " />
+                    </div>
+                  </div>
                 </div>
-                <div
-                  onClick={handleNextPage}
-                  className={cn(
-                    "h-5 w-5 rounded-md border border-divider bg-white text-tertiary transition-all duration-200 ease-in-out hover:bg-opacity-80 hover:text-secondary",
-                    canNextPage
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <ChevronRightIcon className="h-5 w-5 " />
-                </div>
-              </div>
-            </div>
+              </Fragment>
+            )}
           </PopoverContent>
         </Popover>
       </div>
