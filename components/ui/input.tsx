@@ -43,17 +43,18 @@ const Input = React.forwardRef<HTMLInputElement, CombinedInputProps>(
         {Prefix && <Prefix />}
 
         <div className={cn("flex h-9 grow items-center", newHeight)}>
-          <span className={cn("grow leading-[20px]", newLeading)}>
-            <input
-              type={type}
-              className={cn(
-                "w-full grow bg-transparent outline-none transition-colors [appearance:textfield] file:border-0 file:bg-transparent file:text-sm placeholder:text-placeholder focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ",
-                className
-              )}
-              ref={ref}
-              {...props}
-            />
-          </span>
+          {/* <span className={cn("grow leading-[20px]", newLeading)}>
+            
+          </span> */}
+          <input
+            type={type}
+            className={cn(
+              "w-full grow bg-transparent outline-none transition-colors [appearance:textfield] file:border-0 file:bg-transparent file:text-sm placeholder:text-placeholder focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-slate-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ",
+              className
+            )}
+            ref={ref}
+            {...props}
+          />
         </div>
 
         {Suffix && <Suffix />}

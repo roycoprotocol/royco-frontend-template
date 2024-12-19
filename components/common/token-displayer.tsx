@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useGeneralStats } from "@/store";
+import { SparklesIcon } from "lucide-react";
 
 /**
  * @description Props for Token Displayer
@@ -31,6 +32,7 @@ type TokenDisplayerProps = {
     symbol: string;
     image: string;
     name?: string;
+    type?: "token" | "point";
   }>;
   symbols: boolean;
   hover?: boolean;
