@@ -69,6 +69,22 @@ export const TransactionStep = React.forwardRef<
           }
         );
 
+        const response2 = await fetch(`/api/market`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chain_id: marketBuilderForm.watch("chain").id,
+            market_type:
+              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
+            tx_hash: txHash,
+            id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
+            name: marketBuilderForm.watch("market_name"),
+            description: marketBuilderForm.watch("market_description"),
+          }),
+        });
+
         await response.json();
       }
     } catch (error) {
