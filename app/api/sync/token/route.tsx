@@ -22,32 +22,35 @@ export async function GET(request: Request) {
       (batchIndex + 1) * batchSize
     );
 
-    // Process tokens in the current batch
-    for (const token of batchTokens) {
-      const { data, error } = await supabaseClient.from("token_index").upsert({
-        token_id: token.id,
-        chain_id: token.chain_id,
-        contract_address: token.contract_address,
-        source: token.source,
-        name: token.name,
-        symbol: token.symbol,
-        is_active: true,
-        search_id: token.search_id,
-        decimals: token.decimals,
-      });
+    // Convert batch tokens to upsert records
+    const upsertRecords = batchTokens.map((token) => ({
+      token_id: token.id,
+      chain_id: token.chain_id,
+      contract_address: token.contract_address,
+      source: token.source,
+      name: token.name,
+      symbol: token.symbol,
+      is_active: true,
+      search_id: token.search_id,
+      decimals: token.decimals,
+    }));
 
-      if (error) {
-        console.error("Error in route", error);
-        return Response.json(
-          { status: "Internal Server Error" },
-          { status: 500 }
-        );
-      }
+    // Perform batch upsert
+    const { data, error } = await supabaseClient
+      .from("token_index")
+      .upsert(upsertRecords);
+
+    if (error) {
+      console.error("Error in route", error);
+      return Response.json(
+        { status: "Internal Server Error" },
+        { status: 500 }
+      );
     }
 
     return Response.json({ status: "Success" }, { status: 200 });
   } catch (error) {
-    console.error("Error in route", error);
+    console.error("Error in /api/sync/token route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
   }
 }

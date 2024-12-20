@@ -23,18 +23,18 @@ export async function GET(request: Request) {
     );
 
     // Process markets in the current batch
-    for (const market of batchMarkets) {
-      await supabaseClient.from("market_userdata").upsert({
-        id: market.id,
-        name: market.name,
-        description: market.description,
-        is_verified: market.is_verified,
-      });
-    }
+    const batchData = batchMarkets.map((market) => ({
+      id: market.id,
+      name: market.name,
+      description: market.description,
+      is_verified: market.is_verified,
+    }));
+
+    await supabaseClient.from("market_userdata").upsert(batchData);
 
     return Response.json({ status: "Success" }, { status: 200 });
   } catch (error) {
-    console.error("Error in route", error);
+    console.error("Error in /api/sync/market route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
   }
 }
