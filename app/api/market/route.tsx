@@ -42,16 +42,8 @@ export default defineMarket({
   ).toString("base64");
 };
 
-export async function GET(request: Request) {
-  console.log("GET hello world");
-
-  return Response.json({ data: "Hello World" }, { status: 200 });
-}
-
 export async function POST(request: Request) {
   try {
-    console.log("POST hello world");
-
     const body = await request.json();
     const { chain_id, market_type, tx_hash, id, name, description } = body;
 
@@ -197,16 +189,12 @@ export async function POST(request: Request) {
         { status: 200 }
       );
     } else {
-      console.log("Market not found or invalid log");
-
       return Response.json(
         { data: "Market not found or invalid log", status: false },
         { status: 400 }
       );
     }
   } catch (error) {
-    console.log("Error in /api/market route", error);
-
     return Response.json(
       {
         data: "Internal Server Error",
