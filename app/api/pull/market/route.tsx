@@ -63,11 +63,13 @@ export async function POST(request: Request) {
 
     // Check if chain id is provided
     if (!chain_id) {
+      console.log("Chain ID is required");
       return Response.json({ status: "Chain ID is required" }, { status: 400 });
     }
 
     // Check if chain id is a number
     if (typeof chain_id !== "number") {
+      console.log("Chain ID must be a number");
       return Response.json(
         { status: "Chain ID must be a number" },
         { status: 400 }
@@ -77,11 +79,13 @@ export async function POST(request: Request) {
     // Check if chain is supported
     const chain = getSupportedChain(chain_id);
     if (!chain) {
+      console.log("Unsupported chain");
       return Response.json({ status: "Unsupported chain" }, { status: 400 });
     }
 
     // Check if market type is provided
     if (market_type === undefined || market_type === null) {
+      console.log("Market type is required");
       return Response.json(
         { status: "Market type is required" },
         { status: 400 }
@@ -90,6 +94,7 @@ export async function POST(request: Request) {
 
     // Check if market type is a number
     if (typeof market_type !== "number") {
+      console.log("Market type must be a number");
       return Response.json(
         { status: "Market type must be a number" },
         { status: 400 }
@@ -98,6 +103,9 @@ export async function POST(request: Request) {
 
     // Check if market type is valid
     if (market_type !== 0 && market_type !== 1) {
+      console.log(
+        "Market type must be 0 or 1, where 0 represents a recipe market and 1 represents a vault market"
+      );
       return Response.json(
         {
           status:
@@ -109,6 +117,7 @@ export async function POST(request: Request) {
 
     // Check if market id is provided
     if (!market_id) {
+      console.log("Market ID is required");
       return Response.json(
         { status: "Market ID is required" },
         { status: 400 }
@@ -117,6 +126,7 @@ export async function POST(request: Request) {
 
     // Check if market id is a string
     if (typeof market_id !== "string") {
+      console.log("Market ID must be a string");
       return Response.json(
         { status: "Market ID must be a string" },
         { status: 400 }
