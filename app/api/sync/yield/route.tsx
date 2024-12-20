@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const mapEntries = Object.values(SupportedMarketMap).filter(
       (market) => typeof market.native_yield === "function"
     );
-    const batchSize = 100;
+    const batchSize = 10;
     const currentMinute = new Date().getUTCMinutes();
     const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
     const batchMarkets = mapEntries.slice(
