@@ -42,6 +42,10 @@ export default defineMarket({
   ).toString("base64");
 };
 
+export async function GET(request: Request) {
+  return Response.json({ data: "Hello World" }, { status: 200 });
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
