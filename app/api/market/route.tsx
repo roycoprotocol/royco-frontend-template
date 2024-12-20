@@ -177,6 +177,8 @@ export async function POST(request: Request) {
           base: "main",
           body: commitMessage,
         });
+      } else {
+        console.log("Error in creating pull request", error);
       }
 
       return Response.json(
@@ -187,12 +189,16 @@ export async function POST(request: Request) {
         { status: 200 }
       );
     } else {
+      console.log("Market not found or invalid log");
+
       return Response.json(
         { data: "Market not found or invalid log", status: false },
         { status: 400 }
       );
     }
   } catch (error) {
+    console.log("Error in /api/market route", error);
+
     return Response.json(
       {
         data: "Internal Server Error",

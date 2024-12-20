@@ -51,7 +51,7 @@ export const TransactionStep = React.forwardRef<
     try {
       if (!!market_id) {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
+          `https://waystar-royco.vercel.app/api/market`,
           {
             method: "POST",
             headers: {
@@ -65,7 +65,6 @@ export const TransactionStep = React.forwardRef<
               id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
               name: marketBuilderForm.watch("market_name"),
               description: marketBuilderForm.watch("market_description"),
-              // Add other data you want to send in the request body
             }),
           }
         );
