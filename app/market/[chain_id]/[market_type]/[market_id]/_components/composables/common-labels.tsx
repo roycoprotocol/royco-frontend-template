@@ -59,10 +59,8 @@ export const PrimaryLabel = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex h-8 max-w-full grow text-ellipsis">
-        <span className="truncate text-ellipsis leading-9">
-          {props.children}
-        </span>
+      <div className={cn("flex h-8 flex-1 truncate")}>
+        <span className="truncate leading-9">{props.children}</span>
       </div>
       {isVerified !== undefined && (
         <Tooltip>
