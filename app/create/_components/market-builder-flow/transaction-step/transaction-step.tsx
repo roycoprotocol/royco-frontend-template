@@ -51,7 +51,7 @@ export const TransactionStep = React.forwardRef<
     try {
       if (!!market_id) {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/pull/market`,
+          `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
           {
             method: "POST",
             headers: {
