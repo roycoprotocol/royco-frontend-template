@@ -43,11 +43,15 @@ export default defineMarket({
 };
 
 export async function GET(request: Request) {
+  console.log("GET hello world");
+
   return Response.json({ data: "Hello World" }, { status: 200 });
 }
 
 export async function POST(request: Request) {
   try {
+    console.log("POST hello world");
+
     const body = await request.json();
     const { chain_id, market_type, tx_hash, id, name, description } = body;
 

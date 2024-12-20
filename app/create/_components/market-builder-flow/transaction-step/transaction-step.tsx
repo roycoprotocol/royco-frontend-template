@@ -71,7 +71,9 @@ export const TransactionStep = React.forwardRef<
 
         await response.json();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error in updateMarketUserdata", error);
+    }
   };
 
   useEffect(() => {
