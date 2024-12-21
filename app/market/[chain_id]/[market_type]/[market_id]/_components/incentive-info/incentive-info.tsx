@@ -64,10 +64,10 @@ const InfoValueElementClone = React.forwardRef<
 
     const triggerRef = useRef<HTMLDivElement>(null);
 
-    const previousTokenData =
-      previousMarketData.incentive_tokens_data.findIndex(
-        (item: any) => item.id === token_data.id
-      );
+    // const previousTokenData =
+    //   previousMarketData.incentive_tokens_data.findIndex(
+    //     (item: any) => item.id === token_data.id
+    //   );
 
     return (
       <Fragment>
