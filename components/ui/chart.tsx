@@ -5,7 +5,7 @@ import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
 import { BigNumber } from "ethers";
-import { MarketIncentiveType, MarketOfferType } from "../../store";
+import { MarketIncentiveType, MarketOfferType, MarketType } from "../../store";
 import { formatUnits } from "viem";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -271,24 +271,30 @@ const ChartTooltipContent = React.forwardRef<
                               </div>
                             ) : (
                               <div>
-                                {item.payload.tokens_data.map((item: any) => {
-                                  return (
-                                    <>
-                                      <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                        {Intl.NumberFormat("en-US", {
-                                          style: "decimal",
-                                          // notation: "compact",
-                                          useGrouping: true,
-                                          // compactDisplay: "short",
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                        }).format(item.token_amount) +
-                                          " " +
-                                          item.symbol}
-                                      </div>
-                                    </>
-                                  );
-                                })}
+                                {item.payload.tokens_data.length ? (
+                                  item.payload.tokens_data.map((item: any) => {
+                                    return (
+                                      <>
+                                        <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                          {Intl.NumberFormat("en-US", {
+                                            style: "decimal",
+                                            // notation: "compact",
+                                            useGrouping: true,
+                                            // compactDisplay: "short",
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                          }).format(item.token_amount) +
+                                            " " +
+                                            item.symbol}
+                                        </div>
+                                      </>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="font-mono font-medium text-secondary">
+                                    None
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -299,24 +305,12 @@ const ChartTooltipContent = React.forwardRef<
                             <div className="mr-2 text-tertiary">
                               {item.payload.offer_side === 0
                                 ? "Incentives Requested:"
-                                : "Assets Requested:"}
+                                : item.payload.market_type ===
+                                    MarketType.recipe.value
+                                  ? "Assets Requested:"
+                                  : "TVL:"}
                             </div>
-                            {item.payload.offer_side === 1 ? (
-                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                {Intl.NumberFormat("en-US", {
-                                  style: "decimal",
-                                  // notation: "compact",
-                                  useGrouping: true,
-                                  // compactDisplay: "short",
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                }).format(
-                                  item.payload.input_token_data.token_amount
-                                ) +
-                                  " " +
-                                  item.payload.input_token_data.symbol}
-                              </div>
-                            ) : (
+                            {item.payload.offer_side === 0 ? (
                               <div>
                                 {item.payload.tokens_data.map((item: any) => {
                                   return (
@@ -334,6 +328,38 @@ const ChartTooltipContent = React.forwardRef<
                                     </div>
                                   );
                                 })}
+                              </div>
+                            ) : item.payload.market_type ===
+                              MarketType.recipe.value ? (
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {Intl.NumberFormat("en-US", {
+                                  style: "decimal",
+                                  // notation: "compact",
+                                  useGrouping: true,
+                                  // compactDisplay: "short",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(
+                                  item.payload.input_token_data.token_amount
+                                ) +
+                                  " " +
+                                  item.payload.input_token_data.symbol}
+                              </div>
+                            ) : (
+                              <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
+                                {Intl.NumberFormat("en-US", {
+                                  style: "decimal",
+                                  // notation: "compact",
+                                  useGrouping: true,
+                                  // compactDisplay: "short",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(
+                                  item.payload.input_token_data
+                                    .locked_token_amount
+                                ) +
+                                  " " +
+                                  item.payload.input_token_data.symbol}
                               </div>
                             )}
                           </div>

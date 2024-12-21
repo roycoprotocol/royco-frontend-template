@@ -5,6 +5,7 @@ import { Protector } from "../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
+import { PortfolioStats } from "./_components/portfolio-stats";
 
 const Page = () => {
   const Content = () => {
@@ -32,7 +33,7 @@ const Page = () => {
               </div>
             </div>
 
-            {/* Portfolio Stats */}
+            <PortfolioStats />
           </div>
 
           <div

@@ -116,6 +116,7 @@ export const OfferListVisualizer = React.forwardRef<
     ? [
         ...currentHighestOffers.ap_offers.map((offer) => {
           return {
+            market_type: currentMarketData.market_type,
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ap_offer.color,
@@ -128,6 +129,7 @@ export const OfferListVisualizer = React.forwardRef<
         }),
         ...currentHighestOffers.ip_offers.map((offer) => {
           return {
+            market_type: currentMarketData.market_type,
             annual_change_ratio: offer.annual_change_ratio,
             quantity_value_usd: offer.quantity_value_usd,
             fill: chartConfig.ip_offer.color,

@@ -22,10 +22,16 @@ export const PositionsRecipeTable = React.forwardRef<
   const [internalPageIndex, setInternalPageIndex] = useState(0);
 
   useEffect(() => {
-    if ((internalPageIndex + 1) * 5 > 20)
+    if ((internalPageIndex + 1) * 5 > 20 * (pageIndex + 1)) {
       setPageIndex((state) => {
         return state + 1;
       });
+    }
+    if ((internalPageIndex + 1) * 5 <= 20 * pageIndex) {
+      setPageIndex((state) => {
+        return state - 1;
+      });
+    }
   }, [internalPageIndex]);
 
   const { isLoading, data, isError } = useEnrichedPositionsRecipe({
