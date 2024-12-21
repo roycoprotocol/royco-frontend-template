@@ -10,7 +10,12 @@ import {
 } from "../composables";
 import { useActiveMarket } from "../hooks";
 import { ActionFlow, SpringNumber } from "@/components/composables";
-import { MarketRewardStyle, MarketViewType, useMarketManager } from "@/store";
+import {
+  MarketRewardStyle,
+  MarketViewType,
+  useGlobalStates,
+  useMarketManager,
+} from "@/store";
 
 import { MarketType } from "@/store";
 import { InfoCard, InfoTip } from "@/components/common";
@@ -58,6 +63,8 @@ export const MarketInfo = React.forwardRef<
   const [showTransactionDetails, setShowTransactionDetails] = useState(false);
 
   const { address } = useAccount();
+
+  const { customTokenData } = useGlobalStates();
 
   const {
     isLoading: isLoadingRecipe,
@@ -255,10 +262,10 @@ export const MarketInfo = React.forwardRef<
                       </CopyWrapper>
 
                       <InfoTip {...INFO_TIP_PROPS}>
-                        Market id is constructed as concatenation of chain id,
-                        market type and market index. For recipes, market id is
-                        hash of the market and for vaults, it is the address of
-                        wrapped vault.
+                        Global Market ID is constructed as concatenation of
+                        chain id, market type and market id. For recipes, market
+                        id is hash of the market and for vaults, it is the
+                        address of the wrapped vault.
                       </InfoTip>
                     </InfoCard.Row.Value>
                   </InfoCard.Row>

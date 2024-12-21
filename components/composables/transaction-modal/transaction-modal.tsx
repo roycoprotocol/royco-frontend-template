@@ -31,6 +31,7 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
 import { TypedRoycoTransactionType } from "royco/market";
+import { getSupportedToken } from "royco/constants";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,

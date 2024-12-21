@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/composables";
 import { StatsDataTable } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/stats-tables/stats-data-table";
 import { positionsVaultColumns } from "./postions-vault-table-columns";
 import { motion } from "framer-motion";
-import { MarketUserType } from "@/store";
+import { MarketUserType, useGlobalStates } from "@/store";
 
 export const PositionsVaultTable = React.forwardRef<
   HTMLDivElement,
@@ -34,6 +34,8 @@ export const PositionsVaultTable = React.forwardRef<
     }
   }, [internalPageIndex]);
 
+  const { customTokenData } = useGlobalStates();
+
   const { isLoading, data, isError } = useEnrichedPositionsVault({
     chain_id: undefined,
     market_id: undefined,
@@ -48,6 +50,7 @@ export const PositionsVaultTable = React.forwardRef<
             : MarketUserType.ip.value,
       },
     ],
+    custom_token_data: undefined,
   });
 
   const positions = useMemo(() => {

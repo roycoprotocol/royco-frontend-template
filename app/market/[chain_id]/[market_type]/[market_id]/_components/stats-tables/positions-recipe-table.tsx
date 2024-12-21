@@ -4,7 +4,12 @@ import React, { useMemo } from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { useEnrichedPositionsRecipe } from "royco/hooks";
-import { MarketType, MarketUserType, useMarketManager } from "@/store";
+import {
+  MarketType,
+  MarketUserType,
+  useGlobalStates,
+  useMarketManager,
+} from "@/store";
 import { offerColumns } from "./offer-columns";
 import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
@@ -33,6 +38,8 @@ export const PositionsRecipeTable = React.forwardRef<
   const { positionsRecipeTablePage, setPositionsRecipeTablePage } =
     useMarketManager();
 
+  const { customTokenData } = useGlobalStates();
+
   const { isLoading, data, isError, error } = useEnrichedPositionsRecipe({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
@@ -47,6 +54,7 @@ export const PositionsRecipeTable = React.forwardRef<
             : MarketUserType.ip.value,
       },
     ],
+    custom_token_data: undefined,
   });
 
   let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;

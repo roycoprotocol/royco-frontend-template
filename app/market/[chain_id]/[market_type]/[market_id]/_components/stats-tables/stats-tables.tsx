@@ -5,6 +5,7 @@ import {
   MarketStatsView,
   MarketType,
   MarketUserType,
+  useGlobalStates,
   useMarketManager,
 } from "@/store";
 import React from "react";
@@ -30,6 +31,7 @@ export const StatsTables = React.forwardRef<
   const { address, isConnected } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
+  const { customTokenData } = useGlobalStates();
 
   const { data: offers } = useEnrichedOffers({
     chain_id: marketMetadata.chain_id,
@@ -43,6 +45,7 @@ export const StatsTables = React.forwardRef<
         value: userType === MarketUserType.ap.id ? 0 : 1,
       },
     ],
+    custom_token_data: undefined,
   });
 
   return (

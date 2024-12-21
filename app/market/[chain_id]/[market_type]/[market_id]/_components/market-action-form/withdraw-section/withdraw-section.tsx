@@ -132,6 +132,7 @@ export const WithdrawSection = React.forwardRef<
         value: 0,
       },
     ],
+    custom_token_data: undefined,
   });
 
   const {
@@ -150,6 +151,7 @@ export const WithdrawSection = React.forwardRef<
         value: RoycoMarketUserType.ap.value,
       },
     ],
+    custom_token_data: undefined,
   });
 
   // const { isLoading: isLoadingPositionsVault, data: positionsVault } =

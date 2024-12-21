@@ -1,10 +1,13 @@
 import { cn } from "@/lib/utils";
-import { SpringNumber } from "@/components/composables";
+import {
+  SpringNumber,
+  IncentiveBreakdown,
+  YieldBreakdown,
+} from "@/components/composables";
 import { EnrichedMarketDataType } from "royco/queries";
 import {
   AipBreakdown,
   AssetBreakdown,
-  IncentiveBreakdown,
   InfoGrid,
   InfoTip,
   TokenDisplayer,
@@ -30,6 +33,11 @@ import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
 import { capitalize } from "lodash";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -320,8 +328,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             />
           )}
 
-          <Tooltip>
-            <TooltipTrigger>
+          <HoverCard openDelay={200} closeDelay={200}>
+            <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
               <SpringNumber
                 previousValue={previousValue}
                 currentValue={currentValue}
@@ -344,16 +352,22 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   props.view === "list" && "leading-5"
                 )}
               />
-            </TooltipTrigger>
-
-            {tokens.length > 0 && (
-              <IncentiveBreakdown
-                noEdit
-                market={props.row.original}
-                breakdown={tokens}
-              />
-            )}
-          </Tooltip>
+            </HoverCardTrigger>
+            {typeof window !== "undefined" &&
+              props.row.original.incentive_tokens_data.length > 0 &&
+              createPortal(
+                <HoverCardContent
+                  className="w-64"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <IncentiveBreakdown
+                    base_key={props.row.original.id}
+                    breakdown={tokens}
+                  />
+                </HoverCardContent>,
+                document.body
+              )}
+          </HoverCard>
         </div>
       );
     },
@@ -399,58 +413,31 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             "group"
           )}
         >
-          <Tooltip>
-            {props.row.original.annual_change_ratio >= Math.pow(10, 18) ? (
-              "0"
-            ) : (
-              <TooltipTrigger className={cn("flex cursor-pointer items-end")}>
-                <SpringNumber
-                  previousValue={previousValue}
-                  currentValue={currentValue}
-                  numberFormatOptions={{
-                    style: "percent",
-                    notation: "compact",
-                    useGrouping: true,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }}
-                  className={cn(
-                    props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                    props.view === "list" && "h-5"
-                  )}
-                  spanClassName={cn(
-                    props.view === "grid" && InfoGrid.Content.Primary.Span,
-                    props.view === "list" && "leading-5"
-                  )}
-                />
-              </TooltipTrigger>
-            )}
-
-            {/* {props.row.original.incentive_tokens_data.filter(
-              (token: any) => token.annual_change_ratio !== 0
-            ).length > 0 && (
-              <AipBreakdown
-                noEdit
-                breakdown={props.row.original.incentive_tokens_data.filter(
-                  (token: any) => token.annual_change_ratio !== 0
-                )}
-              />
-            )} */}
-          </Tooltip>
-
-          {/* <PoolEditor market={props.row.original} /> */}
-
-          {/* <button
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
+          <YieldBreakdown
+            onClick={(e) => e.stopPropagation()}
+            breakdown={props.row.original.yield_breakdown}
+            base_key={props.row.original.id}
           >
-            <EllipsisVerticalIcon
+            <SpringNumber
+              previousValue={previousValue}
+              currentValue={currentValue}
+              numberFormatOptions={{
+                style: "percent",
+                notation: "compact",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }}
               className={cn(
-                "ml-1 h-4 w-4 text-black opacity-0 transition-all duration-200 ease-in-out hover:text-primary group-hover:opacity-100"
+                props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
+                props.view === "list" && "h-5"
+              )}
+              spanClassName={cn(
+                props.view === "grid" && InfoGrid.Content.Primary.Span,
+                props.view === "list" && "leading-5"
               )}
             />
-          </button> */}
+          </YieldBreakdown>
         </div>
       );
     },

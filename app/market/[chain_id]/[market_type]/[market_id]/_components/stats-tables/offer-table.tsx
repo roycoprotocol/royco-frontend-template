@@ -4,7 +4,12 @@ import React from "react";
 import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { useEnrichedOffers } from "royco/hooks";
-import { MarketType, MarketUserType, useMarketManager } from "@/store";
+import {
+  MarketType,
+  MarketUserType,
+  useGlobalStates,
+  useMarketManager,
+} from "@/store";
 import { offerColumns } from "./offer-columns";
 import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
@@ -20,6 +25,8 @@ export const OfferTable = React.forwardRef<
 
   const { offerTablePage, setOfferTablePage, userType } = useMarketManager();
 
+  const { customTokenData } = useGlobalStates();
+
   const { isLoading, data } = useEnrichedOffers({
     chain_id: marketMetadata.chain_id,
     market_id: marketMetadata.market_id,
@@ -32,6 +39,7 @@ export const OfferTable = React.forwardRef<
         value: userType === MarketUserType.ap.id ? 0 : 1,
       },
     ],
+    custom_token_data: undefined,
   });
 
   let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;

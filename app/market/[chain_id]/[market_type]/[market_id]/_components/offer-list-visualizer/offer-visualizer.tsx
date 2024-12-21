@@ -11,8 +11,6 @@ import {
   BASE_UNDERLINE,
   TertiaryLabel,
 } from "../composables";
-import { useActiveMarket } from "../hooks";
-import { useEnrichedOffers } from "royco/hooks";
 import { OfferListVisualizer } from "./offer-list-visualizer";
 import { OfferListBook } from "./offer-list-book";
 
