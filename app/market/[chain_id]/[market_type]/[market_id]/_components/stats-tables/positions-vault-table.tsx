@@ -8,7 +8,7 @@ import { StatsDataTable } from "./stats-data-table";
 import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator } from "@/components/common";
 import { positionsVaultColumns } from "./positions-vault-columns";
-import { MarketUserType, useMarketManager } from "@/store";
+import { MarketUserType, useGlobalStates, useMarketManager } from "@/store";
 import { RoycoMarketUserType } from "royco/market";
 
 export const PositionsVaultTable = React.forwardRef<
@@ -20,6 +20,8 @@ export const PositionsVaultTable = React.forwardRef<
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
   const { userType } = useMarketManager();
+
+  const { customTokenData } = useGlobalStates();
 
   const { isLoading, data, isError } = useEnrichedPositionsVault({
     chain_id: marketMetadata.chain_id,
@@ -34,6 +36,7 @@ export const PositionsVaultTable = React.forwardRef<
             : MarketUserType.ip.value,
       },
     ],
+    custom_token_data: undefined,
   });
 
   let totalCount = data && "count" in data ? (data.count ? data.count : 0) : 0;

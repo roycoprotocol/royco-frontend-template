@@ -263,10 +263,11 @@ export const PreviewStep = React.forwardRef<
               {/**
                * Native Yield Indicator
                */}
-              {marketMetadata.market_type === MarketType.vault.id &&
-                userType === MarketUserType.ap.id &&
+              {userType === MarketUserType.ap.id &&
                 offerType === MarketOfferType.market.id &&
-                !!currentMarketData.native_annual_change_ratio && (
+                currentMarketData.yield_breakdown.filter(
+                  (yield_breakdown) => yield_breakdown.category !== "base"
+                ).length > 0 && (
                   <div className="mt-3 flex w-full flex-row items-center justify-between">
                     <SecondaryLabel className="text-black">
                       <div className="mr-2">Native Yield</div>
@@ -293,8 +294,10 @@ export const PreviewStep = React.forwardRef<
 
                     <div className="flex w-fit flex-col items-end text-right">
                       <SecondaryLabel className="text-black">
-                        {!!currentMarketData.native_annual_change_ratio &&
-                        currentMarketData.native_annual_change_ratio > 0
+                        {currentMarketData.yield_breakdown.filter(
+                          (yield_breakdown) =>
+                            yield_breakdown.category !== "base"
+                        ).length > 0
                           ? "+"
                           : null}
                         {Intl.NumberFormat("en-US", {
@@ -304,7 +307,16 @@ export const PreviewStep = React.forwardRef<
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         }).format(
-                          currentMarketData.native_annual_change_ratio ?? 0
+                          currentMarketData.yield_breakdown
+                            .filter(
+                              (yield_breakdown) =>
+                                yield_breakdown.category !== "base"
+                            )
+                            .reduce(
+                              (acc, yield_breakdown) =>
+                                acc + yield_breakdown.annual_change_ratio,
+                              0
+                            )
                         )}
                       </SecondaryLabel>
                     </div>
@@ -382,12 +394,20 @@ export const PreviewStep = React.forwardRef<
                               incentiveData.reduce(
                                 (acc, incentive) =>
                                   acc + incentive.annual_change_ratio,
-                                marketMetadata.market_type ===
-                                  MarketType.vault.id &&
-                                  userType === MarketUserType.ap.id &&
-                                  offerType === MarketOfferType.market.id &&
-                                  !!currentMarketData.native_annual_change_ratio
-                                  ? currentMarketData.native_annual_change_ratio
+
+                                userType === MarketUserType.ap.id &&
+                                  offerType === MarketOfferType.market.id
+                                  ? currentMarketData.yield_breakdown
+                                      .filter(
+                                        (yield_breakdown) =>
+                                          yield_breakdown.category !== "base"
+                                      )
+                                      .reduce(
+                                        (acc, yield_breakdown) =>
+                                          acc +
+                                          yield_breakdown.annual_change_ratio,
+                                        0
+                                      )
                                   : 0
                               )
                             )}

@@ -10,7 +10,7 @@ import { isEqual } from "lodash";
 import { useEffect } from "react";
 
 import { columns } from "./columns";
-import { useExplore } from "@/store";
+import { useExplore, useGlobalStates } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -43,6 +43,8 @@ export const MarketsTable = () => {
     exploreIsVerified: isVerified,
   } = useExplore();
 
+  const { customTokenData } = useGlobalStates();
+
   const { data, isLoading, isError, error, isRefetching, count } =
     useEnrichedMarkets({
       sorting,
@@ -50,6 +52,7 @@ export const MarketsTable = () => {
       page_index: pageIndex,
       search_key: searchKey,
       is_verified: showVerifiedMarket ? true : isVerified,
+      custom_token_data: customTokenData,
     });
 
   /**

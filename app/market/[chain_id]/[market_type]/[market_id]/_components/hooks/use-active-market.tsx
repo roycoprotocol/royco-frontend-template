@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { isEqual } from "lodash";
 import { produce } from "immer";
 
-import { MarketType } from "@/store";
+import { MarketType, useGlobalStates } from "@/store";
 import { EnrichedMarketDataType } from "royco/queries";
 
 export const useActiveMarket = () => {
@@ -20,6 +20,8 @@ export const useActiveMarket = () => {
   const chain_id = params.chain_id;
   const market_type = params.market_type;
   const market_id = params.market_id;
+
+  const { customTokenData } = useGlobalStates();
 
   /**
    * @notice Enriched Market
@@ -31,6 +33,7 @@ export const useActiveMarket = () => {
     market_type: parseInt(market_type),
     // @ts-ignore
     market_id: market_id,
+    custom_token_data: customTokenData,
   });
 
   /**
@@ -52,6 +55,7 @@ export const useActiveMarket = () => {
     market_id: market_id,
     // @ts-ignore
     market_type: parseInt(market_type),
+    custom_token_data: customTokenData,
   });
 
   /**

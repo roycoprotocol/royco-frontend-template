@@ -104,6 +104,7 @@ export const MarketActionForm = React.forwardRef<
         connectWalletModal();
       } else if (chainId !== marketMetadata.chain_id) {
         try {
+          // @ts-ignore
           await switchChain(config, {
             /**
              * @TODO strictly type this

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useExplore } from "@/store";
+import { useExplore, useGlobalStates } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -24,12 +24,15 @@ export const Pagination = () => {
     [pathname]
   );
 
+  const { customTokenData } = useGlobalStates();
+
   const { count, isLoading } = useEnrichedMarkets({
     sorting,
     filters,
     page_index: pageIndex,
     search_key: searchKey,
     is_verified: showVerifiedMarket ? true : isVerified,
+    custom_token_data: customTokenData,
   });
 
   const totalPages = Math.ceil((count ?? 0) / 20); // marketPerPage = 20

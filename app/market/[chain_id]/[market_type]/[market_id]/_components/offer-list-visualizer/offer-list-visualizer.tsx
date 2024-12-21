@@ -88,9 +88,16 @@ export const OfferListVisualizer = React.forwardRef<
   const { propsHighestOffers, currentHighestOffers, currentMarketData } =
     useActiveMarket();
 
-  const nativeIncentives = currentMarketData.native_yield ?? {
-    native_annual_change_ratio: 0,
-    native_annual_change_ratios: [],
+  const nativeIncentives = {
+    native_annual_change_ratio: currentMarketData.yield_breakdown
+      .filter((yield_breakdown) => yield_breakdown.category !== "base")
+      .reduce(
+        (acc, yield_breakdown) => acc + yield_breakdown.annual_change_ratio,
+        0
+      ),
+    native_annual_change_ratios: currentMarketData.yield_breakdown.filter(
+      (yield_breakdown) => yield_breakdown.category !== "base"
+    ),
   };
 
   const chartConfig = useMemo(() => {

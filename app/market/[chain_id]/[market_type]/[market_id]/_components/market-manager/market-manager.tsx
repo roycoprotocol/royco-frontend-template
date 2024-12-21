@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Fragment, useEffect, useState } from "react";
-import { useMarketManager } from "@/store";
+import { useGlobalStates, useMarketManager } from "@/store";
 import {
   MarketSteps,
   MarketType,

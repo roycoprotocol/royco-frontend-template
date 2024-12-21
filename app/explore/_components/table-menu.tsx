@@ -6,7 +6,7 @@ import { isEqual } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import { useExplore } from "@/store";
+import { useExplore, useGlobalStates } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 
@@ -66,12 +66,16 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
     //   pageIndex,
     //   customPoolParams,
     // });
+
+    const { customTokenData } = useGlobalStates();
+
     const { isLoading, isError, isRefetching, count } = useEnrichedMarkets({
       sorting,
       filters,
       page_index: pageIndex,
       search_key: searchKey,
       is_verified: showVerifiedMarket ? true : exploreIsVerified,
+      custom_token_data: customTokenData,
     });
 
     /**

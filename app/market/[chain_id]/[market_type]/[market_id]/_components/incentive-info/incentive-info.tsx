@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { Fragment } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import {
   BASE_MARGIN_TOP,
   BASE_PADDING,
@@ -10,11 +10,17 @@ import {
 import { useActiveMarket } from "../hooks";
 import { useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
-import { SpringNumber } from "@/components/composables";
+import { SpringNumber, TokenEditor } from "@/components/composables";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
 import { SupportedToken } from "royco/constants";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { SquarePenIcon } from "lucide-react";
 
 const InfoKeyElementClone = React.forwardRef<
   HTMLDivElement,
@@ -54,9 +60,30 @@ const InfoValueElementClone = React.forwardRef<
     },
     ref
   ) => {
+    const [open, setOpen] = useState(false);
+
+    const triggerRef = useRef<HTMLDivElement>(null);
+
+    const previousTokenData =
+      previousMarketData.incentive_tokens_data.findIndex(
+        (item: any) => item.id === token_data.id
+      );
+
     return (
       <Fragment>
         <SecondaryLabel className={cn("text-black", className)}>
+          {/* <SpringNumber
+            previousValue={previousMarketData.annual_change_ratio}
+            currentValue={token_data.annual_change_ratio}
+            numberFormatOptions={{
+              style: "percent",
+              notation: "standard",
+              useGrouping: true,
+              minimumFractionDigits: 0, // Ensures at least 2 decimal places
+              maximumFractionDigits:
+                token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
+            }}
+          /> */}
           {Intl.NumberFormat("en-US", {
             style: "percent",
             notation: "standard",
@@ -108,41 +135,84 @@ const InfoValueElementClone = React.forwardRef<
         )}
 
         {!!token_data.fdv && (
-          <TertiaryLabel className={cn("", className)}>
-            @{" "}
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 0, // Ensures at least 2 decimal places
-              maximumFractionDigits: 8, // Limits to exactly 2 decimal places
-            }).format(token_data.fdv)}{" "}
-            FDV
-          </TertiaryLabel>
+          <div className="flex flex-row items-center gap-1">
+            <TertiaryLabel className={cn("", className)}>
+              @{" "}
+              {/* <SpringNumber
+                previousValue={previousTokenData.fdv}
+                currentValue={token_data.fdv}
+                numberFormatOptions={{
+                  style: "currency",
+                  currency: "USD",
+                  notation: "standard",
+                  useGrouping: true,
+                  minimumFractionDigits: 0, // Ensures at least 2 decimal places
+                  maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+                }}
+              /> */}
+              {Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 0, // Ensures at least 2 decimal places
+                maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+              }).format(token_data.fdv)}{" "}
+              FDV
+            </TertiaryLabel>
+
+            <HoverCard
+              openDelay={200}
+              closeDelay={200}
+              open={open}
+              onOpenChange={setOpen}
+            >
+              <HoverCardTrigger
+                asChild
+                onClick={() => {
+                  if (open === false) {
+                    setOpen(true);
+                  }
+                }}
+              >
+                <SquarePenIcon
+                  strokeWidth={1.5}
+                  className="h-3 w-3 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
+                />
+              </HoverCardTrigger>
+              <HoverCardContent className="w-96 overflow-hidden p-0">
+                <TokenEditor
+                  closeHoverCard={() => {
+                    setOpen(false);
+                    triggerRef.current?.blur();
+                  }}
+                  token_data={{
+                    ...token_data,
+                    fdv: token_data.fdv ?? 0,
+                    total_supply: token_data.total_supply
+                      ? token_data.total_supply === 0
+                        ? 1
+                        : token_data.total_supply
+                      : 0,
+                    price: token_data.price ?? 0,
+                    allocation: token_data.allocation
+                      ? token_data.allocation * 100
+                      : 100,
+                  }}
+                />
+              </HoverCardContent>
+            </HoverCard>
+          </div>
         )}
       </Fragment>
     );
   }
 );
 
-type DetailAPRData = {
-  id: string;
-  name: string;
-  description: string;
-  value: number;
-  token_data?: SupportedToken;
-};
-
 export const IncentiveInfo = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    detailAPRData?: {
-      data: DetailAPRData[];
-      netAPR: number;
-    };
-  }
->(({ className, detailAPRData, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const {
     marketMetadata,
     currentMarketData,
@@ -164,8 +234,9 @@ export const IncentiveInfo = React.forwardRef<
           }
         );
 
-  const currentNativeIncentives =
-    currentMarketData.native_yield?.native_annual_change_ratios;
+  const currentNativeIncentives = currentMarketData.yield_breakdown.filter(
+    (yield_breakdown) => yield_breakdown.category !== "base"
+  );
 
   const currentNetAPR = currentMarketData?.annual_change_ratio ?? 0;
   const previousNetAPR = previousMarketData?.annual_change_ratio ?? 0;
@@ -317,54 +388,9 @@ export const IncentiveInfo = React.forwardRef<
           </InfoCard>
         )}
 
-        {/* {detailAPRData && detailAPRData.data.length > 0 && (
-          <InfoCard
-            className={cn("flex h-fit flex-col gap-3 overflow-y-scroll py-2")}
-          >
-            <TertiaryLabel>Underlying Incentives</TertiaryLabel>
-
-            {detailAPRData.data.map((item) => {
-              return (
-                <InfoCard.Row
-                  key={item.id}
-                  className={cn(INFO_ROW_CLASSES, "grid grid-cols-2")}
-                >
-                  <InfoCard.Row.Key className="relative h-fit w-fit">
-                    <div className="flex flex-row items-center">
-                      <TokenDisplayer
-                        tokens={[item.token_data as any]}
-                        size={4}
-                        symbols={false}
-                      />
-                      <SecondaryLabel className={cn("text-black", className)}>
-                        <span className="font-normal">{item.name}</span>
-                      </SecondaryLabel>
-                    </div>
-                    <TertiaryLabel className="ml-5">
-                      {item.description}
-                    </TertiaryLabel>
-                  </InfoCard.Row.Key>
-
-                  <InfoCard.Row.Value className="relative flex h-fit w-full flex-col items-end gap-0">
-                    <SecondaryLabel className={cn("text-black", className)}>
-                      {item.value === Math.pow(10, 18)
-                        ? `N/D`
-                        : Intl.NumberFormat("en-US", {
-                            style: "percent",
-                            notation: "standard",
-                            useGrouping: true,
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: item.value > 0.0001 ? 2 : 8,
-                          }).format(item.value)}{" "}
-                    </SecondaryLabel>
-                  </InfoCard.Row.Value>
-                </InfoCard.Row>
-              );
-            })}
-          </InfoCard>
-        )} */}
-
-        {!!currentMarketData.native_annual_change_ratio && (
+        {currentMarketData.yield_breakdown.filter(
+          (yield_breakdown) => yield_breakdown.category !== "base"
+        ).length > 0 && (
           <div
             className={cn(
               "flex w-full flex-row items-center justify-between",
@@ -374,16 +400,39 @@ export const IncentiveInfo = React.forwardRef<
             <SecondaryLabel className="text-black">Native Yield</SecondaryLabel>
 
             <SecondaryLabel className="text-black">
-              {(currentMarketData.native_annual_change_ratio ?? 0) >=
-              Math.pow(10, 18) ? (
+              {(currentMarketData.yield_breakdown
+                .filter(
+                  (yield_breakdown) => yield_breakdown.category !== "base"
+                )
+                .reduce(
+                  (acc, yield_breakdown) =>
+                    acc + yield_breakdown.annual_change_ratio,
+                  0
+                ) ?? 0) >= Math.pow(10, 18) ? (
                 `0`
               ) : (
                 <SpringNumber
                   previousValue={
-                    previousMarketData?.native_annual_change_ratio ?? 0
+                    previousMarketData?.yield_breakdown
+                      .filter(
+                        (yield_breakdown) => yield_breakdown.category !== "base"
+                      )
+                      .reduce(
+                        (acc, yield_breakdown) =>
+                          acc + yield_breakdown.annual_change_ratio,
+                        0
+                      ) ?? 0
                   }
                   currentValue={
-                    currentMarketData.native_annual_change_ratio ?? 0
+                    currentMarketData.yield_breakdown
+                      .filter(
+                        (yield_breakdown) => yield_breakdown.category !== "base"
+                      )
+                      .reduce(
+                        (acc, yield_breakdown) =>
+                          acc + yield_breakdown.annual_change_ratio,
+                        0
+                      ) ?? 0
                   }
                   numberFormatOptions={{
                     style: "percent",
@@ -391,8 +440,16 @@ export const IncentiveInfo = React.forwardRef<
                     useGrouping: true,
                     minimumFractionDigits: 0, // Ensures at least 2 decimal places
                     maximumFractionDigits:
-                      (currentMarketData.native_annual_change_ratio ?? 0) >
-                      0.0001
+                      currentMarketData.yield_breakdown
+                        .filter(
+                          (yield_breakdown) =>
+                            yield_breakdown.category !== "base"
+                        )
+                        .reduce(
+                          (acc, yield_breakdown) =>
+                            acc + yield_breakdown.annual_change_ratio,
+                          0
+                        ) > 0.0001
                         ? 2
                         : 8,
                   }}

@@ -43,6 +43,7 @@ export async function GET(request: Request) {
           });
 
           const yieldData = await market.native_yield!({
+            // @ts-ignore
             roycoClient: supabaseClient,
             chainClient,
           });
