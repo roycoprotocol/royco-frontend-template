@@ -1,15 +1,16 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables";
 import { type TypedArrayDistinctAsset, useDistinctAssets } from "royco/hooks";
 
 import { FilterWrapper } from "../composables";
-import { sepolia } from "viem/chains";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
+
+const excludedToken = ["1-0x4f8e1426a9d10bddc11d26042ad270f16ccb95f2"];
 
 export const AssetsFilter = () => {
   const { data, isLoading, isError, isRefetching } = useDistinctAssets();
@@ -28,6 +29,12 @@ export const AssetsFilter = () => {
       })
     : [];
 
+  const filteredTokens = useMemo(() => {
+    return tokens.filter((token: any) => {
+      return !excludedToken.includes(token.id);
+    });
+  }, [tokens]);
+
   if (isLoading)
     return (
       <div className="flex w-full flex-col place-content-center items-center">
@@ -42,7 +49,7 @@ export const AssetsFilter = () => {
   if (data) {
     return (
       <Fragment>
-        {tokens.map((token, index) => {
+        {filteredTokens.map((token, index) => {
           if (token) {
             return (
               <div key={`filter-wrapper:assets:${token.symbol}`}>

@@ -29,6 +29,8 @@ import { SimulationViewer } from "./simulation-viewer";
 import { SlideUpWrapper } from "@/components/animations";
 import { BigNumber } from "ethers";
 import { formatUnits } from "viem";
+import { SupportedChainlist } from "@/sdk/constants";
+import { SupportedChainMap } from "royco/constants";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -75,6 +77,16 @@ export const PreviewStep = React.forwardRef<
     return "0";
   }, [currentMarketData?.frontend_fee]);
 
+  const showSimulation = useMemo(() => {
+    if (currentMarketData && currentMarketData.chain_id) {
+      return ![
+        SupportedChainMap[21_000_000].id,
+        SupportedChainMap[98_865].id,
+      ].includes(currentMarketData.chain_id);
+    }
+    return true;
+  }, [currentMarketData]);
+
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-1 flex-col place-content-center items-center">
@@ -95,16 +107,13 @@ export const PreviewStep = React.forwardRef<
   } else if (!!propsEnrichedMarket.data) {
     return (
       <div className={cn("grow overflow-y-scroll", className)} {...props}>
-        <div className="rounded-2xl border px-3 pb-3 pt-5">
-          <SimulationViewer marketActionForm={marketActionForm} />
-        </div>
+        {showSimulation && (
+          <div className={cn("mb-5 rounded-2xl border px-3 pb-3 pt-5")}>
+            <SimulationViewer marketActionForm={marketActionForm} />
+          </div>
+        )}
 
-        <div
-          className={cn(
-            BASE_MARGIN_TOP.XL,
-            "rounded-2xl border px-3 pb-3 pt-5"
-          )}
-        >
+        <div className={cn("rounded-2xl border px-3 pb-3 pt-5")}>
           <SlideUpWrapper
             layout="position"
             layoutId="motion:market:preview-step:incentives-title"
