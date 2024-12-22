@@ -47,6 +47,7 @@ const InfoValueElementClone = React.forwardRef<
     previousMarketData: any;
     token_data: any;
     incentiveType: any;
+    category: string;
   }
 >(
   (
@@ -56,6 +57,7 @@ const InfoValueElementClone = React.forwardRef<
       currentMarketData,
       token_data,
       incentiveType,
+      category,
       ...props
     },
     ref
@@ -133,10 +135,11 @@ const InfoValueElementClone = React.forwardRef<
           </TertiaryLabel>
         )}
 
-        <div className="flex flex-row items-center gap-1">
-          <TertiaryLabel className={cn("", className)}>
-            @{" "}
-            {/* <SpringNumber
+        {category === "base" && (
+          <div className="flex flex-row items-center gap-1">
+            <TertiaryLabel className={cn("", className)}>
+              @{" "}
+              {/* <SpringNumber
                 previousValue={previousTokenData.fdv}
                 currentValue={token_data.fdv}
                 numberFormatOptions={{
@@ -148,59 +151,60 @@ const InfoValueElementClone = React.forwardRef<
                   maximumFractionDigits: 8, // Limits to exactly 2 decimal places
                 }}
               /> */}
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 0, // Ensures at least 2 decimal places
-              maximumFractionDigits: 8, // Limits to exactly 2 decimal places
-            }).format(token_data.fdv)}{" "}
-            FDV
-          </TertiaryLabel>
+              {Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 0, // Ensures at least 2 decimal places
+                maximumFractionDigits: 8, // Limits to exactly 2 decimal places
+              }).format(token_data.fdv)}{" "}
+              FDV
+            </TertiaryLabel>
 
-          <HoverCard
-            openDelay={200}
-            closeDelay={200}
-            open={open}
-            onOpenChange={setOpen}
-          >
-            <HoverCardTrigger
-              asChild
-              onClick={() => {
-                if (open === false) {
-                  setOpen(true);
-                }
-              }}
+            <HoverCard
+              openDelay={200}
+              closeDelay={200}
+              open={open}
+              onOpenChange={setOpen}
             >
-              <SquarePenIcon
-                strokeWidth={1.5}
-                className="h-3 w-3 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
-              />
-            </HoverCardTrigger>
-            <HoverCardContent className="w-96 overflow-hidden p-0">
-              <TokenEditor
-                closeHoverCard={() => {
-                  setOpen(false);
-                  triggerRef.current?.blur();
+              <HoverCardTrigger
+                asChild
+                onClick={() => {
+                  if (open === false) {
+                    setOpen(true);
+                  }
                 }}
-                token_data={{
-                  ...token_data,
-                  fdv: token_data.fdv ?? 0,
-                  total_supply: token_data.total_supply
-                    ? token_data.total_supply === 0
-                      ? 1
-                      : token_data.total_supply
-                    : 0,
-                  price: token_data.price ?? 0,
-                  allocation: token_data.allocation
-                    ? token_data.allocation * 100
-                    : 100,
-                }}
-              />
-            </HoverCardContent>
-          </HoverCard>
-        </div>
+              >
+                <SquarePenIcon
+                  strokeWidth={1.5}
+                  className="h-3 w-3 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
+                />
+              </HoverCardTrigger>
+              <HoverCardContent className="w-96 overflow-hidden p-0">
+                <TokenEditor
+                  closeHoverCard={() => {
+                    setOpen(false);
+                    triggerRef.current?.blur();
+                  }}
+                  token_data={{
+                    ...token_data,
+                    fdv: token_data.fdv ?? 0,
+                    total_supply: token_data.total_supply
+                      ? token_data.total_supply === 0
+                        ? 1
+                        : token_data.total_supply
+                      : 0,
+                    price: token_data.price ?? 0,
+                    allocation: token_data.allocation
+                      ? token_data.allocation * 100
+                      : 100,
+                  }}
+                />
+              </HoverCardContent>
+            </HoverCard>
+          </div>
+        )}
       </Fragment>
     );
   }
@@ -318,6 +322,7 @@ export const IncentiveInfo = React.forwardRef<
                       currentMarketData={currentMarketData}
                       previousMarketData={previousMarketData}
                       incentiveType={incentiveType}
+                      category={"base"}
                     />
                   </InfoCard.Row.Value>
                 </InfoCard.Row>
@@ -377,6 +382,7 @@ export const IncentiveInfo = React.forwardRef<
                       currentMarketData={currentMarketData}
                       previousMarketData={previousMarketData}
                       incentiveType={incentiveType}
+                      category={"underlying_native"}
                     />
                   </InfoCard.Row.Value>
                 </InfoCard.Row>
