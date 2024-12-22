@@ -279,9 +279,11 @@ export const TransactionStep = React.forwardRef<
             Newly deployed markets must be verified before becoming available to
             depositors.{" "}
             <motion.a
-              href={`/market/${marketBuilderForm.watch("chain").id}/${
-                marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1
-              }/${market_id}`}
+              href={getExplorerUrl({
+                chainId: marketBuilderForm.watch("chain").id,
+                value: txHash ?? "",
+                type: "tx",
+              })}
               target="_blank"
               rel="noopener noreferrer"
               className="relative"
@@ -289,7 +291,7 @@ export const TransactionStep = React.forwardRef<
               initial="initial"
               animate="initial"
             >
-              <motion.span>View your market link here.</motion.span>
+              <motion.span>View transaction on explorer here.</motion.span>
               <motion.div
                 className="absolute bottom-0 left-0 h-[1px] w-full origin-right bg-current"
                 variants={{
@@ -308,25 +310,17 @@ export const TransactionStep = React.forwardRef<
         {txStatus === "error" && "Error while deploying market."}
       </div>
 
-      <div className="mt-2 flex flex-row items-center gap-3">
-        <BadgeLink
-          target="_blank"
-          href={getExplorerUrl({
-            chainId: marketBuilderForm.watch("chain").id,
-            value: txHash ?? "",
-            type: "tx",
-          })}
-          text="View on Explorer"
-        />
-
-        {/* {!!market_id && (
+      {txStatus === "success" && (
+        <div className="mt-2 flex flex-row items-center gap-3">
           <BadgeLink
             target="_blank"
-            href={`/market/${marketBuilderForm.watch("chain").id}/${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}/${market_id}`}
-            text="Market Dashboard"
+            href={`/market/${marketBuilderForm.watch("chain").id}/${
+              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1
+            }/${market_id}`}
+            text="View Market"
           />
-        )} */}
-      </div>
+        </div>
+      )}
 
       <div>
         {txStatus === "error" && (
