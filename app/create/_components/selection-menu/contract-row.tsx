@@ -126,9 +126,15 @@ export const ContractRow = React.forwardRef<
               >
                 <div className="flex h-5 max-w-[90%] grow flex-row items-center ">
                   <div className="overflow-hidden truncate text-ellipsis text-base">
-                    <span className="leading-5 text-black">
-                      {contract.contract_name}
-                    </span>
+                    {contract.contract_name ? (
+                      <span className="leading-5 text-black">
+                        {contract.contract_name}
+                      </span>
+                    ) : (
+                      <span className="leading-5 text-tertiary">
+                        Unknown Contract
+                      </span>
+                    )}
                   </div>
 
                   {/**
