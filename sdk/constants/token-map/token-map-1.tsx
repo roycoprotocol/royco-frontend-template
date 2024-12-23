@@ -11864,4 +11864,14 @@ export const TokenMap1 = {
       "https://assets.coingecko.com/coins/images/50579/large/hETH_Icon_CG.png?1728408977",
     decimals: 18,
   },
+
+  "1-0x5c2803F395aa4708C79F38D99aa7a180202a2783": {
+    id: "1-0x5c2803F395aa4708C79F38D99aa7a180202a2783",
+    chain_id: 1,
+    contract_address: "0x5c2803F395aa4708C79F38D99aa7a180202a2783",
+    name: "Hinkal Points",
+    symbol: "HINK",
+    image: "https://drive.google.com/file/d/1L3DgqBhASyesZvEWeM8kyGT82oCGxZxQ/view?pli=1",
+    decimals: 18,
+  },
 };
