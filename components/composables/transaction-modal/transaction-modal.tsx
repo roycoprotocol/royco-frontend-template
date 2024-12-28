@@ -68,11 +68,7 @@ export const TransactionModal = React.forwardRef<
     error: txError,
     writeContract,
     reset: resetTx,
-  } = useWriteContract({
-    mutation: {
-      retry: true,
-    },
-  });
+  } = useWriteContract();
 
   const {
     isLoading: isTxConfirming,
