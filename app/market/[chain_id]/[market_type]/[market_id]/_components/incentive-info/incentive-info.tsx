@@ -391,7 +391,7 @@ export const IncentiveInfo = React.forwardRef<
           </InfoCard>
         )}
 
-        {currentMarketData.yield_breakdown.filter(
+        {/* {currentMarketData.yield_breakdown.filter(
           (yield_breakdown) => yield_breakdown.category !== "base"
         ).length > 0 && (
           <div
@@ -461,7 +461,7 @@ export const IncentiveInfo = React.forwardRef<
               )}
             </SecondaryLabel>
           </div>
-        )}
+        )} */}
 
         <div
           className={cn(
