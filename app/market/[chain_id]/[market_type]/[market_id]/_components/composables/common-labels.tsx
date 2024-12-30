@@ -74,7 +74,23 @@ export const PrimaryLabel = React.forwardRef<
           {typeof window !== "undefined" &&
             createPortal(
               <TooltipContent className="z-9999">
-                {isVerified ? "Verified Market" : "WARNING: UNVERIFIED MARKET"}
+                {isVerified ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="text-xs font-medium text-black">
+                      This market is verified.
+                    </div>
+                    <a
+                      className="text-xs underline"
+                      href="https://docs.royco.org/for-incentive-providers/verify-a-market"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Learn more.
+                    </a>
+                  </div>
+                ) : (
+                  "WARNING: UNVERIFIED MARKET"
+                )}
               </TooltipContent>,
               document.body
             )}

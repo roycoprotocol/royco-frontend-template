@@ -185,7 +185,7 @@ export const YieldBreakdown = React.forwardRef<
             >
               {breakdown.some((item) => item.category === "base") && (
                 <BreakdownItem>
-                  <BreakdownTitle>Royco Yield</BreakdownTitle>
+                  <BreakdownTitle>Royco Yield (Fixed)</BreakdownTitle>
                   <BreakdownContent
                     className="mt-1"
                     breakdown={breakdown.filter(

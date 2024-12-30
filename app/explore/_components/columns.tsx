@@ -143,9 +143,24 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 {typeof window !== "undefined" &&
                   createPortal(
                     <TooltipContent className="z-9999">
-                      {props.row.original.is_verified
-                        ? "Verified Market"
-                        : "WARNING: UNVERIFIED MARKET"}
+                      {props.row.original.is_verified ? (
+                        <div className="flex flex-col gap-1">
+                          <div className="text-xs font-medium text-black">
+                            This market is verified.
+                          </div>
+                          <a
+                            className="text-xs underline"
+                            href="https://docs.royco.org/for-incentive-providers/verify-a-market"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Learn more.
+                          </a>
+                        </div>
+                      ) : (
+                        "WARNING: UNVERIFIED MARKET"
+                      )}
                     </TooltipContent>,
                     document.body
                   )}
