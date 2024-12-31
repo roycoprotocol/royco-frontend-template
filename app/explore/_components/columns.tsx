@@ -26,8 +26,7 @@ import {
   ArrowUpIcon,
   BadgeAlertIcon,
   BadgeCheckIcon,
-  CircleCheckIcon,
-  EllipsisVerticalIcon,
+  SparklesIcon,
 } from "lucide-react";
 import { PoolEditor } from "./ui";
 import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
@@ -433,25 +432,33 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             breakdown={props.row.original.yield_breakdown}
             base_key={props.row.original.id}
           >
-            <SpringNumber
-              previousValue={previousValue}
-              currentValue={currentValue}
-              numberFormatOptions={{
-                style: "percent",
-                notation: "compact",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }}
-              className={cn(
-                props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                props.view === "list" && "h-5"
-              )}
-              spanClassName={cn(
-                props.view === "grid" && InfoGrid.Content.Primary.Span,
-                props.view === "list" && "leading-5"
-              )}
-            />
+            <div className="flex flex-row items-center gap-2">
+              <SpringNumber
+                previousValue={previousValue}
+                currentValue={currentValue}
+                numberFormatOptions={{
+                  style: "percent",
+                  notation: "compact",
+                  useGrouping: true,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }}
+                className={cn(
+                  props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
+                  props.view === "list" && "h-5"
+                )}
+                spanClassName={cn(
+                  props.view === "grid" && InfoGrid.Content.Primary.Span,
+                  props.view === "list" && "leading-5"
+                )}
+              />
+
+              <SparklesIcon
+                className="h-4 w-4"
+                color="#3CC27A"
+                strokeWidth={3}
+              />
+            </div>
           </YieldBreakdown>
         </div>
       );
