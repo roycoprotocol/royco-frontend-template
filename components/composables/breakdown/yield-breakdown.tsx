@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/hover-card";
 import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
-import { SquarePenIcon } from "lucide-react";
+import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { TokenEditor } from "../token-editor";
 import { createPortal } from "react-dom";
 
@@ -147,7 +147,10 @@ const NetYield = React.forwardRef<
         key={`yield-breakdown:${base_key}:net-yield`}
         className=" flex flex-row items-center justify-between"
       >
-        Net Yield
+        <div className="flex flex-row items-center gap-2">
+          <SparklesIcon className="h-4 w-4" color="#3CC27A" strokeWidth={3} />
+          <span>Net Yield</span>
+        </div>
         <div className="">
           {Intl.NumberFormat("en-US", {
             style: "percent",
