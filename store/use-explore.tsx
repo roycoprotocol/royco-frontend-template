@@ -77,9 +77,11 @@ export const useExplore = create<ExploreState>((set) => ({
           },
         ]
       : []),
-    ...(getSubdomain()
+    ...(typeof window !== "undefined"
       ? (() => {
-          switch (getSubdomain()) {
+          const subdomain = getSubdomain();
+
+          switch (subdomain) {
             case "ethereum":
               return [
                 {

@@ -12,11 +12,15 @@ interface GlobalState {
 }
 
 export const getSubdomain = () => {
-  if (typeof window === "undefined") return undefined;
+  try {
+    if (typeof window === "undefined") return undefined;
 
-  const subdomain = window.location.host.split(".")[0];
+    const subdomain = window.location.host.split(".")[0];
 
-  return subdomain;
+    return subdomain;
+  } catch (error) {
+    return undefined;
+  }
 };
 
 export const useGlobalStates = create<GlobalState>((set) => ({
