@@ -96,6 +96,7 @@ const BreakdownRow = React.forwardRef<
                     : 0,
                   price: item.price ?? 0,
                   allocation: item.allocation ? item.allocation * 100 : 100,
+                  token_amount: item.token_amount ?? 0,
                 }}
               />
             </HoverCardContent>

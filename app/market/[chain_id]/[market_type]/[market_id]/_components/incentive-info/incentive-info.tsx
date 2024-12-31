@@ -199,6 +199,7 @@ const InfoValueElementClone = React.forwardRef<
                     allocation: token_data.allocation
                       ? token_data.allocation * 100
                       : 100,
+                    token_amount: token_data.token_amount ?? 0,
                   }}
                 />
               </HoverCardContent>
@@ -283,6 +284,12 @@ export const IncentiveInfo = React.forwardRef<
                 currentMarketData.base_end_timestamps?.[token_data_index]
               );
 
+              const base_breakdown = currentMarketData.yield_breakdown.find(
+                (breakdown: any) =>
+                  breakdown.category === "base" &&
+                  breakdown.id === token_data.id
+              );
+
               return (
                 <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
                   <InfoCard.Row.Key className="relative h-fit w-fit">
@@ -302,7 +309,10 @@ export const IncentiveInfo = React.forwardRef<
                     <InfoKeyElementClone
                       className="mb-1"
                       symbolClassName="text-black font-normal"
-                      token_data={token_data}
+                      token_data={{
+                        ...token_data,
+                        ...base_breakdown,
+                      }}
                     />
 
                     {start_date && end_date ? (
@@ -318,7 +328,10 @@ export const IncentiveInfo = React.forwardRef<
                      */}
                     <InfoValueElementClone
                       className=""
-                      token_data={token_data}
+                      token_data={{
+                        ...token_data,
+                        ...base_breakdown,
+                      }}
                       currentMarketData={currentMarketData}
                       previousMarketData={previousMarketData}
                       incentiveType={incentiveType}
