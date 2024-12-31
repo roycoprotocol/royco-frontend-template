@@ -24,7 +24,7 @@ function CustomizedXAxisTick(props: any) {
 
   const incentive_token_data = token_data.map((token: any) => {
     return (
-      <tspan textAnchor="middle" x="0">
+      <tspan textAnchor="middle" x="0" dy="15">
         {Intl.NumberFormat("en-US", {
           style: "decimal",
           notation: "compact",
@@ -153,6 +153,14 @@ export const OfferListVisualizer = React.forwardRef<
         )
     : [];
 
+  const bottomMargin = useMemo(() => {
+    const maxTokensLength = chartData.reduce((max, offer) => {
+      const tokensLength = offer.tokens_data?.length ?? 0;
+      return tokensLength > max ? tokensLength : max;
+    }, 0);
+    return maxTokensLength * 15;
+  }, [chartData]);
+
   return (
     <div ref={ref} className={cn("flex flex-col", className)} {...props}>
       {propsHighestOffers.isLoading && (
@@ -168,7 +176,10 @@ export const OfferListVisualizer = React.forwardRef<
             config={chartConfig}
           >
             <BarChart
-              margin={{ left: 30, bottom: 20 }}
+              margin={{
+                left: 30,
+                bottom: bottomMargin + 10,
+              }}
               accessibilityLayer
               data={chartData}
             >
