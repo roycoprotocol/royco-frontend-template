@@ -2,7 +2,15 @@ import { MarketFilter } from "@/sdk/queries";
 import { BaseSortingFilter } from "@/sdk/types";
 import { sepolia } from "viem/chains";
 import { create } from "zustand";
-import { SupportedChainlist } from "../sdk/constants";
+import {
+  ArbitrumOne,
+  Base,
+  Corn,
+  EthereumMainnet,
+  EthereumSepolia,
+  Plume,
+} from "royco/constants";
+import { getSubdomain } from "./use-global-states";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -60,13 +68,6 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreSortKey: "total_incentive_amounts_usd" as string,
   setExploreSortKey: (exploreSortKey: string) => set({ exploreSortKey }),
   exploreFilters: [
-    /**
-     * @todo Remove this when we go live
-     * @tag remove-when-live
-     *
-     * @context
-     * ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "BERACHAIN" ? [ ... ] : []),
-     */
     ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET"
       ? [
           {
@@ -76,11 +77,56 @@ export const useExplore = create<ExploreState>((set) => ({
           },
         ]
       : []),
-    // @note: we have a filter in .env, we want testnet to have all chains
-    // ...SupportedChainlist.filter((chain) => !chain.testnet).map((chain) => ({
-    //   id: "chain_id",
-    //   value: chain.id,
-    // })),
+    ...(getSubdomain()
+      ? (() => {
+          switch (getSubdomain()) {
+            case "ethereum":
+              return [
+                {
+                  id: "chain_id",
+                  value: EthereumMainnet.id,
+                },
+              ];
+            case "sepolia":
+              return [
+                {
+                  id: "chain_id",
+                  value: EthereumSepolia.id,
+                },
+              ];
+            case "base":
+              return [
+                {
+                  id: "chain_id",
+                  value: Base.id,
+                },
+              ];
+            case "arbitrum":
+              return [
+                {
+                  id: "chain_id",
+                  value: ArbitrumOne.id,
+                },
+              ];
+            case "corn":
+              return [
+                {
+                  id: "chain_id",
+                  value: Corn.id,
+                },
+              ];
+            case "plume":
+              return [
+                {
+                  id: "chain_id",
+                  value: Plume.id,
+                },
+              ];
+            default:
+              return [];
+          }
+        })()
+      : []),
   ] as Array<MarketFilter>,
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
