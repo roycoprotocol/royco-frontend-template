@@ -50,7 +50,26 @@ export const TransactionStep = React.forwardRef<
   const updateMarketUserdata = async () => {
     try {
       if (!!market_id) {
-        const response = await fetch(
+        // Save in local db
+        const response1 = await fetch(`/api/market`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chain_id: marketBuilderForm.watch("chain").id,
+            market_type:
+              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
+            tx_hash: txHash,
+            id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
+            name: marketBuilderForm.watch("market_name"),
+            description: marketBuilderForm.watch("market_description"),
+            push: false,
+          }),
+        });
+
+        // Save in royco server & sdk
+        const response2 = await fetch(
           `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
           {
             method: "POST",
@@ -65,27 +84,12 @@ export const TransactionStep = React.forwardRef<
               id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
               name: marketBuilderForm.watch("market_name"),
               description: marketBuilderForm.watch("market_description"),
+              push: true,
             }),
           }
         );
 
-        const response2 = await fetch(`/api/market`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chain_id: marketBuilderForm.watch("chain").id,
-            market_type:
-              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-            tx_hash: txHash,
-            id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
-            name: marketBuilderForm.watch("market_name"),
-            description: marketBuilderForm.watch("market_description"),
-          }),
-        });
-
-        await response.json();
+        await response1.json();
       }
     } catch (error) {
       console.log("Error in updateMarketUserdata", error);

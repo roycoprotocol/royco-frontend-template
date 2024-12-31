@@ -45,7 +45,8 @@ export default defineMarket({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { chain_id, market_type, tx_hash, id, name, description } = body;
+    const { chain_id, market_type, tx_hash, id, name, description, push } =
+      body;
 
     const chain = getSupportedChain(chain_id);
     if (!chain) {
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
         .from("market_userdata")
         .insert([row]);
 
-      if (!error) {
+      if (!error && push === true) {
         // Create file path
         const filePath = `sdk/constants/market-map/${chain_id}/definitions/${chain_id}_${market_type}_${market_id}.ts`;
 
@@ -157,6 +158,10 @@ export async function POST(request: Request) {
           }
         }
 
+        if (fileSha) {
+          throw new Error("Market File already exists");
+        }
+
         // Create the file in the new branch
         await octokit.repos.createOrUpdateFileContents({
           owner: "roycoprotocol",
@@ -176,6 +181,14 @@ export async function POST(request: Request) {
           head: newBranchName,
           base: "main",
           body: commitMessage,
+        });
+
+        // Auto-merge the pull request
+        await octokit.pulls.merge({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          pull_number: pr.data.number,
+          merge_method: "squash",
         });
       } else {
         console.log("Error in creating pull request", error);
