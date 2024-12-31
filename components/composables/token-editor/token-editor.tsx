@@ -74,6 +74,7 @@ export const TokenEditor = React.forwardRef<
       total_supply: number;
       price: number;
       allocation: number;
+      token_amount: number;
     };
     closeHoverCard?: () => void;
   }
@@ -97,9 +98,10 @@ export const TokenEditor = React.forwardRef<
     const fdv = parseFloat(TokenEditorForm.watch("fdv") ?? "0");
     const allocation = parseFloat(TokenEditorForm.watch("allocation") ?? "0");
 
-    const new_fdv = (fdv * allocation) / 100;
+    const new_fdv = fdv;
+    const new_total_supply = token_data.token_amount / (allocation / 100);
 
-    let price = new_fdv / token_data.total_supply;
+    let price = new_fdv / new_total_supply;
 
     if (isNaN(price)) {
       price = 0;
@@ -109,12 +111,9 @@ export const TokenEditor = React.forwardRef<
       ...customTokenData,
       {
         token_id: token_data.id,
-        fdv: (
-          (parseFloat(TokenEditorForm.watch("fdv") ?? "0") *
-            parseFloat(TokenEditorForm.watch("allocation") ?? "100")) /
-          100
-        ).toString(),
+        fdv: new_fdv.toString(),
         price: price.toString(),
+        total_supply: new_total_supply.toString(),
       },
     ];
 
