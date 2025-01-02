@@ -15,11 +15,16 @@ export async function GET(request: Request) {
     // Calculate batch size for the SupportedTokenMap entries
     const mapEntries = Object.values(SupportedTokenMap);
     const batchSize = 100;
-    const currentMinute = new Date().getUTCMinutes();
-    const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+    const currentTime = Math.floor(Date.now() / (1000 * 60)); // Convert to minutes since epoch
+    const totalBatches = Math.ceil(mapEntries.length / batchSize);
+    const batchIndex = currentTime % totalBatches;
     const batchTokens = mapEntries.slice(
       batchIndex * batchSize,
       (batchIndex + 1) * batchSize
+    );
+
+    console.log(
+      `Processing batch ${batchIndex + 1} of ${totalBatches}, tokens: ${batchTokens.length}`
     );
 
     // Convert batch tokens to upsert records
