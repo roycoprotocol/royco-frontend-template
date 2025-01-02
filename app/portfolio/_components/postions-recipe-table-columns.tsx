@@ -35,7 +35,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedPositionsRecipeDataType> 
       cell: (props: any) => {
         return (
           <Link
-            href={`/market/${props.row.original.chain_id}/${MarketType.recipe.id}/${props.row.original.market_id}`}
+            href={`/market/${props.row.original.chain_id}/${MarketType.recipe.value}/${props.row.original.market_id}`}
           >
             <div
               className={cn(

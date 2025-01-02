@@ -30,7 +30,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     cell: (props: any) => {
       return (
         <Link
-          href={`/market/${props.row.original.chain_id}/${MarketType.vault.id}/${props.row.original.market_id}`}
+          href={`/market/${props.row.original.chain_id}/${MarketType.vault.value}/${props.row.original.market_id}`}
         >
           <div
             className={cn(
