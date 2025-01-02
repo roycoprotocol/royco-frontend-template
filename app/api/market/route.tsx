@@ -6,6 +6,7 @@ import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { getMarketIdFromEventLog } from "royco/market";
 import { Octokit } from "@octokit/rest";
+import validator from "validator";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -30,13 +31,18 @@ Market Details:
 };
 
 export const getContent = (marketData: any) => {
+  const sanitizedName = validator.escape(validator.trim(marketData.name || ""));
+  const sanitizedDescription = validator.escape(
+    validator.trim(marketData.description || "")
+  );
+
   return Buffer.from(
     `import { defineMarket } from "@/sdk/constants";
 
 export default defineMarket({
-  id: "${marketData.id}",
-  name: "${marketData.name}",
-  description: "${marketData.description}",
+  id: \`${marketData.id}\`,
+  name: \`${sanitizedName}\`,
+  description: \`${sanitizedDescription}\`,
   is_verified: ${marketData.is_verified},
 });`
   ).toString("base64");
