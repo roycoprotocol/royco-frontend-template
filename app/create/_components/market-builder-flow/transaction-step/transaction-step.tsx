@@ -50,7 +50,8 @@ export const TransactionStep = React.forwardRef<
   const updateMarketUserdata = async () => {
     try {
       if (!!market_id) {
-        const response = await fetch(
+        // Save in royco server & sdk
+        const response1 = await fetch(
           `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
           {
             method: "POST",
@@ -65,10 +66,12 @@ export const TransactionStep = React.forwardRef<
               id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
               name: marketBuilderForm.watch("market_name"),
               description: marketBuilderForm.watch("market_description"),
+              push: true,
             }),
           }
         );
 
+        // Save in local db
         const response2 = await fetch(`/api/market`, {
           method: "POST",
           headers: {
@@ -82,10 +85,11 @@ export const TransactionStep = React.forwardRef<
             id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
             name: marketBuilderForm.watch("market_name"),
             description: marketBuilderForm.watch("market_description"),
+            push: false,
           }),
         });
 
-        await response.json();
+        await response2.json();
       }
     } catch (error) {
       console.log("Error in updateMarketUserdata", error);
