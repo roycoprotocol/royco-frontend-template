@@ -5,7 +5,7 @@ import { LoadingSpinner } from "../loading-spinner";
 import { TransactionOptionsType } from "@/sdk/types";
 import { BigNumber } from "ethers";
 import { BadgeLink, ContentBadge, TokenDisplayer } from "@/components/common";
-import { getExplorerUrl } from "@/sdk/utils";
+import { getExplorerUrl } from "royco/utils";
 
 export const TransactionRow = React.forwardRef<
   HTMLDivElement,
