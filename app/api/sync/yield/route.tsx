@@ -78,7 +78,7 @@ const updateUnderlyingYields = async ({
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
-    (market) => typeof market.underlying_yield === "function"
+    (market) => typeof market.underlying_vault_yield === "function"
   );
   const batchSize = 10;
   const currentMinute = new Date().getUTCMinutes();
@@ -103,7 +103,7 @@ const updateUnderlyingYields = async ({
           transport: http(RPC_API_KEYS[chain_id]),
         });
 
-        const yieldData = await market.underlying_yield!({
+        const yieldData = await market.underlying_vault_yield!({
           // @ts-ignore
           roycoClient: supabaseClient,
           chainClient,
