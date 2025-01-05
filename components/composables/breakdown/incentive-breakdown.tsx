@@ -26,17 +26,16 @@ const BreakdownRow = React.forwardRef<
       className="flex flex-row items-center justify-between font-light"
       {...props}
     >
-      <TokenDisplayer tokens={[item]} symbols={true} />
+      <TokenDisplayer tokens={[item]} symbols={true} pointPrefix={true} />
 
       <div className="flex flex-row items-center gap-2">
         <div>
           {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
+            notation: "compact",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
             useGrouping: true,
-          }).format(item.token_amount_usd)}
+          }).format(item.token_amount)}
         </div>
       </div>
     </div>

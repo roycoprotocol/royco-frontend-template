@@ -8,10 +8,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { EnrichedMarketDataType } from "royco/queries";
-import { TokenDisplayer } from "@/components/common";
+import { InfoTip, TokenDisplayer } from "@/components/common";
 import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { TokenEditor } from "../token-editor";
 import { createPortal } from "react-dom";
+import { TertiaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -149,7 +150,7 @@ const NetYield = React.forwardRef<
       >
         <div className="flex flex-row items-center gap-2">
           <SparklesIcon className="h-4 w-4" color="#3CC27A" strokeWidth={3} />
-          <span>Net Yield</span>
+          <span>Net APY</span>
         </div>
         <div className="">
           {Intl.NumberFormat("en-US", {
@@ -188,21 +189,29 @@ export const YieldBreakdown = React.forwardRef<
               {...props}
             >
               {breakdown.some((item) => item.category === "base") && (
-                <BreakdownItem>
-                  <BreakdownTitle>Royco Yield (Fixed)</BreakdownTitle>
-                  <BreakdownContent
-                    className="mt-1"
-                    breakdown={breakdown.filter(
-                      (item) => item.category === "base"
-                    )}
-                    base_key={base_key}
-                  />
-                </BreakdownItem>
+                <div>
+                  <BreakdownItem>
+                    <BreakdownTitle>Incentives Offered on Royco</BreakdownTitle>
+                    <BreakdownContent
+                      className="mt-1"
+                      breakdown={breakdown.filter(
+                        (item) => item.category === "base"
+                      )}
+                      base_key={base_key}
+                    />
+                  </BreakdownItem>
+                  <div className="flex justify-end gap-2">
+                    <TertiaryLabel className="self-end italic">
+                      Fixed Rate
+                    </TertiaryLabel>
+                    <InfoTip size="sm">Hello World</InfoTip>
+                  </div>
+                </div>
               )}
 
               {breakdown.some((item) => item.category !== "base") && (
                 <BreakdownItem>
-                  <BreakdownTitle>Native Yield</BreakdownTitle>
+                  <BreakdownTitle>Native Incentives</BreakdownTitle>
                   <BreakdownContent
                     className="mt-1"
                     breakdown={breakdown.filter(

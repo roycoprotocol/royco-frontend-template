@@ -52,13 +52,13 @@ interface ExploreState {
 }
 
 export const exploreColumnNames = {
-  name: "Title",
+  name: "Incentivized Action",
   input_token_id: "Asset",
   chain_id: "Chain",
-  market_type: "Payout",
-  total_incentive_amounts_usd: "Add. Incentives",
+  market_type: "Exit",
+  total_incentive_amounts_usd: "Incentives Offered",
   locked_quantity_usd: "TVL",
-  annual_change_ratio: "Net APR",
+  annual_change_ratio: "Net APY",
   chain: "Chain",
 };
 
