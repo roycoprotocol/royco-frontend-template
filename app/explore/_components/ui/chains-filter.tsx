@@ -16,7 +16,7 @@ export const ChainsFilter = () => {
       {data.map((chain) => {
         const shouldHide =
           process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET" &&
-          chain?.testnet === true;
+          (chain?.testnet === true || chain?.id === 98865);
 
         return (
           <div
