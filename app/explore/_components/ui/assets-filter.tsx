@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables";
@@ -14,6 +14,12 @@ import { getFrontendTagClient } from "@/components/constants";
 const excludedToken = ["1-0x4f8e1426a9d10bddc11d26042ad270f16ccb95f2"];
 
 export const AssetsFilter = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data, isLoading, isError, isRefetching } = useDistinctAssets();
 
   const tokens = !!data
@@ -27,7 +33,11 @@ export const AssetsFilter = () => {
         //     return chain?.id === 11155111;
         //   });
         // } else
-        if (typeof window !== "undefined" && frontendTag !== "dev") {
+        if (
+          typeof window !== "undefined" &&
+          frontendTag !== "dev" &&
+          frontendTag !== "testnet"
+        ) {
           return !token.ids.every((id) => {
             const [chain_id, token_address] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));
@@ -56,7 +66,7 @@ export const AssetsFilter = () => {
     return <AlertIndicator className="py-2">No tokens yet</AlertIndicator>;
   }
 
-  if (data) {
+  if (data && mounted) {
     return (
       <Fragment>
         {filteredTokens.map((token, index) => {

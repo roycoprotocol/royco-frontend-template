@@ -8,42 +8,49 @@ import { ChainFilterWrapper } from "../composables";
 import { getFrontendTagClient } from "@/components/constants";
 
 export const ChainsFilter = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data } = useBaseChains();
 
   return (
     <Fragment>
-      {data.map((chain) => {
-        const frontendTag = getFrontendTagClient();
+      {mounted &&
+        data.map((chain) => {
+          const frontendTag = getFrontendTagClient();
 
-        let shouldHide = false;
+          let shouldHide = false;
 
-        if (
-          typeof window !== "undefined" &&
-          frontendTag !== "dev" &&
-          frontendTag !== "testnet"
-        ) {
-          if (chain?.testnet === true) {
-            shouldHide = true;
-          } else if (chain.id === 98865) {
-            shouldHide = true;
+          if (
+            typeof window !== "undefined" &&
+            frontendTag !== "dev" &&
+            frontendTag !== "testnet"
+          ) {
+            if (chain?.testnet === true) {
+              shouldHide = true;
+            } else if (chain.id === 98865) {
+              shouldHide = true;
+            }
           }
-        }
 
-        return (
-          <div
-            className={cn(shouldHide && "hidden")}
-            key={`filter-wrapper:chains:${chain.id}`}
-          >
-            <ChainFilterWrapper
-              filter={{
-                id: "chain_id",
-                value: chain.id,
-              }}
-              token={chain}
-            />
-          </div>
-        );
-      })}
+          return (
+            <div
+              className={cn(shouldHide && "hidden")}
+              key={`filter-wrapper:chains:${chain.id}`}
+            >
+              <ChainFilterWrapper
+                filter={{
+                  id: "chain_id",
+                  value: chain.id,
+                }}
+                token={chain}
+              />
+            </div>
+          );
+        })}
     </Fragment>
   );
 };
