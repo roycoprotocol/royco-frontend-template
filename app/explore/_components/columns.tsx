@@ -3,6 +3,7 @@ import {
   SpringNumber,
   IncentiveBreakdown,
   YieldBreakdown,
+  TokenEditor,
 } from "@/components/composables";
 import { EnrichedMarketDataType } from "royco/queries";
 import {
@@ -453,6 +454,13 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
 
       let currentValue = props.row.original.annual_change_ratio;
 
+      const breakdowns = props.row.original.yield_breakdown.filter(
+        (item: any) =>
+          item.category === "base" &&
+          item.type === "point" &&
+          item.annual_change_ratio === 0
+      );
+
       return (
         <div
           key={`${props.view}:market:${props.row.original.id}:aip`}
@@ -463,40 +471,79 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             "group"
           )}
         >
-          <YieldBreakdown
-            onClick={(e) => e.stopPropagation()}
-            breakdown={props.row.original.yield_breakdown}
-            base_key={props.row.original.id}
-            marketType={marketType}
-          >
-            <div className="flex flex-row items-center gap-2">
-              <SpringNumber
-                previousValue={previousValue}
-                currentValue={currentValue}
-                numberFormatOptions={{
-                  style: "percent",
-                  notation: "compact",
-                  useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }}
-                className={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                  props.view === "list" && "h-5"
+          {breakdowns.length > 0 ? (
+            <HoverCard openDelay={200} closeDelay={200}>
+              <HoverCardTrigger
+                className="cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Calculate
+              </HoverCardTrigger>
+              {typeof window !== "undefined" &&
+                createPortal(
+                  <HoverCardContent
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-96 overflow-hidden p-0"
+                  >
+                    <TokenEditor
+                      closeHoverCard={() => {}}
+                      token_data={{
+                        ...breakdowns[0],
+                        fdv: breakdowns[0].fdv ?? 0,
+                        total_supply: breakdowns[0].total_supply
+                          ? breakdowns[0].total_supply === 0
+                            ? 1
+                            : breakdowns[0].total_supply
+                          : 0,
+                        price: breakdowns[0].price ?? 0,
+                        allocation: breakdowns[0].allocation
+                          ? breakdowns[0].allocation * 100
+                          : 100,
+                        token_amount: breakdowns[0].token_amount ?? 0,
+                      }}
+                    />
+                  </HoverCardContent>,
+                  document.body
                 )}
-                spanClassName={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Span,
-                  props.view === "list" && "leading-5"
-                )}
-              />
+            </HoverCard>
+          ) : (
+            <YieldBreakdown
+              onClick={(e) => e.stopPropagation()}
+              breakdown={props.row.original.yield_breakdown}
+              base_key={props.row.original.id}
+              marketType={marketType}
+            >
+              <div className="flex flex-row items-center gap-2">
+                <>
+                  <SpringNumber
+                    previousValue={previousValue}
+                    currentValue={currentValue}
+                    numberFormatOptions={{
+                      style: "percent",
+                      notation: "compact",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }}
+                    className={cn(
+                      props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
+                      props.view === "list" && "h-5"
+                    )}
+                    spanClassName={cn(
+                      props.view === "grid" && InfoGrid.Content.Primary.Span,
+                      props.view === "list" && "leading-5"
+                    )}
+                  />
 
-              <SparklesIcon
-                className="h-4 w-4"
-                color="#3CC27A"
-                strokeWidth={3}
-              />
-            </div>
-          </YieldBreakdown>
+                  <SparklesIcon
+                    className="h-4 w-4"
+                    color="#3CC27A"
+                    strokeWidth={3}
+                  />
+                </>
+              </div>
+            </YieldBreakdown>
+          )}
         </div>
       );
     },
