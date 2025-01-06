@@ -111,13 +111,6 @@ export const getExploreFilters = () => {
   return filters;
 };
 
-export const getExploreIsVerified = () => {
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
-
-  return frontendTag === "testnet" || frontendTag === "dev" ? false : true;
-};
-
 export const useExplore = create<ExploreState>((set) => ({
   exploreView: "list" as string,
   setExploreView: (exploreView: string) => set({ exploreView }),
@@ -156,7 +149,7 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreCustomPoolParams: [],
   setExploreCustomPoolParams: (exploreCustomPoolParams) =>
     set({ exploreCustomPoolParams }),
-  exploreIsVerified: getExploreIsVerified(),
+  exploreIsVerified: true,
   setExploreIsVerified: (exploreIsVerified: boolean) =>
     set({ exploreIsVerified }),
 }));
