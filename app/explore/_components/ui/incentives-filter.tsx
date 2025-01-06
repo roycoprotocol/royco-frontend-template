@@ -20,13 +20,14 @@ export const IncentivesFilter = () => {
         const frontendTag =
           typeof window !== "undefined" ? getFrontendTag() : "default";
 
-        if (frontendTag === "testnet") {
-          return token.ids.every((id) => {
-            const [chain_id] = id.split("-");
-            const chain = getSupportedChain(parseInt(chain_id));
-            return chain?.id === 11155111;
-          });
-        } else if (frontendTag !== "dev") {
+        // if (frontendTag === "testnet") {
+        //   return token.ids.every((id) => {
+        //     const [chain_id] = id.split("-");
+        //     const chain = getSupportedChain(parseInt(chain_id));
+        //     return chain?.id === 11155111;
+        //   });
+        // } else
+        if (frontendTag !== "dev") {
           return !token.ids.every((id) => {
             const [chain_id] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));

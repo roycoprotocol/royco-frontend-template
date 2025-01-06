@@ -50,9 +50,9 @@ export const ChainsFilter = () => {
             }
           }
 
-          if (!!window && frontendTag === "testnet" && chain.id !== 11155111) {
-            shouldHide = true;
-          }
+          // if (!!window && frontendTag === "testnet" && chain.id !== 11155111) {
+          //   shouldHide = true;
+          // }
 
           return (
             <div
