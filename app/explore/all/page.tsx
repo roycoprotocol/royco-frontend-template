@@ -12,7 +12,7 @@ import { Pagination } from "../_components/pagination";
 import { cn } from "@/lib/utils";
 import { Protector } from "../../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
-import { getFrontendTag } from "@/store";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -94,10 +94,9 @@ const Page = () => {
     );
   };
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = getFrontendTagServer();
 
-  if (frontendTag === "internal") {
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
   } else {
     return <Content />;

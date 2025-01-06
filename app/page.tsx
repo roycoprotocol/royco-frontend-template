@@ -1,5 +1,3 @@
-// "use client";
-
 import "./explore/local.css";
 
 import { cn } from "@/lib/utils";
@@ -14,16 +12,9 @@ import {
 } from "./explore/_components";
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
-import { getFrontendTag } from "@/store";
-// import { useEffect, useState } from "react";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
-  // const [mounted, setMounted] = useState(false);
-
-  // useEffect(() => {
-  //   setMounted(true);
-  // }, []);
-
   const Content = () => {
     return (
       <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
@@ -103,18 +94,9 @@ const Page = () => {
     );
   };
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = getFrontendTagServer();
 
-  // if (mounted) {
-  //   if (frontendTag === "internal") {
-  //     return <Protector children={<Content />} />;
-  //   } else {
-  //     return <Content />;
-  //   }
-  // }
-
-  if (frontendTag === "internal") {
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
   } else {
     return <Content />;

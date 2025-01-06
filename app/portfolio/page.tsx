@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import { Protector } from "../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
-import { getFrontendTag, MarketManagerStoreProvider } from "@/store";
+import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -51,10 +52,9 @@ const Page = () => {
     );
   };
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = getFrontendTagServer();
 
-  if (frontendTag === "internal") {
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
   } else {
     return <Content />;

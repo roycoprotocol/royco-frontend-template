@@ -1,3 +1,2 @@
-import { MAX_SCREEN_WIDTH } from "./constants";
-
-export { MAX_SCREEN_WIDTH };
+export * from "./constants";
+export * from "./frontend-tag-server";

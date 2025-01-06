@@ -1,10 +1,8 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { MarketBuilder } from "./_components";
 import "./local.css";
 import { Protector } from "../protector";
-import { getFrontendTag } from "@/store";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -24,10 +22,9 @@ const Page = () => {
     );
   };
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = getFrontendTagServer();
 
-  if (frontendTag === "internal") {
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
   } else {
     return <Content />;

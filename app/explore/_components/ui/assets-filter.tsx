@@ -9,7 +9,7 @@ import { type TypedArrayDistinctAsset, useDistinctAssets } from "royco/hooks";
 import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
-import { getFrontendTag } from "@/store";
+import { getFrontendTagClient } from "@/components/constants";
 
 const excludedToken = ["1-0x4f8e1426a9d10bddc11d26042ad270f16ccb95f2"];
 
@@ -18,8 +18,7 @@ export const AssetsFilter = () => {
 
   const tokens = !!data
     ? (data as TypedArrayDistinctAsset[]).filter((token) => {
-        const frontendTag =
-          typeof window !== "undefined" ? getFrontendTag() : "default";
+        const frontendTag = getFrontendTagClient();
 
         // if (frontendTag === "testnet") {
         //   return token.ids.every((id) => {
@@ -28,7 +27,7 @@ export const AssetsFilter = () => {
         //     return chain?.id === 11155111;
         //   });
         // } else
-        if (frontendTag !== "dev") {
+        if (typeof window !== "undefined" && frontendTag !== "dev") {
           return !token.ids.every((id) => {
             const [chain_id, token_address] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));
