@@ -1,9 +1,8 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { MarketBuilder } from "./_components";
 import "./local.css";
 import { Protector } from "../protector";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -23,13 +22,12 @@ const Page = () => {
     );
   };
 
-  if (
-    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
-    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
-  ) {
-    return <Content />;
-  } else {
+  const frontendTag = getFrontendTagServer();
+
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
+  } else {
+    return <Content />;
   }
 };
 

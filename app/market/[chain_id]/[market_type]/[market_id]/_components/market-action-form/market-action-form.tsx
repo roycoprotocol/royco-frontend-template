@@ -117,7 +117,7 @@ export const MarketActionForm = React.forwardRef<
         if (isValid.status) {
           onSubmit(marketActionForm.getValues());
         } else {
-          toast.custom(<ErrorAlert message={isValid.message} />);
+          toast.custom(<ErrorAlert message={isValid.message ?? ""} />);
         }
       } else if (
         marketStep === MarketSteps.preview.id &&

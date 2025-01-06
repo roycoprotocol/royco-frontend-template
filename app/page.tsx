@@ -12,6 +12,7 @@ import {
 } from "./explore/_components";
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -93,13 +94,12 @@ const Page = () => {
     );
   };
 
-  if (
-    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
-    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
-  ) {
-    return <Content />;
-  } else {
+  const frontendTag = getFrontendTagServer();
+
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
+  } else {
+    return <Content />;
   }
 };
 

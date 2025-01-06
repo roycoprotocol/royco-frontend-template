@@ -13,7 +13,11 @@ import {
   TokenDisplayer,
 } from "@/components/common";
 
-import { exploreColumnNames, useExplore } from "@/store/use-explore";
+import {
+  exploreColumnNames,
+  exploreColumnTooltips,
+  useExplore,
+} from "@/store/use-explore";
 import {
   Tooltip,
   TooltipContent,
@@ -43,6 +47,9 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
     const { exploreSort, setExploreSort } = useExplore();
 
+    const name = (exploreColumnNames as any)[column.id];
+    const tooltip = (exploreColumnTooltips as any)[column.id];
+
     return (
       <div
         onClick={() => {
@@ -69,13 +76,9 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
         )}
         {...props}
       >
-        <div className="body-2 h-5">
-          <span className="leading-5">
-            {
-              // @ts-ignore
-              exploreColumnNames[column.id]
-            }
-          </span>
+        <div className="body-2 item-center flex h-5 gap-1">
+          <span className="leading-5">{name}</span>
+          {tooltip && <InfoTip>{tooltip}</InfoTip>}
         </div>
         {column.getCanSort() && column.id !== "market_type" && (
           <div className="body-2 ml-[6px] h-4 w-4 opacity-90">
@@ -208,44 +211,44 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   //     );
   //   },
   // },
-  // {
-  //   accessorKey: "chain_id",
-  //   enableResizing: false,
-  //   // header: exploreColumnNames.chain,
-  //   enableSorting: false,
-  //   header: ({ column }: { column: any }) => {
-  //     return <HeaderWrapper column={column} />;
-  //   },
+  {
+    accessorKey: "chain_id",
+    enableResizing: false,
+    // header: exploreColumnNames.chain,
+    enableSorting: false,
+    header: ({ column }: { column: any }) => {
+      return <HeaderWrapper column={column} />;
+    },
 
-  //   meta: {
-  //     className: "min-w-28",
-  //   },
-  //   cell: (props: any) => {
-  //     return (
-  //       <div
-  //         key={`${props.view}:market:${props.row.original.id}:chain-id`}
-  //         className={cn(
-  //           props.view === "list" && props.column.columnDef.meta.className,
-  //           "flex h-fit capitalize",
-  //           props.view === "grid" &&
-  //             "body-2 min-w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"
-  //         )}
-  //       >
-  //         <TokenDisplayer
-  //           hover
-  //           bounce
-  //           tokens={[props.row.original.chain_data]}
-  //           symbols={props.view === "list" ? false : true}
-  //           className={cn(
-  //             props.column.columnDef.meta.className,
-  //             "flex flex-row place-content-start items-center gap-2 text-left",
-  //             props.view === "grid" ? "mr-2 min-w-fit" : "pl-[0.75rem]"
-  //           )}
-  //         />
-  //       </div>
-  //     );
-  //   },
-  // },
+    meta: {
+      className: "min-w-28",
+    },
+    cell: (props: any) => {
+      return (
+        <div
+          key={`${props.view}:market:${props.row.original.id}:chain-id`}
+          className={cn(
+            props.view === "list" && props.column.columnDef.meta.className,
+            "flex h-fit capitalize",
+            props.view === "grid" &&
+              "body-2 min-w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"
+          )}
+        >
+          <TokenDisplayer
+            hover
+            bounce
+            tokens={[props.row.original.chain_data]}
+            symbols={props.view === "list" ? false : true}
+            className={cn(
+              props.column.columnDef.meta.className,
+              "flex flex-row place-content-start items-center gap-2 text-left",
+              props.view === "grid" ? "mr-2 min-w-fit" : "pl-[0.75rem]"
+            )}
+          />
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "locked_quantity_usd",
     enableResizing: false,
@@ -336,23 +339,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     cell: (props: any) => {
       const rowIndex = props.row.index;
       const tokens = props.row.original.incentive_tokens_data;
+      const points = tokens.filter((token: any) => token.type === "point");
 
-      let previousValueUsd = 0;
-      let previousValueToken = 0;
-
-      if (
-        props.placeholderDatas[0] !== null &&
-        rowIndex < props.placeholderDatas[0].length
-      ) {
-        previousValueUsd =
-          props.placeholderDatas[0][rowIndex].total_incentive_amounts_usd;
-      }
-
-      const previousValue = previousValueUsd || previousValueToken;
-
-      const currentValueUsd = props.row.original.total_incentive_amounts_usd;
-
-      const currentValue = currentValueUsd;
+      const previousPointsValue = 0;
+      const currentPointsValue = points[0]?.token_amount || 0;
 
       if (!props) return null;
 
@@ -368,39 +358,47 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         >
           <HoverCard openDelay={200} closeDelay={200}>
             <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
-              {/* <SpringNumber
-                previousValue={previousValue}
-                currentValue={currentValue}
-                numberFormatOptions={{
-                  style: "currency",
-                  currency: "USD",
-                  notation: "compact",
-                  useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  // minimumFractionDigits: props.view === "list" ? 2 : 0,
-                  // maximumFractionDigits: props.view === "list" ? 2 : 0,
-                }}
-                className={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                  props.view === "list" && "h-5"
-                )}
-                spanClassName={cn(
-                  props.view === "grid" && InfoGrid.Content.Primary.Span,
-                  props.view === "list" && "leading-5"
-                )}
-              /> */}
-              {props.row.original.total_incentive_amounts_usd > 0 && (
-                <TokenDisplayer
-                  hover
-                  bounce
-                  className="gap-0"
-                  symbolClassName="gap-0"
-                  tokens={tokens}
-                  symbols={false}
-                  pointPrefix={true}
-                  // key={`market:${props.row.original.id}:rewards:tokens`}
-                />
+              {points.length > 0 ? (
+                <div className="flex flex-row items-center gap-1">
+                  <SpringNumber
+                    previousValue={previousPointsValue}
+                    currentValue={currentPointsValue}
+                    numberFormatOptions={{
+                      notation: "compact",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }}
+                    className={cn(
+                      props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
+                      props.view === "list" && "h-5"
+                    )}
+                    spanClassName={cn(
+                      props.view === "grid" && InfoGrid.Content.Primary.Span,
+                      props.view === "list" && "leading-5"
+                    )}
+                  />
+                  <TokenDisplayer
+                    hover
+                    bounce
+                    className="gap-0"
+                    symbolClassName="gap-0"
+                    tokens={points}
+                    symbols={false}
+                  />
+                  <span className="font-gt text-base font-300">Points</span>
+                </div>
+              ) : (
+                props.row.original.total_incentive_amounts_usd > 0 && (
+                  <TokenDisplayer
+                    hover
+                    bounce
+                    className="gap-0"
+                    symbolClassName="gap-0"
+                    tokens={tokens}
+                    symbols={false}
+                  />
+                )
               )}
             </HoverCardTrigger>
             {typeof window !== "undefined" &&
@@ -437,6 +435,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     cell: (props: any) => {
       const rowIndex = props.row.index;
 
+      const marketType = props.row.original.market_type;
+
       let previousValue = 0;
 
       if (
@@ -467,6 +467,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             onClick={(e) => e.stopPropagation()}
             breakdown={props.row.original.yield_breakdown}
             base_key={props.row.original.id}
+            marketType={marketType}
           >
             <div className="flex flex-row items-center gap-2">
               <SpringNumber
@@ -532,10 +533,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           >
             <span className="leading-5">
               {props.row.original.market_type === MarketType.vault.value
-                ? "Anytime"
+                ? "No"
                 : props.row.original.reward_style !== 2
-                  ? "Lockup required"
-                  : "Anytime, but forfeit"}
+                  ? "Yes"
+                  : "No, but forfeit"}
             </span>
           </div>
 

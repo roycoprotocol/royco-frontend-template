@@ -10,7 +10,7 @@ import {
   EthereumSepolia,
   Plume,
 } from "royco/constants";
-import { getSubdomain } from "./use-global-states";
+import { getFrontendTag } from "./use-global-states";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -52,14 +52,106 @@ interface ExploreState {
 }
 
 export const exploreColumnNames = {
-  name: "Incentivized Action",
+  name: "Action Market",
   input_token_id: "Asset",
   chain_id: "Chain",
-  market_type: "Exit",
+  market_type: "Lockup",
   total_incentive_amounts_usd: "Incentives Offered",
   locked_quantity_usd: "TVL",
   annual_change_ratio: "Net APY",
   chain: "Chain",
+};
+
+export const exploreColumnTooltips = {
+  name: (
+    <span>
+      A Royco Action Market is a market that incentives an onchain action.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-is-an-a-royco-action-market"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
+  annual_change_ratio: (
+    <span>
+      The combined incentives you receive for performing the action.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-types-of-incentives-can-i-receive"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
+  market_type: (
+    <span>
+      If the market requires a lockup. Some markets may allow early exit, but
+      you must forfeit all incentives.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-types-of-incentives-can-i-receive"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
+};
+
+export const getExploreFilters = () => {
+  let filters: MarketFilter[] = [];
+
+  const frontendTag =
+    typeof window !== "undefined" ? getFrontendTag() : "default";
+
+  if (
+    frontendTag !== "dev" &&
+    frontendTag !== "testnet" &&
+    frontendTag !== "internal"
+  ) {
+    filters.push({
+      id: "chain_id",
+      value: sepolia.id,
+      condition: "NOT",
+    });
+  }
+
+  // Filters based on Chain
+  if (frontendTag === "ethereum") {
+    filters.push({
+      id: "chain_id",
+      value: EthereumMainnet.id,
+    });
+  } else if (frontendTag === "base") {
+    filters.push({
+      id: "chain_id",
+      value: Base.id,
+    });
+  } else if (frontendTag === "arbitrum") {
+    filters.push({
+      id: "chain_id",
+      value: ArbitrumOne.id,
+    });
+  } else if (frontendTag === "plume") {
+    filters.push({
+      id: "chain_id",
+      value: Plume.id,
+    });
+  } else if (frontendTag === "corn") {
+    filters.push({
+      id: "chain_id",
+      value: Corn.id,
+    });
+  }
+
+  return filters;
 };
 
 export const useExplore = create<ExploreState>((set) => ({
@@ -67,69 +159,7 @@ export const useExplore = create<ExploreState>((set) => ({
   setExploreView: (exploreView: string) => set({ exploreView }),
   exploreSortKey: "total_incentive_amounts_usd" as string,
   setExploreSortKey: (exploreSortKey: string) => set({ exploreSortKey }),
-  exploreFilters: [
-    ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET"
-      ? [
-          {
-            id: "chain_id",
-            value: sepolia.id,
-            condition: "NOT",
-          },
-        ]
-      : []),
-    ...(typeof window !== "undefined"
-      ? (() => {
-          const subdomain = getSubdomain();
-
-          switch (subdomain) {
-            case "ethereum":
-              return [
-                {
-                  id: "chain_id",
-                  value: EthereumMainnet.id,
-                },
-              ];
-            case "sepolia":
-              return [
-                {
-                  id: "chain_id",
-                  value: EthereumSepolia.id,
-                },
-              ];
-            case "base":
-              return [
-                {
-                  id: "chain_id",
-                  value: Base.id,
-                },
-              ];
-            case "arbitrum":
-              return [
-                {
-                  id: "chain_id",
-                  value: ArbitrumOne.id,
-                },
-              ];
-            case "corn":
-              return [
-                {
-                  id: "chain_id",
-                  value: Corn.id,
-                },
-              ];
-            case "plume":
-              return [
-                {
-                  id: "chain_id",
-                  value: Plume.id,
-                },
-              ];
-            default:
-              return [];
-          }
-        })()
-      : []),
-  ] as Array<MarketFilter>,
+  exploreFilters: typeof window !== "undefined" ? getExploreFilters() : [],
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
   exploreSort: [

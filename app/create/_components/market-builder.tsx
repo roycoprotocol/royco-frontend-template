@@ -2,7 +2,11 @@
 
 import { useWindowSize } from "@react-hook/window-size";
 
-import { useMarketBuilderManager, useSelectionMenu } from "@/store";
+import {
+  getFrontendTag,
+  useMarketBuilderManager,
+  useSelectionMenu,
+} from "@/store";
 import { MarketBuilderManager } from "./market-builder-manager";
 
 import React, { useEffect } from "react";
@@ -19,6 +23,35 @@ import { useSearchContracts } from "royco/hooks";
 import { MarketBuilderSteps } from "@/store/";
 import { AlertIndicator } from "@/components/common";
 import { mainnet, sepolia } from "viem/chains";
+import {
+  ArbitrumOne,
+  Base,
+  Corn,
+  EthereumMainnet,
+  EthereumSepolia,
+  Plume,
+} from "royco/constants";
+
+export const getPoolFormDefaults = () => {
+  const frontendTag =
+    typeof window !== "undefined" ? getFrontendTag() : "default";
+
+  if (frontendTag === "ethereum") {
+    return PoolFormDefaults[EthereumMainnet.id];
+  } else if (frontendTag === "sepolia") {
+    return PoolFormDefaults[EthereumSepolia.id];
+  } else if (frontendTag === "base") {
+    return PoolFormDefaults[Base.id];
+  } else if (frontendTag === "arbitrum") {
+    return PoolFormDefaults[ArbitrumOne.id];
+  } else if (frontendTag === "plume") {
+    return PoolFormDefaults[Plume.id];
+  } else if (frontendTag === "corn") {
+    return PoolFormDefaults[Corn.id];
+  }
+
+  return PoolFormDefaults[EthereumMainnet.id];
+};
 
 export const MarketBuilder = React.forwardRef<
   HTMLDivElement,
@@ -42,12 +75,7 @@ export const MarketBuilder = React.forwardRef<
   const marketBuilderForm = useForm<z.infer<typeof MarketBuilderFormSchema>>({
     resolver: zodResolver(MarketBuilderFormSchema),
     // @ts-ignore
-    defaultValues:
-      PoolFormDefaults[
-        process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET"
-          ? sepolia.id
-          : mainnet.id
-      ],
+    defaultValues: getPoolFormDefaults(),
   });
 
   // pre fetching contract list

@@ -26,7 +26,7 @@ const BreakdownRow = React.forwardRef<
       className="flex flex-row items-center justify-between font-light"
       {...props}
     >
-      <TokenDisplayer tokens={[item]} symbols={true} pointPrefix={true} />
+      <TokenDisplayer tokens={[item]} symbols={true} />
 
       <div className="flex flex-row items-center gap-2">
         <div>

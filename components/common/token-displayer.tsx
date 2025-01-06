@@ -41,7 +41,6 @@ type TokenDisplayerProps = {
   imageClassName?: string;
   symbolClassName?: string;
   size?: number;
-  pointPrefix?: boolean;
 };
 
 /**
@@ -62,7 +61,6 @@ const TokenDisplayer = React.forwardRef<
       name = false,
       tokens,
       symbols,
-      pointPrefix = false,
       ...props
     },
     ref
@@ -147,8 +145,9 @@ const TokenDisplayer = React.forwardRef<
                        */}
                       {/* <span className="">{token.symbol.toUpperCase()}</span> */}
                       {/* <div>{token.symbol}</div> */}
-                      {token.symbol}{" "}
-                      {pointPrefix && token.type === "point" && "Points"}
+                      {[token.symbol, token.type === "point" && "Points"]
+                        .filter(Boolean)
+                        .join(" ")}
                     </TooltipContent>,
                     document.body
                   )}
@@ -196,7 +195,11 @@ const TokenDisplayer = React.forwardRef<
 
           {symbols && tokens.length >= 1 && (
             <Fragment>
-              {name === true ? tokens[0].name : tokens[0].symbol}
+              {name === true
+                ? tokens[0].name
+                : [tokens[0].symbol, tokens[0].type === "point" && "Points"]
+                    .filter(Boolean)
+                    .join(" ")}
               {tokens.length > 1 && ` +${tokens.length - 1} more`}
             </Fragment>
           )}

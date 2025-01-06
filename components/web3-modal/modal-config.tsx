@@ -23,13 +23,7 @@ export const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [
-  mainnet,
-  arbitrum,
-  base,
-  corn,
-  ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? [sepolia] : []),
-] as const;
+const chains = [mainnet, arbitrum, base, corn, sepolia] as const;
 
 export const config = defaultWagmiConfig({
   chains,

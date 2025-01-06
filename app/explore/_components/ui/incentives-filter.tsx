@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables";
 import {
@@ -10,13 +10,33 @@ import {
 import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
+import { getFrontendTagClient } from "@/components/constants";
 
 export const IncentivesFilter = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data, isLoading, isError } = useDistinctIncentives();
 
   const tokens = !!data
     ? (data as TypedArrayDistinctIncentive[]).filter((token) => {
-        if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
+        const frontendTag = getFrontendTagClient();
+
+        // if (frontendTag === "testnet") {
+        //   return token.ids.every((id) => {
+        //     const [chain_id] = id.split("-");
+        //     const chain = getSupportedChain(parseInt(chain_id));
+        //     return chain?.id === 11155111;
+        //   });
+        // } else
+        if (
+          typeof window !== "undefined" &&
+          frontendTag !== "testnet" &&
+          frontendTag !== "dev"
+        ) {
           return !token.ids.every((id) => {
             const [chain_id] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));
@@ -39,7 +59,7 @@ export const IncentivesFilter = () => {
     return <AlertIndicator className="py-2">No tokens yet</AlertIndicator>;
   }
 
-  if (data) {
+  if (data && mounted) {
     return (
       <Fragment>
         {tokens.map((token, index) => {
