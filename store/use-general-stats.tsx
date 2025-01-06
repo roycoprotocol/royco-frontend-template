@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { restrictedCountries } from "@/app/_components/provider/connect-wallet-provider";
 import { useDisconnect } from "wagmi";
 import { useAccount } from "wagmi";
+import { getFrontendTag } from "./use-global-states";
 
 export const BrowserDetector = React.forwardRef<
   HTMLDivElement,
@@ -33,7 +34,12 @@ export const GeoDetector = React.forwardRef<
 
   useEffect(() => {
     const checkRestriction = async () => {
-      if (process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
+      const frontendTag =
+        typeof window !== "undefined" ? getFrontendTag() : "default";
+
+      const nonGeoBlockedFrontendTags = ["dev", "testnet", "internal"];
+
+      if (!nonGeoBlockedFrontendTags.includes(frontendTag)) {
         try {
           const response = await fetch("https://freeipapi.com/api/json/");
           const data = await response.json();

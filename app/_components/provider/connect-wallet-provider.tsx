@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ConnectWalletAlertModal } from "../ui/connect-wallet-alert-modal";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { getFrontendTag } from "@/store";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -28,7 +29,12 @@ export const ConnectWalletProvider = ({
 
   const connectWalletModal = async () => {
     try {
-      if (process.env.NEXT_PUBLIC_IS_GEOBLOCKED === "TRUE") {
+      const frontendTag =
+        typeof window !== "undefined" ? getFrontendTag() : "default";
+
+      const nonGeoBlockedFrontendTags = ["dev", "internal", "testnet"];
+
+      if (!nonGeoBlockedFrontendTags.includes(frontendTag)) {
         const response = await fetch("https://freeipapi.com/api/json/");
         const data = await response.json();
 

@@ -12,6 +12,7 @@ import {
   Corn,
   Plume,
 } from "royco/constants";
+import { getFrontendTag } from "@/store";
 
 export const metadata = {
   name: "Royco",
@@ -22,6 +23,9 @@ export const metadata = {
   icons: ["/icon.png"],
 };
 
+const frontendTag =
+  typeof window !== "undefined" ? getFrontendTag() : "default";
+
 export const config = getDefaultConfig({
   appName: "Royco",
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
@@ -31,9 +35,7 @@ export const config = getDefaultConfig({
     Base,
     Corn,
     Plume,
-    ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET"
-      ? [EthereumSepolia]
-      : []),
+    ...(frontendTag === "dev" ? [EthereumSepolia] : []),
   ],
   ssr: true,
   multiInjectedProviderDiscovery: true,
