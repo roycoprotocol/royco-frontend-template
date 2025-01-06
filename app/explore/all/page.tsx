@@ -12,6 +12,7 @@ import { Pagination } from "../_components/pagination";
 import { cn } from "@/lib/utils";
 import { Protector } from "../../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { getFrontendTag } from "@/store";
 
 const Page = () => {
   const Content = () => {
@@ -93,13 +94,13 @@ const Page = () => {
     );
   };
 
-  if (
-    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
-    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
-  ) {
-    return <Content />;
-  } else {
+  const frontendTag =
+    typeof window !== "undefined" ? getFrontendTag() : "default";
+
+  if (frontendTag === "internal") {
     return <Protector children={<Content />} />;
+  } else {
+    return <Content />;
   }
 };
 

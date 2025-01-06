@@ -10,13 +10,17 @@ import {
 import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
+import { getFrontendTag } from "@/store";
 
 export const IncentivesFilter = () => {
   const { data, isLoading, isError } = useDistinctIncentives();
 
   const tokens = !!data
     ? (data as TypedArrayDistinctIncentive[]).filter((token) => {
-        if (process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET") {
+        const frontendTag =
+          typeof window !== "undefined" ? getFrontendTag() : "default";
+
+        if (frontendTag !== "dev") {
           return !token.ids.every((id) => {
             const [chain_id] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));

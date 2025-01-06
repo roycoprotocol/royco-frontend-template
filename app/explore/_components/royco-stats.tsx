@@ -8,6 +8,7 @@ import { produce } from "immer";
 import { isEqual } from "lodash";
 import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
+import { getFrontendTag } from "@/store";
 
 export const RoycoStats = React.forwardRef<
   HTMLDivElement,

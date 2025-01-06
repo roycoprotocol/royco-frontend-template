@@ -7,6 +7,7 @@ import { cookieStorage, createStorage, http } from "wagmi";
  * Replace viem/chains with royco/constants
  */
 import { sepolia, mainnet, arbitrum, base, corn } from "viem/chains";
+import { getFrontendTag } from "@/store";
 
 // Get projectId at https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -22,13 +23,16 @@ export const metadata = {
   icons: ["/icon.png"],
 };
 
+const frontendTag =
+  typeof window !== "undefined" ? getFrontendTag() : "default";
+
 // Create wagmiConfig
 const chains = [
   mainnet,
   arbitrum,
   base,
   corn,
-  ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? [sepolia] : []),
+  ...(frontendTag === "dev" ? [sepolia] : []),
 ] as const;
 
 export const config = defaultWagmiConfig({

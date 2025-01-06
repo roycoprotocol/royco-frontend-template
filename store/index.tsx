@@ -6,4 +6,4 @@ export * from "./use-market-builder-manager";
 export * from "./use-market-manager";
 export * from "./market-manager-props";
 export * from "./use-market-builder";
-export { useGlobalStates, getSubdomain } from "./use-global-states";
+export { useGlobalStates, getFrontendTag } from "./use-global-states";
