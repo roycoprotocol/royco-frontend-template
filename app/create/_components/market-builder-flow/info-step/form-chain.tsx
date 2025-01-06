@@ -28,11 +28,10 @@ import { TokenDisplayer } from "@/components/common";
 import { useSupportedChains } from "royco/hooks";
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
 import { FormInputLabel } from "@/components/composables";
-import { getFrontendTag } from "@/store";
+import { getFrontendTagClient } from "@/components/constants";
 
 const getSupportedChainsOptions = () => {
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = getFrontendTagClient();
 
   if (frontendTag === "dev") {
     return {

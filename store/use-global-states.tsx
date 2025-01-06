@@ -38,14 +38,14 @@ export const getFrontendTag = () => {
       frontendTag = "plume";
     } else if (url.includes("corn")) {
       frontendTag = "corn";
+    } else if (url.includes("internal")) {
+      frontendTag = "internal";
     } else if (url.includes("testnet") || url.includes("sepolia")) {
       frontendTag = "testnet";
     } else if (url.includes("boyco")) {
       frontendTag = "boyco";
     } else if (url.includes("local")) {
       frontendTag = "dev";
-    } else if (url.includes("internal")) {
-      frontendTag = "internal";
     }
 
     return frontendTag as FrontendTag;

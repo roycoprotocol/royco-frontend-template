@@ -86,11 +86,6 @@ export const getExploreFilters = () => {
       id: "chain_id",
       value: EthereumMainnet.id,
     });
-  } else if (frontendTag === "testnet") {
-    filters.push({
-      id: "chain_id",
-      value: EthereumSepolia.id,
-    });
   } else if (frontendTag === "base") {
     filters.push({
       id: "chain_id",
