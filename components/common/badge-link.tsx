@@ -26,19 +26,11 @@ const BaseContent = React.forwardRef<
       <div
         className={cn(
           "flex",
-          size === "md" && "h-5 text-base",
-          size === "sm" && "h-4 text-sm"
+          size === "md" && "text-base",
+          size === "sm" && "text-sm"
         )}
       >
-        <span
-          className={cn(
-            "",
-            size === "md" && "leading-6",
-            size === "sm" && "leading-5"
-          )}
-        >
-          {props.children}
-        </span>
+        {props.children}
       </div>
     </Fragment>
   );

@@ -202,15 +202,20 @@ export const YieldBreakdown = React.forwardRef<
                       base_key={base_key}
                     />
                   </BreakdownItem>
-                  {marketType !== undefined &&
-                    marketType === MarketType.recipe.value && (
-                      <div className="flex justify-end gap-2">
-                        <TertiaryLabel className="self-end italic">
-                          Fixed Rate
-                        </TertiaryLabel>
-                        <InfoTip size="sm">Hello World</InfoTip>
-                      </div>
-                    )}
+                  {marketType !== undefined && (
+                    <div className="flex justify-end gap-2">
+                      <TertiaryLabel className="self-end italic">
+                        {marketType === MarketType.recipe.value
+                          ? "Fixed Rate"
+                          : "Variable Rate"}
+                      </TertiaryLabel>
+                      <InfoTip size="sm">
+                        {marketType === MarketType.recipe.value
+                          ? "Rate of incentives received is fixed, and cannot be diluted"
+                          : "Rate of incentives is variable, and can change based on the number of market participants."}
+                      </InfoTip>
+                    </div>
+                  )}
                 </div>
               )}
 
