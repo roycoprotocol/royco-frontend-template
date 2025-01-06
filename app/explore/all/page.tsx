@@ -12,6 +12,7 @@ import { Pagination } from "../_components/pagination";
 import { cn } from "@/lib/utils";
 import { Protector } from "../../protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -93,13 +94,12 @@ const Page = () => {
     );
   };
 
-  if (
-    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
-    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
-  ) {
-    return <Content />;
-  } else {
+  const frontendTag = getFrontendTagServer();
+
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
+  } else {
+    return <Content />;
   }
 };
 

@@ -28,6 +28,21 @@ import { TokenDisplayer } from "@/components/common";
 import { useSupportedChains } from "royco/hooks";
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
 import { FormInputLabel } from "@/components/composables";
+import { getFrontendTagClient } from "@/components/constants";
+
+const getSupportedChainsOptions = () => {
+  const frontendTag = getFrontendTagClient();
+
+  if (frontendTag === "dev") {
+    return {
+      testnet: true,
+    };
+  }
+
+  return {
+    testnet: false,
+  };
+};
 
 export const FormChain = React.forwardRef<
   HTMLDivElement,
@@ -35,9 +50,7 @@ export const FormChain = React.forwardRef<
     marketBuilderForm: UseFormReturn<z.infer<typeof MarketBuilderFormSchema>>;
   }
 >(({ className, marketBuilderForm, ...props }, ref) => {
-  const { data } = useSupportedChains({
-    testnet: process.env.NEXT_PUBLIC_FRONTEND_TYPE === "TESTNET" ? true : false,
-  });
+  const { data } = useSupportedChains(getSupportedChainsOptions());
 
   return (
     <FormField

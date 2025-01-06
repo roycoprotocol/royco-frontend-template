@@ -6,6 +6,7 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
+import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -51,13 +52,12 @@ const Page = () => {
     );
   };
 
-  if (
-    process.env.NEXT_PUBLIC_IS_LOCAL === "TRUE" ||
-    process.env.NEXT_PUBLIC_IS_LOCKED !== "TRUE"
-  ) {
-    return <Content />;
-  } else {
+  const frontendTag = getFrontendTagServer();
+
+  if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;
+  } else {
+    return <Content />;
   }
 };
 

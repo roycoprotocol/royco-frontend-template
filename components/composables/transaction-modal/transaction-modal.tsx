@@ -44,6 +44,8 @@ export const TransactionModal = React.forwardRef<
   const { transactions, setTransactions, marketStep, setMarketStep } =
     useMarketManager();
 
+  console.log("transactions", transactions);
+
   const shouldSwitchChain = useMemo(() => {
     if (transactions.length > 0 && chainId !== transactions[0]?.chainId) {
       return true;

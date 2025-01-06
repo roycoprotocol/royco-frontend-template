@@ -10,7 +10,7 @@ import {
   EthereumSepolia,
   Plume,
 } from "royco/constants";
-import { getSubdomain } from "./use-global-states";
+import { getFrontendTag } from "./use-global-states";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -62,74 +62,61 @@ export const exploreColumnNames = {
   chain: "Chain",
 };
 
+export const getExploreFilters = () => {
+  let filters: MarketFilter[] = [];
+
+  const frontendTag =
+    typeof window !== "undefined" ? getFrontendTag() : "default";
+
+  if (
+    frontendTag !== "dev" &&
+    frontendTag !== "testnet" &&
+    frontendTag !== "internal"
+  ) {
+    filters.push({
+      id: "chain_id",
+      value: sepolia.id,
+      condition: "NOT",
+    });
+  }
+
+  // Filters based on Chain
+  if (frontendTag === "ethereum") {
+    filters.push({
+      id: "chain_id",
+      value: EthereumMainnet.id,
+    });
+  } else if (frontendTag === "base") {
+    filters.push({
+      id: "chain_id",
+      value: Base.id,
+    });
+  } else if (frontendTag === "arbitrum") {
+    filters.push({
+      id: "chain_id",
+      value: ArbitrumOne.id,
+    });
+  } else if (frontendTag === "plume") {
+    filters.push({
+      id: "chain_id",
+      value: Plume.id,
+    });
+  } else if (frontendTag === "corn") {
+    filters.push({
+      id: "chain_id",
+      value: Corn.id,
+    });
+  }
+
+  return filters;
+};
+
 export const useExplore = create<ExploreState>((set) => ({
   exploreView: "list" as string,
   setExploreView: (exploreView: string) => set({ exploreView }),
   exploreSortKey: "total_incentive_amounts_usd" as string,
   setExploreSortKey: (exploreSortKey: string) => set({ exploreSortKey }),
-  exploreFilters: [
-    ...(process.env.NEXT_PUBLIC_FRONTEND_TYPE !== "TESTNET"
-      ? [
-          {
-            id: "chain_id",
-            value: sepolia.id,
-            condition: "NOT",
-          },
-        ]
-      : []),
-    ...(typeof window !== "undefined"
-      ? (() => {
-          const subdomain = getSubdomain();
-
-          switch (subdomain) {
-            case "ethereum":
-              return [
-                {
-                  id: "chain_id",
-                  value: EthereumMainnet.id,
-                },
-              ];
-            case "sepolia":
-              return [
-                {
-                  id: "chain_id",
-                  value: EthereumSepolia.id,
-                },
-              ];
-            case "base":
-              return [
-                {
-                  id: "chain_id",
-                  value: Base.id,
-                },
-              ];
-            case "arbitrum":
-              return [
-                {
-                  id: "chain_id",
-                  value: ArbitrumOne.id,
-                },
-              ];
-            case "corn":
-              return [
-                {
-                  id: "chain_id",
-                  value: Corn.id,
-                },
-              ];
-            case "plume":
-              return [
-                {
-                  id: "chain_id",
-                  value: Plume.id,
-                },
-              ];
-            default:
-              return [];
-          }
-        })()
-      : []),
-  ] as Array<MarketFilter>,
+  exploreFilters: typeof window !== "undefined" ? getExploreFilters() : [],
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
   exploreSort: [

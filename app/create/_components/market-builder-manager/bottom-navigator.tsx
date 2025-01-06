@@ -5,7 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { LockupTimeMap, MarketBuilderFormSchema } from "../market-builder-form";
 import { cn } from "@/lib/utils";
-import { useMarketBuilderManager } from "@/store";
+import { getFrontendTag, useMarketBuilderManager } from "@/store";
 import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
 import { MotionWrapper } from "../market-builder-flow/animations";
@@ -25,6 +25,23 @@ import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
 import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
+import { BigNumber } from "ethers";
+
+const getFrontendFee = () => {
+  /**
+   * Default frontend fee is 4% of the total amount of incentives
+   */
+  let frontendFee = BigNumber.from(4).pow(16).toString();
+
+  const frontendTag =
+    typeof window !== "undefined" ? getFrontendTag() : "default";
+
+  if (frontendTag === "boyco") {
+    frontendFee = "0";
+  }
+
+  return frontendFee;
+};
 
 export const BottomNavigator = React.forwardRef<
   HTMLDivElement,
@@ -68,7 +85,7 @@ export const BottomNavigator = React.forwardRef<
           .multiplier
       ).toString(),
       inputToken: marketBuilderForm.watch("asset")?.contract_address,
-      frontendFee: process.env.NEXT_PUBLIC_FRONTEND_FEE as string,
+      frontendFee: getFrontendFee(),
       rewardStyle:
         marketBuilderForm.watch("incentive_schedule") === "upfront"
           ? REWARD_STYLE.Upfront
@@ -82,7 +99,7 @@ export const BottomNavigator = React.forwardRef<
       writeContractOptions: writeContractOptionsVault,
     } = useCreateVaultMarket({
       chainId: marketBuilderForm.watch("chain").id,
-      frontendFee: process.env.NEXT_PUBLIC_FRONTEND_FEE as string,
+      frontendFee: getFrontendFee(),
       vaultAddress: marketBuilderForm.watch("vault_address"),
       vaultName: marketBuilderForm.watch("market_name"),
       vaultOwner: address,
@@ -111,6 +128,7 @@ export const BottomNavigator = React.forwardRef<
         else if (chainId !== marketBuilderForm.watch("chain").id) {
           setForceLoader(true);
           try {
+            // @ts-ignore
             await switchChain(config, {
               /**
                * @TODO strictly type this
