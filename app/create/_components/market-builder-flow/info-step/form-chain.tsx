@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ import { getFrontendTagClient } from "@/components/constants";
 const getSupportedChainsOptions = () => {
   const frontendTag = getFrontendTagClient();
 
-  if (frontendTag === "dev") {
+  if (frontendTag === "dev" || frontendTag === "testnet") {
     return {
       testnet: true,
     };
