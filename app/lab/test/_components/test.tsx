@@ -12,7 +12,7 @@ export const Test = () => {
     try {
       // Fetch the custom APY from your API
       const custom_apy_res = await fetch(
-        "https://api-v1.bakerfi.xyz/api/vaults/8453/mille-feuille/yield"
+        "https://app.nest.credit/api/nest-rwa-vault"
       );
 
       // Parse the response as JSON
@@ -20,7 +20,7 @@ export const Test = () => {
 
       // Extract the underlying yield from the custom APY data & perform calculations, if needed and then update the underlying_annual_change_ratio
       const new_underlying_annual_change_ratio =
-        (Number(custom_apy_data["yield"]) ?? 0) / 100;
+        Number(custom_apy_data.estimatedAPY) ?? 0;
 
       console.log(
         "new_underlying_annual_change_ratio",
