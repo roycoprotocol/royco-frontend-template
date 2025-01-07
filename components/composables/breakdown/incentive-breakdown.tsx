@@ -31,12 +31,11 @@ const BreakdownRow = React.forwardRef<
       <div className="flex flex-row items-center gap-2">
         <div>
           {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
+            notation: "compact",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
             useGrouping: true,
-          }).format(item.token_amount_usd)}
+          }).format(item.token_amount)}
         </div>
       </div>
     </div>

@@ -52,14 +52,57 @@ interface ExploreState {
 }
 
 export const exploreColumnNames = {
-  name: "Title",
+  name: "Action Market",
   input_token_id: "Asset",
   chain_id: "Chain",
-  market_type: "Payout",
-  total_incentive_amounts_usd: "Add. Incentives",
+  market_type: "Lockup",
+  total_incentive_amounts_usd: "Incentives Offered",
   locked_quantity_usd: "TVL",
-  annual_change_ratio: "Net APR",
+  annual_change_ratio: "Net APY",
   chain: "Chain",
+};
+
+export const exploreColumnTooltips = {
+  name: (
+    <span>
+      A Royco Action Market is a market that incentives an onchain action.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-is-an-a-royco-action-market"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
+  annual_change_ratio: (
+    <span>
+      The combined incentives you receive for performing the action.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-types-of-incentives-can-i-receive"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
+  market_type: (
+    <span>
+      If the market requires a lockup. Some markets may allow early exit, but
+      you must forfeit all incentives.{" "}
+      <a
+        className="underline"
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://docs.royco.org/for-users/faqs#what-types-of-incentives-can-i-receive"
+      >
+        Learn more
+      </a>
+    </span>
+  ),
 };
 
 export const getExploreFilters = () => {

@@ -8,10 +8,12 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { EnrichedMarketDataType } from "royco/queries";
-import { TokenDisplayer } from "@/components/common";
+import { InfoTip, TokenDisplayer } from "@/components/common";
 import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { TokenEditor } from "../token-editor";
 import { createPortal } from "react-dom";
+import { TertiaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { MarketType } from "@/store";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -149,7 +151,7 @@ const NetYield = React.forwardRef<
       >
         <div className="flex flex-row items-center gap-2">
           <SparklesIcon className="h-4 w-4" color="#3CC27A" strokeWidth={3} />
-          <span>Net Yield</span>
+          <span>Net APY</span>
         </div>
         <div className="">
           {Intl.NumberFormat("en-US", {
@@ -168,8 +170,9 @@ export const YieldBreakdown = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     breakdown: EnrichedMarketDataType["yield_breakdown"];
     base_key: string;
+    marketType?: number;
   }
->(({ className, breakdown, base_key, ...props }, ref) => {
+>(({ className, breakdown, base_key, marketType, ...props }, ref) => {
   return (
     <HoverCard openDelay={200} closeDelay={200}>
       <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
@@ -188,21 +191,37 @@ export const YieldBreakdown = React.forwardRef<
               {...props}
             >
               {breakdown.some((item) => item.category === "base") && (
-                <BreakdownItem>
-                  <BreakdownTitle>Royco Yield (Fixed)</BreakdownTitle>
-                  <BreakdownContent
-                    className="mt-1"
-                    breakdown={breakdown.filter(
-                      (item) => item.category === "base"
-                    )}
-                    base_key={base_key}
-                  />
-                </BreakdownItem>
+                <div>
+                  <BreakdownItem>
+                    <BreakdownTitle>Incentives Offered on Royco</BreakdownTitle>
+                    <BreakdownContent
+                      className="mt-1"
+                      breakdown={breakdown.filter(
+                        (item) => item.category === "base"
+                      )}
+                      base_key={base_key}
+                    />
+                  </BreakdownItem>
+                  {marketType !== undefined && (
+                    <div className="flex justify-end gap-2">
+                      <TertiaryLabel className="self-end italic">
+                        {marketType === MarketType.recipe.value
+                          ? "Fixed Rate"
+                          : "Variable Rate"}
+                      </TertiaryLabel>
+                      <InfoTip size="sm">
+                        {marketType === MarketType.recipe.value
+                          ? "Rate of incentives received is fixed, and cannot be diluted"
+                          : "Rate of incentives is variable, and can change based on the number of market participants."}
+                      </InfoTip>
+                    </div>
+                  )}
+                </div>
               )}
 
               {breakdown.some((item) => item.category !== "base") && (
                 <BreakdownItem>
-                  <BreakdownTitle>Native Yield</BreakdownTitle>
+                  <BreakdownTitle>Native Incentives</BreakdownTitle>
                   <BreakdownContent
                     className="mt-1"
                     breakdown={breakdown.filter(

@@ -89,6 +89,7 @@ const TokenDisplayer = React.forwardRef<
                       className={cn(
                         "shrink-0 rounded-full bg-z2 transition-transform",
                         index !== 0 && "-ml-1",
+                        size === 6 && "h-6 w-6",
                         size === 5 && "h-5 w-5",
                         size === 4 && "h-4 w-4",
                         imageClassName
@@ -112,6 +113,7 @@ const TokenDisplayer = React.forwardRef<
                     className={cn(
                       "shrink-0 rounded-full bg-z2 transition-transform",
                       index !== 0 && "-ml-1",
+                      size === 6 && "h-6 w-6",
                       size === 5 && "h-5 w-5",
                       size === 4 && "h-4 w-4",
                       imageClassName
@@ -145,7 +147,9 @@ const TokenDisplayer = React.forwardRef<
                        */}
                       {/* <span className="">{token.symbol.toUpperCase()}</span> */}
                       {/* <div>{token.symbol}</div> */}
-                      {token.symbol}
+                      {[token.symbol, token.type === "point" && "Points"]
+                        .filter(Boolean)
+                        .join(" ")}
                     </TooltipContent>,
                     document.body
                   )}
@@ -160,6 +164,7 @@ const TokenDisplayer = React.forwardRef<
             "flex flex-col items-center",
             symbolClassName,
             // browserType === "webkit" && "h-fit",
+            size === 6 && "text-base",
             size === 5 && "text-base",
             size === 4 && "text-sm"
           )}
@@ -193,7 +198,11 @@ const TokenDisplayer = React.forwardRef<
 
           {symbols && tokens.length >= 1 && (
             <Fragment>
-              {name === true ? tokens[0].name : tokens[0].symbol}
+              {name === true
+                ? tokens[0].name
+                : [tokens[0].symbol, tokens[0].type === "point" && "Points"]
+                    .filter(Boolean)
+                    .join(" ")}
               {tokens.length > 1 && ` +${tokens.length - 1} more`}
             </Fragment>
           )}

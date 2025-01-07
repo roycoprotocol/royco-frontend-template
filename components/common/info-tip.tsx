@@ -6,6 +6,7 @@ import {
 import { cn } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import React from "react";
+import { createPortal } from "react-dom";
 
 export const InfoTip = React.forwardRef<
   HTMLDivElement,
@@ -27,16 +28,19 @@ export const InfoTip = React.forwardRef<
           )}
         />
       </TooltipTrigger>
-      <TooltipContent
-        className={cn(
-          "bg-white",
-          size === "sm" && "text-sm leading-snug",
-          "max-w-80",
-          className
-        )}
-      >
-        {props.children}
-      </TooltipContent>
+      {createPortal(
+        <TooltipContent
+          className={cn(
+            "bg-white",
+            size === "sm" && "text-sm leading-snug",
+            "max-w-80",
+            className
+          )}
+        >
+          {props.children}
+        </TooltipContent>,
+        document.body
+      )}
     </Tooltip>
   );
 });
