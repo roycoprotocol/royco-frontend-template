@@ -77,8 +77,8 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
         )}
         {...props}
       >
-        <div className="body-2 item-center flex h-5 gap-1">
-          <span className="leading-5">{name}</span>
+        <div className="body-2 item-center flex justify-center gap-1">
+          <span>{name}</span>
           {tooltip && <InfoTip>{tooltip}</InfoTip>}
         </div>
         {column.getCanSort() && column.id !== "market_type" && (
@@ -315,7 +315,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               />
 
               {props.view === "grid" && (
-                <div className="h-5 text-secondary">
+                <div className="text-secondary">
                   <span className="leading-5">TVL</span>
                 </div>
               )}
@@ -386,6 +386,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     symbolClassName="gap-0"
                     tokens={points}
                     symbols={false}
+                    size={props.view === "list" ? 4 : 6}
                   />
                   <span className="font-gt text-base font-300">Points</span>
                 </div>
@@ -398,6 +399,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     symbolClassName="gap-0"
                     tokens={tokens}
                     symbols={false}
+                    size={props.view === "list" ? 4 : 6}
                   />
                 )
               )}
@@ -536,7 +538,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   />
 
                   <SparklesIcon
-                    className="h-4 w-4"
+                    className={cn(
+                      props.view === "list" && "h-4 w-4",
+                      props.view === "grid" && "h-5 w-5"
+                    )}
                     color="#3CC27A"
                     strokeWidth={3}
                   />
@@ -573,7 +578,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         >
           <div
             className={cn(
-              "body-2 h-5",
+              "body-2",
               props.view === "grid" && "text-secondary",
               props.view === "list" && "text-black"
             )}

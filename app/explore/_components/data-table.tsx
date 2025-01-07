@@ -227,15 +227,7 @@ export function DataTable<TData, TValue>({
                         columnVisibility.annual_change_ratio && (
                           <InfoGrid.Item>
                             <InfoGrid.Content.Secondary>
-                              <div
-                                className={InfoGrid.Content.Secondary.Wrapper}
-                              >
-                                <span
-                                  className={InfoGrid.Content.Secondary.Span}
-                                >
-                                  APR
-                                </span>
-                              </div>
+                              <div>APR</div>
 
                               <InfoTip>Annual Percentage Rate</InfoTip>
                             </InfoGrid.Content.Secondary>
@@ -244,6 +236,7 @@ export function DataTable<TData, TValue>({
                               noContentWidth
                               customKey={`grid:content:${row.original.id}:aip`}
                               height="2.438rem"
+                              className="hide-scrollbar overflow-x-scroll"
                             >
                               {flexRender(
                                 annualChangeRatio.column.columnDef.cell,
@@ -263,15 +256,7 @@ export function DataTable<TData, TValue>({
                           ?.total_incentive_amounts_usd > 0 && (
                           <InfoGrid.Item>
                             <InfoGrid.Content.Secondary>
-                              <div
-                                className={InfoGrid.Content.Secondary.Wrapper}
-                              >
-                                <span
-                                  className={InfoGrid.Content.Secondary.Span}
-                                >
-                                  Incentives
-                                </span>
-                              </div>
+                              <div>Incentives</div>
 
                               <InfoTip>Incentives</InfoTip>
                             </InfoGrid.Content.Secondary>
