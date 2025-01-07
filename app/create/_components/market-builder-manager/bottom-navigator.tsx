@@ -31,7 +31,8 @@ const getFrontendFee = () => {
   /**
    * Default frontend fee is 4% of the total amount of incentives
    */
-  let frontendFee = BigNumber.from(4).pow(16).toString();
+  const multiplier = BigNumber.from(10).pow(16);
+  let frontendFee = BigNumber.from(4).mul(multiplier).toString();
 
   const frontendTag =
     typeof window !== "undefined" ? getFrontendTag() : "default";

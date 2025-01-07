@@ -44,8 +44,8 @@ export const TransactionRow = React.forwardRef<
            * Transaction Title
            */}
           <div className="flex h-6 w-full shrink-0 grow flex-col place-content-center items-center">
-            <div className="h-4 w-full items-start text-left font-gt text-sm font-light text-black">
-              <span className="leading-5">{transaction.label}</span>
+            <div className="w-full items-start text-left font-gt text-sm font-light text-black">
+              {transaction.label}
             </div>
           </div>
 
@@ -56,18 +56,16 @@ export const TransactionRow = React.forwardRef<
                   const key = `token-out:${token.id}:${tokenIndex}`;
                   return (
                     <ContentBadge key={key}>
-                      <div className="h-4 font-gt text-xs font-300 text-secondary">
-                        <span className="leading-5">
-                          -
-                          {`${new Intl.NumberFormat("en-US", {
-                            notation: "standard",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 8,
-                          }).format(
-                            token.token_amount
-                          )} ${token.symbol.toUpperCase()}`}
-                        </span>
+                      <div className="font-gt text-xs font-300 text-secondary">
+                        -
+                        {`${new Intl.NumberFormat("en-US", {
+                          notation: "standard",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 8,
+                        }).format(
+                          token.token_amount
+                        )} ${token.symbol.toUpperCase()}`}
                       </div>
                     </ContentBadge>
                   );
@@ -78,18 +76,16 @@ export const TransactionRow = React.forwardRef<
                   const key = `token-in:${token.id}:${tokenIndex}`;
                   return (
                     <ContentBadge key={key}>
-                      <div className="h-4 font-gt text-xs font-300 text-secondary">
-                        <span className="leading-5">
-                          +
-                          {`${new Intl.NumberFormat("en-US", {
-                            notation: "standard",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 8,
-                          }).format(
-                            token.token_amount
-                          )} ${token.symbol.toUpperCase()}`}
-                        </span>
+                      <div className="font-gt text-xs font-300 text-secondary">
+                        +
+                        {`${new Intl.NumberFormat("en-US", {
+                          notation: "standard",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 8,
+                        }).format(
+                          token.token_amount
+                        )} ${token.symbol.toUpperCase()}`}
                       </div>
                     </ContentBadge>
                   );
