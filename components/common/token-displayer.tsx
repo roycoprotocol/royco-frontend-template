@@ -89,6 +89,7 @@ const TokenDisplayer = React.forwardRef<
                       className={cn(
                         "shrink-0 rounded-full bg-z2 transition-transform",
                         index !== 0 && "-ml-1",
+                        size === 6 && "h-6 w-6",
                         size === 5 && "h-5 w-5",
                         size === 4 && "h-4 w-4",
                         imageClassName
@@ -112,6 +113,7 @@ const TokenDisplayer = React.forwardRef<
                     className={cn(
                       "shrink-0 rounded-full bg-z2 transition-transform",
                       index !== 0 && "-ml-1",
+                      size === 6 && "h-6 w-6",
                       size === 5 && "h-5 w-5",
                       size === 4 && "h-4 w-4",
                       imageClassName
@@ -162,6 +164,7 @@ const TokenDisplayer = React.forwardRef<
             "flex flex-col items-center",
             symbolClassName,
             // browserType === "webkit" && "h-fit",
+            size === 6 && "text-base",
             size === 5 && "text-base",
             size === 4 && "text-sm"
           )}
