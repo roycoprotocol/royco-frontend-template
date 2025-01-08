@@ -40,16 +40,22 @@ const NavbarLinks = [
     target: "_self",
   },
   {
-    id: "docs",
-    label: "Docs",
-    link: "https://docs.royco.org/",
-    target: "_blank",
+    id: "portfolio",
+    label: "Portfolio",
+    link: "/portfolio",
+    target: "_self",
   },
   {
-    id: "social",
-    label: "Social",
+    id: "more",
+    label: "More",
     link: null,
     items: [
+      {
+        id: "docs",
+        label: "Docs",
+        link: "https://docs.royco.org/",
+        target: "_blank",
+      },
       {
         id: "blog",
         label: "Blog",
@@ -69,12 +75,6 @@ const NavbarLinks = [
         target: "_blank",
       },
     ],
-  },
-  {
-    id: "portfolio",
-    label: "Portfolio",
-    link: "/portfolio",
-    target: "_self",
   },
 ];
 
