@@ -50,6 +50,8 @@ const config = {
         solitude: "#E5F0FF",
         lily: "#E5F7FF",
 
+        mint: "#4A8160",
+
         focus: "#EFEFF0",
         primary: "#2A2A27",
         secondary: "#606055",

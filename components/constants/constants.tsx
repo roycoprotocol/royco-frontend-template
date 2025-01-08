@@ -34,3 +34,6 @@ export const getFrontendTagClient = () => {
     return "default";
   }
 };
+
+export const OwnershipProofMessage =
+  "This is the message to verify your ownership status of the wallet address. No assets will leave your wallet.";
