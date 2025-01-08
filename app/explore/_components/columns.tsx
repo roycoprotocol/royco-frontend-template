@@ -464,7 +464,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             "group"
           )}
         >
-          {breakdowns.length > 0 ? (
+          {breakdowns.length > 0 && currentValue === 0 ? (
             <HoverCard openDelay={200} closeDelay={200}>
               <HoverCardTrigger
                 className="cursor-pointer underline"
