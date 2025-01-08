@@ -354,13 +354,13 @@ export function DataTable<TData, TValue>({
                     const rowIndex = row.index;
 
                     // @ts-ignore
-                    const market = row.original.id;
+                    const market = row.original as any;
 
                     return (
                       <TableRow
                         onClick={() => {
                           window.open(
-                            `/market/${row.original.chain_id}/${row.original.market_type}/${row.original.market_id}`,
+                            `/market/${market.chain_id}/${market.market_type}/${market.market_id}`,
                             "_self",
                             "noopener,noreferrer"
                           );
@@ -391,11 +391,11 @@ export function DataTable<TData, TValue>({
                               )}
                             >
                               <FallMotion
-                                customKey={`list:content:${row.original.id}`}
+                                customKey={`list:content:${market.id}`}
                                 height="3rem"
                                 delay={rowIndex * 0.02}
                                 className="h-full"
-                                contentClassName="flex flex-col justify-center"
+                                contentClassName="flex flex-col items-center justify-center"
                               >
                                 {flexRender(cell.column.columnDef.cell, {
                                   ...cell.getContext(),
