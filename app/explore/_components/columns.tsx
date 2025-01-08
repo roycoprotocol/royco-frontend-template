@@ -361,47 +361,38 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
               {points.length > 0 ? (
                 <div className="flex flex-row items-center gap-1">
-                  <SpringNumber
-                    previousValue={previousPointsValue}
-                    currentValue={currentPointsValue}
-                    numberFormatOptions={{
-                      notation: "compact",
-                      useGrouping: true,
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }}
-                    className={cn(
-                      props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                      props.view === "list" && "h-5"
-                    )}
-                    spanClassName={cn(
-                      props.view === "grid" && InfoGrid.Content.Primary.Span,
-                      props.view === "list" && "leading-5"
-                    )}
-                  />
                   <TokenDisplayer
-                    hover
                     bounce
                     className="gap-0"
                     symbolClassName="gap-0"
                     tokens={points}
                     symbols={false}
-                    size={props.view === "list" ? 4 : 6}
+                    size={props.view === "list" ? 5 : 6}
                   />
-                  <span className="font-gt text-base font-300">Points</span>
+                  <span className="font-gt text-base font-300">
+                    {`${points[0].symbol} Points`}
+                  </span>
                 </div>
-              ) : (
-                props.row.original.total_incentive_amounts_usd > 0 && (
+              ) : props.row.original.total_incentive_amounts_usd > 0 ? (
+                <div className="flex flex-row items-center gap-1">
                   <TokenDisplayer
-                    hover
                     bounce
                     className="gap-0"
                     symbolClassName="gap-0"
                     tokens={tokens}
                     symbols={false}
-                    size={props.view === "list" ? 4 : 6}
+                    size={props.view === "list" ? 5 : 6}
                   />
-                )
+                  <span className="font-gt text-base font-300">
+                    {tokens.length === 1
+                      ? tokens[0].symbol
+                      : `${tokens[0].symbol} + ${tokens.length - 1}`}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-row items-center gap-1">
+                  <span className="font-gt text-base font-300">N/A</span>
+                </div>
               )}
             </HoverCardTrigger>
             {typeof window !== "undefined" &&
@@ -476,7 +467,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           {breakdowns.length > 0 ? (
             <HoverCard openDelay={200} closeDelay={200}>
               <HoverCardTrigger
-                className="cursor-pointer"
+                className="cursor-pointer underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Calculate
@@ -543,7 +534,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                       props.view === "grid" && "h-5 w-5"
                     )}
                     color="#3CC27A"
-                    strokeWidth={3}
+                    strokeWidth={2}
                   />
                 </>
               </div>
