@@ -54,13 +54,13 @@ export const PrimaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit w-fit max-w-full flex-row items-center font-gt text-lg font-medium text-black",
+        "flex h-fit w-fit max-w-full flex-row items-start font-gt text-lg font-medium text-black",
         className
       )}
       {...props}
     >
-      <div className={cn("flex h-8 flex-1 truncate")}>
-        <span className="truncate leading-9">{props.children}</span>
+      <div className={cn("flex h-fit flex-1 leading-tight")}>
+        {props.children}
       </div>
       {isVerified !== undefined && (
         <Tooltip>

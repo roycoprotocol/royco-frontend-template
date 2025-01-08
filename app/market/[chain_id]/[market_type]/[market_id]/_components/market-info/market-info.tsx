@@ -168,7 +168,7 @@ export const MarketInfo = React.forwardRef<
           </div>
 
           <PrimaryLabel
-            className={cn(BASE_MARGIN_TOP.XS)}
+            className={cn(BASE_MARGIN_TOP.XS, "break-normal")}
             isVerified={currentMarketData.is_verified ? true : false}
           >
             {currentMarketData.name && currentMarketData.name.trim() !== ""
