@@ -19,6 +19,7 @@ import {
   InputExpirySelector,
   IPQuantityIndicator,
 } from "../composables";
+import ShortcutsWidget from "../shortucts-widget";
 
 export const RecipeForms = React.forwardRef<
   HTMLDivElement,
@@ -29,7 +30,6 @@ export const RecipeForms = React.forwardRef<
   const { currentMarketData, marketMetadata } = useActiveMarket();
 
   const { userType, offerType, fundingType } = useMarketManager();
-
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
       <div className="grow overflow-x-hidden overflow-y-scroll pb-2">
@@ -51,6 +51,15 @@ export const RecipeForms = React.forwardRef<
               }}
             />
           </SlideUpWrapper>
+        )}
+
+        {/**
+         * Enso zap-in
+         */}
+        {userType === MarketUserType.ap.id && (
+          <ShortcutsWidget
+            token={currentMarketData?.input_token_data.contract_address!}
+          />
         )}
 
         {/**
