@@ -47,6 +47,9 @@ export const InputExpirySelector = React.forwardRef<
           }
           currentValue={marketActionForm.watch("expiry")}
           setCurrentValue={(date) => {
+            if (date && marketActionForm.watch("no_expiry") === true) {
+              marketActionForm.setValue("no_expiry", false);
+            }
             marketActionForm.setValue("expiry", date);
           }}
         />

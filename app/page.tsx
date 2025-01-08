@@ -13,6 +13,7 @@ import {
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { getFrontendTagServer } from "@/app/layout";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -90,6 +91,8 @@ const Page = () => {
             <Pagination />
           </div>
         </div>
+
+        {/* <RoycoRoyalty /> */}
       </div>
     );
   };

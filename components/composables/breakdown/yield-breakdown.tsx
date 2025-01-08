@@ -150,7 +150,7 @@ const NetYield = React.forwardRef<
         className=" flex flex-row items-center justify-between"
       >
         <div className="flex flex-row items-center gap-2">
-          <SparklesIcon className="h-4 w-4" color="#3CC27A" strokeWidth={3} />
+          <SparklesIcon className="h-4 w-4" color="#3CC27A" strokeWidth={2} />
           <span>Net APY</span>
         </div>
         <div className="">
