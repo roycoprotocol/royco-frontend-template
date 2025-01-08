@@ -7,3 +7,4 @@ export * from "./use-market-manager";
 export * from "./market-manager-props";
 export * from "./use-market-builder";
 export { useGlobalStates, getFrontendTag } from "./use-global-states";
+export * from "./use-join";

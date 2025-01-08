@@ -37,6 +37,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IncentiveInfo } from "../incentive-info";
 import { SupportedTokenMap } from "royco/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import validator from "validator";
 
 const INFO_TIP_PROPS = {
   size: "sm" as "sm",
@@ -171,12 +172,13 @@ export const MarketInfo = React.forwardRef<
             isVerified={currentMarketData.is_verified ? true : false}
           >
             {currentMarketData.name && currentMarketData.name.trim() !== ""
-              ? currentMarketData.name.trim()
+              ? validator.unescape(currentMarketData.name)
               : "Unknown Market"}
           </PrimaryLabel>
 
           <SecondaryLabel className={cn(BASE_MARGIN_TOP.XS, "break-normal")}>
-            {currentMarketData.description ?? "No description available"}
+            {validator.unescape(currentMarketData.description ?? "") ??
+              "No description available"}
           </SecondaryLabel>
 
           {/**
