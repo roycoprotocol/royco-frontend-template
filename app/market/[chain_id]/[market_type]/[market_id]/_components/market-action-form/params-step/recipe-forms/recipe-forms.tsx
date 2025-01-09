@@ -59,6 +59,7 @@ export const RecipeForms = React.forwardRef<
         {userType === MarketUserType.ap.id && (
           <ShortcutsWidget
             token={currentMarketData?.input_token_data.contract_address!}
+            chainId={currentMarketData?.chain_id!}
           />
         )}
 

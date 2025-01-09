@@ -3,7 +3,13 @@ import EnsoWidget from "@ensofinance/shortcuts-widget";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 
-export default function ShortcutsWidget({ token }: { token: string }) {
+export default function ShortcutsWidget({
+  token,
+  chainId,
+}: {
+  token: string;
+  chainId?: number;
+}) {
   const [zapInEnabled, setZapInEnabled] = React.useState(false);
 
   return (
@@ -31,6 +37,7 @@ export default function ShortcutsWidget({ token }: { token: string }) {
           <EnsoWidget
             apiKey={"b4d83fec-53ff-48b4-96b9-e7ac64de2123"}
             obligatedTokenOut={token}
+            obligatedChainId={chainId}
           />{" "}
           <Separator />
         </>
