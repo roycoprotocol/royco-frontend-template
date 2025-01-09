@@ -4,25 +4,44 @@ import Image from "next/image";
 import React, { Fragment, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { RoyaltyForm } from "../royalty-form";
-import { useUserPosition } from "royco/hooks";
+import { useUsername, useUserPosition } from "royco/hooks";
 import { useAccount } from "wagmi";
 import { useImmer } from "use-immer";
 import { isEqual } from "lodash";
 import { produce } from "immer";
-import { SpringNumber } from "@/components/composables";
+import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { Button } from "@/components/ui/button";
+import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
+import { useUserInfo } from "@/components/user/hooks";
+import { useGlobalStates, useJoin } from "@/store";
+import { SignInButton } from "../sign-in-button/sign-in-button";
+import { UseFormReturn } from "react-hook-form";
+import { RoyaltyFormSchema } from "../royalty-form/royality-form-schema";
+import { z } from "zod";
 
 export const Cta = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { address: account_address } = useAccount();
+  React.HTMLAttributes<HTMLDivElement> & {
+    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
+  }
+>(({ className, royaltyForm, ...props }, ref) => {
+  const { address: account_address, isConnected } = useAccount();
+
+  const { cachedWallet, userInfo } = useGlobalStates();
+  const { openRoyaltyForm } = useJoin();
+
+  const propsUseUsername = useUsername({
+    account_address: account_address?.toLowerCase(),
+  });
+
+  const { connectWalletModal } = useConnectWallet();
 
   const [placeholderUserPosition, setPlaceholderUserPosition] = useImmer<
     Array<number | null | undefined>
   >([null, null]);
 
   const propsUserPosition = useUserPosition({
-    account_address,
+    account_address: account_address?.toLowerCase(),
   });
 
   useEffect(() => {
@@ -56,7 +75,7 @@ export const Cta = React.forwardRef<
         className
       )}
     >
-      <h3 className="text-center font-gt text-3xl font-normal sm:text-[40px]">
+      <h3 className="flex flex-row items-center text-center font-gt text-3xl font-normal sm:text-[40px]">
         {!!placeholderUserPosition[1] ? (
           <Fragment>
             Position: #
@@ -74,15 +93,15 @@ export const Cta = React.forwardRef<
         )}
       </h3>
 
-      <div className="mt-5 w-full max-w-[400px] text-center font-gt text-base font-light text-secondary">
+      <div className="my-5 w-full max-w-[400px] text-center font-gt text-base font-light text-secondary">
         Get priority access & benefits based on your wallets. Connect more
         assets to get in first.
       </div>
 
-      <RoyaltyForm />
+      <RoyaltyForm royaltyForm={royaltyForm} />
 
       <Image
-        className="mt-10"
+        className={cn(userInfo ? "mt-0" : "mt-10")}
         src="/join/partners.png"
         alt="Partners"
         width={180}

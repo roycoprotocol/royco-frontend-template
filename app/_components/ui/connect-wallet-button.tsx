@@ -7,6 +7,8 @@ import { useAccount, useChainId, useDisconnect } from "wagmi";
 import { TriangleAlertIcon } from "lucide-react";
 import { SupportedChainMap } from "royco/constants";
 import { useConnectWallet } from "../provider/connect-wallet-provider";
+import { useGlobalStates } from "@/store";
+import { shortAddress } from "royco/utils";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
@@ -19,6 +21,8 @@ export const ConnectWalletButton = React.forwardRef<
   const { connectWalletModal, connectAccountModal } = useConnectWallet();
 
   const isChainSupported = chainId && SupportedChainMap[chainId];
+
+  const { userInfo } = useGlobalStates();
 
   return (
     <Button
@@ -52,7 +56,7 @@ export const ConnectWalletButton = React.forwardRef<
 
       {isConnected && isChainSupported && (
         <div className="flex h-5 flex-col place-content-center items-center">
-          {address && address.slice(0, 6) + "..." + address.slice(-4)}
+          {userInfo ? userInfo.email : address && shortAddress(address)}
         </div>
       )}
 

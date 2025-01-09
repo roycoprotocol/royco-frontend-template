@@ -108,6 +108,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "telegram-login-button": "^0.1.0",
     "unique-names-generator": "^4.7.1",
     "use-immer": "^0.10.0",
     "use-resize-observer": "^9.1.0",

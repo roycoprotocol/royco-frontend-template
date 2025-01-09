@@ -2,6 +2,7 @@
 
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { cn } from "@/lib/utils";
+import { useGlobalStates } from "@/store";
 import { produce } from "immer";
 import { isEqual } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";

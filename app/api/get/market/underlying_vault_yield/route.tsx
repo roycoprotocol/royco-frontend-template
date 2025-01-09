@@ -15,17 +15,16 @@ export async function GET(request: Request) {
     try {
       // Fetch the custom APY from your API
       const custom_apy_res = await fetch(
-        "https://app.nest.credit/api/nest-rwa-vault"
+        "https://api-v1.bakerfi.xyz/api/vaults/8453/mille-feuille/yield"
       );
 
       // Parse the response as JSON
       const custom_apy_data = await custom_apy_res.json();
 
-      console.log(custom_apy_data.estimatedApy);
+      console.log(custom_apy_data["yield"]);
 
       // Extract the underlying yield from the custom APY data & perform calculations, if needed and then update the underlying_annual_change_ratio
-      underlying_annual_change_ratio =
-        Number(custom_apy_data.estimatedApy) ?? 0;
+      underlying_annual_change_ratio = Number(custom_apy_data["yield"]) ?? 0;
     } catch (error) {
       console.error(error);
     }
