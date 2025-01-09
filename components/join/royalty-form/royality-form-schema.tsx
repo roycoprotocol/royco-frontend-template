@@ -19,6 +19,7 @@ export const RoyaltyFormSchema = z.object({
     .refine((value) => !matcher.hasMatch(value), {
       message: "Username contains offensive words.",
     }),
+  telegram: z.string().optional(),
   wallets: z.array(
     z.object({
       account_address: z
@@ -30,7 +31,12 @@ export const RoyaltyFormSchema = z.object({
           },
           { message: "Invalid wallet address." }
         ),
-      proof: z.string().min(1, { message: "Proof is required." }),
+      proof: z
+        .string()
+        .min(1, { message: "Proof of ownership is required." })
+        .refine((value) => value.trim().length > 0, {
+          message: "Proof of ownership is required.",
+        }),
     })
   ),
 });

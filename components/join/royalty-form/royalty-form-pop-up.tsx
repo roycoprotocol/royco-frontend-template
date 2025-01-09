@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -42,23 +42,38 @@ import { RoyaltyFormSchema } from "./royality-form-schema";
 import { FormEmail } from "./form-email";
 import { FormUsername } from "./form-username";
 import { FormWallets } from "./form-wallets";
+import { ExpectedSpot } from "./expected-spot";
+import { FormTelegram } from "./form-telegram";
+import { useJoin } from "@/store";
 
 export const RoyaltyFormPopUp = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const royaltyForm = useForm<z.infer<typeof RoyaltyFormSchema>>({
-    resolver: zodResolver(RoyaltyFormSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      wallets: [],
-    },
-  });
-
+  React.HTMLAttributes<HTMLDivElement> & {
+    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
+  }
+>(({ className, royaltyForm, ...props }, ref) => {
   const onSubmit = (data: z.infer<typeof RoyaltyFormSchema>) => {
     console.log(data);
   };
+
+  const { openRoyaltyForm } = useJoin();
+
+  const { disconnectAsync } = useDisconnect();
+
+  const disconnectWalletIfProofNotRequired = async () => {
+    if (
+      !openRoyaltyForm &&
+      !royaltyForm
+        .getValues("wallets")
+        .some((wallet) => wallet.proof.length === 0)
+    ) {
+      await disconnectAsync();
+    }
+  };
+
+  useEffect(() => {
+    disconnectWalletIfProofNotRequired();
+  }, [openRoyaltyForm]);
 
   return (
     <Form {...royaltyForm}>
@@ -66,7 +81,7 @@ export const RoyaltyFormPopUp = React.forwardRef<
         onSubmit={royaltyForm.handleSubmit(onSubmit)}
         className="flex w-full flex-col bg-[#FBFBF8]"
       >
-        <div className="sticky top-0 border-b border-divider bg-[#FBFBF8] px-[25px] py-2 font-gt text-lg font-medium text-black">
+        <div className="sticky top-0 border-b border-divider bg-[#FBFBF8] px-[25px] py-2 text-lg font-semibold text-black">
           Join the Royco Royalty
         </div>
 
@@ -76,6 +91,24 @@ export const RoyaltyFormPopUp = React.forwardRef<
           <FormUsername className="mt-6" royaltyForm={royaltyForm} />
 
           <FormWallets className="mt-6" royaltyForm={royaltyForm} />
+
+          <ExpectedSpot className="mt-6" royaltyForm={royaltyForm} />
+
+          <Button
+            type="submit"
+            onClick={() => {}}
+            className={cn(
+              "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+              // isPendingSignMessage ? "border border-divider bg-z2" : "bg-mint"
+            )}
+          >
+            {/* {isPendingSignMessage ? (
+                <LoadingSpinner className="h-5 w-5" />
+              ) : (
+                "Prove Funds"
+              )} */}
+            Submit
+          </Button>
         </div>
       </form>
     </Form>

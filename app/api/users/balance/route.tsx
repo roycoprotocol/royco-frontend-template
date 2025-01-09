@@ -9,7 +9,7 @@ export const fetchCache = "force-no-store";
 
 export async function GET(request: Request) {
   try {
-    const searchParams = new URLSearchParams(request.url);
+    const { searchParams } = new URL(request.url);
     const account_address = searchParams.get("account_address")?.toLowerCase();
 
     if (!account_address) {
@@ -43,23 +43,29 @@ export async function GET(request: Request) {
       return Response.json({ balance }, { status: 200 });
     }
 
-    // Set headers
-    const headers = {
-      Accept: "application/json",
-      AccessKey: process.env.DEBANK_API_KEY,
+    // // Set headers
+    // const headers = {
+    //   Accept: "application/json",
+    //   AccessKey: process.env.DEBANK_API_KEY,
+    // };
+
+    // // Create Debank API request
+    // const url = `https://pro-openapi.debank.com/v1/user/total_balance?id=${account_address}`;
+
+    // // Fetch balance from Debank API
+    // const result = await axios.get(url, {
+    //   headers: headers,
+    //   timeout: 60000,
+    // });
+
+    const result = {
+      data: {
+        total_usd_value: Math.random() * 1000000,
+      },
     };
 
-    // Create Debank API request
-    const url = `https://pro-openapi.debank.com/v1/user/total_balance?id=${account_address}`;
-
-    // Fetch balance from Debank API
-    const result = await axios.get(url, {
-      headers: headers,
-      timeout: 60000,
-    });
-
     // Parse balance
-    let balance = parseFloat(result.data.total_usd_value);
+    let balance = result.data.total_usd_value;
     if (isNaN(balance)) {
       balance = 0;
     }
