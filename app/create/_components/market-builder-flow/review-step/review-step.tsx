@@ -19,6 +19,7 @@ import { AnimatePresence } from "framer-motion";
 import { useActionsDecoder, useActionsEncoder } from "royco/hooks";
 import { ActionFlow, AlertLabel } from "@/components/composables";
 import { toFunctionSelector, toFunctionSignature } from "viem";
+import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
 
 export const ReviewStep = React.forwardRef<
   HTMLDivElement,
@@ -35,6 +36,14 @@ export const ReviewStep = React.forwardRef<
   const { reviewActionsType } = useMarketBuilderManager();
 
   const currentActions = marketBuilderForm.watch(reviewActionsType);
+
+  const { data: dataEncodedActions } = useActionsEncoder({
+    /**
+     * @todo Strictly type this
+     */
+    // @ts-ignore
+    marketActions: currentActions,
+  });
 
   return (
     <div
@@ -180,11 +189,13 @@ export const ReviewStep = React.forwardRef<
             Recipe Details
           </h4>
 
-          <div className="flex w-full flex-col items-center">
-            <ReviewActionsTypeSelector
-              marketBuilderForm={marketBuilderForm}
-              className="mt-3"
-            />
+          <div className="mt-3 flex w-full flex-row items-center justify-center gap-2">
+            <ReviewActionsTypeSelector marketBuilderForm={marketBuilderForm} />
+            <div className="flex h-9 w-9 flex-col items-center justify-center rounded-lg border border-divider bg-z2">
+              <CopyWrapper
+                text={JSON.stringify(dataEncodedActions)}
+              ></CopyWrapper>
+            </div>
           </div>
 
           <ActionFlow
