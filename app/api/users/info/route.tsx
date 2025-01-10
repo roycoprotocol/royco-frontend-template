@@ -2,7 +2,7 @@ import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/components/data";
 import { isSolidityAddressValid } from "royco/utils";
-import { isWalletValid } from "@/components/user";
+// import { isWalletValid } from "@/temp/backup/user";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -42,10 +42,12 @@ export async function GET(request: Request) {
       );
     }
 
-    const isOwnershipProofValid = await isWalletValid({
-      account_address,
-      proof,
-    });
+    // const isOwnershipProofValid = await isWalletValid({
+    //   account_address,
+    //   proof,
+    // });
+
+    const isOwnershipProofValid = false;
 
     if (!isOwnershipProofValid) {
       return Response.json(
