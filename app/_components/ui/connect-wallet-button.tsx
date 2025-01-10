@@ -9,8 +9,8 @@ import { SupportedChainMap } from "royco/constants";
 import { useConnectWallet } from "../provider/connect-wallet-provider";
 import { useGlobalStates } from "@/store";
 import { shortAddress } from "royco/utils";
-// import { useUserInfo } from "@/temp/backup/user/hooks";
-// import { useLocalStorage } from "usehooks-ts";
+import { useUserInfo } from "@/components/user/hooks";
+import { useLocalStorage } from "usehooks-ts";
 
 export const ConnectWalletButton = React.forwardRef<
   HTMLButtonElement,
@@ -24,12 +24,12 @@ export const ConnectWalletButton = React.forwardRef<
 
   const isChainSupported = chainId && SupportedChainMap[chainId];
 
-  // const [proof, setProof] = useLocalStorage("proof", null);
+  const [proof, setProof] = useLocalStorage("proof", null);
 
-  // const { data: userInfo } = useUserInfo({
-  //   account_address: address,
-  //   proof: proof,
-  // });
+  const { data: userInfo } = useUserInfo({
+    account_address: address,
+    proof: proof,
+  });
 
   return (
     <Button

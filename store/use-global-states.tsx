@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
 import { CustomTokenData } from "@/sdk/types";
-import { UserInfo } from "@/temp/backup/user/hooks";
+import { useUserInfo } from "@/components/user/hooks";
 
 export type FrontendTag =
   | "ethereum"
