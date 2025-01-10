@@ -99,14 +99,11 @@ export const Cta = React.forwardRef<
           "Join the Royalty."
         )}
       </h3>
-
       <div className="my-5 w-full max-w-[400px] text-center font-gt text-base font-light text-secondary">
         Get priority access & benefits based on your wallets. Connect more
         assets to get in first.
       </div>
-
       <RoyaltyForm royaltyForm={royaltyForm} />
-
       <img
         className={cn(userInfo ? "mt-0" : "mt-10")}
         src="/join/partners.png"
@@ -114,7 +111,7 @@ export const Cta = React.forwardRef<
         width={180}
         height={20}
       />
-
+      ;
       <div className="mt-3 w-full max-w-[409px] text-center font-gt text-sm font-light text-secondary">
         Join DCF God, Sam K, Smokey the Bera, and more.
       </div>

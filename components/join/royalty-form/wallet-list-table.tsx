@@ -77,12 +77,9 @@ export const WalletListTable = React.forwardRef<
             />
           );
         })}
-
-      <div className="h-px w-full bg-divider" />
-
+      <div className="h-px w-full bg-divider" />{" "}
       <WalletListTabRowContainer>
         <div>Total Assets</div>
-
         <div>
           <SpringNumber
             previousValue={0}
