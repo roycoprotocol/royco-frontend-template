@@ -1,11 +1,6 @@
 "use client";
 
-import { RPC_API_KEYS } from "@/components/constants";
-import { Abi, Address, http } from "viem";
 import { Button } from "@/components/ui/button";
-import { getSupportedChain } from "@/sdk/utils/get-supported-chain";
-import { createPublicClient } from "viem";
-import { ContractMap } from "@/sdk/contracts";
 
 export const Test = () => {
   const testFunction = async () => {
