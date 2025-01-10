@@ -3,10 +3,13 @@
 import { LoadingSpinner } from "@/components/composables/loading-spinner";
 import { OwnershipProofMessage } from "@/components/constants";
 import { Button } from "@/components/ui/button";
+import { isWalletValid } from "@/components/user";
+import { useUserInfo } from "@/components/user/hooks";
 import { cn } from "@/lib/utils";
 import { useGlobalStates, useJoin } from "@/store";
 import { isEqual } from "lodash";
 import React, { useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { useAccount, useSignMessage } from "wagmi";
 
 export const SignInButton = React.forwardRef<
@@ -14,7 +17,8 @@ export const SignInButton = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { address: account_address, isConnected } = useAccount();
-  const { cachedWallet, setCachedWallet } = useGlobalStates();
+
+  const [proof, setProof] = useLocalStorage("proof", null);
 
   const {
     signMessage,
@@ -24,20 +28,21 @@ export const SignInButton = React.forwardRef<
     isError: isErrorSignMessage,
   } = useSignMessage();
 
-  useEffect(() => {
-    if (isSuccessSignMessage === true && !!account_address) {
-      const proof = dataSignMessage;
-
-      const wallet = {
-        account_address: account_address.toLowerCase(),
-        proof: proof,
-      };
-
-      if (!isEqual(wallet, cachedWallet)) {
-        localStorage.setItem("wallet", JSON.stringify(wallet));
-        setCachedWallet(wallet);
+  const updateLocalStorageWallet = async () => {
+    try {
+      if (
+        !!dataSignMessage &&
+        isSuccessSignMessage === true &&
+        !!account_address
+      ) {
+        // @ts-ignore
+        setProof(dataSignMessage);
       }
-    }
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    updateLocalStorageWallet();
   }, [dataSignMessage, isSuccessSignMessage, isPendingSignMessage]);
 
   return (

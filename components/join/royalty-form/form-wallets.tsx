@@ -34,6 +34,7 @@ import { isEqual } from "lodash";
 import { WalletListTable } from "./wallet-list-table";
 import { PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import { useTotalWalletsBalance } from "../hooks";
 
 export const WalletConnectionLabel = React.forwardRef<
   HTMLDivElement,
@@ -98,6 +99,7 @@ export const FormWallets = React.forwardRef<
         {
           account_address: account_address.toLowerCase(),
           proof: "",
+          balance: undefined,
         },
       ]);
     }
@@ -161,7 +163,9 @@ export const FormWallets = React.forwardRef<
             </Button>
           </div>
 
-          {royaltyForm.watch("wallets").length > 0 && (
+          {royaltyForm
+            .watch("wallets")
+            .filter((wallet) => wallet.balance !== undefined).length !== 0 && (
             <WalletListTable className="mt-3" royaltyForm={royaltyForm} />
           )}
 

@@ -12,12 +12,13 @@ import { produce } from "immer";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { Button } from "@/components/ui/button";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
-import { useUserInfo } from "@/components/user/hooks";
 import { useGlobalStates, useJoin } from "@/store";
 import { SignInButton } from "../sign-in-button/sign-in-button";
 import { UseFormReturn } from "react-hook-form";
 import { RoyaltyFormSchema } from "../royalty-form/royality-form-schema";
 import { z } from "zod";
+import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
+import { useUserInfo } from "@/components/user/hooks";
 
 export const Cta = React.forwardRef<
   HTMLDivElement,
@@ -27,7 +28,13 @@ export const Cta = React.forwardRef<
 >(({ className, royaltyForm, ...props }, ref) => {
   const { address: account_address, isConnected } = useAccount();
 
-  const { cachedWallet, userInfo } = useGlobalStates();
+  const [proof, setProof] = useLocalStorage("proof", null);
+
+  const { data: userInfo } = useUserInfo({
+    account_address: account_address?.toLowerCase(),
+    proof: proof,
+  });
+
   const { openRoyaltyForm } = useJoin();
 
   const propsUseUsername = useUsername({
@@ -100,13 +107,12 @@ export const Cta = React.forwardRef<
 
       <RoyaltyForm royaltyForm={royaltyForm} />
 
-      <Image
+      <img
         className={cn(userInfo ? "mt-0" : "mt-10")}
         src="/join/partners.png"
         alt="Partners"
         width={180}
         height={20}
-        quality={90}
       />
 
       <div className="mt-3 w-full max-w-[409px] text-center font-gt text-sm font-light text-secondary">

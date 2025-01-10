@@ -22,6 +22,8 @@ import { SignInButton } from "../sign-in-button/sign-in-button";
 import { UseFormReturn } from "react-hook-form";
 import { RoyaltyFormSchema } from "./royality-form-schema";
 import { z } from "zod";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocalStorage } from "usehooks-ts";
 
 export const RoyaltyForm = React.forwardRef<
   HTMLDivElement,
@@ -35,11 +37,18 @@ export const RoyaltyForm = React.forwardRef<
 
   const { address: account_address, isConnected } = useAccount();
 
-  const { cachedWallet, userInfo, isUserInfoPaused } = useGlobalStates();
+  const [proof, setProof] = useLocalStorage("proof", null);
+
+  const { data: userInfo, isLoading: isUserInfoLoading } = useUserInfo({
+    account_address: account_address?.toLowerCase(),
+    proof: proof,
+  });
 
   const propsUseUsername = useUsername({
     account_address: account_address?.toLowerCase(),
   });
+
+  const { isUserInfoPaused } = useGlobalStates();
 
   const { connectWalletModal } = useConnectWallet();
 
@@ -54,7 +63,7 @@ export const RoyaltyForm = React.forwardRef<
         }
       }}
     >
-      {!isConnected && !isUserInfoPaused && (
+      {!isUserInfoLoading && !isConnected && !isUserInfoPaused && (
         <Button
           onClick={() => {
             connectWalletModal();
@@ -65,41 +74,44 @@ export const RoyaltyForm = React.forwardRef<
         </Button>
       )}
 
-      {isConnected &&
-        !userInfo &&
-        propsUseUsername.isLoading &&
-        !isUserInfoPaused && (
-          <Button
-            onClick={() => {
-              // do nothing
-            }}
-            className="h-12 w-full max-w-xs rounded-lg border border-divider bg-z2 font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
-          >
-            <LoadingSpinner className="h-5 w-5" />
-          </Button>
-        )}
+      {(isUserInfoLoading ||
+        (isConnected &&
+          !userInfo &&
+          propsUseUsername.isLoading &&
+          !isUserInfoPaused)) && (
+        <Button
+          onClick={() => {
+            // do nothing
+          }}
+          className="h-12 w-full max-w-xs rounded-lg border border-divider bg-z2 font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+        >
+          <LoadingSpinner className="h-5 w-5" />
+        </Button>
+      )}
 
-      {isConnected &&
+      {!isUserInfoLoading &&
+        isConnected &&
         !propsUseUsername.isLoading &&
         propsUseUsername.data &&
         !userInfo &&
         !isUserInfoPaused && <SignInButton />}
 
       <DialogTrigger asChild>
-        {(isUserInfoPaused ||
-          (isConnected &&
-            !propsUseUsername.isLoading &&
-            !propsUseUsername.data &&
-            !userInfo)) && (
-          <Button
-            onClick={() => {
-              setOpenRoyaltyForm(true);
-            }}
-            className="h-12 w-full max-w-xs rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
-          >
-            Create Account
-          </Button>
-        )}
+        {!isUserInfoLoading &&
+          (isUserInfoPaused ||
+            (isConnected &&
+              !propsUseUsername.isLoading &&
+              !propsUseUsername.data &&
+              !userInfo)) && (
+            <Button
+              onClick={() => {
+                setOpenRoyaltyForm(true);
+              }}
+              className="h-12 w-full max-w-xs rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+            >
+              Create Account
+            </Button>
+          )}
       </DialogTrigger>
 
       {!connectModalOpen && (

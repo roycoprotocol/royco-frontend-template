@@ -26,7 +26,9 @@ export const ExpectedSpot = React.forwardRef<
     });
 
   const propsExpectedSpot = useExpectedSpot({
-    balance: totalWalletsBalance ?? 0,
+    balance: (totalWalletsBalance ?? []).reduce((acc, curr) => {
+      return acc + curr.balance;
+    }, 0),
   });
 
   const [placeholderExpectedSpot, setPlaceholderExpectedSpot] = useImmer<

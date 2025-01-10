@@ -2,7 +2,7 @@ import { OwnershipProofMessage } from "@/components/constants";
 import { isSolidityAddressValid } from "royco/utils";
 import { recoverMessageAddress } from "viem";
 
-export const isCachedWalletValid = async ({
+export const isWalletValid = async ({
   account_address,
   proof,
 }: {
