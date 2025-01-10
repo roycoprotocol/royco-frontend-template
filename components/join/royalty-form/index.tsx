@@ -1,1 +1,1 @@
-// export * from "./royalty-form";
+export * from "./royalty-form";

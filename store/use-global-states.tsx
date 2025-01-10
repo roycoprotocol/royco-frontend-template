@@ -55,26 +55,18 @@ export const getFrontendTag = () => {
   }
 };
 
-export type TypedCachedWallet = {
-  proof: string;
-};
-
-export type TypedCacheWallet = {
+export type TypedUserWallet = {
   account_address: string;
   proof: string;
 };
 
-export type CachedWallet = TypedCacheWallet | null | undefined;
+export type UserWallet = TypedUserWallet | null | undefined;
 
 interface GlobalState {
   customTokenData: CustomTokenData;
   setCustomTokenData: (customTokenData: CustomTokenData) => void;
   frontendTag: FrontendTag;
   setFrontendTag: (frontendTag: FrontendTag) => void;
-  cachedWallet: CachedWallet;
-  setCachedWallet: (cachedWallet: CachedWallet) => void;
-  userInfo: UserInfo;
-  setUserInfo: (userInfo: UserInfo) => void;
   isUserInfoPaused: boolean;
   setIsUserInfoPaused: (isUserInfoPaused: boolean) => void;
 }
@@ -85,10 +77,6 @@ export const useGlobalStates = create<GlobalState>((set) => ({
     set({ customTokenData }),
   frontendTag: getFrontendTag(),
   setFrontendTag: (frontendTag: FrontendTag) => set({ frontendTag }),
-  cachedWallet: null,
-  setCachedWallet: (cachedWallet: CachedWallet) => set({ cachedWallet }),
-  userInfo: null,
-  setUserInfo: (userInfo: UserInfo) => set({ userInfo }),
   isUserInfoPaused: false,
   setIsUserInfoPaused: (isUserInfoPaused: boolean) => set({ isUserInfoPaused }),
 }));

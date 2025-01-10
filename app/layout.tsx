@@ -19,8 +19,6 @@ import { BrowserDetector, GeoDetector } from "@/store/use-general-stats";
 import { RoycoClientProvider } from "./royco-client-provider";
 import RainbowKitProvider from "@/components/rainbow-modal/context-provider";
 import WalletProvider from "@/components/rainbow-modal/context-provider";
-import { WalletCacher } from "@/components/user/wallet-cacher";
-import { UserInfoSetter } from "@/components/user/user-info-setter";
 
 /**
  * @description Inter Font
@@ -178,8 +176,6 @@ export default function RootLayout({
             {/* <AppKitProvider cookies={cookies}> */}
             <WalletProvider>
               <GeoDetector />
-              <WalletCacher />
-              <UserInfoSetter />
 
               <Navbar />
               {children}
