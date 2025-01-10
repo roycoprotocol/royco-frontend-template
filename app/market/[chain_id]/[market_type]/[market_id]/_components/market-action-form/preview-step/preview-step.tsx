@@ -27,9 +27,7 @@ import { TriangleAlertIcon } from "lucide-react";
 import { useMarketFormDetails } from "../use-market-form-details";
 import { SimulationViewer } from "./simulation-viewer";
 import { SlideUpWrapper } from "@/components/animations";
-import { BigNumber } from "ethers";
 import { formatUnits } from "viem";
-import { SupportedChainlist } from "@/sdk/constants";
 import { SupportedChainMap } from "royco/constants";
 
 export const PreviewStep = React.forwardRef<

@@ -12,7 +12,7 @@ import { Abi, AbiFunction, SolidityAddress, IsAbi } from "abitype";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AbiParameter, isAddress, ParseAbi } from "viem";
-import { isAbiValid, isSolidityAddressValid } from "@/sdk/utils";
+import { isAbiValid, isSolidityAddressValid } from "royco/utils";
 
 export const MarketBuilderMarketBuilderFormSchema = z.object({
   functions: z.array(

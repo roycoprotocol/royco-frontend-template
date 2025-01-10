@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { create } from "zustand";
 import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
-import { CustomTokenData } from "@/sdk/types";
+import { CustomTokenData } from "royco/types";
 import { useUserInfo } from "@/components/user/hooks";
 
 export type FrontendTag =
