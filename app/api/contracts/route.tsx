@@ -33,11 +33,7 @@ export async function GET(request: Request) {
 
     if (key !== null) {
       data = contract[key as keyof typeof contract] ?? null;
-    } else {
-      data = contract;
-    }
 
-    if (key !== null) {
       return new Response(
         typeof data === "object" ? JSON.stringify(data) : String(data),
         {
@@ -46,16 +42,18 @@ export async function GET(request: Request) {
         }
       );
     } else {
-      return Response.json(
-        {
-          data: data,
-          message: "Success",
-        },
-        {
-          status: 200,
-        }
-      );
+      data = contract;
     }
+
+    return Response.json(
+      {
+        data: data,
+        message: "Success",
+      },
+      {
+        status: 200,
+      }
+    );
   } catch (error: any) {
     return Response.json(
       {

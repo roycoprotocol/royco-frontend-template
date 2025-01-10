@@ -23,9 +23,9 @@ export async function GET(request: Request) {
       (batchIndex + 1) * batchSize
     );
 
-    console.log(
-      `Processing batch ${batchIndex + 1} of ${totalBatches}, tokens: ${batchTokens.length}`
-    );
+    // console.log(
+    //   `Processing batch ${batchIndex + 1} of ${totalBatches}, tokens: ${batchTokens.length}`
+    // );
 
     // Convert batch tokens to upsert records
     const upsertRecords = batchTokens.map((token) => ({
