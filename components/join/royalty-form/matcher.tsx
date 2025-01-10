@@ -1,13 +1,13 @@
-"use client";
+// "use client";
 
-import {
-  RegExpMatcher,
-  TextCensor,
-  englishDataset,
-  englishRecommendedTransformers,
-} from "obscenity";
+// import {
+//   RegExpMatcher,
+//   TextCensor,
+//   englishDataset,
+//   englishRecommendedTransformers,
+// } from "obscenity";
 
-export const matcher = new RegExpMatcher({
-  ...englishDataset.build(),
-  ...englishRecommendedTransformers,
-});
+// export const matcher = new RegExpMatcher({
+//   ...englishDataset.build(),
+//   ...englishRecommendedTransformers,
+// });
