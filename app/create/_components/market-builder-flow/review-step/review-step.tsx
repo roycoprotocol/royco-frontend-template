@@ -193,7 +193,7 @@ export const ReviewStep = React.forwardRef<
             <ReviewActionsTypeSelector marketBuilderForm={marketBuilderForm} />
             <div className="flex h-9 w-9 flex-col items-center justify-center rounded-lg border border-divider bg-z2">
               <CopyWrapper
-                text={JSON.stringify(dataEncodedActions)}
+                text={JSON.stringify(dataEncodedActions, null, 2)}
               ></CopyWrapper>
             </div>
           </div>
