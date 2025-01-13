@@ -26,11 +26,10 @@ const Page = () => {
             )}
           >
             <div className="flex w-full shrink flex-col items-start lg:w-1/2">
-              <h2 className="heading-2 text-black">Portfolio</h2>
+              <h2 className="heading-2 text-black">Account</h2>
 
               <div className="body-1 mt-2 text-secondary">
-                View your active positions and track your earnings across all
-                markets.
+                View your positions across all Royco Action Markets.
               </div>
             </div>
 
