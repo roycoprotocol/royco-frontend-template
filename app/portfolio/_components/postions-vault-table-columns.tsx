@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { TokenDisplayer } from "@/components/common";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -9,6 +8,10 @@ import { getSupportedChain } from "royco/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { MarketType } from "@/store/market-manager-props";
 import Link from "next/link";
+import { HoverCardTrigger } from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent } from "@/components/ui/hover-card";
+import { createPortal } from "react-dom";
+import { IncentiveBreakdown } from "@/components/composables";
 
 /**
  * @description Column definitions for the table
@@ -23,7 +26,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     accessorKey: "name",
     enableResizing: false,
     enableSorting: false,
-    header: "Title",
+    header: "Action Market",
     meta: {
       className: "min-w-32 w-80",
     },
@@ -42,8 +45,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
             </SecondaryLabel>
 
             <SecondaryLabel className="text-tertiary">
-              {getSupportedChain(props.row.original.chain_id)?.name ||
-                "Unknown Chain"}
+              {`${props.row.original.account_address.slice(0, 6)}...${props.row.original.account_address.slice(-4)} • ${getSupportedChain(props.row.original.chain_id)?.name || "Unknown Chain"}`}
             </SecondaryLabel>
           </div>
         </Link>
@@ -54,7 +56,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     accessorKey: "market_value",
     enableResizing: false,
     enableSorting: false,
-    header: "Market Value",
+    header: <span className="flex flex-col items-center">Balance</span>,
     meta: {
       className: "min-w-32",
     },
@@ -72,7 +74,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       return (
         <div
           className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+            "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
           )}
         >
           <SecondaryLabel className="text-black">
@@ -90,10 +92,59 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
+    accessorKey: "tokens_data",
+    enableResizing: false,
+    enableSorting: false,
+    header: <span className="flex flex-col items-center">Incentives</span>,
+    meta: {
+      className: "min-w-36",
+    },
+    cell: (props: any) => {
+      const tokens = props.row.original.tokens_data;
+      const points = tokens.filter((token: any) => token.type === "point");
+
+      return (
+        <div className={cn("flex flex-col items-center")}>
+          <HoverCard openDelay={200} closeDelay={200}>
+            <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
+              {points.length > 0 ? (
+                <div className="flex flex-row items-center gap-1">
+                  {`${points[0].symbol} Points`}
+                </div>
+              ) : tokens.length > 0 ? (
+                <div className="flex flex-row items-center gap-1">
+                  {tokens.length === 1
+                    ? tokens[0].symbol
+                    : `${tokens[0].symbol} + ${tokens.length - 1}`}
+                </div>
+              ) : (
+                <div className="flex flex-row items-center gap-1">N/A</div>
+              )}
+            </HoverCardTrigger>
+            {typeof window !== "undefined" &&
+              tokens.length > 0 &&
+              createPortal(
+                <HoverCardContent
+                  className="w-64"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <IncentiveBreakdown
+                    base_key={"portfolio:positions:vault"}
+                    breakdown={tokens}
+                  />
+                </HoverCardContent>,
+                document.body
+              )}
+          </HoverCard>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "annual_change_ratio",
     enableResizing: false,
     enableSorting: false,
-    header: "APR",
+    header: <span className="flex flex-col items-center">APR</span>,
     meta: {
       className: "min-w-24",
     },
@@ -101,7 +152,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
       return (
         <div
           className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+            "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
           )}
         >
           <SecondaryLabel className="text-black">
@@ -118,10 +169,54 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
     },
   },
   {
+    accessorKey: "reward_style",
+    enableResizing: false,
+    enableSorting: false,
+    header: (
+      <span className="flex flex-col items-center">Time to Incentive</span>
+    ),
+    meta: {
+      className: "min-w-32 w-52",
+    },
+    cell: (props: any) => {
+      return (
+        <div
+          className={cn(
+            "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
+          )}
+        >
+          <SecondaryLabel className="text-black">None</SecondaryLabel>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "reward_style",
+    enableResizing: false,
+    enableSorting: false,
+    header: <span className="flex flex-col items-center">Exit</span>,
+    meta: {
+      className: "min-w-32 w-52",
+    },
+    cell: (props: any) => {
+      return (
+        <div
+          className={cn(
+            "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
+          )}
+        >
+          <SecondaryLabel className="text-black">Anytime</SecondaryLabel>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "unclaimed_incentives",
     enableResizing: false,
     enableSorting: false,
-    header: "Unclaimed Incentives",
+    header: (
+      <span className="flex flex-col items-center">Unclaimed Incentives</span>
+    ),
     meta: {
       className: "min-w-48 w-64",
     },
@@ -137,7 +232,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
         return (
           <div
             className={cn(
-              "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+              "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
             )}
           >
             Not Applicable
@@ -147,7 +242,7 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
         return (
           <div
             className={cn(
-              "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
+              "flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
             )}
           >
             <SecondaryLabel className="text-black">
@@ -160,143 +255,29 @@ export const positionsVaultColumns: ColumnDef<EnrichedOfferDataType> = [
                 maximumFractionDigits: 8,
               }).format(unclaimed_incentives_usd)}
             </SecondaryLabel>
-
-            <div className="flex flex-col gap-1">
-              {props.row.original.tokens_data.map(
-                (token: any, tokenIndex: number) => {
-                  return (
-                    <div
-                      key={`${props.row.original.id}:unclaimed_incentives:${token.id}`}
-                      className="flex flex-row items-center space-x-2"
-                    >
-                      <SecondaryLabel className="text-tertiary">
-                        {Intl.NumberFormat("en-US", {
-                          style: "decimal",
-                          notation: "standard",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }).format(token.token_amount)}{" "}
-                        {token.symbol.toUpperCase()}
-                      </SecondaryLabel>
-                    </div>
-                  );
-                }
-              )}
-            </div>
           </div>
         );
       }
     },
   },
   {
-    accessorKey: "tokens_data",
+    accessorKey: "withdraw",
     enableResizing: false,
     enableSorting: false,
-    header: "Incentives",
+    header: "",
     meta: {
-      className: "min-w-36",
+      className: "min-w-48 w-64",
     },
     cell: (props: any) => {
       return (
-        <div
-          className={cn(
-            "flex flex-col gap-[0.2rem] pr-3 font-gt text-sm font-300"
-          )}
+        <Link
+          href={`/market/${props.row.original.chain_id}/${MarketType.vault.value}/${props.row.original.market_id}`}
+          className="flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
         >
-          {props.row.original.tokens_data.length === 0 && (
-            <div className="flex items-center space-x-2">None</div>
-          )}
-
-          {props.row.original.tokens_data.map(
-            (
-              // @ts-ignore
-              token,
-              // @ts-ignore
-              tokenIndex
-            ) => {
-              return (
-                <div key={tokenIndex} className="flex items-center space-x-2">
-                  <div className="h-4">
-                    <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }).format(token.token_amount)}
-                    </span>
-                  </div>
-
-                  <TokenDisplayer size={4} tokens={[token]} symbols={true} />
-                </div>
-              );
-            }
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "reward_style",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Reward Schedule",
-    meta: {
-      className: "min-w-32 w-52",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">Streaming</SecondaryLabel>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "input_token_data",
-    enableResizing: false,
-    enableSorting: false,
-    header: "Principal",
-    meta: {
-      className: "min-w-32 w-64",
-    },
-    cell: (props: any) => {
-      return (
-        <div
-          className={cn(
-            "flex flex-col items-start gap-[0.2rem] font-gt text-sm font-300"
-          )}
-        >
-          <SecondaryLabel className="text-black">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(props.row.original.input_token_data.token_amount_usd)}
+          <SecondaryLabel className="text-black underline">
+            Withdraw from Market Page
           </SecondaryLabel>
-
-          <div className="flex flex-row items-center space-x-2">
-            <SecondaryLabel className="text-tertiary">
-              {Intl.NumberFormat("en-US", {
-                style: "decimal",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(props.row.original.input_token_data.token_amount)}{" "}
-              {props.row.original.input_token_data.symbol.toUpperCase()}
-            </SecondaryLabel>
-          </div>
-        </div>
+        </Link>
       );
     },
   },
