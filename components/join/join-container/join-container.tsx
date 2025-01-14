@@ -11,6 +11,7 @@ import { z } from "zod";
 import { useGlobalStates } from "@/store";
 import { useTotalWalletsBalance } from "../hooks";
 import { isEqual } from "lodash";
+import { LeaderboardManager } from "../leaderboard-table";
 
 export const JoinContainer = React.forwardRef<
   HTMLDivElement,
@@ -83,13 +84,15 @@ export const JoinContainer = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-        "w-full max-w-4xl rounded-2xl border border-divider bg-white",
+        "w-full max-w-4xl overflow-hidden rounded-2xl border border-divider bg-white",
         className
       )}
     >
       <Cta royaltyForm={royaltyForm} />
 
       <LeaderboardStats />
+
+      <LeaderboardManager className="w-full border-t border-divider" />
     </div>
   );
 });

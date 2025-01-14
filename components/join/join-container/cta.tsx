@@ -111,7 +111,7 @@ export const Cta = React.forwardRef<
         width={180}
         height={20}
       />
-      ;
+
       <div className="mt-3 w-full max-w-[409px] text-center font-gt text-sm font-light text-secondary">
         Join DCF God, Sam K, Smokey the Bera, and more.
       </div>

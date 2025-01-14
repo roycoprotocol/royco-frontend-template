@@ -8,6 +8,7 @@ import { isEqual } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import { useLeaderboardStats } from "royco/hooks";
 import { useImmer } from "use-immer";
+import { useInterval } from "../hooks";
 
 export const LeaderboardStats = React.forwardRef<
   HTMLDivElement,
@@ -27,6 +28,30 @@ export const LeaderboardStats = React.forwardRef<
 
   const propsLeaderboardStats = useLeaderboardStats();
 
+  // Add simulation function
+  const simulateBalanceIncrease = () => {
+    setPlaceholderLeaderboardStats((draft) => {
+      if (!draft[1]?.balance) return draft;
+
+      // Store current data as previous
+      draft[0] = JSON.parse(JSON.stringify(draft[1]));
+
+      // Create new data with random increase
+      const currentBalance = draft[1].balance;
+
+      // Random increase between 0.01 and 1000
+      const increase = Math.random() * 1000 + 0.01;
+
+      draft[1] = {
+        ...draft[1],
+        balance: currentBalance + increase,
+      };
+    });
+  };
+
+  // Add interval to update balances
+  useInterval(simulateBalanceIncrease, 1000);
+
   useEffect(() => {
     if (
       propsLeaderboardStats.isLoading === false &&
@@ -44,11 +69,7 @@ export const LeaderboardStats = React.forwardRef<
         });
       });
     }
-  }, [
-    propsLeaderboardStats.isLoading,
-    propsLeaderboardStats.isRefetching,
-    propsLeaderboardStats.data,
-  ]);
+  }, [propsLeaderboardStats.data]);
 
   return (
     <div
