@@ -277,11 +277,16 @@ export const IncentiveInfo = React.forwardRef<
             {currentIncentives.map((token_data, token_data_index) => {
               const BASE_KEY = `market:incentive-info:${incentiveType}:${token_data.id}`;
 
+              const incentive_index =
+                currentMarketData.base_incentive_ids?.findIndex(
+                  (incentive_id) => incentive_id === token_data.id
+                ) || 0;
+
               const start_date = Number(
-                currentMarketData.base_start_timestamps?.[token_data_index]
+                currentMarketData.base_start_timestamps?.[incentive_index]
               );
               const end_date = Number(
-                currentMarketData.base_end_timestamps?.[token_data_index]
+                currentMarketData.base_end_timestamps?.[incentive_index]
               );
 
               const base_breakdown = currentMarketData.yield_breakdown.find(
