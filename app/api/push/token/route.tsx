@@ -10,7 +10,6 @@ import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
-
 import { type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
