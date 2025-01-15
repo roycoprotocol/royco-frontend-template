@@ -1,7 +1,6 @@
 import { getSupportedChain, shortAddress } from "royco/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
-import { Chain } from "@wagmi/core/chains";
 import { createPublicClient } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { getMarketIdFromEventLog } from "royco/market";
@@ -51,8 +50,7 @@ export default defineMarket({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { chain_id, market_type, tx_hash, id, name, description, push } =
-      body;
+    const { chain_id, market_type, tx_hash, name, description, push } = body;
 
     const chain = getSupportedChain(chain_id);
     if (!chain) {

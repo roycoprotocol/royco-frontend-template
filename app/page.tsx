@@ -12,7 +12,6 @@ import {
 } from "./explore/_components";
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
-import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -90,11 +89,13 @@ const Page = () => {
             <Pagination />
           </div>
         </div>
+
+        {/* <RoycoRoyalty /> */}
       </div>
     );
   };
 
-  const frontendTag = getFrontendTagServer();
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
 
   if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;

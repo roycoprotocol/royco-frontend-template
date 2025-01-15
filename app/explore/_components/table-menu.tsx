@@ -196,13 +196,13 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           {/**
            * @description Incentive filter
            */}
-          <div className="body-2 mt-[1.375rem] flex flex-col gap-2 text-primary">
+          {/* <div className="body-2 mt-[1.375rem] flex flex-col gap-2 text-primary">
             <h5 className="">Incentive</h5>
 
             <div className="flex flex-wrap gap-2">
               <IncentivesFilter />
             </div>
-          </div>
+          </div> */}
 
           {/**
            * @description Chain filter

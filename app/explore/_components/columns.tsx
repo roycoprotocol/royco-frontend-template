@@ -124,9 +124,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         <div
           key={`${props.view}:market:${props.row.original.id}:name`}
           className={cn(
-            props.column.columnDef.meta.className,
-            props.view === "list" && "body-2 pr-7 text-black",
-            props.view === "grid" && "body-1 pr-0 text-black",
+            props.view === "list" && "body-2 text-black",
+            props.view === "grid" && "body-1 text-black",
             "min-w flex w-full flex-row items-center"
           )}
         >
@@ -214,11 +213,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   // },
   {
     accessorKey: "chain_id",
-    enableResizing: false,
+    enableResizing: true,
     // header: exploreColumnNames.chain,
     enableSorting: false,
     header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
+      return <HeaderWrapper column={column} className="justify-center" />;
     },
 
     meta: {
@@ -229,7 +228,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         <div
           key={`${props.view}:market:${props.row.original.id}:chain-id`}
           className={cn(
-            props.view === "list" && props.column.columnDef.meta.className,
             "flex h-fit capitalize",
             props.view === "grid" &&
               "body-2 min-w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"
@@ -241,7 +239,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             tokens={[props.row.original.chain_data]}
             symbols={props.view === "list" ? false : true}
             className={cn(
-              props.column.columnDef.meta.className,
               "flex flex-row place-content-start items-center gap-2 text-left",
               props.view === "grid" ? "mr-2 min-w-fit" : "pl-[0.75rem]"
             )}
@@ -252,11 +249,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   },
   {
     accessorKey: "locked_quantity_usd",
-    enableResizing: false,
+    enableResizing: true,
     // header: exploreColumnNames.tvl,
     enableSorting: true,
     header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
+      return <HeaderWrapper column={column} className="justify-center" />;
     },
 
     meta: {
@@ -281,7 +278,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         <div
           key={`${props.view}:market:${props.row.original.id}:locked_quantity_usd`}
           className={cn(
-            props.view === "list" && props.column.columnDef.meta.className,
             "tabular-nums",
             props.view === "grid" &&
               "body-2 flex w-fit shrink-0 flex-row space-x-1 rounded-full border border-divider px-[0.438rem] py-1 text-black"
@@ -327,11 +323,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   },
   {
     accessorKey: "total_incentive_amounts_usd",
-    enableResizing: false,
+    enableResizing: true,
     // header: exploreColumnNames.rewards,
     enableSorting: true,
     header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
+      return <HeaderWrapper column={column} className="justify-center" />;
     },
 
     meta: {
@@ -342,16 +338,12 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       const tokens = props.row.original.incentive_tokens_data;
       const points = tokens.filter((token: any) => token.type === "point");
 
-      const previousPointsValue = 0;
-      const currentPointsValue = points[0]?.token_amount || 0;
-
       if (!props) return null;
 
       return (
         <div
           key={`${props.view}:market:${props.row.original.id}:total_incentive_amounts_usd`}
           className={cn(
-            props.view === "list" && props.column.columnDef.meta.className,
             "flex flex-row items-center gap-2 tabular-nums",
             props.view === "grid" &&
               "money-3 flex-row-reverse place-content-start text-primary"
@@ -361,47 +353,38 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
               {points.length > 0 ? (
                 <div className="flex flex-row items-center gap-1">
-                  <SpringNumber
-                    previousValue={previousPointsValue}
-                    currentValue={currentPointsValue}
-                    numberFormatOptions={{
-                      notation: "compact",
-                      useGrouping: true,
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }}
-                    className={cn(
-                      props.view === "grid" && InfoGrid.Content.Primary.Wrapper,
-                      props.view === "list" && "h-5"
-                    )}
-                    spanClassName={cn(
-                      props.view === "grid" && InfoGrid.Content.Primary.Span,
-                      props.view === "list" && "leading-5"
-                    )}
-                  />
                   <TokenDisplayer
-                    hover
                     bounce
                     className="gap-0"
                     symbolClassName="gap-0"
                     tokens={points}
                     symbols={false}
-                    size={props.view === "list" ? 4 : 6}
+                    size={props.view === "list" ? 5 : 6}
                   />
-                  <span className="font-gt text-base font-300">Points</span>
+                  <span className="font-gt text-base font-300">
+                    {`${points[0].symbol} Points`}
+                  </span>
                 </div>
-              ) : (
-                props.row.original.total_incentive_amounts_usd > 0 && (
+              ) : props.row.original.total_incentive_amounts_usd > 0 ? (
+                <div className="flex flex-row items-center gap-1">
                   <TokenDisplayer
-                    hover
                     bounce
                     className="gap-0"
                     symbolClassName="gap-0"
                     tokens={tokens}
                     symbols={false}
-                    size={props.view === "list" ? 4 : 6}
+                    size={props.view === "list" ? 5 : 6}
                   />
-                )
+                  <span className="font-gt text-base font-300">
+                    {tokens.length === 1
+                      ? tokens[0].symbol
+                      : `${tokens[0].symbol} + ${tokens.length - 1}`}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-row items-center gap-1">
+                  <span className="font-gt text-base font-300">N/A</span>
+                </div>
               )}
             </HoverCardTrigger>
             {typeof window !== "undefined" &&
@@ -425,11 +408,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   },
   {
     accessorKey: "annual_change_ratio",
-    enableResizing: false,
+    enableResizing: true,
     // header: exploreColumnNames.aip,
     enableSorting: true,
     header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
+      return <HeaderWrapper column={column} className="justify-center" />;
     },
 
     meta: {
@@ -467,16 +450,15 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         <div
           key={`${props.view}:market:${props.row.original.id}:aip`}
           className={cn(
-            props.view === "list" && props.column.columnDef.meta.className,
             "flex h-5 flex-row items-center tabular-nums",
             props.view === "grid" && "money-3 text-primary",
             "group"
           )}
         >
-          {breakdowns.length > 0 ? (
+          {breakdowns.length > 0 && currentValue === 0 ? (
             <HoverCard openDelay={200} closeDelay={200}>
               <HoverCardTrigger
-                className="cursor-pointer"
+                className="cursor-pointer underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Calculate
@@ -543,7 +525,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                       props.view === "grid" && "h-5 w-5"
                     )}
                     color="#3CC27A"
-                    strokeWidth={3}
+                    strokeWidth={2}
                   />
                 </>
               </div>
@@ -555,13 +537,12 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
   },
   {
     accessorKey: "market_type",
-    enableResizing: false,
+    enableResizing: true,
     // header: exploreColumnNames.action,
     enableSorting: true,
     header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
+      return <HeaderWrapper column={column} className="justify-center" />;
     },
-
     meta: {
       className: "min-w-44",
     },
@@ -570,7 +551,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         <div
           key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
           className={cn(
-            props.view === "list" && props.column.columnDef.meta.className,
             "flex h-fit w-fit",
             props.view === "grid" &&
               "body-2 w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"

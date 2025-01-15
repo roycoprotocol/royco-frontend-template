@@ -19,6 +19,7 @@ import { BrowserDetector, GeoDetector } from "@/store/use-general-stats";
 import { RoycoClientProvider } from "./royco-client-provider";
 import RainbowKitProvider from "@/components/rainbow-modal/context-provider";
 import WalletProvider from "@/components/rainbow-modal/context-provider";
+import { TurnstileWrapper } from "@/auth";
 
 /**
  * @description Inter Font
@@ -91,50 +92,6 @@ const morion = localFont({
   variable: "--font-morion",
 });
 
-export type FrontendTag =
-  | "ethereum"
-  | "base"
-  | "arbitrum"
-  | "plume"
-  | "corn"
-  | "testnet"
-  | "default"
-  | "boyco"
-  | "dev"
-  | "internal";
-
-export const findFrontendTag = (url: string) => {
-  let frontendTag = "default";
-
-  if (url.includes("ethereum")) {
-    frontendTag = "ethereum";
-  } else if (url.includes("base")) {
-    frontendTag = "base";
-  } else if (url.includes("arbitrum")) {
-    frontendTag = "arbitrum";
-  } else if (url.includes("plume")) {
-    frontendTag = "plume";
-  } else if (url.includes("corn")) {
-    frontendTag = "corn";
-  } else if (url.includes("internal")) {
-    frontendTag = "internal";
-  } else if (url.includes("testnet") || url.includes("sepolia")) {
-    frontendTag = "testnet";
-  } else if (url.includes("boyco")) {
-    frontendTag = "boyco";
-  } else if (url.includes("local")) {
-    frontendTag = "dev";
-  }
-
-  return frontendTag as FrontendTag;
-};
-
-export const getFrontendTagServer = () => {
-  const headersList = headers();
-  const url = headersList.get("host") || "";
-  return findFrontendTag(url);
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -142,10 +99,6 @@ export default function RootLayout({
 }>) {
   // Get the host from headers
   const headersList = headers();
-  const host = headersList.get("host") || "";
-
-  // Determine network tag based on URL
-  const frontendTag = findFrontendTag(host);
 
   /**
    * @description Fetch the previously stored state of web3 modal
@@ -162,7 +115,6 @@ export default function RootLayout({
       <TooltipProvider delayDuration={0}>
         <html lang="en">
           <body
-            frontend-tag={frontendTag}
             suppressHydrationWarning
             className={cn(
               inter.variable,
@@ -177,8 +129,10 @@ export default function RootLayout({
             <WalletProvider>
               <GeoDetector />
 
+              {/* <TurnstileWrapper> */}
               <Navbar />
               {children}
+              {/* </TurnstileWrapper> */}
             </WalletProvider>
             {/* </AppKitProvider> */}
 

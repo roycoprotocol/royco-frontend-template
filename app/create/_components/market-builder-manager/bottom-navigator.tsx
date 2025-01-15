@@ -5,7 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { LockupTimeMap, MarketBuilderFormSchema } from "../market-builder-form";
 import { cn } from "@/lib/utils";
-import { getFrontendTag, useMarketBuilderManager } from "@/store";
+import { useMarketBuilderManager } from "@/store";
 import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
 import { MotionWrapper } from "../market-builder-flow/animations";
@@ -34,8 +34,7 @@ const getFrontendFee = () => {
   const multiplier = BigNumber.from(10).pow(16);
   let frontendFee = BigNumber.from(4).mul(multiplier).toString();
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
   if (frontendTag === "boyco") {
     frontendFee = "0";

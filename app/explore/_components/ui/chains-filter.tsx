@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { useBaseChains } from "royco/hooks";
 
 import { ChainFilterWrapper } from "../composables";
-import { getFrontendTagClient } from "@/components/constants";
 
 export const ChainsFilter = () => {
   const [mounted, setMounted] = useState(false);
@@ -20,15 +19,11 @@ export const ChainsFilter = () => {
     <Fragment>
       {mounted &&
         data.map((chain) => {
-          const frontendTag = getFrontendTagClient();
+          const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
           let shouldHide = false;
 
-          if (
-            typeof window !== "undefined" &&
-            frontendTag !== "dev" &&
-            frontendTag !== "testnet"
-          ) {
+          if (frontendTag !== "dev" && frontendTag !== "testnet") {
             if (chain?.testnet === true) {
               shouldHide = true;
             } else if (chain.id === 98865) {
