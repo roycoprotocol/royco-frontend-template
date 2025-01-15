@@ -70,8 +70,7 @@ export const FormContractAbi = React.forwardRef<
                         "relative flex h-fit w-full grow flex-col overflow-hidden rounded-md",
                         "outline-dashed outline-[2px] -outline-offset-4 outline-transparent transition-all duration-200 ease-in-out",
                         isValid === true && "outline-success",
-                        snapshot.isDraggingOver &&
-                          "duration-[1500] animate-pulse bg-focus",
+                        snapshot.isDraggingOver && "animate-pulse bg-focus",
                         snapshot.isDraggingOver &&
                           isValid === false &&
                           "outline-error"

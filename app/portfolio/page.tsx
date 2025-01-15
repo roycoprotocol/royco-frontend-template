@@ -6,7 +6,6 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
-import { getFrontendTagServer } from "@/app/layout";
 
 const Page = () => {
   const Content = () => {
@@ -51,7 +50,7 @@ const Page = () => {
     );
   };
 
-  const frontendTag = getFrontendTagServer();
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
   if (frontendTag === "internal" || frontendTag === "testnet") {
     return <Protector children={<Content />} />;

@@ -28,10 +28,9 @@ import { TokenDisplayer } from "@/components/common";
 import { useSupportedChains } from "royco/hooks";
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
 import { FormInputLabel } from "@/components/composables";
-import { getFrontendTagClient } from "@/components/constants";
 
 const getSupportedChainsOptions = () => {
-  const frontendTag = getFrontendTagClient();
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
   if (frontendTag === "dev" || frontendTag === "testnet") {
     return {

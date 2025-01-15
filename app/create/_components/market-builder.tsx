@@ -2,11 +2,7 @@
 
 import { useWindowSize } from "@react-hook/window-size";
 
-import {
-  getFrontendTag,
-  useMarketBuilderManager,
-  useSelectionMenu,
-} from "@/store";
+import { useMarketBuilderManager, useSelectionMenu } from "@/store";
 import { MarketBuilderManager } from "./market-builder-manager";
 
 import React, { useEffect } from "react";
@@ -33,8 +29,7 @@ import {
 } from "royco/constants";
 
 export const getPoolFormDefaults = () => {
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
   if (frontendTag === "ethereum") {
     return PoolFormDefaults[EthereumMainnet.id];

@@ -65,8 +65,7 @@ export const FormContractAddress = ({ control }: { control: any }) => {
                         error && "border-error",
                         "outline-dashed outline-[2px] -outline-offset-4 outline-transparent transition-all duration-200 ease-in-out",
                         isValid === true && "outline-success",
-                        snapshot.isDraggingOver &&
-                          "animate-pulse duration-[1500] bg-focus",
+                        snapshot.isDraggingOver && "animate-pulse bg-focus",
                         snapshot.isDraggingOver &&
                           isValid === false &&
                           "outline-error"

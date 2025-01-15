@@ -10,7 +10,6 @@ import {
 import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
-import { getFrontendTagClient } from "@/components/constants";
 
 export const IncentivesFilter = () => {
   const [mounted, setMounted] = useState(false);
@@ -23,7 +22,7 @@ export const IncentivesFilter = () => {
 
   const tokens = !!data
     ? (data as TypedArrayDistinctIncentive[]).filter((token) => {
-        const frontendTag = getFrontendTagClient();
+        const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
         // if (frontendTag === "testnet") {
         //   return token.ids.every((id) => {
@@ -32,11 +31,7 @@ export const IncentivesFilter = () => {
         //     return chain?.id === 11155111;
         //   });
         // } else
-        if (
-          typeof window !== "undefined" &&
-          frontendTag !== "testnet" &&
-          frontendTag !== "dev"
-        ) {
+        if (frontendTag !== "testnet" && frontendTag !== "dev") {
           return !token.ids.every((id) => {
             const [chain_id] = id.split("-");
             const chain = getSupportedChain(parseInt(chain_id));

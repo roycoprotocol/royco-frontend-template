@@ -13,27 +13,5 @@ export const RPC_API_KEYS: {
   84532: process.env.NEXT_PUBLIC_RPC_API_KEY_84532!,
 };
 
-type FrontendTag =
-  | "ethereum"
-  | "base"
-  | "arbitrum"
-  | "plume"
-  | "corn"
-  | "testnet"
-  | "default"
-  | "boyco"
-  | "dev"
-  | "internal";
-
-export const getFrontendTagClient = () => {
-  try {
-    return document
-      ?.querySelector("[frontend-tag]")
-      ?.getAttribute("frontend-tag" || "default") as FrontendTag;
-  } catch (error) {
-    return "default";
-  }
-};
-
 export const OwnershipProofMessage =
   "This is the message to verify your ownership status of the wallet address. No assets will leave your wallet.";
