@@ -105,9 +105,6 @@ export const leaderboardColumns: ColumnDef<LeaderboardColumnDataElement>[] = [
       const previousValue = row.original.prev?.balance || 0;
       const currentValue = row.original.balance || 0;
 
-      console.log("previousValue", row.original.prev);
-      console.log("currentValue", currentValue);
-
       return (
         <div className="text-right">
           <SpringNumber

@@ -6,8 +6,6 @@ import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
 import { restrictedCountries } from "@/app/_components/provider/connect-wallet-provider";
 import { useDisconnect } from "wagmi";
-import { useAccount } from "wagmi";
-import { getFrontendTag } from "./use-global-states";
 
 export const BrowserDetector = React.forwardRef<
   HTMLDivElement,
@@ -34,8 +32,7 @@ export const GeoDetector = React.forwardRef<
 
   useEffect(() => {
     const checkRestriction = async () => {
-      const frontendTag =
-        typeof window !== "undefined" ? getFrontendTag() : "default";
+      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
       const nonGeoBlockedFrontendTags = ["dev", "testnet", "internal"];
 

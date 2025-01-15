@@ -1,7 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+    // Check if the request is for the auth/verify route
+    if (
+      request.nextUrl.pathname.startsWith("/api/") &&
+      !request.nextUrl.pathname.startsWith("/api/auth/verify") &&
+      !request.nextUrl.pathname.startsWith("/api/push/token")
+    ) {
+      const authToken = request.headers.get("auth-token");
+
+      const isValid = await fetch("/api/auth/verify?auth_token=" + authToken);
+
+      if (!isValid) {
+        return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+  }
+
   // Check API key specifically for /api/push/token route
   if (request.nextUrl.pathname === "/api/push/token") {
     // 1. Auth token can be passed in header

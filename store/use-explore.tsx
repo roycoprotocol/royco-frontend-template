@@ -1,5 +1,5 @@
-import { MarketFilter } from "@/sdk/queries";
-import { BaseSortingFilter } from "@/sdk/types";
+import { MarketFilter } from "royco/queries";
+import { BaseSortingFilter } from "royco/types";
 import { sepolia } from "viem/chains";
 import { create } from "zustand";
 import {
@@ -10,7 +10,6 @@ import {
   EthereumSepolia,
   Plume,
 } from "royco/constants";
-import { getFrontendTag } from "./use-global-states";
 
 export type ExploreCustomPoolParam = {
   id: string;
@@ -108,8 +107,7 @@ export const exploreColumnTooltips = {
 export const getExploreFilters = () => {
   let filters: MarketFilter[] = [];
 
-  const frontendTag =
-    typeof window !== "undefined" ? getFrontendTag() : "default";
+  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
   if (
     frontendTag !== "dev" &&
@@ -159,7 +157,7 @@ export const useExplore = create<ExploreState>((set) => ({
   setExploreView: (exploreView: string) => set({ exploreView }),
   exploreSortKey: "total_incentive_amounts_usd" as string,
   setExploreSortKey: (exploreSortKey: string) => set({ exploreSortKey }),
-  exploreFilters: typeof window !== "undefined" ? getExploreFilters() : [],
+  exploreFilters: getExploreFilters(),
   setExploreFilters: (exploreFilters: Array<MarketFilter>) =>
     set({ exploreFilters }),
   exploreSort: [

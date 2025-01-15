@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ConnectWalletAlertModal } from "../ui/connect-wallet-alert-modal";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
-import { getFrontendTagClient } from "@/components/constants";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -29,7 +28,7 @@ export const ConnectWalletProvider = ({
 
   const connectWalletModal = async () => {
     try {
-      const frontendTag = getFrontendTagClient();
+      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
       const nonGeoBlockedFrontendTags = ["dev", "internal", "testnet"];
 
