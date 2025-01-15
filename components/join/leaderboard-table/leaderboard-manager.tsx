@@ -16,7 +16,7 @@ export const LeaderboardManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const page_size = 1;
+  const page_size = 50;
   const [page, setPage] = useState(0);
 
   const propsLeaderboard = useLeaderboard({

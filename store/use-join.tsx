@@ -9,6 +9,8 @@ interface JoinState {
   setProofPending: (proofPending: boolean) => void;
   isLoadingProof: boolean;
   setIsLoadingProof: (isLoadingProof: boolean) => void;
+  step: "info" | "otp";
+  setStep: (step: "info" | "otp") => void;
 }
 
 export const useJoin = create<JoinState>((set) => ({
@@ -18,4 +20,6 @@ export const useJoin = create<JoinState>((set) => ({
   setProofPending: (proofPending: boolean) => set({ proofPending }),
   isLoadingProof: false,
   setIsLoadingProof: (isLoadingProof: boolean) => set({ isLoadingProof }),
+  step: "otp",
+  setStep: (step: "info" | "otp") => set({ step }),
 }));
