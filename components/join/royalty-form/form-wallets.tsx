@@ -36,6 +36,9 @@ import { PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useTotalWalletsBalance } from "../hooks";
 
+import { motion, AnimatePresence } from "framer-motion";
+import { SignMessageInfoCard } from "./sign-message-info-card";
+
 export const WalletConnectionLabel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -141,6 +144,14 @@ export const FormWallets = React.forwardRef<
     addWallet();
   }, [account_address]);
 
+  const disconnectWallet = async () => {
+    await disconnectAsync();
+
+    const newWallets = royaltyForm.getValues("wallets");
+    newWallets.pop();
+    royaltyForm.setValue("wallets", newWallets);
+  };
+
   return (
     <FormField
       control={royaltyForm.control}
@@ -150,17 +161,23 @@ export const FormWallets = React.forwardRef<
           <div className="flex flex-row items-center gap-2">
             <FormInputLabel className="w-fit" label="Proof of funds" />
 
-            <Button
-              onClick={async () => {
-                await disconnectAsync().then(() => {
+            {royaltyForm.watch("wallets").length > 1 && (
+              <Button
+                onClick={async () => {
+                  await disconnectAsync();
+
+                  const newWallets = royaltyForm.getValues("wallets");
+                  newWallets.pop();
+                  royaltyForm.setValue("wallets", newWallets);
+
                   connectWalletModal();
-                });
-              }}
-              type="button"
-              className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
-            >
-              <PlusIcon strokeWidth={1.5} className="h-4 w-4 stroke-black" />
-            </Button>
+                }}
+                type="button"
+                className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
+              >
+                <PlusIcon strokeWidth={1.5} className="h-4 w-4 stroke-black" />
+              </Button>
+            )}
           </div>
 
           {royaltyForm
@@ -218,6 +235,31 @@ export const FormWallets = React.forwardRef<
                     "Prove Funds"
                   )}
                 </Button>
+
+                <SignMessageInfoCard
+                  show={isPendingSignMessage ? true : false}
+                />
+
+                {/* {isConnected &&
+                  royaltyForm
+                    .getValues("wallets")
+                    .some((wallet) => wallet.proof === "") && (
+                    <Button
+                      type="button"
+                      onClick={async (e) => {
+                        await disconnectAsync();
+
+                        const newWallets = royaltyForm.getValues("wallets");
+                        newWallets.pop();
+                        royaltyForm.setValue("wallets", newWallets);
+                        e.stopPropagation();
+                      }}
+                      className="mt-2 h-12 w-full rounded-lg bg-error font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+                    >
+                      Disconnect Wallet
+                    </Button>
+                  )} */}
+
                 <WalletConnectionLabel />
               </Fragment>
             )}

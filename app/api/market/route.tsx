@@ -106,7 +106,7 @@ export async function POST(request: Request) {
 
         // Create octokit client
         const octokit = new Octokit({
-          auth: process.env.PERSONAL_ACCESS_GITHUB_TOKEN,
+          auth: process.env.ROYCO_SDK_GITHUB_TOKEN,
         });
 
         // Create a new branch name based on the market details
