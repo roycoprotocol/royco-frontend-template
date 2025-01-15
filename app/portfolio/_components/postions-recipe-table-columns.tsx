@@ -73,15 +73,23 @@ export const positionsRecipeColumns: ColumnDef<EnrichedPositionsRecipeDataType> 
         className: "min-w-32",
       },
       cell: (props: any) => {
-        const input_token_value =
-          props.row.original.input_token_data.token_amount_usd;
+        const input_token_value = props.row.original.is_withdrawn
+          ? 0
+          : props.row.original.input_token_data.token_amount_usd;
 
         const tokens_value = props.row.original.tokens_data.reduce(
-          (acc: number, token: any) => acc + token.token_amount_usd,
+          (acc: number, token: any, index: number) => {
+            if (props.row.original.is_claimed[index] === false) {
+              return acc + token.token_amount_usd;
+            }
+            return acc;
+          },
           0
         );
 
-        const market_value = input_token_value + tokens_value;
+        const market_value = props.row.original.is_forfeited
+          ? input_token_value
+          : input_token_value + tokens_value;
 
         return (
           <div
@@ -267,10 +275,12 @@ export const positionsRecipeColumns: ColumnDef<EnrichedPositionsRecipeDataType> 
       cell: (props: any) => {
         let unclaimed_incentives_usd = 0;
 
-        for (let i = 0; i < props.row.original.tokens_data.length; i++) {
-          if (props.row.original.is_claimed[i] === false) {
-            unclaimed_incentives_usd +=
-              props.row.original.tokens_data[i].token_amount_usd;
+        if (props.row.original.is_forfeited === false) {
+          for (let i = 0; i < props.row.original.tokens_data.length; i++) {
+            if (props.row.original.is_claimed[i] === false) {
+              unclaimed_incentives_usd +=
+                props.row.original.tokens_data[i].token_amount_usd;
+            }
           }
         }
 
