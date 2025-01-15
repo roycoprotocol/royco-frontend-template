@@ -317,7 +317,7 @@ export const positionsRecipeColumns: ColumnDef<EnrichedPositionsRecipeDataType> 
       cell: (props: any) => {
         return (
           <Link
-            href={`/market/${props.row.original.chain_id}/${MarketType.vault.value}/${props.row.original.market_id}`}
+            href={`/market/${props.row.original.chain_id}/${MarketType.recipe.value}/${props.row.original.market_id}`}
             className="flex flex-col items-center gap-[0.2rem] font-gt text-sm font-300"
           >
             <SecondaryLabel className="text-black underline">
