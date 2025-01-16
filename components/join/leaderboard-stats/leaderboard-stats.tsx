@@ -39,8 +39,8 @@ export const LeaderboardStats = React.forwardRef<
       // Create new data with random increase
       const currentBalance = draft[1].balance;
 
-      // Random increase between 0.01 and 1000
-      const increase = Math.random() * 1000 + 0.01;
+      // Random increase between 0.01 and 100
+      const increase = Math.random() * 100 + 0.01;
 
       draft[1] = {
         ...draft[1],

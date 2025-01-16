@@ -16,7 +16,7 @@ export const LeaderboardManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const page_size = 50;
+  const page_size = 20;
   const [page, setPage] = useState(0);
 
   const propsLeaderboard = useLeaderboard({
@@ -61,7 +61,7 @@ export const LeaderboardManager = React.forwardRef<
       const dataArray = newData.data;
 
       // Randomly select how many rows to update (1 to 3)
-      const numRowsToUpdate = Math.floor(Math.random() * 3) + 1;
+      const numRowsToUpdate = Math.floor(Math.random() * dataArray.length) + 1;
 
       for (let i = 0; i < numRowsToUpdate; i++) {
         const rowIndex = Math.floor(Math.random() * dataArray.length);
@@ -78,8 +78,8 @@ export const LeaderboardManager = React.forwardRef<
           maxIncrease = prevRowBalance - currentBalance - 0.01;
         }
 
-        // Generate random increase (0.01 to maxIncrease or 1000, whichever is smaller)
-        const increase = Math.random() * Math.min(maxIncrease, 1000) + 0.01;
+        // Generate random increase (0.01 to maxIncrease or 100, whichever is smaller)
+        const increase = Math.random() * Math.min(maxIncrease, 100) + 0.01;
         dataArray[rowIndex].balance = currentBalance + increase;
       }
 
