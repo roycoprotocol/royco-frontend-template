@@ -99,7 +99,7 @@ export const LeaderboardTable = React.forwardRef<
           className={cn(
             "flex w-full flex-col items-center bg-white",
             "divide-y divide-divider",
-            "max-h-[65vh] overflow-y-scroll"
+            "max-h-[60vh] overflow-y-scroll"
           )}
         >
           {table.getRowModel().rows?.length === 0 ? (
