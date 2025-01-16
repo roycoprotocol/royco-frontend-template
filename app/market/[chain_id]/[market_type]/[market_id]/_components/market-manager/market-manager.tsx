@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Fragment, useEffect, useState } from "react";
-import { useGlobalStates, useMarketManager } from "@/store";
+import { useMarketManager } from "@/store";
 import {
   MarketSteps,
   MarketType,
@@ -10,22 +10,22 @@ import {
   TypedMarketViewType,
 } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { MarketActionForm } from "../market-action-form";
+import { MarketActionForm } from "./market-action-form";
 import { useActiveMarket } from "../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
-import { MarketInfo } from "../market-info";
 import { AlertIndicator } from "@/components/common";
 import { SlideUpWrapper } from "@/components/animations";
 import { BASE_PADDING_LEFT, BASE_PADDING_RIGHT } from "../composables";
 import { ChevronLeftIcon } from "lucide-react";
-import { BalanceIndicator } from "../balance-indicator";
 import { motion } from "framer-motion";
 import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { useAccount } from "wagmi";
 import { OfferVisualizer } from "../offer-list-visualizer/offer-visualizer";
+import { MarketInfo } from "./market-info";
+import { BalanceIndicator } from "./balance-indicator";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
