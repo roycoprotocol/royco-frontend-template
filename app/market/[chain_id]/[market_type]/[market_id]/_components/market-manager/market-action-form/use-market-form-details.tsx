@@ -83,6 +83,7 @@ export const useMarketFormDetails = (
   const {
     isValid,
     isLoading,
+    // @ts-ignore
     isReady,
     writeContractOptions,
     canBePerformedCompletely,

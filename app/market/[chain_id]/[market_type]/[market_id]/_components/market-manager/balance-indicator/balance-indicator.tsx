@@ -207,32 +207,36 @@ export const BalanceIndicator = React.forwardRef<
       <div className={cn("mt-5")}>
         <TertiaryLabel className="mb-3 text-sm">Tokens Supplied</TertiaryLabel>
 
-        <InfoCard>
-          <InfoCard.Row className={INFO_ROW_CLASSES}>
-            <InfoCard.Row.Key>
-              <TokenDisplayer
-                tokens={inputTokenData ? [inputTokenData] : []}
-                symbols={true}
-                symbolClassName="text-sm font-medium"
-              />
-            </InfoCard.Row.Key>
+        {inputTokenData ? (
+          <InfoCard>
+            <InfoCard.Row className={INFO_ROW_CLASSES}>
+              <InfoCard.Row.Key>
+                <TokenDisplayer
+                  tokens={inputTokenData ? [inputTokenData] : []}
+                  symbols={true}
+                  symbolClassName="text-sm font-medium"
+                />
+              </InfoCard.Row.Key>
 
-            <InfoCard.Row.Value className="gap-0">
-              <SpringNumber
-                className="text-sm font-medium"
-                previousValue={0}
-                currentValue={inputTokenData?.token_amount ?? 0}
-                numberFormatOptions={{
-                  style: "decimal",
-                  notation: "standard",
-                  useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 8,
-                }}
-              />
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-        </InfoCard>
+              <InfoCard.Row.Value className="gap-0">
+                <SpringNumber
+                  className="text-sm font-medium"
+                  previousValue={0}
+                  currentValue={inputTokenData?.token_amount ?? 0}
+                  numberFormatOptions={{
+                    style: "decimal",
+                    notation: "standard",
+                    useGrouping: true,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 8,
+                  }}
+                />
+              </InfoCard.Row.Value>
+            </InfoCard.Row>
+          </InfoCard>
+        ) : (
+          <span>--</span>
+        )}
       </div>
 
       <hr className="my-3" />
@@ -245,9 +249,7 @@ export const BalanceIndicator = React.forwardRef<
           Incentives Accumulated
         </TertiaryLabel>
 
-        {!incentivesTokenData || incentivesTokenData?.length === 0 ? (
-          <AlertIndicator>No incentives found</AlertIndicator>
-        ) : (
+        {incentivesTokenData && incentivesTokenData.length > 0 ? (
           <InfoCard className="flex flex-col gap-2">
             {incentivesTokenData.map((incentive) => {
               return (
@@ -278,6 +280,8 @@ export const BalanceIndicator = React.forwardRef<
               );
             })}
           </InfoCard>
+        ) : (
+          <span>--</span>
         )}
       </div>
     </div>

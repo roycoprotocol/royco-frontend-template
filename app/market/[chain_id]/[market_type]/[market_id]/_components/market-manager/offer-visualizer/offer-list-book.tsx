@@ -2,10 +2,10 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useActiveMarket } from "../hooks";
-import { SecondaryLabel } from "../composables";
 import { AlertIndicator } from "@/components/common";
-import { OfferListRow } from "../offer-list";
+import { SecondaryLabel } from "../../composables";
+import { useActiveMarket } from "../../hooks";
+import { OfferListRow } from "../../offer-list";
 
 export const OfferListBook = React.forwardRef<
   HTMLDivElement,
