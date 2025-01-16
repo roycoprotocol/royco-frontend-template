@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MarketType, useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { format } from "date-fns";
@@ -109,25 +109,30 @@ const IncentiveTokenDetails = React.forwardRef<
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
   useEffect(() => {
-    if (token_data.image) {
-      const url = new URL(token_data.image);
-      url.search = "";
-      Vibrant.from(url.toString())
-        .getPalette()
-        .then((palette) => {
+    const getTokenColor = async () => {
+      if (token_data.image) {
+        const url = new URL(token_data.image);
+        url.search = "";
+        try {
+          const palette = await Vibrant.from(url.toString()).getPalette();
           if (palette && palette.Vibrant) {
             setTokenColor(palette.Vibrant?.hex);
           }
-        });
-    }
+        } catch (error) {
+          setTokenColor("#bdc5d1");
+        }
+      }
+    };
+
+    getTokenColor();
   }, [token_data.image]);
 
-  const breakdowns = currentMarketData.yield_breakdown.filter(
-    (item: any) =>
-      item.category === "base" &&
-      item.type === "point" &&
-      item.annual_change_ratio === 0
-  );
+  const showEstimate = useMemo(() => {
+    if (token_data.type === "point" && token_data.annual_change_ratio === 0) {
+      return true;
+    }
+    return false;
+  }, [token_data]);
 
   return (
     <div className={cn("flex flex-col items-end", className)}>
@@ -136,8 +141,7 @@ const IncentiveTokenDetails = React.forwardRef<
       >
         {/* <ShieldIcon className="h-4 w-4 fill-current" /> */}
 
-        {breakdowns.length > 0 &&
-        currentMarketData.annual_change_ratio === 0 ? (
+        {showEstimate && currentMarketData.annual_change_ratio === 0 ? (
           <TokenEstimatePopover token_data={token_data}>
             <Button
               variant="link"
@@ -195,9 +199,9 @@ const IncentiveTokenDetails = React.forwardRef<
 
       {!!token_data.per_input_token && (
         <TertiaryLabel
-          className={cn("mt-1 flex items-center gap-1", className)}
+          className={cn("mt-1 flex items-center justify-end gap-1", className)}
         >
-          <span>
+          <span className="text-right">
             {Intl.NumberFormat("en-US", {
               notation: "standard",
               useGrouping: true,
@@ -223,7 +227,7 @@ const IncentiveTokenDetails = React.forwardRef<
 
       {category === "base" && (
         <div className="mt-1 flex flex-row items-center gap-1">
-          <TertiaryLabel className={cn("", className)}>
+          <TertiaryLabel className={cn("text-right", className)}>
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",

@@ -21,6 +21,7 @@ function CustomizedXAxisTick(props: any) {
   const { x, y, payload, data } = props;
 
   const apr = data[payload.index]?.annual_change_ratio ?? 0;
+  const token_data = data[payload.index]?.tokens_data?.[0] ?? null;
   const textColor = data[payload.index]?.textColor;
 
   const formatted_apr = (
@@ -39,9 +40,14 @@ function CustomizedXAxisTick(props: any) {
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={10} fill={textColor}>
+      <text x={0} y={0} dy={10} fill={textColor} textAnchor="middle">
         {formatted_apr}
       </text>
+      {token_data && (
+        <text x={0} y={0} dy={30} fill={textColor} textAnchor="middle">
+          {token_data.symbol}
+        </text>
+      )}
     </g>
   );
 }
@@ -75,17 +81,23 @@ export const OfferListVisualizer = React.forwardRef<
     ) {
       const offer = currentHighestOffers.ip_offers[0];
       const token_data = offer.tokens_data?.[0];
-      if (token_data) {
-        const url = new URL(token_data.image);
-        url.search = "";
-        Vibrant.from(url.toString())
-          .getPalette()
-          .then((palette) => {
-            if (palette?.Vibrant) {
-              setTokenColor(palette.Vibrant.hex);
+
+      const getTokenColor = async () => {
+        if (token_data.image) {
+          const url = new URL(token_data.image);
+          url.search = "";
+          try {
+            const palette = await Vibrant.from(url.toString()).getPalette();
+            if (palette && palette.Vibrant) {
+              setTokenColor(palette.Vibrant?.hex);
             }
-          });
-      }
+          } catch (error) {
+            setTokenColor("#bdc5d1");
+          }
+        }
+      };
+
+      getTokenColor();
     }
   }, [currentHighestOffers]);
 
@@ -209,7 +221,7 @@ export const OfferListVisualizer = React.forwardRef<
         <BarChart
           margin={{
             left: 10,
-            bottom: 10,
+            bottom: 20,
           }}
           accessibilityLayer
           data={chartData}
@@ -251,7 +263,7 @@ export const OfferListVisualizer = React.forwardRef<
 
           <Bar
             maxBarSize={20}
-            dataKey="quantity_value_usd"
+            dataKey="input_token_amount"
             strokeWidth={2}
             radius={[10, 10, 10, 10]}
           />
