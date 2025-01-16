@@ -5,7 +5,6 @@ import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
-import { FastAverageColor } from "fast-average-color";
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,
@@ -13,19 +12,18 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { TokenEditor } from "@/components/composables";
-import SparkleIcon from "../icons/sparkle";
-import ShieldIcon from "../icons/shield";
 import { SlideUpWrapper } from "@/components/animations";
-import { useActiveMarket } from "../../../../hooks";
+import { useActiveMarket } from "../../../hooks";
 import {
   BASE_MARGIN_TOP,
   INFO_ROW_CLASSES,
   SecondaryLabel,
   TertiaryLabel,
-} from "../../../../composables";
-import LightningIcon from "../icons/lightning";
-
-const fac = new FastAverageColor();
+} from "../../../composables";
+import LightningIcon from "./icons/lightning";
+import { Vibrant } from "node-vibrant/browser";
+import ShieldIcon from "./icons/shield";
+import SparkleIcon from "./icons/sparkle";
 
 export const TokenEstimatePopover = React.forwardRef<
   HTMLDivElement,
@@ -106,22 +104,21 @@ const IncentiveTokenDetails = React.forwardRef<
     labelClassName?: string;
   }
 >(({ className, token_data, category, labelClassName, ...props }, ref) => {
-  const { currentMarketData, previousMarketData } = useActiveMarket();
+  const { currentMarketData } = useActiveMarket();
 
-  const { incentiveType } = useMarketManager();
-
-  const [open, setOpen] = useState(false);
   const [tokenColor, setTokenColor] = useState<string | null>(null);
-
-  const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (token_data.image) {
       const url = new URL(token_data.image);
       url.search = "";
-      fac.getColorAsync(url.toString()).then((color) => {
-        setTokenColor(color.hex);
-      });
+      Vibrant.from(url.toString())
+        .getPalette()
+        .then((palette) => {
+          if (palette && palette.Vibrant) {
+            setTokenColor(palette.Vibrant?.hex);
+          }
+        });
     }
   }, [token_data.image]);
 

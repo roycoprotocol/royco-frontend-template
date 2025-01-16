@@ -199,7 +199,7 @@ export const MarketActionForm = React.forwardRef<
             layout="position"
             layoutId={`motion:market:back-button:${marketStep}`}
             className={cn(
-              "mt-5 flex w-full flex-row place-content-start items-center px-5 pb-3 text-left"
+              "mt-5 flex w-full flex-row place-content-start items-center text-left"
             )}
           >
             <div
@@ -234,54 +234,6 @@ export const MarketActionForm = React.forwardRef<
         )}
 
         {/**
-         * @note: New version
-         * User Type (Simple / Advanced)
-         */}
-        {marketStep === MarketSteps.params.id && (
-          <SlideUpWrapper
-            className={cn("flex flex-row items-center justify-between")}
-          >
-            <TertiaryLabel
-              /**
-               * @note Commented out for now because user type switch is moved to top
-               */
-              // onClick={() => {
-              //   setUserType(MarketUserType.ap.id);
-              // }}
-              className={cn(
-                "cursor-pointer px-5 pt-5",
-                "transition-all duration-200 ease-in-out hover:text-primary"
-                /**
-                 * @note Commented out for now because user type switch is moved to top
-                 */
-                // userType === MarketUserType.ap.id && BASE_UNDERLINE.MD
-              )}
-            >
-              TRANSACT
-            </TertiaryLabel>
-
-            {/**
-             * @note Commented out for now because user type switch is moved to top
-             */}
-            {/* {viewType === MarketViewType.advanced.id && (
-              <TertiaryLabel
-                onClick={() => {
-                  setActionType(MarketActionType.supply.id);
-                  setUserType(MarketUserType.ip.id);
-                }}
-                className={cn(
-                  "cursor-pointer px-5 pt-5",
-                  "transition-all duration-200 ease-in-out hover:text-primary",
-                  userType === MarketUserType.ip.id && BASE_UNDERLINE.MD
-                )}
-              >
-                INCENTIVIZE
-              </TertiaryLabel>
-            )} */}
-          </SlideUpWrapper>
-        )}
-
-        {/**
          * Action Type (Supply / Withdraw)
          */}
         {marketStep === MarketSteps.params.id &&
@@ -289,7 +241,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId={`motion:market:action-type:${viewType}`}
-              className={cn("mt-5 flex flex-col px-5")}
+              className={cn("mt-5 flex flex-col")}
             >
               <HorizontalTabs
                 className={cn("")}
@@ -309,7 +261,7 @@ export const MarketActionForm = React.forwardRef<
             <SlideUpWrapper
               layout="position"
               layoutId="motion:market:offer-type-selector"
-              className={cn("mt-5 px-5")}
+              className={cn("mt-5")}
             >
               <OfferTypeSelector />
             </SlideUpWrapper>
@@ -319,7 +271,7 @@ export const MarketActionForm = React.forwardRef<
          * Withdraw Section (Input Token / Incentives)
          */}
         {actionType === MarketActionType.withdraw.id && (
-          <SlideUpWrapper className="mt-5 grow px-5">
+          <SlideUpWrapper className="mt-5 grow">
             <WithdrawSection />
           </SlideUpWrapper>
         )}
@@ -333,7 +285,7 @@ export const MarketActionForm = React.forwardRef<
           actionType === MarketActionType.supply.id && (
             <ParamsStep
               marketActionForm={marketActionForm}
-              className={cn("mt-5 px-5")}
+              className={cn("mt-5")}
             />
           )}
 
@@ -343,7 +295,7 @@ export const MarketActionForm = React.forwardRef<
         {marketStep === MarketSteps.preview.id && (
           <PreviewStep
             marketActionForm={marketActionForm}
-            className={cn("mt-5 px-5")}
+            className={cn("mt-5")}
           />
         )}
 
@@ -358,7 +310,7 @@ export const MarketActionForm = React.forwardRef<
           //     animate={{ opacity: 1 }}
           //     transition={{ duration: 0.5, ease: "easeInOut" }}
           //   >
-          <div className={cn("mt-5 shrink-0 px-5 pb-5")}>
+          <div className={cn("mt-5 shrink-0 pb-5")}>
             <Button
               disabled={
                 marketStep === MarketSteps.preview.id &&
@@ -441,56 +393,3 @@ export const MarketActionForm = React.forwardRef<
     );
   }
 });
-
-{
-  /* <Fragment> */
-}
-{
-  /* {viewType === MarketViewType.simple.id && (
-  <div
-    className={cn(
-      "flex w-full flex-col items-start border-b border-divider",
-      BASE_PADDING
-    )}
-  >
-    <div className="flex w-fit max-w-full flex-row items-center font-gt text-lg font-medium text-primary">
-      <div className="max-w-full grow overflow-hidden truncate text-ellipsis">
-        {propsEnrichedMarket.data.title || "Unknown Market"}
-      </div>
-
-      {propsEnrichedMarket.data.title && (
-        <div className="ml-2 flex h-5 w-5 shrink-0 flex-col place-content-center items-center rounded-full bg-primary">
-          <CheckIcon
-            strokeWidth={2.5}
-            className="h-5 w-5 p-1 text-white"
-          />
-        </div>
-      )}
-    </div>
-  </div>
-)} */
-}
-
-// {viewType === MarketViewType.simple.id && (
-//   <div
-//     className={cn(
-//       "flex w-full flex-row items-center justify-between border-t border-divider",
-//       BASE_PADDING
-//     )}
-//   >
-//     <div className="font-gt text-sm font-light text-secondary">
-//       Advanced Mode
-//     </div>
-//     <Switch
-//       checked={viewType === MarketViewType.advanced.id}
-//       onCheckedChange={() => {
-//         setViewType(
-//           viewType === MarketViewType.advanced.id
-//             ? MarketViewType.simple.id
-//             : MarketViewType.advanced.id
-//         );
-//       }}
-//     />
-//   </div>
-// )}
-// </Fragment>

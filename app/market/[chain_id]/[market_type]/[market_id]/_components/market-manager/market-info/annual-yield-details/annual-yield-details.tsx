@@ -11,10 +11,7 @@ import { Button } from "@/components/ui/button";
 import LightningIcon from "./icons/lightning";
 import { PrimaryLabel, SecondaryLabel } from "../../../composables";
 import { TertiaryLabel } from "../../../composables";
-import {
-  IncentiveDetails,
-  TokenEstimatePopover,
-} from "./incentive-details/incentive-details";
+import { IncentiveDetails, TokenEstimatePopover } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
 
 export const AnnualYieldDetails = React.forwardRef<

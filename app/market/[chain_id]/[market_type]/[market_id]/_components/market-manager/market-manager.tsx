@@ -23,9 +23,9 @@ import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { useAccount } from "wagmi";
-import { OfferVisualizer } from "../offer-list-visualizer/offer-visualizer";
 import { MarketInfo } from "./market-info";
 import { BalanceIndicator } from "./balance-indicator";
+import { OfferVisualizer } from "./offer-visualizer";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,

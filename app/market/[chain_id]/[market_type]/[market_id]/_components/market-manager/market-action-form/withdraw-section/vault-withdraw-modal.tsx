@@ -39,6 +39,7 @@ interface VaultWithdrawModalProps {
       token_amount: number;
       token_amount_usd: number;
       shares: string;
+      price: number;
     };
   };
   marketId: string;

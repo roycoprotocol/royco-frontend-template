@@ -80,6 +80,8 @@ export const OfferListRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     type: "ap" | "ip";
+    customKey?: string;
+    indexKey?: string;
     keyInfo: {
       previousValue: number;
       currentValue: number;
@@ -90,77 +92,55 @@ export const OfferListRow = React.forwardRef<
     };
     offer?: EnrichedOfferDataType;
   }
->(({ className, type, keyInfo, valueInfo, offer }, ref) => {
-  return (
-    <div
-      className={cn(
-        "grid w-full grid-cols-2 items-center divide-x divide-divider text-sm text-black",
-        className
-      )}
-    >
-      {type === "ip" && (
-        <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pr-1">
-          <SpringNumber
-            previousValue={valueInfo.previousValue}
-            currentValue={valueInfo.currentValue}
-            numberFormatOptions={{
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }}
-          />
-
-          {!!offer && (
-            <div className="ml-1 flex items-center gap-1">
-              <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
-
-              <TokenDisplayer
-                size={4}
-                tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
-                symbols={false}
-              />
-            </div>
-          )}
-        </SecondaryLabel>
-      )}
-
-      <SecondaryLabel
+>(
+  (
+    { className, type, keyInfo, valueInfo, offer, customKey, indexKey },
+    ref
+  ) => {
+    return (
+      <div
         className={cn(
-          "hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1",
-          type === "ip" && "pl-1",
-          type === "ap" && "pr-1"
+          "grid w-full grid-cols-2 items-center divide-x divide-divider text-sm text-black",
+          className
         )}
       >
-        <SpringNumber
-          previousValue={keyInfo.previousValue}
-          currentValue={keyInfo.currentValue}
-          numberFormatOptions={{
-            notation: "standard",
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 8,
-          }}
-        />
-
-        {!!offer && (
-          <div className="ml-1 flex items-center gap-1">
-            <SecondaryLabel>{offer?.input_token_data?.symbol}</SecondaryLabel>
-
-            <TokenDisplayer
-              size={4}
-              tokens={offer?.input_token_data ? [offer?.input_token_data] : []}
-              symbols={false}
+        {type === "ip" && (
+          <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pr-1">
+            <SpringNumber
+              previousValue={valueInfo.previousValue}
+              currentValue={valueInfo.currentValue}
+              numberFormatOptions={{
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8,
+              }}
             />
-          </div>
-        )}
-      </SecondaryLabel>
 
-      {type === "ap" && (
-        <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pl-1">
+            {!!offer && (
+              <div className="ml-1 flex items-center gap-1">
+                <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
+
+                <TokenDisplayer
+                  size={4}
+                  tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                  symbols={false}
+                />
+              </div>
+            )}
+          </SecondaryLabel>
+        )}
+
+        <SecondaryLabel
+          className={cn(
+            "hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1",
+            type === "ip" && "pl-1",
+            type === "ap" && "pr-1"
+          )}
+        >
           <SpringNumber
-            previousValue={valueInfo.previousValue}
-            currentValue={valueInfo.currentValue}
+            previousValue={keyInfo.previousValue}
+            currentValue={keyInfo.currentValue}
             numberFormatOptions={{
               notation: "standard",
               useGrouping: true,
@@ -171,20 +151,49 @@ export const OfferListRow = React.forwardRef<
 
           {!!offer && (
             <div className="ml-1 flex items-center gap-1">
-              <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
+              <SecondaryLabel>{offer?.input_token_data?.symbol}</SecondaryLabel>
 
               <TokenDisplayer
                 size={4}
-                tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                tokens={
+                  offer?.input_token_data ? [offer?.input_token_data] : []
+                }
                 symbols={false}
               />
             </div>
           )}
         </SecondaryLabel>
-      )}
-    </div>
-  );
-});
+
+        {type === "ap" && (
+          <SecondaryLabel className="hide-scrollbar shrink-0 overflow-x-scroll whitespace-nowrap break-normal py-1 pl-1">
+            <SpringNumber
+              previousValue={valueInfo.previousValue}
+              currentValue={valueInfo.currentValue}
+              numberFormatOptions={{
+                notation: "standard",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8,
+              }}
+            />
+
+            {!!offer && (
+              <div className="ml-1 flex items-center gap-1">
+                <SecondaryLabel>{offer?.tokens_data[0]?.symbol}</SecondaryLabel>
+
+                <TokenDisplayer
+                  size={4}
+                  tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                  symbols={false}
+                />
+              </div>
+            )}
+          </SecondaryLabel>
+        )}
+      </div>
+    );
+  }
+);
 
 export const OfferList = React.forwardRef<
   HTMLDivElement,
