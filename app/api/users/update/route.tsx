@@ -67,7 +67,7 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in /api/sync/yield route", error);
+    console.error("Error in /api/users/update route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
   }
 }

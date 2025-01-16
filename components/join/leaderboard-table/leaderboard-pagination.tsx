@@ -103,7 +103,7 @@ export const LeaderboardPagination = React.forwardRef<
       )}
     >
       <div className="flex h-fit flex-row items-center gap-3">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="popLayout" initial={false}>
           {canPrevPage && (
             <PaginationButtonMotionWrapper
               key={`pagination-button:prev`}
