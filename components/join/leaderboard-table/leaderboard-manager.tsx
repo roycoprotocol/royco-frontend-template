@@ -123,6 +123,8 @@ export const LeaderboardManager = React.forwardRef<
         columns={leaderboardColumns}
       />
 
+      {/* <div className="h-[1px] w-full bg-divider" /> */}
+
       <LeaderboardPagination
         page={page}
         page_size={page_size}
