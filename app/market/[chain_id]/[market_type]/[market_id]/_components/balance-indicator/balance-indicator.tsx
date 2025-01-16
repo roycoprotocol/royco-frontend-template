@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import {
   useEnrichedAccountBalancesRecipeInMarket,
@@ -10,13 +10,7 @@ import { useActiveMarket } from "../hooks";
 import { useAccount } from "wagmi";
 import { isEqual, set } from "lodash";
 import { produce } from "immer";
-import {
-  BASE_MARGIN_TOP,
-  BASE_PADDING,
-  INFO_ROW_CLASSES,
-  PrimaryLabel,
-  TertiaryLabel,
-} from "../composables";
+import { INFO_ROW_CLASSES, PrimaryLabel, TertiaryLabel } from "../composables";
 import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { SpringNumber } from "@/components/composables";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
@@ -107,40 +101,90 @@ export const BalanceIndicator = React.forwardRef<
     }
   }, [isLoadingVault, isRefetchingVault, dataVault]);
 
+  const isLoading = useMemo(
+    () => isLoadingRecipe || isLoadingVault,
+    [isLoadingRecipe, isLoadingVault]
+  );
+
+  const totalBalance = useMemo(() => {
+    let previousValue = 0;
+    if (placeholderData[0]) {
+      if (userType === MarketUserType.ap.id) {
+        previousValue = placeholderData[0].balance_usd_ap;
+      } else {
+        previousValue = placeholderData[0].balance_usd_ip;
+      }
+    }
+
+    let currentValue = 0;
+    if (placeholderData[1]) {
+      if (userType === MarketUserType.ap.id) {
+        currentValue = placeholderData[1].balance_usd_ap;
+      } else {
+        currentValue = placeholderData[1].balance_usd_ip;
+      }
+    }
+
+    return [previousValue, currentValue];
+  }, [userType, placeholderData]);
+
+  const inputTokenData = useMemo(() => {
+    if (userType === MarketUserType.ap.id) {
+      return placeholderData[1]?.input_token_data_ap;
+    }
+
+    if (userType === MarketUserType.ip.id) {
+      return placeholderData[1]?.input_token_data_ip;
+    }
+  }, [userType, placeholderData]);
+
+  const incentivesTokenData = useMemo(() => {
+    if (userType === MarketUserType.ap.id) {
+      return placeholderData[1]?.incentives_ap_data;
+    }
+
+    if (userType === MarketUserType.ip.id) {
+      return placeholderData[1]?.incentives_ip_data;
+    }
+  }, [userType, placeholderData]);
+
   if (!currentMarketData) return null;
 
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex h-fit w-full shrink-0 flex-col",
-        BASE_PADDING,
-        className
-      )}
-      {...props}
-    >
-      <TertiaryLabel>BALANCES</TertiaryLabel>
+  if (!isConnected) {
+    return (
+      <div className={cn("rounded-lg border px-4 py-3")}>
+        {/**
+         * Wallet not connected
+         */}
+        <AlertIndicator className="pb-2 pt-7">
+          Wallet not connected
+        </AlertIndicator>
+      </div>
+    );
+  }
 
+  if (isConnected && !isLoading && !placeholderData[1]) {
+    return (
+      <div className={cn("rounded-lg border px-4 py-3")}>
+        {/**
+         * No activity found
+         */}
+        <AlertIndicator className="pb-2 pt-7">No activity found</AlertIndicator>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("rounded-lg border px-4 py-3")}>
       {/**
-       * Total balance for recipe
+       * Total Balance
        */}
-      {placeholderData[1] && (
-        <PrimaryLabel className={cn("text-3xl font-light", BASE_MARGIN_TOP.XL)}>
+      <div>
+        <TertiaryLabel className="text-sm">Your Balance</TertiaryLabel>
+        <PrimaryLabel className="mt-1 text-2xl font-500">
           <SpringNumber
-            previousValue={
-              placeholderData[0]
-                ? userType === MarketUserType.ap.id
-                  ? placeholderData[0].balance_usd_ap
-                  : placeholderData[0].balance_usd_ip
-                : 0
-            }
-            currentValue={
-              placeholderData[1]
-                ? userType === MarketUserType.ap.id
-                  ? placeholderData[1].balance_usd_ap
-                  : placeholderData[1].balance_usd_ip
-                : 0
-            }
+            previousValue={totalBalance[0]}
+            currentValue={totalBalance[1]}
             numberFormatOptions={{
               style: "currency",
               currency: "USD",
@@ -151,149 +195,84 @@ export const BalanceIndicator = React.forwardRef<
             }}
           />
         </PrimaryLabel>
-      )}
-
-      {isConnected === false && (
-        <AlertIndicator className="pb-2 pt-7">
-          Wallet not connected
-        </AlertIndicator>
-      )}
-
-      {isConnected === true &&
-        isLoadingRecipe === false &&
-        isLoadingVault === false &&
-        (placeholderData[1] === undefined || placeholderData[1] === null) && (
-          <AlertIndicator className="pb-2 pt-7">
-            No activity found
-          </AlertIndicator>
-        )}
+      </div>
 
       {/**
-       * Show total balance
+       * Input Token
        */}
+      <div className={cn("mt-5")}>
+        <TertiaryLabel className="mb-3 text-sm">Tokens Supplied</TertiaryLabel>
 
-      {isConnected &&
-        placeholderData[1] !== undefined &&
-        placeholderData[1] !== null && (
-          <InfoCard className={cn("flex flex-col gap-1", BASE_MARGIN_TOP.XL)}>
-            {/**
-             * @info Input Token
-             */}
-            <InfoCard.Row className={cn(INFO_ROW_CLASSES, "gap-0")}>
-              <InfoCard.Row.Key>Input Token</InfoCard.Row.Key>
-              <InfoCard.Row.Value className="gap-0">
-                <SpringNumber
-                  className="h-4"
-                  spanClassName="leading-5"
-                  previousValue={0}
-                  currentValue={
-                    userType === MarketUserType.ap.id
-                      ? (placeholderData[1]?.input_token_data_ap
-                          ?.token_amount ?? 0)
-                      : (placeholderData[1]?.input_token_data_ip
-                          ?.token_amount ?? 0)
-                  }
-                  numberFormatOptions={{
-                    style: "decimal",
-                    notation: "standard",
-                    useGrouping: true,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 8,
-                  }}
-                />
+        <InfoCard>
+          <InfoCard.Row className={INFO_ROW_CLASSES}>
+            <InfoCard.Row.Key>
+              <TokenDisplayer
+                tokens={inputTokenData ? [inputTokenData] : []}
+                symbols={true}
+                symbolClassName="text-sm font-medium"
+              />
+            </InfoCard.Row.Key>
 
-                <TokenDisplayer
-                  imageClassName="hidden"
-                  size={4}
-                  hover
-                  bounce
-                  tokens={
-                    placeholderData[1]?.input_token_data_ap
-                      ? [placeholderData[1].input_token_data_ap]
-                      : []
-                  }
-                  symbols={true}
-                />
-                <TokenDisplayer
-                  className="ml-2"
-                  size={4}
-                  hover
-                  bounce
-                  tokens={
-                    placeholderData[1]?.input_token_data_ip
-                      ? [placeholderData[1].input_token_data_ip]
-                      : []
-                  }
-                  symbols={false}
-                />
-              </InfoCard.Row.Value>
-            </InfoCard.Row>
+            <InfoCard.Row.Value className="gap-0">
+              <SpringNumber
+                className="text-sm font-medium"
+                previousValue={0}
+                currentValue={inputTokenData?.token_amount ?? 0}
+                numberFormatOptions={{
+                  style: "decimal",
+                  notation: "standard",
+                  useGrouping: true,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 8,
+                }}
+              />
+            </InfoCard.Row.Value>
+          </InfoCard.Row>
+        </InfoCard>
+      </div>
 
-            {/**
-             * @info Incentives AP/IP
-             */}
-            <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-              <InfoCard.Row.Key>Incentives</InfoCard.Row.Key>
-              <InfoCard.Row.Value className="flex h-fit grow flex-col gap-1">
-                {placeholderData[1]?.[
-                  userType === MarketUserType.ap.id
-                    ? "incentives_ap_data"
-                    : "incentives_ip_data"
-                ].length === 0 ? (
-                  <InfoCard.Row.Value className="flex w-full flex-row place-content-end items-end gap-0">
-                    0.00
+      <hr className="my-3" />
+
+      <div>
+        <TertiaryLabel className="mb-3 text-sm">
+          Incentives Accumulated
+        </TertiaryLabel>
+
+        {!incentivesTokenData || incentivesTokenData?.length === 0 ? (
+          <AlertIndicator>No incentives found</AlertIndicator>
+        ) : (
+          <InfoCard className="flex flex-col gap-2">
+            {incentivesTokenData.map((incentive) => {
+              return (
+                <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                  <InfoCard.Row.Key>
+                    <TokenDisplayer
+                      tokens={[incentive]}
+                      symbols={true}
+                      symbolClassName="text-sm font-medium"
+                    />
+                  </InfoCard.Row.Key>
+
+                  <InfoCard.Row.Value className="gap-0">
+                    <SpringNumber
+                      className="text-sm font-medium"
+                      previousValue={0}
+                      currentValue={incentive.token_amount ?? 0}
+                      numberFormatOptions={{
+                        style: "decimal",
+                        notation: "standard",
+                        useGrouping: true,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 8,
+                      }}
+                    />
                   </InfoCard.Row.Value>
-                ) : null}
-
-                {placeholderData[1]?.[
-                  userType === MarketUserType.ap.id
-                    ? "incentives_ap_data"
-                    : "incentives_ip_data"
-                ].map((incentive, index) => {
-                  const BASE_KEY = `market:balance-indicator:balance-incentice-type:${userType}:incentive:${incentive.id}`;
-
-                  return (
-                    <InfoCard.Row.Value
-                      key={BASE_KEY}
-                      className="flex w-full flex-row place-content-end items-end gap-1"
-                    >
-                      <SpringNumber
-                        className="h-4"
-                        spanClassName="leading-5"
-                        previousValue={0}
-                        currentValue={incentive.token_amount}
-                        numberFormatOptions={{
-                          style: "decimal",
-                          notation: "standard",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }}
-                      />
-
-                      <TokenDisplayer
-                        imageClassName="hidden"
-                        size={4}
-                        hover
-                        bounce
-                        tokens={[incentive]}
-                        symbols={true}
-                      />
-                      <TokenDisplayer
-                        className="ml-2"
-                        size={4}
-                        hover
-                        bounce
-                        tokens={[incentive]}
-                        symbols={false}
-                      />
-                    </InfoCard.Row.Value>
-                  );
-                })}
-              </InfoCard.Row.Value>
-            </InfoCard.Row>
+                </InfoCard.Row>
+              );
+            })}
           </InfoCard>
         )}
+      </div>
     </div>
   );
 });

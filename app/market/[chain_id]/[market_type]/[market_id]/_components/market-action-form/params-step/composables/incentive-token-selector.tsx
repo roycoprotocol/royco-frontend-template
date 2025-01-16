@@ -24,6 +24,7 @@ import { useMarketManager } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAccount } from "wagmi";
+import { RoycoMarketType, RoycoMarketUserType } from "royco/market";
 
 export const IncentiveTokenSelector = React.forwardRef<
   HTMLDivElement,
@@ -68,6 +69,10 @@ export const IncentiveTokenSelector = React.forwardRef<
       user_type: userType,
       type,
       account_address: address?.toLowerCase(),
+      ...(currentMarketData.market_type === RoycoMarketType.vault.value &&
+        userType === RoycoMarketUserType.ip.id && {
+          vault_address: currentMarketData.market_id,
+        }),
     });
 
     const propsTokenQuotes = useTokenQuotes({

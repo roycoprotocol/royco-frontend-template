@@ -52,8 +52,10 @@ export const RoyaltyFormPopUp = React.forwardRef<
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
+  const { step, setStep } = useJoin();
+
   const onSubmit = (data: z.infer<typeof RoyaltyFormSchema>) => {
-    console.log(data);
+    setStep("otp");
   };
 
   const { openRoyaltyForm } = useJoin();
@@ -98,9 +100,12 @@ export const RoyaltyFormPopUp = React.forwardRef<
 
           <Button
             type="submit"
-            onClick={() => {}}
+            onClick={() => {
+              royaltyForm.handleSubmit(onSubmit)();
+            }}
             className={cn(
-              "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+              "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90",
+              "transition-all duration-300 ease-in-out"
               // isPendingSignMessage ? "border border-divider bg-z2" : "bg-mint"
             )}
           >

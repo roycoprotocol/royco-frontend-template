@@ -19,33 +19,44 @@ export const RoyaltyFormSchema = z.object({
     .refine((value) => !matcher.hasMatch(value), {
       message: "Username contains offensive words.",
     }),
-  telegram: z.object({
-    id: z.number().optional(),
-    username: z.string().optional(),
-    first_name: z.string().optional(),
-    last_name: z.string().optional(),
-    photo_url: z.string().optional(),
-    hash: z.string().optional(),
-    auth_date: z.number().optional(),
-  }),
-  wallets: z.array(
-    z.object({
-      account_address: z
-        .string()
-        .min(1, { message: "Wallet is required." })
-        .refine(
-          (value) => {
-            return isSolidityAddressValid("address", value);
-          },
-          { message: "Invalid wallet address." }
-        ),
-      proof: z
-        .string()
-        .min(1, { message: "Proof of ownership is required." })
-        .refine((value) => value.trim().length > 0, {
-          message: "Proof of ownership is required.",
-        }),
-      balance: z.number().optional(),
+  telegram: z
+    .object({
+      id: z.number().optional(),
+      username: z.string().optional(),
+      first_name: z.string().optional(),
+      last_name: z.string().optional(),
+      photo_url: z.string().optional(),
+      hash: z.string().optional(),
+      auth_date: z.number().optional(),
     })
-  ),
+    .optional(),
+  wallets: z
+    .array(
+      z.object({
+        account_address: z
+          .string()
+          .min(1, { message: "Wallet is required." })
+          .refine(
+            (value) => {
+              return isSolidityAddressValid("address", value);
+            },
+            { message: "Invalid wallet address." }
+          ),
+        proof: z
+          .string()
+          .min(1, { message: "Proof of ownership is required." })
+          .refine((value) => value.trim().length > 0, {
+            message: "Proof of ownership is required.",
+          }),
+        balance: z.number().optional(),
+      })
+    )
+    .refine(
+      (data) => {
+        return data.length > 0;
+      },
+      {
+        message: "At least one wallet is required.",
+      }
+    ),
 });

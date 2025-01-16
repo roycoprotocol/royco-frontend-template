@@ -24,6 +24,7 @@ import { RoyaltyFormSchema } from "./royality-form-schema";
 import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocalStorage } from "usehooks-ts";
+import { OtpForm } from "../otp-form";
 
 export const RoyaltyForm = React.forwardRef<
   HTMLDivElement,
@@ -31,7 +32,7 @@ export const RoyaltyForm = React.forwardRef<
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
-  const { openRoyaltyForm, setOpenRoyaltyForm } = useJoin();
+  const { openRoyaltyForm, setOpenRoyaltyForm, step } = useJoin();
 
   const { connectModalOpen } = useConnectModal();
 
@@ -116,8 +117,12 @@ export const RoyaltyForm = React.forwardRef<
 
       {!connectModalOpen && (
         <DialogContent className="max-h-[100vh] shrink-0 !rounded-none !border-0 bg-transparent !p-3 shadow-none sm:max-w-[480px]">
-          <div className="hide-scrollbar max-h-[80vh] w-full overflow-y-auto rounded-xl border border-divider bg-white shadow-none">
-            <RoyaltyFormPopUp royaltyForm={royaltyForm} />
+          <div className="hide-scrollbar max-h-[80vh] w-full overflow-y-auto rounded-xl border border-divider bg-white shadow-sm">
+            {step === "info" ? (
+              <RoyaltyFormPopUp royaltyForm={royaltyForm} />
+            ) : (
+              <OtpForm royaltyForm={royaltyForm} />
+            )}
           </div>
         </DialogContent>
       )}
