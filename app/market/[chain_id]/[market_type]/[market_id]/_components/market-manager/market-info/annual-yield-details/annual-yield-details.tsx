@@ -20,6 +20,7 @@ export const AnnualYieldDetails = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { currentMarketData, previousMarketData } = useActiveMarket();
 
+  // find break of point where annual_change_ratio is 0
   const breakdowns = currentMarketData.yield_breakdown.filter(
     (item: any) =>
       item.category === "base" &&
@@ -27,6 +28,7 @@ export const AnnualYieldDetails = React.forwardRef<
       item.annual_change_ratio === 0
   );
 
+  // get first token data of point where annual_change_ratio is 0
   let point_token_data;
   if (breakdowns.length > 0) {
     point_token_data = {
@@ -48,8 +50,7 @@ export const AnnualYieldDetails = React.forwardRef<
          */}
         <div>
           <TertiaryLabel className="text-sm">APY</TertiaryLabel>
-          {breakdowns.length > 0 &&
-          currentMarketData.annual_change_ratio === 0 ? (
+          {breakdowns.length > 0 ? (
             <TokenEstimatePopover token_data={point_token_data}>
               <Button
                 variant="outline"
