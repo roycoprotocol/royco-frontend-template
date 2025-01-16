@@ -15,7 +15,7 @@ import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
 import { MarketType } from "@/store/market-manager-props";
 import { useActiveMarket } from "../hooks";
 import { AnimatePresence, motion } from "framer-motion";
-import { ActionFlow } from "@/components/composables";
+import { ActionFlow, SpringNumber } from "@/components/composables";
 import validator from "validator";
 import { shortAddress } from "royco/utils";
 import { getExplorerUrl } from "royco/utils";
@@ -27,6 +27,7 @@ export const MarketDetails = React.forwardRef<
   const {
     marketMetadata,
     currentMarketData,
+    previousMarketData,
     propsActionsDecoderEnterMarket,
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
@@ -41,12 +42,22 @@ export const MarketDetails = React.forwardRef<
       <div>
         <TertiaryLabel className="text-sm">TVL</TertiaryLabel>
         <PrimaryLabel className="mt-1 text-2xl font-500">
-          {Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            notation: "compact",
-            useGrouping: true,
-          }).format(currentMarketData.locked_quantity_usd ?? 0)}
+          <SpringNumber
+            previousValue={
+              previousMarketData && previousMarketData.locked_quantity_usd
+                ? previousMarketData.locked_quantity_usd
+                : 0
+            }
+            currentValue={currentMarketData.locked_quantity_usd ?? 0}
+            numberFormatOptions={{
+              style: "currency",
+              currency: "USD",
+              notation: "compact",
+              useGrouping: true,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }}
+          />
         </PrimaryLabel>
       </div>
 

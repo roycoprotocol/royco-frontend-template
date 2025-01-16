@@ -295,8 +295,8 @@ export const MarketManager = React.forwardRef<
                    */}
                   <div
                     className={cn(
-                      "border-t border-divider md:border-t-0",
-                      "flex h-full shrink-0 flex-col divide-y divide-divider",
+                      "border-t border-divider p-6 md:border-t-0",
+                      "flex h-full shrink-0 flex-col",
                       "w-full md:w-[50%] xl:w-[25%]"
                     )}
                   >

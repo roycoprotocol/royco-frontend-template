@@ -162,11 +162,11 @@ const TokenDisplayer = React.forwardRef<
           className={cn(
             "font-gt font-300 ",
             "flex flex-col items-center",
-            symbolClassName,
             // browserType === "webkit" && "h-fit",
             size === 6 && "text-base",
             size === 5 && "text-base",
-            size === 4 && "text-sm"
+            size === 4 && "text-sm",
+            symbolClassName
           )}
         >
           {/* {symbols && tokens.length >= 1 && (
