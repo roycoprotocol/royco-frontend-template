@@ -2,7 +2,7 @@
 
 import "./local.css";
 import { cn } from "@/lib/utils";
-import { MarketManager } from "./_components";
+import { MarketManager } from "./_components/market-manager";
 import { MarketManagerStoreProvider } from "@/store";
 import { TransactionModal } from "@/components/composables";
 
