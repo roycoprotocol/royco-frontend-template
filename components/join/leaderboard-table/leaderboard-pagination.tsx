@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useGlobalStates } from "@/store";
 import { useTotalWalletsBalance } from "../hooks";
 import { isEqual } from "lodash";
-import { LeaderboardManager } from "../leaderboard-table";
+import { LeaderboardManager } from ".";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";

@@ -103,7 +103,9 @@ export const Cta = React.forwardRef<
         Get priority access & benefits based on your wallets. Connect more
         assets to get in first.
       </div>
+
       <RoyaltyForm royaltyForm={royaltyForm} />
+
       <img
         className={cn(userInfo ? "mt-0" : "mt-10")}
         src="/join/partners.png"
