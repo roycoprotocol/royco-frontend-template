@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { kv } from "@vercel/kv";
 
-const SupabaseRoutes = ["/api/push/token", "/api/evm/contract"];
+const SupabaseRoutes = [
+  "/api/push/token",
+  "/api/evm/contract",
+  "/api/users/update",
+];
 const RateLimits = {
   rpc: {
     limitDuration: 60,
