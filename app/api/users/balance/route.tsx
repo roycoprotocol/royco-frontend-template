@@ -47,27 +47,27 @@ export async function GET(request: Request) {
       return Response.json({ balance }, { status: 200 });
     }
 
-    // // Set headers
-    // const headers = {
-    //   Accept: "application/json",
-    //   AccessKey: process.env.DEBANK_API_KEY,
-    // };
-
-    // // Create Debank API request
-    // const url = `https://pro-openapi.debank.com/v1/user/total_balance?id=${account_address}`;
-
-    // // Fetch balance from Debank API
-    // const result = await axios.get(url, {
-    //   headers: headers,
-    //   timeout: 60000,
-    // });
-
-    const result = {
-      data: {
-        total_usd_value: Math.random() * 1000000,
-        chain_list: [],
-      },
+    // Set headers
+    const headers = {
+      Accept: "application/json",
+      AccessKey: process.env.DEBANK_API_KEY,
     };
+
+    // Create Debank API request
+    const url = `https://pro-openapi.debank.com/v1/user/total_balance?id=${account_address}`;
+
+    // Fetch balance from Debank API
+    const result = await axios.get(url, {
+      headers: headers,
+      timeout: 60000,
+    });
+
+    // const result = {
+    //   data: {
+    //     total_usd_value: Math.random() * 1000000,
+    //     chain_list: [],
+    //   },
+    // };
 
     // Parse balance
     let balance = result.data.total_usd_value;
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
       balance = 0;
     }
 
-    // Store balance in database
+    // Update database
     await Promise.all([
       insertToWalletsTable({ account_address, balance }),
       insertToWalletBreakdownTable({
