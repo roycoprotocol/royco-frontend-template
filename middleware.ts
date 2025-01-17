@@ -93,16 +93,16 @@ export async function middleware(request: NextRequest) {
    */
   if (SupabaseRoutes.includes(pathname)) {
     // 1. Auth token can be passed in header
-    const headerToken = request.headers.get("auth-token");
+    const headerToken = request.headers.get("auth-token")?.trim();
 
     // 2. Auth token can be passed in url params
-    const urlToken = request.nextUrl.searchParams.get("auth_token");
+    const urlToken = request.nextUrl.searchParams.get("auth_token")?.trim();
 
     // It must be one of the two
     const authToken = headerToken || urlToken;
 
     // Check if auth token is valid
-    if (!authToken || authToken !== process.env.API_SECRET_KEY) {
+    if (!authToken || authToken.trim() !== process.env.API_AUTH_TOKEN?.trim()) {
       return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
         status: 401,
         headers: {
