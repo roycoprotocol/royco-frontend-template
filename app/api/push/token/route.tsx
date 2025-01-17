@@ -27,11 +27,13 @@ export const CHAIN_SLUG = {
     1: "ethereum",
     42161: "arbitrum",
     8453: "base",
+    146: "sonic",
   },
   coingecko: {
     1: "ethereum",
     42161: "arbitrum-one",
     8453: "base",
+    146: "sonic",
   },
 };
 
