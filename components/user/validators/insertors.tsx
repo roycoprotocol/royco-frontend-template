@@ -42,9 +42,17 @@ export const insertToWalletBreakdownTable = async ({
     process.env.SUPABASE_SERVICE_ROLE_KEY as string
   );
 
-  const { data, error } = await supabaseClient
-    .from("wallet_breakdown")
-    .upsert(
-      breakdown.map((item) => ({ account_address, ...item, updated_at }))
-    );
+  const { data, error } = await supabaseClient.from("wallet_breakdown").upsert(
+    breakdown.map((item) => ({
+      account_address,
+      id: item.id,
+      community_id: item.community_id,
+      name: item.name,
+      native_token_id: item.native_token_id,
+      logo_url: item.logo_url,
+      wrapped_token_id: item.wrapped_token_id,
+      usd_value: item.usd_value,
+      updated_at,
+    }))
+  );
 };
