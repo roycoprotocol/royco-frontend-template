@@ -2,6 +2,10 @@ import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/components/data";
 import { isSolidityAddressValid } from "royco/utils";
+import {
+  insertToWalletsTable,
+  insertToWalletBreakdownTable,
+} from "@/components/user";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -61,6 +65,7 @@ export async function GET(request: Request) {
     const result = {
       data: {
         total_usd_value: Math.random() * 1000000,
+        chain_list: [],
       },
     };
 
@@ -71,9 +76,13 @@ export async function GET(request: Request) {
     }
 
     // Store balance in database
-    const { data: insertData, error: insertError } = await supabaseClient
-      .from("wallets")
-      .insert({ account_address, balance });
+    await Promise.all([
+      insertToWalletsTable({ account_address, balance }),
+      insertToWalletBreakdownTable({
+        account_address,
+        breakdown: result.data.chain_list,
+      }),
+    ]);
 
     // Return balance
     return Response.json({ balance }, { status: 200 });
