@@ -24,7 +24,7 @@ export const MarketInfo = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn("flex h-fit w-full shrink-0 flex-col p-6", className)}
+        className={cn("flex h-fit w-full shrink-0 flex-col", className)}
         {...props}
       >
         {/**
