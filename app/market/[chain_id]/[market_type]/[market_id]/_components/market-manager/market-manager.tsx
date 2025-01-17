@@ -188,8 +188,14 @@ export const MarketManager = React.forwardRef<
         )}
       </div>
 
+      {/**
+       * Simple Market Manager
+       */}
       {viewType === MarketViewType.simple.id && <SimpleMarketManager />}
 
+      {/**
+       * Advanced Market Manager
+       */}
       {viewType === MarketViewType.advanced.id && <AdvanceMarketManager />}
     </Fragment>
   );
