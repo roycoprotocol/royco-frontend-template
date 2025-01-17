@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { kv } from "@vercel/kv";
 
 const SupabaseRoutes = ["/api/push/token", "/api/evm/contract"];
+const RateLimits = {
+  rpc: {
+    limitDuration: 60,
+    maxRequests: 60,
+  },
+  simulation: {
+    limitDuration: 60,
+    maxRequests: 10,
+  },
+};
 
 export async function middleware(request: NextRequest) {
   /**
@@ -28,6 +39,49 @@ export async function middleware(request: NextRequest) {
         );
       }
     }
+  }
+
+  let rateLimitTag: string | null = null;
+
+  if (pathname.startsWith("/api/rpc/")) {
+    rateLimitTag = "rpc";
+  } else if (pathname.startsWith("/api/simulation/")) {
+    rateLimitTag = "simulation";
+  }
+
+  /**
+   * Rate limiting for specific routes that have been tagged
+   */
+  if (rateLimitTag) {
+    const ip =
+      request.ip ?? request.headers.get("x-forwarded-for") ?? "unknown";
+    const key = `rate-limit:${ip}:${rateLimitTag}`;
+
+    const currentRequests = (await kv.get<number>(key)) || 0;
+
+    if (
+      currentRequests >=
+      RateLimits[rateLimitTag as keyof typeof RateLimits].maxRequests
+    ) {
+      return new NextResponse(
+        JSON.stringify({ error: "Rate limit exceeded" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "X-RateLimit-Limit":
+              RateLimits[
+                rateLimitTag as keyof typeof RateLimits
+              ].maxRequests.toString(),
+            "X-RateLimit-Remaining": "0",
+          },
+        }
+      );
+    }
+
+    await kv.set(key, currentRequests + 1, {
+      ex: RateLimits[rateLimitTag as keyof typeof RateLimits].limitDuration,
+    });
   }
 
   /**

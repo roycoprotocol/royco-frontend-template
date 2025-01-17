@@ -47,6 +47,34 @@ const nextConfig = {
         source: "/api/event/:path*",
         destination: "https://royco-analytics.vercel.app/:path*", // Proxy to Royco Analytics
       },
+      {
+        source: "/api/rpc/:path*",
+        destination: process.env.RPC_API_KEY_1,
+      },
+      {
+        source: "/api/rpc/11155111/:path*",
+        destination: process.env.RPC_API_KEY_11155111,
+      },
+      {
+        source: "/api/rpc/42161/:path*",
+        destination: process.env.RPC_API_KEY_42161,
+      },
+      {
+        source: "/api/rpc/8453/:path*",
+        destination: process.env.RPC_API_KEY_8453,
+      },
+      {
+        source: "/api/rpc/21000000/:path*",
+        destination: process.env.RPC_API_KEY_21000000,
+      },
+      {
+        source: "/api/rpc/98865/:path*",
+        destination: process.env.RPC_API_KEY_98865,
+      },
+      {
+        source: "/api/rpc/146/:path*",
+        destination: process.env.RPC_API_KEY_146,
+      },
     ];
   },
   // CORS for API routes
