@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@blockaid/client": "^0.21.0",
+    "@celo/compliance": "^1.0.25",
     "@ethersproject/providers": "^5.7.2",
     "@hello-pangea/dnd": "^16.6.0",
     "@hookform/resolvers": "^3.3.4",

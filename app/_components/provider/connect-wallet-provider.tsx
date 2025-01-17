@@ -1,8 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { ConnectWalletAlertModal } from "../ui/connect-wallet-alert-modal";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { SANCTIONED_ADDRESSES } from "@celo/compliance";
+import { useAccount, useDisconnect } from "wagmi";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -20,8 +28,10 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
+  const { disconnect } = useDisconnect();
 
   const [isConnectWalletAlertOpen, setIsConnectWalletAlertOpen] =
     useState(false);
@@ -54,6 +64,20 @@ export const ConnectWalletProvider = ({
   const connectAccountModal = async () => {
     openAccountModal?.();
   };
+
+  const disconnectWalletIfSanctioned = async () => {
+    if (
+      isConnected &&
+      !!address &&
+      [...SANCTIONED_ADDRESSES].includes(address.toLowerCase() as any)
+    ) {
+      disconnect();
+    }
+  };
+
+  useEffect(() => {
+    disconnectWalletIfSanctioned();
+  }, [isConnected, address]);
 
   return (
     <ConnectWalletContext.Provider
