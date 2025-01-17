@@ -1,29 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const SupabaseRoutes = ["/api/push/token", "/api/evm/contract"];
+
 export async function middleware(request: NextRequest) {
-  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-    // Check if the request is for the auth/verify route
-    if (
-      request.nextUrl.pathname.startsWith("/api/") &&
-      !request.nextUrl.pathname.startsWith("/api/auth/verify") &&
-      !request.nextUrl.pathname.startsWith("/api/push/token")
-    ) {
-      const authToken = request.headers.get("auth-token");
+  /**
+   * Current path
+   */
+  const pathname = request.nextUrl.pathname;
 
-      const isValid = await fetch("/api/auth/verify?auth_token=" + authToken);
+  /**
+   * Content-type checking for all API routes
+   */
+  if (pathname.startsWith("/api/")) {
+    if (["POST", "PUT", "PATCH"].includes(request.method)) {
+      // Check if content-type is application/json
+      const contentType = request.headers.get("content-type");
 
-      if (!isValid) {
-        return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
+      // If not application/json, return 415
+      if (!contentType || contentType !== "application/json") {
+        return new NextResponse(
+          JSON.stringify({ error: "Content-Type must be application/json" }),
+          {
+            status: 415,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
     }
   }
 
-  // Check API key specifically for /api/push/token route
-  if (request.nextUrl.pathname === "/api/push/token") {
+  /**
+   * Supabase routes are only accessible by Supabase
+   */
+  if (SupabaseRoutes.includes(pathname)) {
     // 1. Auth token can be passed in header
     const headerToken = request.headers.get("auth-token");
 
@@ -44,21 +54,22 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Content-type checking for all API routes
-  if (request.nextUrl.pathname.startsWith("/api/")) {
-    if (["POST", "PUT", "PATCH"].includes(request.method)) {
-      // Check if content-type is application/json
-      const contentType = request.headers.get("content-type");
+  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+    // Check if the request is for the auth/verify route
+    if (
+      pathname.startsWith("/api/") &&
+      !pathname.startsWith("/api/auth/verify") &&
+      !pathname.startsWith("/api/push/token")
+    ) {
+      const authToken = request.headers.get("auth-token");
 
-      // If not application/json, return 415
-      if (!contentType || contentType !== "application/json") {
-        return new NextResponse(
-          JSON.stringify({ error: "Content-Type must be application/json" }),
-          {
-            status: 415,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+      const isValid = await fetch("/api/auth/verify?auth_token=" + authToken);
+
+      if (!isValid) {
+        return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
       }
     }
   }
