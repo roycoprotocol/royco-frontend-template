@@ -16,6 +16,8 @@ import {
 import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import ShortcutsWidget from "../shortucts-widget";
+import { useActiveMarket } from "../../../hooks";
 
 export const APOfferUI = React.forwardRef<
   HTMLDivElement,
@@ -24,9 +26,21 @@ export const APOfferUI = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { userType, offerType, fundingType } = useMarketManager();
+  const { currentMarketData } = useActiveMarket();
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
+      {/**
+       * Enso zap-in
+       */}
+      {fundingType === MarketFundingType.wallet.id && (
+        <ShortcutsWidget
+          token={currentMarketData?.input_token_data.contract_address!}
+          symbol={currentMarketData?.input_token_data.symbol}
+          chainId={currentMarketData?.chain_id!}
+        />
+      )}
+
       {/**
        * Quantity Selector for AP
        */}

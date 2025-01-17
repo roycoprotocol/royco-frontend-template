@@ -19,6 +19,7 @@ import {
   InputExpirySelector,
   IPQuantityIndicator,
 } from "../composables";
+import ShortcutsWidget from "../shortucts-widget";
 
 export const RecipeForms = React.forwardRef<
   HTMLDivElement,
@@ -52,6 +53,18 @@ export const RecipeForms = React.forwardRef<
             />
           </SlideUpWrapper>
         )}
+
+        {/**
+         * Enso zap-in
+         */}
+        {userType === MarketUserType.ap.id &&
+          fundingType === MarketFundingType.wallet.id && (
+            <ShortcutsWidget
+              token={currentMarketData?.input_token_data.contract_address!}
+              symbol={currentMarketData?.input_token_data.symbol}
+              chainId={currentMarketData?.chain_id!}
+            />
+          )}
 
         {/**
          * Quantity Selector for AP
