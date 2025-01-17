@@ -49,6 +49,7 @@ const config = {
         peach: "#FFF8F3",
         solitude: "#E5F0FF",
         lily: "#E5F7FF",
+        dodger_blue: "#007AFF",
 
         mint: "#4A8160",
 
