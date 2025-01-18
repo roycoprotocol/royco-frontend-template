@@ -26,7 +26,15 @@ export const metadata = {
 export const config = getDefaultConfig({
   appName: "Royco",
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
-  chains: [EthereumMainnet, ArbitrumOne, Base, Corn, Plume, EthereumSepolia],
+  chains: [
+    EthereumMainnet,
+    ArbitrumOne,
+    Base,
+    Corn,
+    Plume,
+    EthereumSepolia,
+    Sonic,
+  ],
   ssr: true,
   multiInjectedProviderDiscovery: true,
   transports: {
