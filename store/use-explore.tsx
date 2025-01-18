@@ -9,6 +9,7 @@ import {
   EthereumMainnet,
   EthereumSepolia,
   Plume,
+  Sonic,
 } from "royco/constants";
 
 export type ExploreCustomPoolParam = {
@@ -146,6 +147,11 @@ export const getExploreFilters = () => {
     filters.push({
       id: "chain_id",
       value: Corn.id,
+    });
+  } else if (frontendTag === "sonic") {
+    filters.push({
+      id: "chain_id",
+      value: Sonic.id,
     });
   }
 

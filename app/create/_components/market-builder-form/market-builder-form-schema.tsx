@@ -28,6 +28,8 @@ import {
   Base,
   Corn,
   Plume,
+  Sonic,
+  TokenMap146,
 } from "royco/constants";
 
 import {
@@ -401,6 +403,20 @@ export const PoolFormDefaults = {
     chain: SupportedChainMap[Corn.id],
     asset:
       TokenMap21000000["21000000-0xdf0b24095e15044538866576754f3c964e902ee6"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+  },
+  [Sonic.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[Sonic.id],
+    asset: TokenMap146["146-0x29219dd400f2bf60e5a23d13be72b486d4038894"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",
