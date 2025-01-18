@@ -185,7 +185,7 @@ export const BalanceIndicator = React.forwardRef<
        */}
       <div>
         <TertiaryLabel className="text-sm">Your Balance</TertiaryLabel>
-        <PrimaryLabel className="mt-1 text-2xl font-500">
+        <PrimaryLabel className="mt-1 text-2xl font-medium">
           <SpringNumber
             previousValue={totalBalance[0]}
             currentValue={totalBalance[1]}

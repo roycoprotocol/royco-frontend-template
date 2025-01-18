@@ -61,7 +61,7 @@ export const AnnualYieldDetails = React.forwardRef<
               </Button>
             </TokenEstimatePopover>
           ) : (
-            <PrimaryLabel className="mt-1 text-2xl font-500">
+            <PrimaryLabel className="mt-1 text-2xl font-medium">
               <SpringNumber
                 previousValue={
                   previousMarketData && previousMarketData.annual_change_ratio
@@ -89,7 +89,7 @@ export const AnnualYieldDetails = React.forwardRef<
           <TertiaryLabel className="text-sm">
             {currentMarketData.reward_style ===
             MarketRewardStyle.forfeitable.value ? (
-              <span className="text-p flex items-center gap-1 text-[#007AFF]">
+              <span className="text-p text-dodger_blue flex items-center gap-1">
                 Forfeitable
                 <LogOutIcon className="h-4 w-4" />
               </span>
@@ -97,7 +97,7 @@ export const AnnualYieldDetails = React.forwardRef<
               "Lockup Period"
             )}
           </TertiaryLabel>
-          <PrimaryLabel className="mt-1 text-2xl font-500">
+          <PrimaryLabel className="mt-1 text-2xl font-medium">
             {currentMarketData.market_type === MarketType.recipe.value &&
             currentMarketData.lockup_time !== "0"
               ? formatDuration(
