@@ -13,37 +13,9 @@ import {
 import { useActiveMarket } from "../../hooks";
 import { MarketActionType, MarketOfferType, MarketType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTokenQuotes } from "royco/hooks";
-import {
-  BASE_MARGIN_TOP,
-  BASE_PADDING_BOTTOM,
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  BASE_PADDING_TOP,
-  BASE_UNDERLINE,
-  SecondaryLabel,
-  TertiaryLabel,
-} from "../../composables";
-import { Button } from "@/components/ui/button";
-import { ErrorAlert, HorizontalTabs } from "@/components/composables";
-import toast from "react-hot-toast";
-import { useAccount, useChainId } from "wagmi";
-
-import { switchChain } from "@wagmi/core";
-import { config } from "@/components/rainbow-modal/modal-config";
-import { ParamsStep } from "./params-step";
-import { PreviewStep } from "./preview-step";
-import { ChevronLeftIcon } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { WithdrawSection } from "./withdraw-section"; // @todo fix it
-import { AlertIndicator } from "@/components/common";
-import { useMarketFormDetails } from "./use-market-form-details";
-import { RoycoMarketVaultIncentiveAction } from "royco/market";
-import { SlideUpWrapper } from "@/components/animations";
-import { OfferTypeSelector } from "./offer-type-selector";
-import { NULL_ADDRESS } from "royco/constants";
 import { MarketActionFormSchema } from "./market-action-form-schema";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
+import { ActionParams } from "./action-params";
+import { ActionPreview } from "./action-preview/action-preview";
 
 export const MarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -51,9 +23,6 @@ export const MarketActionForm = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const {
     marketStep,
-    setMarketStep,
-    transactions,
-    setTransactions,
     actionType,
     setActionType,
     userType,
@@ -61,16 +30,10 @@ export const MarketActionForm = React.forwardRef<
     viewType,
     offerType,
     setOfferType,
-    setViewType,
     vaultIncentiveActionType,
   } = useMarketManager();
-  const { address, isConnected } = useAccount();
 
-  const chainId = useChainId();
-
-  const { currentMarketData, marketMetadata } = useActiveMarket();
-
-  const { connectWalletModal } = useConnectWallet();
+  const { currentMarketData } = useActiveMarket();
 
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
@@ -80,75 +43,6 @@ export const MarketActionForm = React.forwardRef<
       no_expiry: true,
     },
   });
-
-  const propsTokenQuotes = useTokenQuotes({
-    token_ids: [
-      currentMarketData?.input_token_id ?? "",
-      ...marketActionForm.watch("incentive_tokens").map((token) => token.id),
-    ].filter(Boolean),
-  });
-
-  const {
-    isLoading,
-    isValid,
-    isReady,
-    writeContractOptions,
-    canBePerformedCompletely,
-    canBePerformedPartially,
-    incentiveData,
-  } = useMarketFormDetails(marketActionForm);
-
-  const handleNextStep = async () => {
-    try {
-      if (!isConnected) {
-        connectWalletModal();
-      } else if (chainId !== marketMetadata.chain_id) {
-        try {
-          // @ts-ignore
-          await switchChain(config, {
-            /**
-             * @TODO strictly type this
-             */
-            // @ts-ignore
-            chainId: marketMetadata.chain_id,
-          });
-        } catch (error) {}
-      } else if (marketStep === MarketSteps.params.id) {
-        if (isValid.status) {
-          onSubmit(marketActionForm.getValues());
-        } else {
-          toast.custom(<ErrorAlert message={isValid.message ?? ""} />);
-        }
-      } else if (
-        marketStep === MarketSteps.preview.id &&
-        canBePerformedPartially
-      ) {
-        setTransactions(writeContractOptions);
-      }
-    } catch (error) {
-      toast.custom(<ErrorAlert message="Error submitting offer" />);
-    }
-  };
-
-  const nextLabel = () => {
-    if (!address) {
-      return "Connect wallet";
-    } else if (chainId !== marketMetadata.chain_id) {
-      return "Switch chain";
-    } else if (marketStep === MarketSteps.params.id) {
-      return "Supply Now";
-    } else if (marketStep === MarketSteps.preview.id) {
-      return "Confirm offer";
-    } else {
-      return "Offer in progress";
-    }
-  };
-
-  const onSubmit = (data: any) => {
-    if (isValid.status) {
-      setMarketStep(MarketSteps.preview.id);
-    }
-  };
 
   useEffect(() => {
     if (viewType === MarketViewType.simple.id) {
@@ -166,12 +60,8 @@ export const MarketActionForm = React.forwardRef<
     }
   }, [userType]);
 
-  const resetCurrentIncentivesArray = () => {
-    marketActionForm.setValue("incentive_tokens", []);
-  };
-
   useEffect(() => {
-    resetCurrentIncentivesArray();
+    marketActionForm.setValue("incentive_tokens", []);
   }, [vaultIncentiveActionType]);
 
   useEffect(() => {
@@ -187,207 +77,15 @@ export const MarketActionForm = React.forwardRef<
       <div
         key={`market-action-form:container:${marketStep}:${viewType}`}
         ref={ref}
-        className={cn(
-          "flex w-full shrink-0 flex-col",
-          "overflow-hidden",
-          className
-        )}
+        className={cn("flex flex-col", className)}
         {...props}
       >
-        {marketStep !== MarketSteps.params.id && (
-          <SlideUpWrapper
-            layout="position"
-            layoutId={`motion:market:back-button:${marketStep}`}
-            className={cn(
-              "mt-5 flex w-full flex-row place-content-start items-center text-left"
-            )}
-          >
-            <div
-              onClick={() => setMarketStep(MarketSteps.params.id)}
-              className={cn(
-                BASE_UNDERLINE.MD,
-                "flex flex-row place-content-start items-center space-x-1 text-left decoration-transparent",
-                "transition-all duration-200 ease-in-out hover:text-black hover:decoration-tertiary"
-              )}
-            >
-              <ChevronLeftIcon
-                strokeWidth={1}
-                className="h-5 w-5 text-secondary"
-              />
-              <SecondaryLabel className="mt-[0.15rem] flex h-4 leading-none">
-                OFFER PARAMS
-              </SecondaryLabel>
-            </div>
-          </SlideUpWrapper>
+        {marketStep === MarketSteps.params.id && (
+          <ActionParams marketActionForm={marketActionForm} />
         )}
 
-        {marketStep !== MarketSteps.params.id && (
-          <SlideUpWrapper
-            layout="position"
-            layoutId={`motion:market:form-label:${marketStep}`}
-            delay={0.2}
-          >
-            <TertiaryLabel className={cn("px-5 pt-5")}>
-              {MarketSteps[marketStep].label}
-            </TertiaryLabel>
-          </SlideUpWrapper>
-        )}
-
-        {/**
-         * Action Type (Supply / Withdraw)
-         */}
-        {marketStep === MarketSteps.params.id &&
-          userType === MarketUserType.ap.id && (
-            <SlideUpWrapper
-              layout="position"
-              layoutId={`motion:market:action-type:${viewType}`}
-              className={cn("mt-5 flex flex-col")}
-            >
-              <HorizontalTabs
-                className={cn("")}
-                size="sm"
-                key="market:action-type:container"
-                baseId="market:action-type"
-                tabs={Object.values(MarketActionType)}
-                activeTab={actionType}
-                setter={setActionType}
-              />
-            </SlideUpWrapper>
-          )}
-
-        {marketStep === MarketSteps.params.id &&
-          actionType === MarketActionType.supply.id &&
-          viewType === MarketViewType.advanced.id && (
-            <SlideUpWrapper
-              layout="position"
-              layoutId="motion:market:offer-type-selector"
-              className={cn("mt-5")}
-            >
-              <OfferTypeSelector />
-            </SlideUpWrapper>
-          )}
-
-        {/**
-         * Withdraw Section (Input Token / Incentives)
-         */}
-        {actionType === MarketActionType.withdraw.id && (
-          <SlideUpWrapper className="mt-5 grow">
-            <WithdrawSection />
-          </SlideUpWrapper>
-        )}
-
-        {/* <WithdrawSection /> */}
-
-        {/**
-         * Params Step
-         */}
-        {marketStep === MarketSteps.params.id &&
-          actionType === MarketActionType.supply.id && (
-            <ParamsStep
-              marketActionForm={marketActionForm}
-              className={cn("mt-5")}
-            />
-          )}
-
-        {/**
-         * Preview Step
-         */}
         {marketStep === MarketSteps.preview.id && (
-          <PreviewStep
-            marketActionForm={marketActionForm}
-            className={cn("mt-5")}
-          />
-        )}
-
-        {/**
-         * Action Button
-         */}
-        {actionType === MarketActionType.supply.id && (
-          // <AnimatePresence mode="popLayout">
-          //   <motion.div
-          //     className={cn("mt-5 shrink-0 px-5 pb-5")}
-          //     initial={{ opacity: 0 }}
-          //     animate={{ opacity: 1 }}
-          //     transition={{ duration: 0.5, ease: "easeInOut" }}
-          //   >
-          <div className={cn("mt-5 shrink-0 pb-5")}>
-            <Button
-              disabled={
-                marketStep === MarketSteps.preview.id &&
-                canBePerformedPartially === false
-                  ? true
-                  : false
-              }
-              onClick={async () => {
-                await handleNextStep();
-              }}
-              size="sm"
-              type="button"
-              className="shrink-0"
-            >
-              {nextLabel()}
-            </Button>
-
-            {offerType === MarketOfferType.market.id &&
-              userType === MarketUserType.ap.id &&
-              !(
-                marketMetadata.market_type === MarketType.vault.id &&
-                !!currentMarketData &&
-                !!currentMarketData.base_incentive_ids &&
-                currentMarketData.base_incentive_ids.length < 1
-              ) && (
-                <Button
-                  disabled={
-                    offerType === MarketOfferType.limit.id ||
-                    userType === MarketUserType.ip.id ||
-                    (marketMetadata.market_type === MarketType.vault.id &&
-                      !!currentMarketData &&
-                      !!currentMarketData.base_incentive_ids &&
-                      currentMarketData.base_incentive_ids.length < 1)
-                  }
-                  onClick={async () => {
-                    setOfferType(MarketOfferType.limit.id);
-
-                    if (typeof window !== "undefined") {
-                      localStorage.setItem(
-                        "royco_market_view_type",
-                        MarketViewType.advanced.id
-                      );
-                    }
-
-                    setViewType(MarketViewType.advanced.id);
-                  }}
-                  size="sm"
-                  type="button"
-                  variant="secondary"
-                  className={cn(
-                    BASE_MARGIN_TOP.SM,
-                    "w-full shrink-0 place-content-center"
-                  )}
-                >
-                  Bid for More Incentives
-                </Button>
-              )}
-
-            {userType === MarketUserType.ip.id &&
-              marketStep === MarketSteps.preview.id && (
-                <p className="mt-5 text-center text-sm text-tertiary">
-                  Royco takes a fee only when an offer is filled. See more on
-                  fee breakdown{" "}
-                  <a
-                    href="https://docs.royco.org/for-incentive-providers/fees-on-royco"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                  >
-                    here
-                  </a>
-                </p>
-              )}
-          </div>
-
-          //   </motion.div>
-          // </AnimatePresence>
+          <ActionPreview marketActionForm={marketActionForm} />
         )}
       </div>
     );
