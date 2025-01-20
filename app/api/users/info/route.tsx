@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/components/data";
 import { isSolidityAddressValid } from "royco/utils";
 import { isWalletValid } from "@/components/user";
+import { verify } from "jsonwebtoken";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -16,16 +17,33 @@ const supabaseClient = createClient<Database>(
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const account_address = searchParams.get("account_address");
+
+    // This proof is actually a jwt and has message being signed as account_address
     const proof = searchParams.get("proof");
+    const req_account_address = searchParams.get("account_address");
 
-    const walledValid = await isWalletValid({ account_address, proof });
+    if (!proof) {
+      return Response.json({ message: "Proof is required" }, { status: 400 });
+    }
 
-    if (!account_address || !walledValid) {
+    if (!req_account_address) {
       return Response.json(
-        { message: "Invalid wallet address or proof" },
+        { message: "Account address is required" },
         { status: 400 }
       );
+    }
+
+    const { account_address } = verify(
+      proof,
+      process.env.JWT_SECRET as string
+    ) as { account_address: string };
+
+    if (!account_address) {
+      return Response.json({ message: "Invalid proof" }, { status: 400 });
+    }
+
+    if (req_account_address.toLowerCase() !== account_address.toLowerCase()) {
+      return Response.json({ message: "Invalid proof" }, { status: 400 });
     }
 
     const { data, error } = await supabaseClient

@@ -11,6 +11,8 @@ interface JoinState {
   setIsLoadingProof: (isLoadingProof: boolean) => void;
   step: "info" | "otp";
   setStep: (step: "info" | "otp") => void;
+  signedMessage: string | null;
+  setSignedMessage: (signedMessage: string | null) => void;
 }
 
 export const useJoin = create<JoinState>((set) => ({
@@ -22,4 +24,6 @@ export const useJoin = create<JoinState>((set) => ({
   setIsLoadingProof: (isLoadingProof: boolean) => set({ isLoadingProof }),
   step: "otp",
   setStep: (step: "info" | "otp") => set({ step }),
+  signedMessage: null,
+  setSignedMessage: (signedMessage: string | null) => set({ signedMessage }),
 }));

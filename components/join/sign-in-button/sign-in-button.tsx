@@ -18,7 +18,7 @@ export const SignInButton = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { address: account_address, isConnected } = useAccount();
 
-  const [proof, setProof] = useLocalStorage("proof", null);
+  const { signedMessage, setSignedMessage } = useJoin();
 
   const {
     signMessage,
@@ -36,7 +36,7 @@ export const SignInButton = React.forwardRef<
         !!account_address
       ) {
         // @ts-ignore
-        setProof(dataSignMessage);
+        setSignedMessage(dataSignMessage);
       }
     } catch (err) {}
   };

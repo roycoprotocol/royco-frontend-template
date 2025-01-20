@@ -27,7 +27,6 @@ export const ConnectWalletButton = React.forwardRef<
   const [proof, setProof] = useLocalStorage("proof", null);
 
   const { data: userInfo } = useUserInfo({
-    account_address: address,
     proof: proof,
   });
 
