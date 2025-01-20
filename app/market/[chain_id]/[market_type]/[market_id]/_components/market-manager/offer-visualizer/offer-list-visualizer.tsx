@@ -83,7 +83,7 @@ export const OfferListVisualizer = React.forwardRef<
       const token_data = offer.tokens_data?.[0];
 
       const getTokenColor = async () => {
-        if (token_data.image) {
+        if (token_data && token_data.image) {
           const url = new URL(token_data.image);
           url.search = "";
           try {

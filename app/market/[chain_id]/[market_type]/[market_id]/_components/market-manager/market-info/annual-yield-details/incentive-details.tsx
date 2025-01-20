@@ -110,7 +110,7 @@ const IncentiveTokenDetails = React.forwardRef<
 
   useEffect(() => {
     const getTokenColor = async () => {
-      if (token_data.image) {
+      if (token_data && token_data.image) {
         const url = new URL(token_data.image);
         url.search = "";
         try {
