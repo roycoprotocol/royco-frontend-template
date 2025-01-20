@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useGlobalStates } from "@/store";
 import { useTotalWalletsBalance } from "../hooks";
 import { isEqual } from "lodash";
-import { LeaderboardManager } from "../leaderboard-table";
+import { LeaderboardManager } from ".";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
@@ -103,7 +103,7 @@ export const LeaderboardPagination = React.forwardRef<
       )}
     >
       <div className="flex h-fit flex-row items-center gap-3">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="popLayout" initial={false}>
           {canPrevPage && (
             <PaginationButtonMotionWrapper
               key={`pagination-button:prev`}

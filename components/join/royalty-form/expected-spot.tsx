@@ -22,6 +22,7 @@ export const ExpectedSpot = React.forwardRef<
     useTotalWalletsBalance({
       wallets: royaltyForm
         .watch("wallets")
+        .filter((wallet) => wallet.proof.length > 0)
         .map((wallet) => wallet.account_address.toLowerCase()),
     });
 

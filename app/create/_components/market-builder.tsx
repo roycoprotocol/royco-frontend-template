@@ -26,6 +26,7 @@ import {
   EthereumMainnet,
   EthereumSepolia,
   Plume,
+  Sonic,
 } from "royco/constants";
 
 export const getPoolFormDefaults = () => {
@@ -43,6 +44,8 @@ export const getPoolFormDefaults = () => {
     return PoolFormDefaults[Plume.id];
   } else if (frontendTag === "corn") {
     return PoolFormDefaults[Corn.id];
+  } else if (frontendTag === "sonic") {
+    return PoolFormDefaults[Sonic.id];
   }
 
   return PoolFormDefaults[EthereumMainnet.id];

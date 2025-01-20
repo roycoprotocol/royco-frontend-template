@@ -1,6 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/components/data";
 import axios from "axios";
+import {
+  insertToWalletsTable,
+  insertToWalletBreakdownTable,
+} from "@/components/user";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -19,8 +23,8 @@ export async function GET(request: Request) {
       .select("*")
       .lt(
         "updated_at",
-        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      ) // 24 hours
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      ) // 7 days
       .order("updated_at", { ascending: true })
       .limit(50);
 
@@ -48,14 +52,15 @@ export async function GET(request: Request) {
           // Set updated_at to current time
           const updated_at = new Date().toISOString();
 
-          // Update user_wallets table
-          const { data: dataUpdate, error: errorUpdate } = await supabaseClient
-            .from("wallets")
-            .update({
-              balance,
+          // Update database
+          await Promise.all([
+            insertToWalletsTable({ account_address, balance, updated_at }),
+            insertToWalletBreakdownTable({
+              account_address,
+              breakdown: result.data.chain_list,
               updated_at,
-            })
-            .eq("account_address", item.account_address);
+            }),
+          ]);
         })
       );
     }
@@ -67,7 +72,7 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in /api/sync/yield route", error);
+    console.error("Error in /api/users/update route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
   }
 }
