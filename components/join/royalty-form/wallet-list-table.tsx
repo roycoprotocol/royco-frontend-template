@@ -11,6 +11,7 @@ import { shortAddress } from "royco/utils";
 import { useImmer } from "use-immer";
 import { isEqual } from "lodash";
 import { produce } from "immer";
+import { AlertCircleIcon } from "lucide-react";
 
 export const WalletListTabRowContainer = React.forwardRef<
   HTMLDivElement,
@@ -43,7 +44,12 @@ export const WalletListTableRow = React.forwardRef<
       <div>{shortAddress(wallet.account_address)}</div>
 
       <div>
-        {wallet.proof !== "" && wallet.balance === undefined ? (
+        {wallet.proof === "" ? (
+          <div className="flex flex-row items-center gap-1 rounded-md bg-error px-[0.3rem] py-[0.1rem] text-xs text-white">
+            <AlertCircleIcon strokeWidth={2} className="h-3 w-3 stroke-white" />
+            <div>Proof Missing</div>
+          </div>
+        ) : wallet.balance === undefined ? (
           <LoadingSpinner className="h-4 w-4" />
         ) : (
           <SpringNumber

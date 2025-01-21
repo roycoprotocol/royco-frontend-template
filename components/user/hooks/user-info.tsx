@@ -1,7 +1,7 @@
 "use client";
 
-import { useGlobalStates } from "@/store";
 import React, { useEffect } from "react";
+import { useGlobalStates } from "@/store";
 import { useLocalStorage } from "usehooks-ts";
 import { useUserInfo } from "./use-user-info";
 import { useAccount } from "wagmi";
