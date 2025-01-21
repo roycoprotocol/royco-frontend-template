@@ -147,7 +147,7 @@ export const FormWallets = React.forwardRef<
       newWallets[index].proof = dataSignMessage;
       royaltyForm.setValue("wallets", newWallets);
 
-      await disconnectAsync();
+      // await disconnectAsync();
     }
   };
 
