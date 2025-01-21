@@ -20,6 +20,8 @@ import { RoycoClientProvider } from "./royco-client-provider";
 import RainbowKitProvider from "@/components/rainbow-modal/context-provider";
 import WalletProvider from "@/components/rainbow-modal/context-provider";
 import { TurnstileWrapper } from "@/auth";
+import { Toaster as ToasterSonner } from "@/components/ui/sonner";
+import { UserInfoSetter } from "@/components/user/hooks";
 
 /**
  * @description Inter Font
@@ -127,7 +129,9 @@ export default function RootLayout({
           >
             {/* <AppKitProvider cookies={cookies}> */}
             <WalletProvider>
+              <UserInfoSetter />
               <GeoDetector />
+              <ToasterSonner richColors={true} position="top-center" />
 
               {/* <TurnstileWrapper> */}
               <Navbar />

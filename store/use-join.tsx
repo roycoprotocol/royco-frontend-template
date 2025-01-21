@@ -9,10 +9,12 @@ interface JoinState {
   setProofPending: (proofPending: boolean) => void;
   isLoadingProof: boolean;
   setIsLoadingProof: (isLoadingProof: boolean) => void;
-  step: "info" | "otp";
-  setStep: (step: "info" | "otp") => void;
+  step: "info" | "otp" | "success";
+  setStep: (step: "info" | "otp" | "success") => void;
   signedMessage: string | null;
   setSignedMessage: (signedMessage: string | null) => void;
+  token: string | null;
+  setToken: (token: string | null) => void;
 }
 
 export const useJoin = create<JoinState>((set) => ({
@@ -22,8 +24,10 @@ export const useJoin = create<JoinState>((set) => ({
   setProofPending: (proofPending: boolean) => set({ proofPending }),
   isLoadingProof: false,
   setIsLoadingProof: (isLoadingProof: boolean) => set({ isLoadingProof }),
-  step: "otp",
-  setStep: (step: "info" | "otp") => set({ step }),
+  step: "info",
+  setStep: (step: "info" | "otp" | "success") => set({ step }),
   signedMessage: null,
   setSignedMessage: (signedMessage: string | null) => set({ signedMessage }),
+  token: null,
+  setToken: (token: string | null) => set({ token }),
 }));

@@ -19,11 +19,16 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     // This proof is actually a jwt and has message being signed as account_address
-    const proof = searchParams.get("proof");
-    const req_account_address = searchParams.get("account_address");
+    const sign_in_token = searchParams.get("sign_in_token");
+    const req_account_address = searchParams
+      .get("account_address")
+      ?.toLowerCase();
 
-    if (!proof) {
-      return Response.json({ message: "Proof is required" }, { status: 400 });
+    if (!sign_in_token) {
+      return Response.json(
+        { message: "Sign in token is required" },
+        { status: 400 }
+      );
     }
 
     if (!req_account_address) {
@@ -34,7 +39,7 @@ export async function GET(request: Request) {
     }
 
     const { account_address } = verify(
-      proof,
+      sign_in_token,
       process.env.JWT_SECRET as string
     ) as { account_address: string };
 
@@ -48,7 +53,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabaseClient
       .rpc("get_user_info", {
-        in_account_address: account_address,
+        in_account_address: account_address.toLowerCase(),
       })
       .throwOnError();
 

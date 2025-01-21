@@ -56,15 +56,24 @@ export async function POST(request: Request) {
       ]);
 
     if (!usernameValid) {
-      return Response.json({ status: "Invalid username" }, { status: 400 });
+      return Response.json(
+        { status: "Username already registered" },
+        { status: 400 }
+      );
     }
 
     if (!emailValid) {
-      return Response.json({ status: "Invalid email" }, { status: 400 });
+      return Response.json(
+        { status: "Email already registered" },
+        { status: 400 }
+      );
     }
 
     if (!walletsValid) {
-      return Response.json({ status: "Invalid wallets" }, { status: 400 });
+      return Response.json(
+        { status: "Wallets already registered" },
+        { status: 400 }
+      );
     }
 
     await supabaseClient.from("user_hash_map").insert({

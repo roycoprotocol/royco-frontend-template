@@ -1,30 +1,29 @@
 "use client";
 
 import React from "react";
-import { cn } from "@/lib/utils";
 import { useJoin } from "@/store";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { RoyaltyFormPopUp } from "./royalty-form-pop-up";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
-
-import Image from "next/image";
-import { useUsername, useUserPosition } from "royco/hooks";
-import { useImmer } from "use-immer";
-import { isEqual } from "lodash";
-import { produce } from "immer";
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { useUsername } from "royco/hooks";
+import { LoadingSpinner } from "@/components/composables";
 import { useUserInfo } from "@/components/user/hooks";
 import { useGlobalStates } from "@/store";
 import { SignInButton } from "../sign-in-button/sign-in-button";
 import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { z } from "zod";
-import { AnimatePresence, motion } from "framer-motion";
 import { useLocalStorage } from "usehooks-ts";
 import { OtpForm } from "../otp-form";
+import { SuccessScreen } from "../success-screen";
 
 export const RoyaltyForm = React.forwardRef<
   HTMLDivElement,
@@ -32,24 +31,20 @@ export const RoyaltyForm = React.forwardRef<
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
+  const { user, isUserInfoPaused } = useGlobalStates();
   const { openRoyaltyForm, setOpenRoyaltyForm, step } = useJoin();
-
   const { connectModalOpen } = useConnectModal();
-
   const { address: account_address, isConnected } = useAccount();
-
-  const [proof, setProof] = useLocalStorage("proof", null);
+  const [signInToken, setSignInToken] = useLocalStorage("sign_in_token", null);
 
   const { data: userInfo, isLoading: isUserInfoLoading } = useUserInfo({
     account_address: account_address?.toLowerCase(),
-    proof: proof,
+    sign_in_token: signInToken,
   });
 
   const propsUseUsername = useUsername({
     account_address: account_address?.toLowerCase(),
   });
-
-  const { isUserInfoPaused } = useGlobalStates();
 
   const { connectWalletModal } = useConnectWallet();
 
@@ -117,12 +112,12 @@ export const RoyaltyForm = React.forwardRef<
 
       {!connectModalOpen && (
         <DialogContent className="max-h-[100vh] shrink-0 !rounded-none !border-0 bg-transparent !p-3 shadow-none sm:max-w-[480px]">
+          <DialogTitle className="hidden">Royalty Dialog</DialogTitle>
+
           <div className="hide-scrollbar max-h-[80vh] w-full overflow-y-auto rounded-xl border border-divider bg-white shadow-sm">
-            {step === "info" ? (
-              <RoyaltyFormPopUp royaltyForm={royaltyForm} />
-            ) : (
-              <OtpForm royaltyForm={royaltyForm} />
-            )}
+            {step === "info" && <RoyaltyFormPopUp royaltyForm={royaltyForm} />}
+            {step === "otp" && <OtpForm royaltyForm={royaltyForm} />}
+            {step === "success" && <SuccessScreen />}
           </div>
         </DialogContent>
       )}
