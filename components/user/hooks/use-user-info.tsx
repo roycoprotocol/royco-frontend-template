@@ -17,14 +17,14 @@ export type TypedUserInfo = {
 export type UserInfo = TypedUserInfo | null;
 
 export const getUserInfoQueryFunction = async ({
+  sign_in_token,
   account_address,
-  proof,
 }: {
+  sign_in_token?: string | null;
   account_address?: string | null;
-  proof?: string | null;
 }) => {
   const res = await fetch(
-    `/api/users/info?account_address=${account_address}&proof=${proof}`
+    `/api/users/info?sign_in_token=${sign_in_token}&account_address=${account_address}`
   );
 
   const data = await res.json();
@@ -38,26 +38,26 @@ export const getUserInfoQueryFunction = async ({
 };
 
 export const useUserInfo = ({
+  sign_in_token,
   account_address,
-  proof,
 }: {
+  sign_in_token?: string | null;
   account_address?: string | null;
-  proof?: string | null;
 }) => {
   return useQuery({
     queryKey: [
       "user-info",
       {
-        account_address: account_address?.toLowerCase(),
-        proof,
+        sign_in_token,
+        account_address,
       },
     ],
     queryFn: () =>
       getUserInfoQueryFunction({
-        account_address: account_address?.toLowerCase(),
-        proof,
+        sign_in_token,
+        account_address,
       }),
-    enabled: Boolean(account_address && proof),
+    enabled: Boolean(sign_in_token && account_address),
     refetchOnWindowFocus: false,
     refetchInterval: 1000 * 60 * 1, // 1 minute
   });

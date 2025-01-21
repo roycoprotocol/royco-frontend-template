@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { LeaderboardStats } from "../leaderboard-stats";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RoyaltyFormSchema } from "../royalty-form/royality-form-schema";
+import { RoyaltyFormSchema } from "../royalty-form/royalty-form-schema";
 import { z } from "zod";
 import { useGlobalStates } from "@/store";
 import { useTotalWalletsBalance } from "../hooks";

@@ -32,19 +32,19 @@ import { mainnet } from "@wagmi/core/chains";
 
 import { useSwitchChain } from "wagmi";
 
-import toast from "react-hot-toast";
-
 import { useWeb3ModalState } from "@web3modal/wagmi/react";
 import { CaretRightIcon, CaretDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import { matcher } from "./matcher";
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { FormEmail } from "./form-email";
 import { FormUsername } from "./form-username";
 import { FormWallets } from "./form-wallets";
 import { ExpectedSpot } from "./expected-spot";
 import { FormTelegram } from "./form-telegram";
 import { useJoin } from "@/store";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/composables";
 
 export const RoyaltyFormPopUp = React.forwardRef<
   HTMLDivElement,
@@ -52,10 +52,41 @@ export const RoyaltyFormPopUp = React.forwardRef<
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
-  const { step, setStep } = useJoin();
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const { step, setStep, setToken } = useJoin();
 
-  const onSubmit = (data: z.infer<typeof RoyaltyFormSchema>) => {
-    setStep("otp");
+  const onSubmit = async (data: z.infer<typeof RoyaltyFormSchema>) => {
+    setSubmitLoading(true);
+
+    try {
+      const req = await fetch("/api/users/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const res = await req.json();
+
+      if (!req.ok) {
+        throw new Error(res.status);
+      }
+
+      const { token } = res;
+
+      setToken(token);
+      setStep("otp");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Failed to submit form";
+
+      toast.error(message);
+
+      console.error(error);
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   const { openRoyaltyForm } = useJoin();
@@ -99,22 +130,18 @@ export const RoyaltyFormPopUp = React.forwardRef<
           <ExpectedSpot className="mt-6" royaltyForm={royaltyForm} />
 
           <Button
+            disabled={submitLoading}
             type="submit"
             onClick={() => {
               royaltyForm.handleSubmit(onSubmit)();
             }}
             className={cn(
               "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90",
-              "transition-all duration-300 ease-in-out"
-              // isPendingSignMessage ? "border border-divider bg-z2" : "bg-mint"
+              "transition-all duration-300 ease-in-out",
+              submitLoading && "border border-divider bg-focus"
             )}
           >
-            {/* {isPendingSignMessage ? (
-                <LoadingSpinner className="h-5 w-5" />
-              ) : (
-                "Prove Funds"
-              )} */}
-            Submit
+            {submitLoading ? <LoadingSpinner className="h-4 w-4" /> : "Submit"}
           </Button>
         </div>
       </form>

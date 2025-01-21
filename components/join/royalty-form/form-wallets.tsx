@@ -17,7 +17,7 @@ import { type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import {
   ErrorAlert,
   FormInputLabel,
@@ -180,9 +180,7 @@ export const FormWallets = React.forwardRef<
             )}
           </div>
 
-          {royaltyForm
-            .watch("wallets")
-            .filter((wallet) => wallet.balance !== undefined).length !== 0 && (
+          {royaltyForm.watch("wallets") && (
             <WalletListTable className="mt-3" royaltyForm={royaltyForm} />
           )}
 

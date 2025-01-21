@@ -1,47 +1,27 @@
 "use client";
 
-import Image from "next/image";
 import React, { Fragment, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { RoyaltyForm } from "../royalty-form";
-import { useUsername, useUserPosition } from "royco/hooks";
+import { useUserPosition } from "royco/hooks";
 import { useAccount } from "wagmi";
 import { useImmer } from "use-immer";
 import { isEqual } from "lodash";
 import { produce } from "immer";
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
-import { Button } from "@/components/ui/button";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
-import { useGlobalStates, useJoin } from "@/store";
-import { SignInButton } from "../sign-in-button/sign-in-button";
+import { SpringNumber } from "@/components/composables";
+import { useGlobalStates } from "@/store";
 import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "../royalty-form/royality-form-schema";
+import { RoyaltyFormSchema } from "../royalty-form/royalty-form-schema";
 import { z } from "zod";
-import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
-import { useUserInfo } from "@/components/user/hooks";
 
-export const Cta = React.forwardRef<
+export const JoinHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
   const { address: account_address, isConnected } = useAccount();
-
-  const [proof, setProof] = useLocalStorage("proof", null);
-
-  const { data: userInfo } = useUserInfo({
-    account_address: account_address?.toLowerCase(),
-    proof: proof,
-  });
-
-  const { openRoyaltyForm } = useJoin();
-
-  const propsUseUsername = useUsername({
-    account_address: account_address?.toLowerCase(),
-  });
-
-  const { connectWalletModal } = useConnectWallet();
+  const { user } = useGlobalStates();
 
   const [placeholderUserPosition, setPlaceholderUserPosition] = useImmer<
     Array<number | null | undefined>
@@ -83,7 +63,7 @@ export const Cta = React.forwardRef<
       )}
     >
       <h3 className="flex flex-row items-center text-center font-gt text-3xl font-normal sm:text-[40px]">
-        {!!placeholderUserPosition[1] ? (
+        {!!user && !!placeholderUserPosition[1] ? (
           <Fragment>
             Position: #
             <SpringNumber
@@ -107,7 +87,7 @@ export const Cta = React.forwardRef<
       <RoyaltyForm royaltyForm={royaltyForm} />
 
       <img
-        className={cn(userInfo ? "mt-0" : "mt-10")}
+        className={cn(user ? "mt-0" : "mt-10")}
         src="/join/partners.png"
         alt="Partners"
         width={180}
