@@ -17,9 +17,9 @@ import {
   BASE_UNDERLINE,
   SecondaryLabel,
   TertiaryLabel,
-} from "../composables";
+} from "../../composables";
 import { PositionsRecipeTable } from "./positions-recipe-table";
-import { useActiveMarket } from "../hooks";
+import { useActiveMarket } from "../../hooks";
 import { PositionsVaultTable } from "./positions-vault-table";
 import { useEnrichedOffers } from "royco/hooks";
 

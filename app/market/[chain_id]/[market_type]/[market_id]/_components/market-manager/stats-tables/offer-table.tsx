@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useActiveMarket } from "../hooks";
+import { useActiveMarket } from "../../hooks";
 import { useAccount } from "wagmi";
 import { useEnrichedOffers } from "royco/hooks";
 import {

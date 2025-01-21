@@ -11,7 +11,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { TokenEditor } from "@/components/composables";
+import { LoadingSpinner, TokenEditor } from "@/components/composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { useActiveMarket } from "../../../hooks";
 import {
@@ -24,6 +24,8 @@ import LightningIcon from "./icons/lightning";
 import { Vibrant } from "node-vibrant/browser";
 import ShieldIcon from "./icons/shield";
 import SparkleIcon from "./icons/sparkle";
+
+export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
 export const TokenEstimatePopover = React.forwardRef<
   HTMLDivElement,
@@ -86,13 +88,15 @@ const IncentiveToken = React.forwardRef<
   }
 >(({ className, token_data, symbolClassName, ...props }, ref) => {
   return (
-    <TokenDisplayer
-      className={cn("", className)}
-      symbolClassName={cn("text-sm font-medium", symbolClassName)}
-      tokens={[token_data]}
-      size={4}
-      symbols={true}
-    />
+    <div ref={ref} className={cn("", className)} {...props}>
+      <TokenDisplayer
+        className={cn("", className)}
+        symbolClassName={cn("text-sm font-medium", symbolClassName)}
+        tokens={[token_data]}
+        size={4}
+        symbols={true}
+      />
+    </div>
   );
 });
 
@@ -129,7 +133,7 @@ const IncentiveTokenDetails = React.forwardRef<
             }
           }
         } catch (error) {
-          setTokenColor("#bdc5d1");
+          setTokenColor(DEFAULT_TOKEN_COLOR);
         }
       }
     };
@@ -145,12 +149,14 @@ const IncentiveTokenDetails = React.forwardRef<
   }, [token_data]);
 
   return (
-    <div className={cn("flex flex-col items-end", className)}>
+    <div
+      ref={ref}
+      className={cn("flex flex-col items-end", className)}
+      {...props}
+    >
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {/* <ShieldIcon className="h-4 w-4 fill-current" /> */}
-
         {showEstimate && currentMarketData.annual_change_ratio === 0 ? (
           <TokenEstimatePopover token_data={token_data}>
             <Button
@@ -168,17 +174,17 @@ const IncentiveTokenDetails = React.forwardRef<
                 {currentMarketData.market_type === MarketType.recipe.value ? (
                   <ShieldIcon
                     className="h-5 w-5"
-                    style={{ fill: tokenColor ? tokenColor : "inherit" }}
+                    style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
                   />
                 ) : (
                   <SparkleIcon
                     className="h-5 w-5"
-                    style={{ fill: tokenColor ? tokenColor : "inherit" }}
+                    style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
                   />
                 )}
                 <span
                   className="flex h-5 items-center font-medium"
-                  style={{ color: tokenColor ? tokenColor : "inherit" }}
+                  style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
                 >
                   {token_data.annual_change_ratio >= 0 ? "+" : "-"}
                   {Intl.NumberFormat("en-US", {
@@ -187,7 +193,7 @@ const IncentiveTokenDetails = React.forwardRef<
                     useGrouping: true,
                     minimumFractionDigits: 0,
                     maximumFractionDigits:
-                      token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
+                      token_data.annual_change_ratio > 0.0001 ? 2 : 8,
                   }).format(Math.abs(token_data.annual_change_ratio))}
                 </span>
               </div>
@@ -199,7 +205,7 @@ const IncentiveTokenDetails = React.forwardRef<
                   useGrouping: true,
                   minimumFractionDigits: 0,
                   maximumFractionDigits:
-                    token_data.annual_change_ratio > 0.0001 ? 2 : 8, // Limits to exactly 2 decimal places
+                    token_data.annual_change_ratio > 0.0001 ? 2 : 8,
                 }).format(token_data.annual_change_ratio)}
               </span>
             )}
@@ -294,6 +300,14 @@ export const IncentiveDetails = React.forwardRef<
     (yield_breakdown) => yield_breakdown.category !== "base"
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex w-full shrink-0 flex-col items-center justify-center py-3">
+        <LoadingSpinner className="h-5 w-5" />
+      </div>
+    );
+  }
+
   if (!!currentMarketData && !!marketMetadata) {
     return (
       <div
@@ -333,8 +347,8 @@ export const IncentiveDetails = React.forwardRef<
               return (
                 <SlideUpWrapper
                   layout="position"
-                  layoutId={`motion:market:incentive-details:${token_data.id}`}
-                  delay={0.3}
+                  layoutId={`motion:market:market-info:incentive-details:${token_data.id}`}
+                  delay={0.1 + token_data_index * 0.1}
                 >
                   <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
                     <InfoCard.Row.Key>
@@ -382,15 +396,13 @@ export const IncentiveDetails = React.forwardRef<
             )}
           >
             {currentNativeIncentives.map((token_data, token_data_index) => {
-              const BASE_KEY = `market:native-incentive-info:${incentiveType}:${token_data.id}`;
-
               return (
                 <SlideUpWrapper
                   layout="position"
-                  layoutId={`motion:market:native-incentive-details:${token_data.id}`}
-                  delay={0.3}
+                  layoutId={`motion:market:market-info:native-incentive-details:${token_data.id}`}
+                  delay={0.1 + token_data_index * 0.1}
                 >
-                  <InfoCard.Row key={BASE_KEY} className={cn(INFO_ROW_CLASSES)}>
+                  <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
                     <InfoCard.Row.Key>
                       <IncentiveToken
                         className="mb-1"
@@ -398,11 +410,6 @@ export const IncentiveDetails = React.forwardRef<
                         token_data={token_data}
                       />
 
-                      {/* 
-                    <TertiaryLabel className={cn("", className)}>
-                      {token_data.label}
-                    </TertiaryLabel> 
-                    */}
                       <TertiaryLabel className="ml-5">
                         Underlying Rate(s)
                       </TertiaryLabel>

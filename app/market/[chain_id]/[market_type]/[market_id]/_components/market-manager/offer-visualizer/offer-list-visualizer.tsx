@@ -16,6 +16,12 @@ import { TertiaryLabel } from "../../composables";
 import { Circle } from "lucide-react";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
+import { DEFAULT_TOKEN_COLOR } from "../market-info/annual-yield-details/incentive-details";
+
+const DEFAULT_OFFER_TEXT_COLOR = "#737373";
+
+const DEFAULT_AP_OFFER_COLOR = "#e7e7e7";
+const DEFAULT_IP_OFFER_COLOR = "#25be25";
 
 export const description = "A bar chart with an active bar";
 
@@ -116,7 +122,7 @@ export const OfferListVisualizer = React.forwardRef<
               }
             }
           } catch (error) {
-            setTokenColor("#bdc5d1");
+            setTokenColor(DEFAULT_TOKEN_COLOR);
           }
         }
       };
@@ -129,13 +135,13 @@ export const OfferListVisualizer = React.forwardRef<
     return {
       ap_offer: {
         label: "AP Offer",
-        color: "#E7E7E7",
-        textColor: "#737373",
+        color: DEFAULT_AP_OFFER_COLOR,
+        textColor: DEFAULT_OFFER_TEXT_COLOR,
       },
       ip_offer: {
         label: "IP Offer",
-        color: tokenColor ?? "#25BE25",
-        textColor: tokenColor ?? "#25BE25",
+        color: tokenColor ?? DEFAULT_IP_OFFER_COLOR,
+        textColor: tokenColor ?? DEFAULT_OFFER_TEXT_COLOR,
       },
     };
   }, [currentMarketData, tokenColor]);
@@ -193,7 +199,11 @@ export const OfferListVisualizer = React.forwardRef<
 
   if (propsHighestOffers.isLoading) {
     return (
-      <div className="flex h-80 flex-col place-content-center">
+      <div
+        ref={ref}
+        className={cn("flex h-80 flex-col place-content-center", className)}
+        {...props}
+      >
         <LoadingSpinner className="h-4 w-4" />
       </div>
     );
@@ -201,7 +211,11 @@ export const OfferListVisualizer = React.forwardRef<
 
   if (!chartData.length || !currentHighestOffers) {
     return (
-      <div className="flex h-80 flex-col place-content-center">
+      <div
+        ref={ref}
+        className={cn("flex h-80 flex-col place-content-center", className)}
+        {...props}
+      >
         <AlertIndicator>No market activity yet</AlertIndicator>
       </div>
     );

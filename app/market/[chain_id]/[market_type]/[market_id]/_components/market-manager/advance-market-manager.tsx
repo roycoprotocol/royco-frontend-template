@@ -7,7 +7,7 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants/constants";
 import { motion } from "framer-motion";
 import { OfferVisualizer } from "./offer-visualizer";
 import { BalanceIndicator } from "./balance-indicator";
-import { StatsTables } from "../stats-tables/stats-tables";
+import { StatsTables } from "./stats-tables/stats-tables";
 
 export const AdvanceMarketManager = forwardRef<
   HTMLDivElement,

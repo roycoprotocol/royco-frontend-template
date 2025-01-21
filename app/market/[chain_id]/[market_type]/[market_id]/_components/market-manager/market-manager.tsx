@@ -3,33 +3,22 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useMarketManager } from "@/store";
 import {
-  MarketSteps,
   MarketType,
   MarketUserType,
   MarketViewType,
   TypedMarketViewType,
 } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { MarketActionForm } from "./market-action-form";
 import { useActiveMarket } from "../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { AlertIndicator } from "@/components/common";
 import { SlideUpWrapper } from "@/components/animations";
-import {
-  BASE_PADDING_LEFT,
-  BASE_PADDING_RIGHT,
-  SecondaryLabel,
-} from "../composables";
+import { SecondaryLabel } from "../composables";
 import { ChevronLeftIcon } from "lucide-react";
-import { motion } from "framer-motion";
-import { StatsTables } from "../stats-tables/stats-tables";
 import { WarningBox } from "@/components/composables";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { useAccount } from "wagmi";
-import { MarketInfo } from "./market-info";
-import { BalanceIndicator } from "./balance-indicator";
-import { OfferVisualizer } from "./offer-visualizer";
 import { SimpleMarketManager } from "./simple-market-manager";
 import { AdvanceMarketManager } from "./advance-market-manager";
 
@@ -37,10 +26,9 @@ export const MarketManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { viewType, setViewType, marketStep, userType, setUserType } =
-    useMarketManager();
+  const { viewType, setViewType, userType, setUserType } = useMarketManager();
 
-  const { isLoading, currentMarketData, marketMetadata } = useActiveMarket();
+  const { isLoading, currentMarketData } = useActiveMarket();
 
   const { address: walletAddress } = useAccount();
   const [connectWalletAddress, setConnectWalletAddress] = useState<

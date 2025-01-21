@@ -3,7 +3,7 @@ import { TokenDisplayer } from "@/components/common";
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { EnrichedOfferDataType } from "royco/queries";
-import { SecondaryLabel } from "../composables";
+import { SecondaryLabel } from "../../composables";
 import { formatDistanceToNow } from "date-fns";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { getExplorerUrl } from "royco/utils";
 import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { TransactionOptionsType } from "royco/types";
-import { useActiveMarket } from "../hooks";
+import { useActiveMarket } from "../../hooks";
 import { BigNumber } from "ethers";
 import {
   getRecipeCancelAPOfferTransactionOptions,
