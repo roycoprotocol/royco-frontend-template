@@ -1,11 +1,8 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
 import { MarketActionForm } from "./market-action-form";
-import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { MarketInfo } from "./market-info";
 import { useMarketManager } from "@/store/use-market-manager";
-import { SecondaryLabel } from "../composables/common-labels";
 import { MAX_SCREEN_WIDTH } from "@/components/constants/constants";
 import { motion } from "framer-motion";
 import { OfferVisualizer } from "./offer-visualizer";
@@ -55,7 +52,7 @@ export const AdvanceMarketManager = forwardRef<
         >
           <OfferVisualizer />
 
-          <StatsTables className="min-h-[18rem] flex-1" />
+          <StatsTables className="max-h-[42rem] flex-1" />
         </div>
 
         {/**
@@ -84,7 +81,7 @@ export const AdvanceMarketManager = forwardRef<
       >
         <OfferVisualizer />
 
-        <StatsTables className="min-h-[18rem] flex-1" />
+        <StatsTables className="max-h-[24rem] flex-1" />
       </div>
     </motion.div>
   );

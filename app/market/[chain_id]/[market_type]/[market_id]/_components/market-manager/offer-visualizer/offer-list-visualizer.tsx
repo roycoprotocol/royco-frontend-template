@@ -13,7 +13,9 @@ import { AlertIndicator } from "@/components/common";
 import { Vibrant } from "node-vibrant/browser";
 import { useActiveMarket } from "../../hooks";
 import { TertiaryLabel } from "../../composables";
-import { Circle, Square } from "lucide-react";
+import { Circle } from "lucide-react";
+import { RoycoMarketType } from "royco/market";
+import { BigNumber } from "ethers";
 
 export const description = "A bar chart with an active bar";
 
@@ -56,40 +58,62 @@ export const OfferListVisualizer = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { propsHighestOffers, currentHighestOffers, currentMarketData } =
-    useActiveMarket();
-
-  const nativeIncentives = {
-    native_annual_change_ratio: currentMarketData.yield_breakdown
-      .filter((yield_breakdown) => yield_breakdown.category !== "base")
-      .reduce(
-        (acc, yield_breakdown) => acc + yield_breakdown.annual_change_ratio,
-        0
-      ),
-    native_annual_change_ratios: currentMarketData.yield_breakdown.filter(
-      (yield_breakdown) => yield_breakdown.category !== "base"
-    ),
-  };
+  const {
+    propsHighestOffers,
+    currentHighestOffers,
+    currentMarketData,
+    marketMetadata,
+  } = useActiveMarket();
 
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (
-      currentHighestOffers &&
-      currentHighestOffers.ip_offers &&
-      currentHighestOffers.ip_offers.length > 0
-    ) {
-      const offer = currentHighestOffers.ip_offers[0];
-      const token_data = offer.tokens_data?.[0];
+  const highestIncentiveToken = useMemo(() => {
+    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
+      if (
+        !currentHighestOffers ||
+        currentHighestOffers.ip_offers.length === 0 ||
+        currentHighestOffers.ip_offers[0].tokens_data.length === 0
+      ) {
+        return null;
+      }
 
+      return currentHighestOffers.ip_offers[0].tokens_data[0];
+    }
+
+    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
+      if (
+        !currentMarketData ||
+        currentMarketData.incentive_tokens_data.length === 0
+      ) {
+        return null;
+      }
+
+      return currentMarketData.incentive_tokens_data.find((token_data) => {
+        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+      });
+    }
+  }, [currentMarketData, currentHighestOffers, marketMetadata]);
+
+  useEffect(() => {
+    if (highestIncentiveToken) {
       const getTokenColor = async () => {
-        if (token_data && token_data.image) {
-          const url = new URL(token_data.image);
+        if (highestIncentiveToken.image) {
+          const url = new URL(highestIncentiveToken.image);
           url.search = "";
           try {
             const palette = await Vibrant.from(url.toString()).getPalette();
-            if (palette && palette.Vibrant) {
-              setTokenColor(palette.Vibrant?.hex);
+            if (palette) {
+              const swatches = Object.values(palette).filter(
+                (swatch) => swatch !== null
+              );
+              const color = swatches.reduce((prev, current) => {
+                return (prev?.population ?? 0) > (current?.population ?? 0)
+                  ? prev
+                  : current;
+              });
+              if (color) {
+                setTokenColor(color.hex);
+              }
             }
           } catch (error) {
             setTokenColor("#bdc5d1");

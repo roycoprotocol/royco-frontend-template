@@ -115,8 +115,18 @@ const IncentiveTokenDetails = React.forwardRef<
         url.search = "";
         try {
           const palette = await Vibrant.from(url.toString()).getPalette();
-          if (palette && palette.Vibrant) {
-            setTokenColor(palette.Vibrant?.hex);
+          if (palette) {
+            const swatches = Object.values(palette).filter(
+              (swatch) => swatch !== null
+            );
+            const color = swatches.reduce((prev, current) => {
+              return (prev?.population ?? 0) > (current?.population ?? 0)
+                ? prev
+                : current;
+            });
+            if (color) {
+              setTokenColor(color.hex);
+            }
           }
         } catch (error) {
           setTokenColor("#bdc5d1");
@@ -253,16 +263,32 @@ export const IncentiveDetails = React.forwardRef<
 
   const { incentiveType } = useMarketManager();
 
-  const currentIncentives =
-    marketMetadata.market_type === RoycoMarketType.recipe.id
-      ? !!currentHighestOffers && currentHighestOffers.ip_offers.length > 0
-        ? currentHighestOffers.ip_offers[0].tokens_data
-        : []
-      : currentMarketData?.incentive_tokens_data.filter(
-          (incentive_token_data) => {
-            return BigNumber.from(incentive_token_data.raw_amount ?? "0").gt(0);
-          }
-        );
+  const highestIncentives = useMemo(() => {
+    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
+      if (
+        !currentHighestOffers ||
+        currentHighestOffers.ip_offers.length === 0 ||
+        currentHighestOffers.ip_offers[0].tokens_data.length === 0
+      ) {
+        return [];
+      }
+
+      return currentHighestOffers.ip_offers[0].tokens_data;
+    }
+
+    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
+      if (
+        !currentMarketData ||
+        currentMarketData.incentive_tokens_data.length === 0
+      ) {
+        return [];
+      }
+
+      return currentMarketData.incentive_tokens_data.filter((token_data) => {
+        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+      });
+    }
+  }, [currentMarketData, currentHighestOffers, marketMetadata]);
 
   const currentNativeIncentives = currentMarketData.yield_breakdown.filter(
     (yield_breakdown) => yield_breakdown.category !== "base"
@@ -275,20 +301,20 @@ export const IncentiveDetails = React.forwardRef<
         className={cn("flex h-fit w-full shrink-0 flex-col", className)}
         {...props}
       >
-        {(!currentIncentives || currentIncentives.length === 0) && (
+        {(!highestIncentives || highestIncentives.length === 0) && (
           <AlertIndicator>No add. incentives offered</AlertIndicator>
         )}
 
         {/**
          * Market Incentives
          */}
-        {currentIncentives && currentIncentives.length !== 0 && (
+        {highestIncentives && highestIncentives.length !== 0 && (
           <InfoCard
             className={cn(
               "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll"
             )}
           >
-            {currentIncentives.map((token_data, token_data_index) => {
+            {highestIncentives.map((token_data, token_data_index) => {
               const BASE_KEY = `market:incentive-info:${incentiveType}:${token_data.id}`;
 
               const start_date = Number(
