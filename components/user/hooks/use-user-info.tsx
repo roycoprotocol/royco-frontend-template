@@ -1,11 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eq } from "lodash";
-import { isSolidityAddressValid } from "royco/utils";
-import { useLocalStorage } from "usehooks-ts";
-import { isWalletValid } from "../validators";
-import { useAccount } from "wagmi";
 
 export type TypedUserInfo = {
   username: string;

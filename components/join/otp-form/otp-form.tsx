@@ -24,6 +24,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "usehooks-ts";
 
 export const OtpForm = React.forwardRef<
   HTMLDivElement,
@@ -38,6 +39,8 @@ export const OtpForm = React.forwardRef<
       otp: "",
     },
   });
+
+  const [signInToken, setSignInToken] = useLocalStorage("sign_in_token", null);
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -93,6 +96,10 @@ export const OtpForm = React.forwardRef<
       if (!req.ok) {
         throw new Error(res.status);
       }
+
+      const sign_in_token = res.sign_in_token;
+
+      setSignInToken(sign_in_token);
 
       setStep("success");
 

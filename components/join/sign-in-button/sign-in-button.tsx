@@ -1,11 +1,10 @@
 "use client";
 
+import React, { useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables/loading-spinner";
 import { OwnershipProofMessage } from "@/components/constants";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useJoin } from "@/store";
-import React, { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { useAccount, useSignMessage } from "wagmi";
 
