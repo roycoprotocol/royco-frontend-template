@@ -22,7 +22,7 @@ export const IPLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:supply-action:input-amount-wrapper"
+        layoutId="motion:market:recipe:ip-limit:input-amount-wrapper"
         delay={0.1}
       >
         <InputAmountWrapper marketActionForm={marketActionForm} />
@@ -43,7 +43,7 @@ export const IPLimitActionForm = React.forwardRef<
       <div className="mt-4">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-expiry-selector"
+          layoutId="motion:market:recipe:ip-limit:input-expiry-selector"
           delay={0.4}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />

@@ -20,7 +20,7 @@ export const IPLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:vault-incentive-action-type"
+        layoutId="motion:market:vault:ip-limit:incentive-action-type"
         delay={0.1}
       >
         <ActionTypeSelector />
