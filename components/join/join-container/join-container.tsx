@@ -2,11 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
-import { Cta } from "./cta";
+import { JoinHeader } from "./join-header";
 import { LeaderboardStats } from "../leaderboard-stats";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RoyaltyFormSchema } from "../royalty-form/royality-form-schema";
+import { RoyaltyFormSchema } from "../royalty-form/royalty-form-schema";
 import { z } from "zod";
 import { useGlobalStates } from "@/store";
 import { useTotalWalletsBalance } from "../hooks";
@@ -88,7 +88,7 @@ export const JoinContainer = React.forwardRef<
         className
       )}
     >
-      <Cta royaltyForm={royaltyForm} />
+      <JoinHeader royaltyForm={royaltyForm} />
 
       <LeaderboardStats />
 

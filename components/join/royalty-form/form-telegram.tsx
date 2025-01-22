@@ -17,7 +17,7 @@ import { type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { FormInputLabel } from "@/components/composables";
 import { TelegramConnectButton } from "./telegram-connect-button";
 

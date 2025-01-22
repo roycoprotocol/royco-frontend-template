@@ -14,6 +14,7 @@ import {
 } from "@/components/user";
 import { RegisterUserTemplate } from "@/components/constants";
 import { createHash } from "crypto";
+import { sign } from "jsonwebtoken";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -169,9 +170,21 @@ export async function POST(request: Request) {
       );
     }
 
+    // Create a new JWT that is valid for 7 * 24 hours
+    const sign_in_token = sign(
+      {
+        username,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "7d",
+      }
+    );
+
     return Response.json(
       {
         status: "Success",
+        sign_in_token,
       },
       { status: 200 }
     );
