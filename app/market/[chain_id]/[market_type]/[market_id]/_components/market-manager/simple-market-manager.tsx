@@ -6,7 +6,6 @@ import { MarketSteps, MarketViewType } from "@/store/market-manager-props";
 import { MarketInfo } from "./market-info";
 import { useMarketManager } from "@/store/use-market-manager";
 import { SecondaryLabel } from "../composables/common-labels";
-import { MAX_SCREEN_WIDTH } from "@/components/constants/constants";
 import { motion } from "framer-motion";
 
 export const SimpleMarketManager = forwardRef<
@@ -30,11 +29,13 @@ export const SimpleMarketManager = forwardRef<
        * Market Info
        */}
       {marketStep === MarketSteps.params.id && (
-        <div className="p-3 md:p-6">
-          <MarketInfo />
+        <>
+          <div className="p-3 md:p-6">
+            <MarketInfo />
+          </div>
 
           <hr />
-        </div>
+        </>
       )}
 
       {/**

@@ -3,98 +3,72 @@ import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/components/data";
 import { isSolidityAddressValid } from "royco/utils";
 import { isWalletValid } from "@/components/user";
+import { verify } from "jsonwebtoken";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 
+const supabaseClient = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
+);
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const account_address = searchParams.get("account_address");
-    const proof = searchParams.get("proof");
+
+    // This proof is actually a jwt and has message being signed as account_address
+    const sign_in_token = searchParams.get("sign_in_token");
+    const req_account_address = searchParams
+      .get("account_address")
+      ?.toLowerCase();
+
+    if (!sign_in_token) {
+      return Response.json(
+        { message: "Sign in token is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!req_account_address) {
+      return Response.json(
+        { message: "Account address is required" },
+        { status: 400 }
+      );
+    }
+
+    const { account_address } = verify(
+      sign_in_token,
+      process.env.JWT_SECRET as string
+    ) as { account_address: string };
 
     if (!account_address) {
+      return Response.json({ message: "Invalid proof" }, { status: 400 });
+    }
+
+    if (req_account_address.toLowerCase() !== account_address.toLowerCase()) {
+      return Response.json({ message: "Invalid proof" }, { status: 400 });
+    }
+
+    const { data, error } = await supabaseClient
+      .rpc("get_user_info", {
+        in_account_address: account_address.toLowerCase(),
+      })
+      .throwOnError();
+
+    if (error) {
       return Response.json(
-        { message: "Wallet address not provided" },
-        { status: 400 }
+        { message: "Internal Server Error" },
+        { status: 500 }
       );
     }
 
-    if (!isSolidityAddressValid("address", account_address)) {
-      return Response.json(
-        { message: "Invalid wallet address" },
-        { status: 400 }
-      );
+    if (!data || data.length === 0) {
+      return Response.json({ message: "User not found" }, { status: 404 });
     }
 
-    if (!proof) {
-      return Response.json(
-        { message: "Ownership proof not provided" },
-        { status: 400 }
-      );
-    }
-
-    if (typeof proof !== "string") {
-      return Response.json(
-        { message: "Invalid ownership proof" },
-        { status: 400 }
-      );
-    }
-
-    const isOwnershipProofValid = await isWalletValid({
-      account_address,
-      proof,
-    });
-
-    if (!isOwnershipProofValid) {
-      return Response.json(
-        { message: "Mismatch between wallet address and ownership proof" },
-        { status: 400 }
-      );
-    }
-
-    const supabaseClient = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-      process.env.SUPABASE_SERVICE_ROLE_KEY as string
-    );
-
-    const { data: wallet_user_data, error: wallet_user_error } =
-      await supabaseClient
-        .from("wallet_user_map")
-        .select("*")
-        .eq("account_address", account_address)
-        .limit(1)
-        .throwOnError();
-
-    if (!wallet_user_data || wallet_user_data.length === 0) {
-      return Response.json({ message: "User not found" }, { status: 400 });
-    }
-
-    const username = wallet_user_data[0].username;
-
-    const [user_data, wallets_data] = await Promise.all([
-      supabaseClient
-        .from("users")
-        .select("*")
-        .eq("username", username)
-        .limit(1)
-        .throwOnError(),
-      supabaseClient
-        .from("wallet_user_map")
-        .select("*")
-        .eq("username", username)
-        .throwOnError(),
-    ]);
-
-    if (!user_data.data || user_data.data.length === 0) {
-      return Response.json({ message: "User not found" }, { status: 400 });
-    }
-
-    const email = user_data.data[0].email;
-    const created_at = user_data.data[0].created_at;
-    const wallets =
-      wallets_data.data?.map((wallet) => wallet.account_address) || [];
+    const { username, email, wallets, created_at } = data[0];
 
     // Return user
     return Response.json(

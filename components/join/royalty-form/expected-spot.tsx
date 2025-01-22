@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { z } from "zod";
 import { useExpectedSpot } from "royco/hooks";
 import { useTotalWalletsBalance } from "../hooks";
@@ -22,6 +22,7 @@ export const ExpectedSpot = React.forwardRef<
     useTotalWalletsBalance({
       wallets: royaltyForm
         .watch("wallets")
+        .filter((wallet) => wallet.proof.length > 0)
         .map((wallet) => wallet.account_address.toLowerCase()),
     });
 

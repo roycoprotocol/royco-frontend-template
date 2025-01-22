@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useEnrichedPositionsRecipe } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
-import { StatsDataTable } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/stats-tables/stats-data-table";
+import { StatsDataTable } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/stats-tables/stats-data-table";
 import { positionsRecipeColumns } from "./postions-recipe-table-columns";
 import { motion } from "framer-motion";
 import { MarketUserType, useGlobalStates } from "@/store";

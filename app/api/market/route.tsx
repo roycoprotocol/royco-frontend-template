@@ -29,22 +29,68 @@ Market Details:
 - Request Timestamp: ${new Date().toUTCString()}`;
 };
 
+export const getBoycoMarket = ({
+  id,
+  name,
+  description,
+}: {
+  id: string;
+  name: string;
+  description: string;
+}) => {
+  return Buffer.from(
+    `import { defineMarket } from "@/sdk/constants";
+
+export default defineMarket({
+  id: \`${id}\`,
+  name: \`${name}\`,
+  description: \`${description}\`,
+  is_verified: false,
+  category: "boyco",
+});`
+  ).toString("base64");
+};
+
+export const getDefaultMarket = ({
+  id,
+  name,
+  description,
+}: {
+  id: string;
+  name: string;
+  description: string;
+}) => {
+  return Buffer.from(
+    `import { defineMarket } from "@/sdk/constants";
+
+export default defineMarket({
+  id: \`${id}\`,
+  name: \`${name}\`,
+  description: \`${description}\`,
+  is_verified: false,
+});`
+  ).toString("base64");
+};
+
 export const getContent = (marketData: any) => {
   const sanitizedName = validator.escape(validator.trim(marketData.name || ""));
   const sanitizedDescription = validator.escape(
     validator.trim(marketData.description || "")
   );
 
-  return Buffer.from(
-    `import { defineMarket } from "@/sdk/constants";
-
-export default defineMarket({
-  id: \`${marketData.id}\`,
-  name: \`${sanitizedName}\`,
-  description: \`${sanitizedDescription}\`,
-  is_verified: ${marketData.is_verified},
-});`
-  ).toString("base64");
+  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+    return getBoycoMarket({
+      id: marketData.id,
+      name: sanitizedName,
+      description: sanitizedDescription,
+    });
+  } else {
+    return getDefaultMarket({
+      id: marketData.id,
+      name: sanitizedName,
+      description: sanitizedDescription,
+    });
+  }
 };
 
 export async function POST(request: Request) {
@@ -133,6 +179,9 @@ export async function POST(request: Request) {
           name: name,
           description: description,
           is_verified: false,
+          ...(process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+            ? { category: "boyco" }
+            : {}),
         });
 
         // Create commit message
@@ -194,6 +243,13 @@ export async function POST(request: Request) {
           pull_number: pr.data.number,
           merge_method: "squash",
         });
+
+        // Delete the branch after merging
+        await octokit.git.deleteRef({
+          owner: "roycoprotocol",
+          repo: "royco-sdk",
+          ref: `heads/${newBranchName}`,
+        });
       } else {
         console.log("Error in creating pull request", error);
       }
@@ -212,6 +268,7 @@ export async function POST(request: Request) {
       );
     }
   } catch (error) {
+    console.log("Error in creating market", error);
     return Response.json(
       {
         data: "Internal Server Error",

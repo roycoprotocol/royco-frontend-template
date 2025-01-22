@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import React from "react";
-import { InfoIcon, ZapIcon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { SpringNumber } from "@/components/composables";
 import { MarketRewardStyle } from "@/store";
 import { LogOutIcon } from "lucide-react";
@@ -41,6 +41,7 @@ export const AnnualYieldDetails = React.forwardRef<
 
   return (
     <div
+      ref={ref}
       className={cn("mt-5 rounded-lg border px-4 py-3", className)}
       {...props}
     >
@@ -89,7 +90,7 @@ export const AnnualYieldDetails = React.forwardRef<
           <TertiaryLabel className="text-sm">
             {currentMarketData.reward_style ===
             MarketRewardStyle.forfeitable.value ? (
-              <span className="text-p text-dodger_blue flex items-center gap-1">
+              <span className="text-p flex items-center gap-1 text-dodger_blue">
                 Forfeitable
                 <LogOutIcon className="h-4 w-4" />
               </span>

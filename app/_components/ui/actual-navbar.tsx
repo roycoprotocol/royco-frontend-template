@@ -221,7 +221,7 @@ export const ActualNavbar = React.forwardRef<
                     scale: 0.8,
                     filter: "blur(4px)",
                   },
-                  whileInView: {
+                  whileinview: {
                     x: 0,
                     opacity: 1,
                     scale: 1,
@@ -241,7 +241,7 @@ export const ActualNavbar = React.forwardRef<
                 {label}
               </a>
             ) : (
-              <Tooltip>
+              <Tooltip key={`navbar-link:learn:${BASE_KEY}`}>
                 <TooltipTrigger>{label}</TooltipTrigger>
                 <TooltipContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
                   {items?.map((item) => (
@@ -272,7 +272,7 @@ export const ActualNavbar = React.forwardRef<
               scale: 0.8,
               y: 20,
             },
-            whileInView: {
+            whileinview: {
               opacity: 1,
               scale: 1,
               y: 0,

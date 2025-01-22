@@ -17,7 +17,7 @@ import { type UseFormReturn } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 
-import { RoyaltyFormSchema } from "./royality-form-schema";
+import { RoyaltyFormSchema } from "./royalty-form-schema";
 import {
   ErrorAlert,
   FormInputLabel,
@@ -33,11 +33,12 @@ import { OwnershipProofMessage } from "@/components/constants";
 import { isEqual } from "lodash";
 import { WalletListTable } from "./wallet-list-table";
 import { PlusIcon } from "lucide-react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { useTotalWalletsBalance } from "../hooks";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { SignMessageInfoCard } from "./sign-message-info-card";
+import { toast } from "sonner";
 
 export const WalletConnectionLabel = React.forwardRef<
   HTMLDivElement,
@@ -106,6 +107,20 @@ export const FormWallets = React.forwardRef<
         },
       ]);
     }
+
+    if (
+      isConnected &&
+      !!account_address &&
+      royaltyForm
+        .watch("wallets")
+        .some(
+          (wallet) =>
+            wallet.account_address.toLowerCase() ===
+            account_address.toLowerCase()
+        )
+    ) {
+      toast.error("Wallet already added");
+    }
   };
 
   const addProof = async () => {
@@ -132,7 +147,7 @@ export const FormWallets = React.forwardRef<
       newWallets[index].proof = dataSignMessage;
       royaltyForm.setValue("wallets", newWallets);
 
-      await disconnectAsync();
+      // await disconnectAsync();
     }
   };
 
@@ -144,14 +159,6 @@ export const FormWallets = React.forwardRef<
     addWallet();
   }, [account_address]);
 
-  const disconnectWallet = async () => {
-    await disconnectAsync();
-
-    const newWallets = royaltyForm.getValues("wallets");
-    newWallets.pop();
-    royaltyForm.setValue("wallets", newWallets);
-  };
-
   return (
     <FormField
       control={royaltyForm.control}
@@ -161,28 +168,28 @@ export const FormWallets = React.forwardRef<
           <div className="flex flex-row items-center gap-2">
             <FormInputLabel className="w-fit" label="Proof of funds" />
 
-            {royaltyForm.watch("wallets").length > 1 && (
-              <Button
-                onClick={async () => {
-                  await disconnectAsync();
+            {royaltyForm.watch("wallets").length > 0 &&
+              royaltyForm
+                .watch("wallets")
+                .some((wallet) => wallet.proof !== "") && (
+                <Button
+                  onClick={async () => {
+                    await disconnectAsync();
 
-                  const newWallets = royaltyForm.getValues("wallets");
-                  newWallets.pop();
-                  royaltyForm.setValue("wallets", newWallets);
-
-                  connectWalletModal();
-                }}
-                type="button"
-                className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
-              >
-                <PlusIcon strokeWidth={1.5} className="h-4 w-4 stroke-black" />
-              </Button>
-            )}
+                    connectWalletModal();
+                  }}
+                  type="button"
+                  className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
+                >
+                  <PlusIcon
+                    strokeWidth={1.5}
+                    className="h-4 w-4 stroke-black"
+                  />
+                </Button>
+              )}
           </div>
 
-          {royaltyForm
-            .watch("wallets")
-            .filter((wallet) => wallet.balance !== undefined).length !== 0 && (
+          {royaltyForm.watch("wallets") && (
             <WalletListTable className="mt-3" royaltyForm={royaltyForm} />
           )}
 

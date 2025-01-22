@@ -1,14 +1,10 @@
 "use client";
 
+import React, { useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables/loading-spinner";
 import { OwnershipProofMessage } from "@/components/constants";
 import { Button } from "@/components/ui/button";
-import { isWalletValid } from "@/components/user";
-import { useUserInfo } from "@/components/user/hooks";
-import { cn } from "@/lib/utils";
-import { useGlobalStates, useJoin } from "@/store";
-import { isEqual } from "lodash";
-import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { useAccount, useSignMessage } from "wagmi";
 
@@ -17,8 +13,7 @@ export const SignInButton = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { address: account_address, isConnected } = useAccount();
-
-  const [proof, setProof] = useLocalStorage("proof", null);
+  const [signInToken, setSignInToken] = useLocalStorage("sign_in_token", null);
 
   const {
     signMessage,
@@ -28,21 +23,35 @@ export const SignInButton = React.forwardRef<
     isError: isErrorSignMessage,
   } = useSignMessage();
 
-  const updateLocalStorageWallet = async () => {
+  const updateLocalStorageSignInToken = async () => {
     try {
       if (
         !!dataSignMessage &&
         isSuccessSignMessage === true &&
         !!account_address
       ) {
-        // @ts-ignore
-        setProof(dataSignMessage);
+        const req = await fetch("/api/users/validate", {
+          method: "POST",
+          body: JSON.stringify({
+            signed_message: dataSignMessage,
+            account_address: account_address.toLowerCase(),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const res = await req.json();
+
+        if (res.sign_in_token) {
+          setSignInToken(res.sign_in_token);
+        }
       }
     } catch (err) {}
   };
 
   useEffect(() => {
-    updateLocalStorageWallet();
+    updateLocalStorageSignInToken();
   }, [dataSignMessage, isSuccessSignMessage, isPendingSignMessage]);
 
   return (

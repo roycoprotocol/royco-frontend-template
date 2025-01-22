@@ -51,4 +51,6 @@ export const MarketActionFormSchema = z.object({
 
   expiry: z.date().optional(),
   no_expiry: z.boolean().default(false),
+
+  annual_change_ratio: z.string().default("0"), // in percentage
 });

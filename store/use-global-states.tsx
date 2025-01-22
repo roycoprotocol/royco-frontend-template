@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
 import { CustomTokenData } from "royco/types";
-import { useUserInfo } from "@/components/user/hooks";
+import { UserInfo } from "@/components/user/hooks";
 
 export type TypedUserWallet = {
   account_address: string;
@@ -19,6 +19,8 @@ interface GlobalState {
   setCustomTokenData: (customTokenData: CustomTokenData) => void;
   isUserInfoPaused: boolean;
   setIsUserInfoPaused: (isUserInfoPaused: boolean) => void;
+  user: UserInfo | null;
+  setUser: (user: UserInfo | null) => void;
 }
 
 export const useGlobalStates = create<GlobalState>((set) => ({
@@ -27,4 +29,6 @@ export const useGlobalStates = create<GlobalState>((set) => ({
     set({ customTokenData }),
   isUserInfoPaused: false,
   setIsUserInfoPaused: (isUserInfoPaused: boolean) => set({ isUserInfoPaused }),
+  user: null,
+  setUser: (user: UserInfo | null) => set({ user }),
 }));

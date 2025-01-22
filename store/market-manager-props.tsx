@@ -98,10 +98,12 @@ export const MarketOfferType = {
   [RoycoMarketOfferType.market.id]: {
     ...RoycoMarketOfferType.market,
     label: "Market Offer",
+    description: "Supply at the current incentive rate",
   },
   [RoycoMarketOfferType.limit.id]: {
     ...RoycoMarketOfferType.limit,
     label: "Limit Offer",
+    description: "Bid for more incentives",
   },
 };
 

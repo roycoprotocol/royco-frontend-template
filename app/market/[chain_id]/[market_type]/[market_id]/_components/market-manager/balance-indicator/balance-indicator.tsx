@@ -18,6 +18,7 @@ import {
   PrimaryLabel,
   TertiaryLabel,
 } from "../../composables";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const BalanceIndicator = React.forwardRef<
   HTMLDivElement,
@@ -156,7 +157,11 @@ export const BalanceIndicator = React.forwardRef<
 
   if (!isConnected) {
     return (
-      <div className={cn("rounded-lg border px-4 py-3")}>
+      <div
+        ref={ref}
+        className={cn("rounded-lg border px-4 py-3", className)}
+        {...props}
+      >
         {/**
          * Wallet not connected
          */}
@@ -169,7 +174,11 @@ export const BalanceIndicator = React.forwardRef<
 
   if (isConnected && !isLoading && !placeholderData[1]) {
     return (
-      <div className={cn("rounded-lg border px-4 py-3")}>
+      <div
+        ref={ref}
+        className={cn("rounded-lg border px-4 py-3", className)}
+        {...props}
+      >
         {/**
          * No activity found
          */}
@@ -179,7 +188,11 @@ export const BalanceIndicator = React.forwardRef<
   }
 
   return (
-    <div className={cn("rounded-lg border px-4 py-3")}>
+    <div
+      ref={ref}
+      className={cn("rounded-lg border px-4 py-3", className)}
+      {...props}
+    >
       {/**
        * Total Balance
        */}
@@ -209,30 +222,36 @@ export const BalanceIndicator = React.forwardRef<
 
         {inputTokenData ? (
           <InfoCard>
-            <InfoCard.Row className={INFO_ROW_CLASSES}>
-              <InfoCard.Row.Key>
-                <TokenDisplayer
-                  tokens={inputTokenData ? [inputTokenData] : []}
-                  symbols={true}
-                  symbolClassName="text-sm font-medium"
-                />
-              </InfoCard.Row.Key>
+            <SlideUpWrapper
+              layout="position"
+              layoutId={`motion:market:balance-indicator:input-token:${inputTokenData.id}`}
+              delay={0.1}
+            >
+              <InfoCard.Row className={INFO_ROW_CLASSES}>
+                <InfoCard.Row.Key>
+                  <TokenDisplayer
+                    tokens={inputTokenData ? [inputTokenData] : []}
+                    symbols={true}
+                    symbolClassName="text-sm font-medium"
+                  />
+                </InfoCard.Row.Key>
 
-              <InfoCard.Row.Value className="gap-0">
-                <SpringNumber
-                  className="text-sm font-medium"
-                  previousValue={0}
-                  currentValue={inputTokenData?.token_amount ?? 0}
-                  numberFormatOptions={{
-                    style: "decimal",
-                    notation: "standard",
-                    useGrouping: true,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 8,
-                  }}
-                />
-              </InfoCard.Row.Value>
-            </InfoCard.Row>
+                <InfoCard.Row.Value className="gap-0">
+                  <SpringNumber
+                    className="text-sm font-medium"
+                    previousValue={0}
+                    currentValue={inputTokenData?.token_amount ?? 0}
+                    numberFormatOptions={{
+                      style: "decimal",
+                      notation: "standard",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 8,
+                    }}
+                  />
+                </InfoCard.Row.Value>
+              </InfoCard.Row>
+            </SlideUpWrapper>
           </InfoCard>
         ) : (
           <span>--</span>
@@ -251,32 +270,38 @@ export const BalanceIndicator = React.forwardRef<
 
         {incentivesTokenData && incentivesTokenData.length > 0 ? (
           <InfoCard className="flex flex-col gap-2">
-            {incentivesTokenData.map((incentive) => {
+            {incentivesTokenData.map((incentive, index) => {
               return (
-                <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-                  <InfoCard.Row.Key>
-                    <TokenDisplayer
-                      tokens={[incentive]}
-                      symbols={true}
-                      symbolClassName="text-sm font-medium"
-                    />
-                  </InfoCard.Row.Key>
+                <SlideUpWrapper
+                  layout="position"
+                  layoutId={`motion:market:balance-indicator:incentive-token:${incentive.id}`}
+                  delay={0.1 + index * 0.1}
+                >
+                  <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                    <InfoCard.Row.Key>
+                      <TokenDisplayer
+                        tokens={[incentive]}
+                        symbols={true}
+                        symbolClassName="text-sm font-medium"
+                      />
+                    </InfoCard.Row.Key>
 
-                  <InfoCard.Row.Value className="gap-0">
-                    <SpringNumber
-                      className="text-sm font-medium"
-                      previousValue={0}
-                      currentValue={incentive.token_amount ?? 0}
-                      numberFormatOptions={{
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }}
-                    />
-                  </InfoCard.Row.Value>
-                </InfoCard.Row>
+                    <InfoCard.Row.Value className="gap-0">
+                      <SpringNumber
+                        className="text-sm font-medium"
+                        previousValue={0}
+                        currentValue={incentive.token_amount ?? 0}
+                        numberFormatOptions={{
+                          style: "decimal",
+                          notation: "standard",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 8,
+                        }}
+                      />
+                    </InfoCard.Row.Value>
+                  </InfoCard.Row>
+                </SlideUpWrapper>
               );
             })}
           </InfoCard>

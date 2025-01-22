@@ -11,6 +11,7 @@ import {
   Base,
   Corn,
   Plume,
+  Sonic,
 } from "royco/constants";
 
 export const metadata = {
@@ -25,7 +26,15 @@ export const metadata = {
 export const config = getDefaultConfig({
   appName: "Royco",
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
-  chains: [EthereumMainnet, ArbitrumOne, Base, Corn, Plume, EthereumSepolia],
+  chains: [
+    EthereumMainnet,
+    ArbitrumOne,
+    Base,
+    Corn,
+    Plume,
+    EthereumSepolia,
+    Sonic,
+  ],
   ssr: true,
   multiInjectedProviderDiscovery: true,
   transports: {
@@ -57,6 +66,11 @@ export const config = getDefaultConfig({
     [EthereumSepolia.id]: fallback([
       unstable_connector(injected),
       http(process.env.NEXT_PUBLIC_RPC_API_KEY_11155111),
+      http(),
+    ]),
+    [Sonic.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_146),
       http(),
     ]),
   },

@@ -1,39 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useJoin } from "@/store";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { RoyaltyFormPopUp } from "./royalty-form-pop-up";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
-
-import Image from "next/image";
-import { useUsername, useUserPosition } from "royco/hooks";
-import { useImmer } from "use-immer";
-import { isEqual } from "lodash";
-import { produce } from "immer";
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
-import { useUserInfo } from "@/components/user/hooks";
-import { useGlobalStates } from "@/store";
-import { SignInButton } from "../sign-in-button/sign-in-button";
-import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "./royality-form-schema";
-import { z } from "zod";
-import { AnimatePresence, motion } from "framer-motion";
-import { useLocalStorage } from "usehooks-ts";
-import {
-  CircleHelpIcon,
-  ClipboardSignatureIcon,
-  FileSignature,
-  FileSignatureIcon,
-} from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export const SignMessageInfoCard = React.forwardRef<
   HTMLDivElement,

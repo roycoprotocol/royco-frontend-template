@@ -35,7 +35,11 @@ export const MarketDetails = React.forwardRef<
   const [showActionDetails, setShowActionDetails] = useState(false);
 
   return (
-    <div className={cn("mt-5 rounded-lg border px-4 py-3")}>
+    <div
+      ref={ref}
+      className={cn("mt-5 rounded-lg border px-4 py-3", className)}
+      {...props}
+    >
       {/**
        * TVL
        */}
