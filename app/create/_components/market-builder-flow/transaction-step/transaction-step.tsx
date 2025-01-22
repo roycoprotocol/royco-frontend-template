@@ -50,26 +50,26 @@ export const TransactionStep = React.forwardRef<
   const updateMarketUserdata = async () => {
     try {
       if (!!market_id) {
-        // Save in royco server & sdk
-        const response1 = await fetch(
-          `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              chain_id: marketBuilderForm.watch("chain").id,
-              market_type:
-                marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-              tx_hash: txHash,
-              id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
-              name: marketBuilderForm.watch("market_name"),
-              description: marketBuilderForm.watch("market_description"),
-              push: true,
-            }),
-          }
-        );
+        // // Save in royco server & sdk
+        // const response1 = await fetch(
+        //   `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
+        //   {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       chain_id: marketBuilderForm.watch("chain").id,
+        //       market_type:
+        //         marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
+        //       tx_hash: txHash,
+        //       id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
+        //       name: marketBuilderForm.watch("market_name"),
+        //       description: marketBuilderForm.watch("market_description"),
+        //       push: true,
+        //     }),
+        //   }
+        // );
 
         // Save in local db
         const response2 = await fetch(`/api/market`, {
@@ -85,7 +85,7 @@ export const TransactionStep = React.forwardRef<
             id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
             name: marketBuilderForm.watch("market_name"),
             description: marketBuilderForm.watch("market_description"),
-            push: false,
+            push: true,
           }),
         });
 
