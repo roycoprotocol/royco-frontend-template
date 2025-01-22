@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { FallMotion } from "@/components/animations";
+import { FallMotion, SlideUpWrapper } from "@/components/animations";
 import {
   RoycoMarketFundingType,
   TypedRoycoMarketFundingType,
@@ -61,7 +61,7 @@ export const FundingSourceSelector = React.forwardRef<
           >
             <div className="w-full">
               <FallMotion
-                customKey={`market:funding:funding-type-selector:${fundingType}`}
+                customKey={`market:supply-action:funding-source-selector:${fundingType}`}
                 height="2rem"
                 motionClassName="flex flex-col items-start"
                 contentClassName="text-left flex flex-col justify-center"
@@ -82,10 +82,16 @@ export const FundingSourceSelector = React.forwardRef<
         </Select>
 
         {fundingType === RoycoMarketFundingType.vault.id && (
-          <FundingVaultSelector
-            fundingVaultAddress={fundingVaultAddress}
-            onSelectFundingVaultAddress={onSelectFundingVaultAddress}
-          />
+          <SlideUpWrapper
+            layout="position"
+            layoutId="motion:market:funding-source-selector:funding-vault-selector"
+            delay={0.1}
+          >
+            <FundingVaultSelector
+              fundingVaultAddress={fundingVaultAddress}
+              onSelectFundingVaultAddress={onSelectFundingVaultAddress}
+            />
+          </SlideUpWrapper>
         )}
       </div>
     );

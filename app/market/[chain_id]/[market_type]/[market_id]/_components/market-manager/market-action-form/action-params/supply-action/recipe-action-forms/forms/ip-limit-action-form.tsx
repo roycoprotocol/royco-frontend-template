@@ -7,6 +7,7 @@ import { IPQuantityIndicator } from "../../../composables";
 import { InputExpirySelector } from "../../../composables";
 import { IncentivesAmountSelector } from "../../../composables";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const IPLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -16,15 +17,38 @@ export const IPLimitActionForm = React.forwardRef<
 >(({ className, marketActionForm, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("", className)} {...props}>
-      <InputAmountWrapper marketActionForm={marketActionForm} delay={0.2} />
+      {/**
+       * Input Amount
+       */}
+      <SlideUpWrapper
+        layout="position"
+        layoutId="motion:market:supply-action:input-amount-wrapper"
+        delay={0.1}
+      >
+        <InputAmountWrapper marketActionForm={marketActionForm} />
+      </SlideUpWrapper>
 
+      {/**
+       * Incentive Amount Selector
+       */}
       <IncentivesAmountSelector
         marketActionForm={marketActionForm}
-        delayTitle={0.5}
-        delayContent={0.5}
+        delayTitle={0.2}
+        delayContent={0.3}
       />
 
-      <InputExpirySelector delay={0.6} marketActionForm={marketActionForm} />
+      {/**
+       * Input Expiry
+       */}
+      <div className="mt-4">
+        <SlideUpWrapper
+          layout="position"
+          layoutId="motion:market:supply-action:input-expiry-selector"
+          delay={0.4}
+        >
+          <InputExpirySelector marketActionForm={marketActionForm} />
+        </SlideUpWrapper>
+      </div>
 
       <IPQuantityIndicator marketActionForm={marketActionForm} />
     </div>

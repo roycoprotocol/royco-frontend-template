@@ -109,53 +109,47 @@ export const FundingVaultSelector = React.forwardRef<
 
     return (
       <div ref={ref} className={cn("contents", className)} {...props}>
-        <SlideUpWrapper
-          layout="position"
-          layoutId="motion:market:erc4626-vault-selector"
-          delay={0.3}
+        <Select
+          onOpenChange={(open) => {
+            return open;
+          }}
+          onValueChange={(e) => {
+            onSelectFundingVaultAddress && onSelectFundingVaultAddress(e);
+          }}
+          value={selectedFundingVault.market_id}
         >
-          <Select
-            onOpenChange={(open) => {
-              return open;
-            }}
-            onValueChange={(e) => {
-              onSelectFundingVaultAddress && onSelectFundingVaultAddress(e);
-            }}
-            value={selectedFundingVault.market_id}
+          <SelectTrigger
+            className={cn(
+              "mt-2 w-full bg-white py-0 pl-3 pr-2 text-sm font-light text-black"
+            )}
           >
-            <SelectTrigger
-              className={cn(
-                "mt-2 w-full bg-white py-0 pl-3 pr-2 text-sm font-light text-black"
-              )}
-            >
-              <div className="w-full">
-                <FallMotion
-                  customKey={`market:funding:funding-vault-selector:${selectedFundingVault.market_id}`}
-                  height="2rem"
-                  motionClassName="flex flex-col items-start"
-                  contentClassName="text-left"
-                >
-                  {selectedFundingVault.name}
-                </FallMotion>
-              </div>
-            </SelectTrigger>
+            <div className="w-full">
+              <FallMotion
+                customKey={`market:funding-source-selector:funding-vault-selector:${selectedFundingVault.market_id}`}
+                height="2rem"
+                motionClassName="flex flex-col items-start"
+                contentClassName="text-left"
+              >
+                {selectedFundingVault.name}
+              </FallMotion>
+            </div>
+          </SelectTrigger>
 
-            <SelectContent className="max-h-[200px] w-full overflow-auto">
-              {fundingVaultMarketData.map((vault) => (
-                <SelectItem
-                  key={vault.market_id}
-                  className="text-sm"
-                  value={vault.market_id}
-                >
-                  {vault.name}
-                </SelectItem>
-              ))}
-              {isLoadingUserVaultMarketBalanceData && (
-                <LoadingSpinner className="h-3 w-3" />
-              )}
-            </SelectContent>
-          </Select>
-        </SlideUpWrapper>
+          <SelectContent className="max-h-[200px] w-full overflow-auto">
+            {fundingVaultMarketData.map((vault) => (
+              <SelectItem
+                key={vault.market_id}
+                className="text-sm"
+                value={vault.market_id}
+              >
+                {vault.name}
+              </SelectItem>
+            ))}
+            {isLoadingUserVaultMarketBalanceData && (
+              <LoadingSpinner className="h-3 w-3" />
+            )}
+          </SelectContent>
+        </Select>
       </div>
     );
   }

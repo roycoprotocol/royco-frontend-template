@@ -6,6 +6,7 @@ import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { IPQuantityIndicator } from "../../../composables";
 import { IncentiveAssetsSelector } from "../../../composables";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const IPMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -16,12 +17,24 @@ export const IPMarketActionForm = React.forwardRef<
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <div ref={ref} className={cn(className)} {...props}>
-        <InputAmountWrapper marketActionForm={marketActionForm} delay={0.2} />
+        {/**
+         * Input Amount
+         */}
+        <SlideUpWrapper
+          layout="position"
+          layoutId="motion:market:supply-action:input-amount-wrapper"
+          delay={0.1}
+        >
+          <InputAmountWrapper marketActionForm={marketActionForm} />
+        </SlideUpWrapper>
 
+        {/**
+         * Incentive Asset Selector
+         */}
         <IncentiveAssetsSelector
           marketActionForm={marketActionForm}
-          delayTitle={0.4}
-          delayContent={0.5}
+          delayTitle={0.2}
+          delayContent={0.3}
         />
 
         <IPQuantityIndicator marketActionForm={marketActionForm} />

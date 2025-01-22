@@ -4,6 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -14,9 +15,15 @@ export const APMarketActionForm = React.forwardRef<
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
-       * Quantity Selector for AP
+       * Input Amount
        */}
-      <InputAmountWrapper marketActionForm={marketActionForm} delay={0.3} />
+      <SlideUpWrapper
+        layout="position"
+        layoutId="motion:market:supply-action:input-amount-wrapper"
+        delay={0.1}
+      >
+        <InputAmountWrapper marketActionForm={marketActionForm} />
+      </SlideUpWrapper>
     </div>
   );
 });

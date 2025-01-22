@@ -5,6 +5,7 @@ import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { FundingSourceSelector } from "../../components/funding-source-selector";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -17,18 +18,30 @@ export const APMarketActionForm = React.forwardRef<
       {/**
        * Funding Source Selector
        */}
-      <FundingSourceSelector
-        fundingVaultAddress={marketActionForm.watch("funding_vault") ?? ""}
-        onSelectFundingVaultAddress={(value) => {
-          marketActionForm.setValue("funding_vault", value);
-        }}
-      />
+      <SlideUpWrapper
+        layout="position"
+        layoutId="motion:market:supply-action:funding-source-selector"
+        delay={0.1}
+      >
+        <FundingSourceSelector
+          fundingVaultAddress={marketActionForm.watch("funding_vault") || ""}
+          onSelectFundingVaultAddress={(value) => {
+            marketActionForm.setValue("funding_vault", value);
+          }}
+        />
+      </SlideUpWrapper>
 
       {/**
        * Input Amount
        */}
       <div className="mt-2">
-        <InputAmountWrapper marketActionForm={marketActionForm} />
+        <SlideUpWrapper
+          layout="position"
+          layoutId="motion:market:supply-action:input-amount-wrapper"
+          delay={0.2}
+        >
+          <InputAmountWrapper marketActionForm={marketActionForm} />
+        </SlideUpWrapper>
       </div>
     </div>
   );

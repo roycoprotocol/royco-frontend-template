@@ -5,6 +5,7 @@ import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { IPQuantityIndicator } from "../../../composables";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const IPMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -18,7 +19,13 @@ export const IPMarketActionForm = React.forwardRef<
         {/**
          * Quantity Selector for IP
          */}
-        <InputAmountWrapper marketActionForm={marketActionForm} delay={0.3} />
+        <SlideUpWrapper
+          layout="position"
+          layoutId="motion:market:supply-action:input-amount-wrapper"
+          delay={0.1}
+        >
+          <InputAmountWrapper marketActionForm={marketActionForm} />
+        </SlideUpWrapper>
 
         {/**
          * Grey Box for IP

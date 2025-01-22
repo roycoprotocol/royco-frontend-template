@@ -35,9 +35,9 @@ export const InputAmountWrapper = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
-    delay?: number;
+    onAmountChange?: (value: { amount: number; rawAmount: string }) => void;
   }
->(({ className, marketActionForm, delay, ...props }, ref) => {
+>(({ className, marketActionForm, onAmountChange, ...props }, ref) => {
   const { address } = useAccount();
 
   const { currentMarketData, marketMetadata } = useActiveMarket();
@@ -150,15 +150,11 @@ export const InputAmountWrapper = React.forwardRef<
   const isLoadingBalance = isLoadingWalletBalance || isLoadingVaultBalance;
 
   return (
-    <SlideUpWrapper
-      layout="position"
-      layoutId={`motion:market:amount-selector:${userType}:${viewType}`}
-      delay={delay ?? 0}
-    >
+    <div ref={ref} className={cn("contents", className)} {...props}>
       <FormInputLabel
         size="sm"
         label={
-          userType === MarketUserType.ip.id ? "Desired Result" : "Input Amount"
+          userType === MarketUserType.ip.id ? "Desired Amount" : "Input Amount"
         }
       />
 
@@ -169,14 +165,18 @@ export const InputAmountWrapper = React.forwardRef<
         containerClassName="mt-2"
         currentValue={marketActionForm.watch("quantity.amount") ?? ""}
         setCurrentValue={(value) => {
-          marketActionForm.setValue("quantity.amount", value);
-          marketActionForm.setValue(
-            "quantity.raw_amount",
-            parseTokenAmountToRawAmount(
-              value,
-              currentMarketData?.input_token_data.decimals ?? 0
-            )
+          const amount = value;
+          const rawAmount = parseTokenAmountToRawAmount(
+            amount,
+            currentMarketData?.input_token_data.decimals ?? 0
           );
+
+          marketActionForm.setValue("quantity.amount", amount);
+          marketActionForm.setValue("quantity.raw_amount", rawAmount);
+
+          if (onAmountChange) {
+            onAmountChange({ amount: parseFloat(amount || "0"), rawAmount });
+          }
         }}
         Prefix={() => {
           if (userType === MarketUserType.ip.id) {
@@ -247,49 +247,12 @@ export const InputAmountWrapper = React.forwardRef<
       )}
 
       {/**
-       * Indicator to show remaining balance to fill
-       */}
-      {/* {offerType === MarketOfferType.market.id &&
-      (marketMetadata.market_type === MarketType.recipe.id ||
-        userType === MarketUserType.ip.id) ? (
-        <TertiaryLabel className="mt-2 flex flex-row items-center justify-between">
-          <div>
-            {userType === MarketUserType.ap.id
-              ? Intl.NumberFormat("en-US", {
-                  notation: "standard",
-                  useGrouping: true,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 8,
-                }).format(
-                  parseRawAmountToTokenAmount(
-                    currentMarketData?.quantity_ip ?? "0", // @note: AP fills IP quantity
-                    currentMarketData?.input_token_data.decimals ?? 0
-                  )
-                )
-              : Intl.NumberFormat("en-US", {
-                  notation: "standard",
-                  useGrouping: true,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 8,
-                }).format(
-                  parseRawAmountToTokenAmount(
-                    currentMarketData?.quantity_ap ?? "0", // @note: IP fills AP quantity
-                    currentMarketData?.input_token_data.decimals ?? 0
-                  )
-                )}{" "}
-            {currentMarketData?.input_token_data.symbol.toUpperCase()} Fillable
-            in Total
-          </div>
-        </TertiaryLabel>
-      ) : null} */}
-
-      {/**
        * Insufficient balance indicator
        */}
       {!hasSufficientBalance && (
         <SlideUpWrapper
           layout="position"
-          layoutId={`motion:market:warning-alert:${fundingType}`}
+          layoutId={`motion:market:input-amount-wrapper:warning-alert:${fundingType}`}
           className="mt-3"
           delay={0.4}
         >
@@ -298,6 +261,43 @@ export const InputAmountWrapper = React.forwardRef<
           </WarningAlert>
         </SlideUpWrapper>
       )}
-    </SlideUpWrapper>
+    </div>
   );
 });
+
+// {/**
+//  * Indicator to show remaining balance to fill
+//  */}
+//  {offerType === MarketOfferType.market.id &&
+//   (marketMetadata.market_type === MarketType.recipe.id ||
+//     userType === MarketUserType.ip.id) ? (
+//     <TertiaryLabel className="mt-2 flex flex-row items-center justify-between">
+//       <div>
+//         {userType === MarketUserType.ap.id
+//           ? Intl.NumberFormat("en-US", {
+//               notation: "standard",
+//               useGrouping: true,
+//               minimumFractionDigits: 0,
+//               maximumFractionDigits: 8,
+//             }).format(
+//               parseRawAmountToTokenAmount(
+//                 currentMarketData?.quantity_ip ?? "0", // @note: AP fills IP quantity
+//                 currentMarketData?.input_token_data.decimals ?? 0
+//               )
+//             )
+//           : Intl.NumberFormat("en-US", {
+//               notation: "standard",
+//               useGrouping: true,
+//               minimumFractionDigits: 0,
+//               maximumFractionDigits: 8,
+//             }).format(
+//               parseRawAmountToTokenAmount(
+//                 currentMarketData?.quantity_ap ?? "0", // @note: IP fills AP quantity
+//                 currentMarketData?.input_token_data.decimals ?? 0
+//               )
+//             )}{" "}
+//         {currentMarketData?.input_token_data.symbol.toUpperCase()} Fillable
+//         in Total
+//       </div>
+//     </TertiaryLabel>
+//   ) : null}
