@@ -18,7 +18,15 @@ const RateLimits = {
   },
 };
 
+const logIncomingRequest = (request: NextRequest) => {
+  console.log("Incoming request:", request.nextUrl.pathname);
+};
+
 export async function middleware(request: NextRequest) {
+  // if (process.env.NODE_ENV === "development") {
+  //   logIncomingRequest(request);
+  // }
+
   /**
    * Current path
    */

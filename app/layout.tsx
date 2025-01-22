@@ -22,6 +22,7 @@ import WalletProvider from "@/components/rainbow-modal/context-provider";
 import { TurnstileWrapper } from "@/auth";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 import { UserInfoSetter } from "@/components/user/hooks";
+import { RoycoAnalytics } from "./royco-analytics";
 
 /**
  * @description Inter Font
@@ -141,6 +142,10 @@ export default function RootLayout({
             {/* </AppKitProvider> */}
 
             <BrowserDetector />
+
+            {/* {process.env.NODE_ENV !== "development" && (
+              <RoycoAnalytics id={process.env.ANALYTICS_ID!} />
+            )} */}
 
             <Toaster />
           </body>
