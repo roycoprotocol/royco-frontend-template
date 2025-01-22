@@ -28,6 +28,9 @@ export async function GET(request: Request) {
       name: market.name,
       description: market.description,
       is_verified: market.is_verified,
+      ...(market.category && {
+        category: market.category,
+      }),
     }));
 
     await supabaseClient.from("market_userdata").upsert(batchData);
