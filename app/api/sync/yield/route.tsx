@@ -8,6 +8,78 @@ export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 
+const updateExternalIncentives = async ({
+  supabaseClient,
+}: {
+  supabaseClient: SupabaseClient;
+}) => {
+  // Filter markets and calculate batch
+  const mapEntries = Object.values(SupportedMarketMap).filter(
+    (market) => market.external_incentives !== undefined
+  );
+  const batchSize = 10;
+  const currentMinute = new Date().getUTCMinutes();
+  const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+  const batchMarkets = mapEntries.slice(
+    batchIndex * batchSize,
+    (batchIndex + 1) * batchSize
+  );
+
+  // Fetch incentives in parallel
+  const incentiveResults = await Promise.all(
+    batchMarkets.map(async (market) => {
+      try {
+        const chain_id = parseInt(market.id.split("_")[0]);
+        const market_type = parseInt(market.id.split("_")[1]);
+        const market_id = market.id.split("_")[2];
+
+        const chain = getSupportedChain(chain_id);
+
+        const chainClient = createPublicClient({
+          chain: chain,
+          transport: http(RPC_API_KEYS[chain_id]),
+        });
+
+        const token_ids = market.external_incentives!.map(
+          (incentive_token) => incentive_token.token_id
+        );
+
+        const values = await Promise.all(
+          market.external_incentives!.map(async (incentie_token) => {
+            const value = await incentie_token.value!({
+              roycoClient: supabaseClient,
+              chainClient,
+            });
+            return value;
+          })
+        );
+
+        return {
+          id: market.id,
+          chain_id,
+          market_type,
+          market_id,
+          token_ids,
+          values,
+          updated_at: new Date(),
+        };
+      } catch (error) {
+        console.error(`Error fetching yield for market ${market.id}:`, error);
+        return null;
+      }
+    })
+  );
+
+  // Filter out failed requests and upsert to database
+  const validResults = incentiveResults.filter(
+    (result): result is NonNullable<typeof result> => result !== null
+  );
+
+  if (validResults.length > 0) {
+    await supabaseClient.from("raw_external_incentives").upsert(validResults);
+  }
+};
+
 const updateNativeYields = async ({
   supabaseClient,
 }: {
@@ -15,7 +87,7 @@ const updateNativeYields = async ({
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
-    (market) => typeof market.native_yield === "function"
+    (market) => market.native_yield !== undefined
   );
   const batchSize = 10;
   const currentMinute = new Date().getUTCMinutes();
@@ -40,18 +112,34 @@ const updateNativeYields = async ({
           transport: http(RPC_API_KEYS[chain_id]),
         });
 
-        const yieldData = await market.native_yield!({
-          // @ts-ignore
-          roycoClient: supabaseClient,
-          chainClient,
-        });
+        const token_ids = market.native_yield!.map(
+          (incentive_token) => incentive_token.token_id
+        );
+
+        const annual_change_ratios = await Promise.all(
+          market.native_yield!.map(async (incentie_token) => {
+            const annual_change_ratio =
+              await incentie_token.annual_change_ratio!({
+                roycoClient: supabaseClient,
+                chainClient,
+              });
+            return annual_change_ratio;
+          })
+        );
+
+        const annual_change_ratio = annual_change_ratios.reduce(
+          (acc, curr) => acc + curr,
+          0
+        );
 
         return {
           id: market.id,
           chain_id,
           market_type,
           market_id,
-          annual_change_ratio: yieldData.native_annual_change_ratio,
+          token_ids,
+          annual_change_ratios,
+          annual_change_ratio,
           updated_at: new Date(),
         };
       } catch (error) {
@@ -78,7 +166,7 @@ const updateUnderlyingYields = async ({
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
-    (market) => typeof market.underlying_vault_yield === "function"
+    (market) => market.underlying_yield !== undefined
   );
   const batchSize = 10;
   const currentMinute = new Date().getUTCMinutes();
@@ -103,8 +191,7 @@ const updateUnderlyingYields = async ({
           transport: http(RPC_API_KEYS[chain_id]),
         });
 
-        const yieldData = await market.underlying_vault_yield!({
-          // @ts-ignore
+        const annual_change_ratio = await market.underlying_yield!({
           roycoClient: supabaseClient,
           chainClient,
         });
@@ -114,7 +201,7 @@ const updateUnderlyingYields = async ({
           chain_id,
           market_type,
           market_id,
-          annual_change_ratio: yieldData.underlying_annual_change_ratio,
+          annual_change_ratio,
           updated_at: new Date(),
         };
       } catch (error) {
@@ -141,8 +228,11 @@ export async function GET(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );
 
-    await updateNativeYields({ supabaseClient });
-    await updateUnderlyingYields({ supabaseClient });
+    await Promise.all([
+      updateNativeYields({ supabaseClient }),
+      updateUnderlyingYields({ supabaseClient }),
+      updateExternalIncentives({ supabaseClient }),
+    ]);
 
     return Response.json(
       {
