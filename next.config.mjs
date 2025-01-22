@@ -35,6 +35,7 @@ const nextConfig = {
     fetches: {
       fullUrl: true,
     },
+    rewrites: true,
   },
   // Reverse proxy to Posthog and Royco Analytics
   rewrites: async () => {
@@ -48,7 +49,7 @@ const nextConfig = {
         destination: "https://royco-analytics.vercel.app/:path*", // Proxy to Royco Analytics
       },
       {
-        source: "/api/rpc/:path*",
+        source: "/api/rpc/1/:path*",
         destination: process.env.RPC_API_KEY_1,
       },
       {
