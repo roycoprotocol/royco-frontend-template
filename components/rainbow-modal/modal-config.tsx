@@ -40,37 +40,37 @@ export const config = getDefaultConfig({
   transports: {
     [EthereumMainnet.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_1),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_1!),
       http(),
     ]),
     [ArbitrumOne.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_42161),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_42161!),
       http(),
     ]),
     [Base.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_8453),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_8453!),
       http(),
     ]),
     [Corn.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_21000000),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_21000000!),
       http(),
     ]),
     [Plume.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_98865),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_98865!),
       http(),
     ]),
     [EthereumSepolia.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_11155111),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_11155111!),
       http(),
     ]),
     [Sonic.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_146),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_146!),
       http(),
     ]),
   },
