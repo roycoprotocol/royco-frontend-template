@@ -6,6 +6,7 @@ import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { ActionTypeSelector } from "../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { IPLimitOfferIncentivesUI } from "../ip-limit-offer-incentives-ui";
+import { useMarketManager } from "@/store/use-market-manager";
 
 export const IPLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -13,6 +14,8 @@ export const IPLimitActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
+  const { viewType } = useMarketManager();
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
@@ -20,7 +23,7 @@ export const IPLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:vault:ip-limit:incentive-action-type"
+        layoutId={`motion:market:vault:ip-limit:incentive-action-type:${viewType}`}
         delay={0.1}
       >
         <ActionTypeSelector />

@@ -16,6 +16,7 @@ import { FormInputLabel } from "@/components/composables";
 import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrapper";
 import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper";
 import { parseTokenAmountToRawAmount } from "royco/utils";
+import { useMarketManager } from "@/store/use-market-manager";
 
 export const APR_LOCKUP_CONSTANT = 365 * 24 * 60 * 60;
 
@@ -27,6 +28,8 @@ export const APLimitActionForm = React.forwardRef<
 >(({ className, marketActionForm, ...props }, ref) => {
   const { currentMarketData, marketMetadata, currentHighestOffers } =
     useActiveMarket();
+
+  const { viewType } = useMarketManager();
 
   const highestIncentiveData = useMemo(() => {
     if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
@@ -144,7 +147,7 @@ export const APLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:recipe:ap-limit:funding-source-selector"
+        layoutId={`motion:market:recipe:ap-limit:funding-source-selector:${viewType}`}
         delay={0.1}
       >
         <FundingSourceSelector
@@ -158,10 +161,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Yield
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ap-limit:incentive-yield-wrapper"
+          layoutId={`motion:market:recipe:ap-limit:incentive-yield-wrapper:${viewType}`}
           delay={0.2}
         >
           <IncentiveYieldWrapper
@@ -185,10 +188,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Amount
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ap-limit:input-amount-wrapper"
+          layoutId={`motion:market:recipe:ap-limit:input-amount-wrapper:${viewType}`}
           delay={0.3}
         >
           <InputAmountWrapper
@@ -214,10 +217,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Token Selector
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ap-limit:incentive-token-selector"
+          layoutId={`motion:market:recipe:ap-limit:incentive-token-selector:${viewType}`}
           delay={0.4}
         >
           <FormInputLabel size="sm" label="Incentives Requested" />
@@ -255,10 +258,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Amount
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ap-limit:incentive-amount-wrapper"
+          layoutId={`motion:market:recipe:ap-limit:incentive-amount-wrapper:${viewType}`}
           delay={0.5}
         >
           <IncentiveAmountWrapper
@@ -285,10 +288,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      <div className="mt-4">
+      <div className="mt-5">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ap-limit:input-expiry-selector"
+          layoutId={`motion:market:recipe:ap-limit:input-expiry-selector:${viewType}`}
           delay={0.6}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />

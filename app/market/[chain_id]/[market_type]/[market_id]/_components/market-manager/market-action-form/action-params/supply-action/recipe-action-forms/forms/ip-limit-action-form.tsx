@@ -8,6 +8,7 @@ import { InputExpirySelector } from "../../../composables";
 import { IncentivesAmountSelector } from "../../../composables";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
+import { useMarketManager } from "@/store/use-market-manager";
 
 export const IPLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -15,6 +16,8 @@ export const IPLimitActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
+  const { viewType } = useMarketManager();
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
@@ -22,7 +25,7 @@ export const IPLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:recipe:ip-limit:input-amount-wrapper"
+        layoutId={`motion:market:recipe:ip-limit:input-amount-wrapper:${viewType}`}
         delay={0.1}
       >
         <InputAmountWrapper marketActionForm={marketActionForm} />
@@ -40,10 +43,10 @@ export const IPLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      <div className="mt-4">
+      <div className="mt-5">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:recipe:ip-limit:input-expiry-selector"
+          layoutId={`motion:market:recipe:ip-limit:input-expiry-selector:${viewType}`}
           delay={0.4}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />

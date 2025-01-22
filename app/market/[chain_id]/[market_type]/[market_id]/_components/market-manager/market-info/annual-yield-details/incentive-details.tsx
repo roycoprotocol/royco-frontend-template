@@ -267,7 +267,7 @@ export const IncentiveDetails = React.forwardRef<
   const { marketMetadata, currentMarketData, currentHighestOffers, isLoading } =
     useActiveMarket();
 
-  const { incentiveType } = useMarketManager();
+  const { incentiveType, viewType } = useMarketManager();
 
   const highestIncentives = useMemo(() => {
     if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
@@ -347,7 +347,7 @@ export const IncentiveDetails = React.forwardRef<
               return (
                 <SlideUpWrapper
                   layout="position"
-                  layoutId={`motion:market:market-info:incentive-details:${token_data.id}`}
+                  layoutId={`motion:market:market-info:incentive-details:${viewType}:${token_data.id}`}
                   delay={0.1 + token_data_index * 0.1}
                 >
                   <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
@@ -399,7 +399,7 @@ export const IncentiveDetails = React.forwardRef<
               return (
                 <SlideUpWrapper
                   layout="position"
-                  layoutId={`motion:market:market-info:native-incentive-details:${token_data.id}`}
+                  layoutId={`motion:market:market-info:native-incentive-details:${viewType}:${token_data.id}`}
                   delay={0.1 + token_data_index * 0.1}
                 >
                   <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>

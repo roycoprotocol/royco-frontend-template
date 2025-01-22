@@ -6,6 +6,7 @@ import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { IPQuantityIndicator } from "../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
+import { useMarketManager } from "@/store/use-market-manager";
 
 export const IPMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -13,6 +14,8 @@ export const IPMarketActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
+  const { viewType } = useMarketManager();
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <div ref={ref} className={cn(className)} {...props}>
@@ -21,7 +24,7 @@ export const IPMarketActionForm = React.forwardRef<
          */}
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:vault:ip-market:input-amount-wrapper"
+          layoutId={`motion:market:vault:ip-market:input-amount-wrapper:${viewType}`}
           delay={0.1}
         >
           <InputAmountWrapper marketActionForm={marketActionForm} />
