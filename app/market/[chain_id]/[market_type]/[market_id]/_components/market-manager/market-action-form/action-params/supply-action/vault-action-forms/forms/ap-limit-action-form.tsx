@@ -17,6 +17,8 @@ import { FormInputLabel } from "@/components/composables";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
 import { APR_LOCKUP_CONSTANT } from "../../recipe-action-forms/forms/ap-limit-action-form";
+import { InfoIcon } from "lucide-react";
+import { SecondaryLabel } from "../../../../../../composables";
 
 export const APLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -133,7 +135,7 @@ export const APLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:supply-action:incentive-yield-wrapper"
+        layoutId="motion:market:vault:ap-limit:incentive-yield-wrapper"
         delay={0.1}
       >
         <IncentiveYieldWrapper
@@ -159,7 +161,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-amount-wrapper"
+          layoutId="motion:market:vault:ap-limit:input-amount-wrapper"
           delay={0.2}
         >
           <InputAmountWrapper
@@ -188,7 +190,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:incentive-token-selector"
+          layoutId="motion:market:vault:ap-limit:incentive-token-selector"
           delay={0.4}
         >
           <FormInputLabel size="sm" label="Incentive Requested per USDC" />
@@ -230,7 +232,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:incentive-amount-wrapper"
+          layoutId="motion:market:vault:ap-limit:incentive-amount-wrapper"
           delay={0.5}
         >
           <IncentiveAmountWrapper
@@ -259,11 +261,22 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-4">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-expiry-selector"
+          layoutId="motion:market:vault:ap-limit:input-expiry-selector"
           delay={0.4}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />
         </SlideUpWrapper>
+      </div>
+
+      {/**
+       * Disclaimer
+       */}
+      <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+        <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+        <SecondaryLabel className="break-normal text-xs">
+          Your offer will be placed in the rate of incentives to input asset,
+          not percentage APY.
+        </SecondaryLabel>
       </div>
     </div>
   );

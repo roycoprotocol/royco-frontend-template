@@ -1,7 +1,7 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import { FormInputLabel } from "../../../../../composables";
+import { FormInputLabel, TertiaryLabel } from "../../../../../composables";
 import { MarketActionFormSchema } from "../../../market-action-form-schema";
 import { z } from "zod";
 import React, { useMemo, useState, useEffect } from "react";
@@ -88,9 +88,30 @@ export const IncentiveYieldWrapper = React.forwardRef<
   const selectedYield =
     marketActionForm.watch("annual_change_ratio")?.toString() || "";
 
+  const selectedIncentiveToken =
+    marketActionForm.watch("incentive_tokens")?.[0] || null;
+
+  const formLabel = useMemo(() => {
+    if (selectedIncentiveToken) {
+      return `Desired % ${selectedIncentiveToken.symbol}`;
+    }
+    return "Desired %";
+  }, [selectedIncentiveToken]);
+
+  const totalYield = useMemo(() => {
+    let result = selectedYield ? parseFloat(selectedYield) / 100 : 0;
+    if (currentMarketData && currentMarketData.native_annual_change_ratio) {
+      result += (currentMarketData as any).native_annual_change_ratios.reduce(
+        (acc: number, item: number) => acc + item,
+        0
+      );
+    }
+    return result;
+  }, [selectedYield, currentMarketData]);
+
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <FormInputLabel size="sm" label="Desired %" />
+      <FormInputLabel size="sm" label={formLabel} />
 
       {/**
        * Input yield selector
@@ -132,6 +153,23 @@ export const IncentiveYieldWrapper = React.forwardRef<
           );
         }}
       />
+
+      {/**
+       * Total APY
+       */}
+      <TertiaryLabel className="mt-2 space-x-1 italic">
+        <span>Total APY:</span>
+
+        <span className="flex items-center justify-center">
+          {Intl.NumberFormat("en-US", {
+            style: "percent",
+            notation: "standard",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+            useGrouping: true,
+          }).format(totalYield || 0)}
+        </span>
+      </TertiaryLabel>
     </div>
   );
 });

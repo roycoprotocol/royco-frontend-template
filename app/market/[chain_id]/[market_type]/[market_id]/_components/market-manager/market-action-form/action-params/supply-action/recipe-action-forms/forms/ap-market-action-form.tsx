@@ -20,7 +20,7 @@ export const APMarketActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:supply-action:funding-source-selector"
+        layoutId="motion:market:recipe:ap-market:funding-source-selector"
         delay={0.1}
       >
         <FundingSourceSelector
@@ -37,7 +37,7 @@ export const APMarketActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-amount-wrapper"
+          layoutId="motion:market:recipe:ap-market:input-amount-wrapper"
           delay={0.2}
         >
           <InputAmountWrapper marketActionForm={marketActionForm} />

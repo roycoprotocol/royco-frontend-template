@@ -197,6 +197,13 @@ export const OfferListVisualizer = React.forwardRef<
     );
   }, [currentHighestOffers, currentMarketData, tokenColor]);
 
+  const YAxisLabel = useMemo(() => {
+    if (currentMarketData && currentMarketData.input_token_data) {
+      return `${currentMarketData.input_token_data.symbol} Offer Size`;
+    }
+    return "Offer Size";
+  }, [currentMarketData]);
+
   if (propsHighestOffers.isLoading) {
     return (
       <div
@@ -279,8 +286,9 @@ export const OfferListVisualizer = React.forwardRef<
             tickLine={false}
             axisLine={false}
             label={{
-              value: "Offer Size",
-              position: "left",
+              value: YAxisLabel,
+              position: "center",
+              dx: -30,
               angle: -90,
             }}
             tickMargin={0}

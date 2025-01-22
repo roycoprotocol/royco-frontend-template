@@ -144,7 +144,7 @@ export const APLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:supply-action:funding-source-selector"
+        layoutId="motion:market:recipe:ap-limit:funding-source-selector"
         delay={0.1}
       >
         <FundingSourceSelector
@@ -161,7 +161,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:incentive-yield-wrapper"
+          layoutId="motion:market:recipe:ap-limit:incentive-yield-wrapper"
           delay={0.2}
         >
           <IncentiveYieldWrapper
@@ -188,7 +188,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-amount-wrapper"
+          layoutId="motion:market:recipe:ap-limit:input-amount-wrapper"
           delay={0.3}
         >
           <InputAmountWrapper
@@ -217,7 +217,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:incentive-token-selector"
+          layoutId="motion:market:recipe:ap-limit:incentive-token-selector"
           delay={0.4}
         >
           <FormInputLabel size="sm" label="Incentives Requested" />
@@ -258,7 +258,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-2">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:incentive-amount-wrapper"
+          layoutId="motion:market:recipe:ap-limit:incentive-amount-wrapper"
           delay={0.5}
         >
           <IncentiveAmountWrapper
@@ -288,7 +288,7 @@ export const APLimitActionForm = React.forwardRef<
       <div className="mt-4">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:supply-action:input-expiry-selector"
+          layoutId="motion:market:recipe:ap-limit:input-expiry-selector"
           delay={0.6}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />
