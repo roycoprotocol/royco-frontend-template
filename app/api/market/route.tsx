@@ -78,7 +78,7 @@ export const getContent = (marketData: any) => {
     validator.trim(marketData.description || "")
   );
 
-  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "dev") {
+  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
     return getBoycoMarket({
       id: marketData.id,
       name: sanitizedName,
