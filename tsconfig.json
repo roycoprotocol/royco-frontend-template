@@ -29,7 +29,8 @@
     ".next/types/**/*.ts",
     "scripts/data/generate-markets.mts",
     "app/create/_components/market-form",
-    "components/composables/simulation-box"
+    "components/composables/simulation-box",
+    "app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/supply-action/components/funding-source-selector"
   ],
   "exclude": ["node_modules", "bin"]
 }

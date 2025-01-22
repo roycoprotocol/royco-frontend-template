@@ -24,14 +24,13 @@ import { ErrorAlert } from "../alerts";
 import toast from "react-hot-toast";
 import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
-import { TransactionOptionsType } from "@/sdk/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
 import { TypedRoycoTransactionType } from "royco/market";
-import { getSupportedToken } from "royco/constants";
+import { TransactionOptionsType } from "royco/types";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -355,11 +354,11 @@ export const TransactionModal = React.forwardRef<
                 className="h-9 text-sm"
                 onClick={async () => {
                   try {
+                    // @ts-ignore
                     await switchChain(config, {
                       /**
                        * @TODO strictly type this
                        */
-                      // @ts-ignore
                       chainId: transactions[0]?.chainId,
                     });
                   } catch (error) {
