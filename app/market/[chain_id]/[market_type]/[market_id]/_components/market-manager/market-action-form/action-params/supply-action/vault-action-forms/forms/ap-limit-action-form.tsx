@@ -29,6 +29,8 @@ export const APLimitActionForm = React.forwardRef<
   const { currentMarketData, marketMetadata, currentHighestOffers } =
     useActiveMarket();
 
+  const { viewType } = useMarketManager();
+
   const highestIncentiveData = useMemo(() => {
     if (marketMetadata.market_type === RoycoMarketType.vault.id) {
       if (
@@ -135,7 +137,7 @@ export const APLimitActionForm = React.forwardRef<
        */}
       <SlideUpWrapper
         layout="position"
-        layoutId="motion:market:vault:ap-limit:incentive-yield-wrapper"
+        layoutId={`motion:market:vault:ap-limit:incentive-yield-wrapper:${viewType}`}
         delay={0.1}
       >
         <IncentiveYieldWrapper
@@ -158,10 +160,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Amount
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:vault:ap-limit:input-amount-wrapper"
+          layoutId={`motion:market:vault:ap-limit:input-amount-wrapper:${viewType}`}
           delay={0.2}
         >
           <InputAmountWrapper
@@ -187,10 +189,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Token Selector
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:vault:ap-limit:incentive-token-selector"
+          layoutId={`motion:market:vault:ap-limit:incentive-token-selector:${viewType}`}
           delay={0.4}
         >
           <FormInputLabel size="sm" label="Incentive Requested per USDC" />
@@ -229,10 +231,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Amount
        */}
-      <div className="mt-2">
+      <div className="mt-3">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:vault:ap-limit:incentive-amount-wrapper"
+          layoutId={`motion:market:vault:ap-limit:incentive-amount-wrapper:${viewType}`}
           delay={0.5}
         >
           <IncentiveAmountWrapper
@@ -258,10 +260,10 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      <div className="mt-4">
+      <div className="mt-5">
         <SlideUpWrapper
           layout="position"
-          layoutId="motion:market:vault:ap-limit:input-expiry-selector"
+          layoutId={`motion:market:vault:ap-limit:input-expiry-selector:${viewType}`}
           delay={0.4}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />
@@ -271,12 +273,20 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Disclaimer
        */}
-      <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
-        <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
-        <SecondaryLabel className="break-normal text-xs">
-          Your offer will be placed in the rate of incentives to input asset,
-          not percentage APY.
-        </SecondaryLabel>
+      <div className="mt-3">
+        <SlideUpWrapper
+          layout="position"
+          layoutId={`motion:market:vault:ap-limit:disclaimer:${viewType}`}
+          delay={0.5}
+        >
+          <div className="flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+            <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+            <SecondaryLabel className="break-normal text-xs">
+              Your offer will be placed in the rate of incentives to input
+              asset, not percentage APY.
+            </SecondaryLabel>
+          </div>
+        </SlideUpWrapper>
       </div>
     </div>
   );
