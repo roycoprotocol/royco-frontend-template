@@ -9,8 +9,8 @@ import { MarketType, MarketUserType, useMarketManager } from "@/store";
 import { Switch } from "@/components/ui/switch";
 import { SlideUpWrapper } from "@/components/animations";
 import { cn } from "@/lib/utils";
-import { PositionsRecipeTable } from "./positions-recipe-table";
-import { PositionsVaultTable } from "./positions-vault-table";
+import { PositionsRecipeManager } from "./positions-recipe-manager";
+import { PositionsVaultManager } from "./positions-vault-manager";
 // import { Profile } from "./account-profile";
 
 export const PositionsTable = React.forwardRef<
@@ -63,15 +63,11 @@ export const PositionsTable = React.forwardRef<
         <div className="min-w-0 flex-1">
           <div>
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
-              <SlideUpWrapper
-                layout="position"
-                layoutId="motion:position:market-type"
-                className={cn("flex min-w-52 flex-col")}
-              >
+              <div className={cn("flex min-w-52 flex-col")}>
                 <PrimaryLabel>Your Positions: Supply to Vault</PrimaryLabel>
-              </SlideUpWrapper>
+              </div>
 
-              <SlideUpWrapper
+              {/* <SlideUpWrapper
                 layout="position"
                 layoutId="motion:position:user-type"
                 className={cn("flex flex-col")}
@@ -91,41 +87,19 @@ export const PositionsTable = React.forwardRef<
                     }}
                   />
                 </div>
-              </SlideUpWrapper>
+              </SlideUpWrapper> */}
             </div>
-            <div className="w-full overflow-x-auto rounded-2xl border border-divider bg-white p-1 md:p-2">
-              <TertiaryLabel className="mb-5 mt-5 px-5">
-                POSITIONS
-              </TertiaryLabel>
-
-              <PositionsVaultTable
-                marketType={marketType}
-                userType={userType}
-              />
-            </div>
+            <PositionsVaultManager />
           </div>
 
           <div className="mt-10">
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
-              <SlideUpWrapper
-                layout="position"
-                layoutId="motion:position:market-type"
-                className={cn("flex min-w-52 flex-col")}
-              >
+              <div className={cn("flex min-w-52 flex-col")}>
                 <PrimaryLabel>Your Positions: All Other Actions</PrimaryLabel>
-              </SlideUpWrapper>
+              </div>
             </div>
 
-            <div className="w-full overflow-x-auto rounded-2xl border border-divider bg-white p-1 md:p-2">
-              <TertiaryLabel className="mb-5 mt-5 px-5">
-                POSITIONS
-              </TertiaryLabel>
-
-              <PositionsRecipeTable
-                marketType={marketType}
-                userType={userType}
-              />
-            </div>
+            <PositionsRecipeManager />
           </div>
         </div>
       </div>
