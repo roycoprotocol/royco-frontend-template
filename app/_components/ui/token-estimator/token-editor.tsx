@@ -20,6 +20,7 @@ import {
   parseFormattedValueToText,
   parseTextToFormattedValue,
 } from "royco/utils";
+import { useGlobalStates } from "@/store/use-global-states";
 
 export const TokenEditor = React.forwardRef<
   HTMLDivElement,
@@ -32,6 +33,12 @@ export const TokenEditor = React.forwardRef<
     onRemove?: () => void;
   }
 >(({ className, token, onRemove, customTokenForm, index, ...props }, ref) => {
+  const { customTokenData } = useGlobalStates();
+
+  const previousTokenData = useMemo(() => {
+    return customTokenData.find((t) => t.token_id === token.token_id);
+  }, [token.token_id]);
+
   const tokenData = useMemo(() => {
     return SupportedTokenList.find((t) => t.id === token.token_id);
   }, [token.token_id]);
@@ -99,9 +106,9 @@ export const TokenEditor = React.forwardRef<
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div>
           <SecondaryLabel className="font-light">Total Supply</SecondaryLabel>
-          <PrimaryLabel className="mt-1 text-2xl">
+          <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
-              previousValue={0}
+              previousValue={parseFloat(previousTokenData?.total_supply || "0")}
               currentValue={parseFloat(
                 customTokenForm.watch(
                   `customTokenData.${index}.total_supply`
@@ -120,9 +127,9 @@ export const TokenEditor = React.forwardRef<
 
         <div>
           <SecondaryLabel className="font-light">Price</SecondaryLabel>
-          <PrimaryLabel className="mt-1 text-2xl">
+          <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
-              previousValue={0}
+              previousValue={parseFloat(previousTokenData?.price || "0")}
               currentValue={parseFloat(
                 customTokenForm.watch(`customTokenData.${index}.price`) || "0"
               )}

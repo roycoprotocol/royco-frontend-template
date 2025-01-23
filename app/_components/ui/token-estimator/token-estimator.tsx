@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -91,7 +92,7 @@ export const TokenEstimator = React.forwardRef<
           {/**
            * Sheet header
            */}
-          <SheetHeader>
+          <SheetHeader className="flex flex-col items-start">
             <Button
               variant="ghost"
               className="flex w-fit px-1"
@@ -117,7 +118,7 @@ export const TokenEstimator = React.forwardRef<
               <SlideUpWrapper
                 layout="position"
                 layoutId="motion:market:token-estimator:token-selector"
-                className="flex flex-col"
+                className="flex flex-col overflow-x-auto"
               >
                 <TokenSelector
                   defaultTokenId={defaultTokenId}
@@ -148,26 +149,28 @@ export const TokenEstimator = React.forwardRef<
               </form>
             </div>
 
-            <Button
-              className="flex w-full items-center justify-center gap-2"
-              disabled={loading}
-              onClick={() => {
-                setCustomTokenData(form.getValues().customTokenData);
-                setLoading(true);
+            <SheetClose asChild>
+              <Button
+                className="flex w-full items-center justify-center gap-2"
+                disabled={loading}
+                onClick={() => {
+                  setCustomTokenData(form.getValues().customTokenData);
+                  setLoading(true);
 
-                setTimeout(() => {
-                  setLoading(false);
-                  setOpen(false);
-                }, 1000);
-              }}
-            >
-              {loading ? (
-                <LoadingSpinner className="h-5 w-5" />
-              ) : (
-                <LightningIcon className="h-5 w-5" />
-              )}
-              <span className="text-sm font-medium">Estimate APY</span>
-            </Button>
+                  setTimeout(() => {
+                    setLoading(false);
+                    setOpen(false);
+                  }, 1000);
+                }}
+              >
+                {loading ? (
+                  <LoadingSpinner className="h-5 w-5" />
+                ) : (
+                  <LightningIcon className="h-5 w-5" />
+                )}
+                <span className="text-sm font-medium">Estimate APY</span>
+              </Button>
+            </SheetClose>
           </Form>
         </div>
       </SheetContent>
