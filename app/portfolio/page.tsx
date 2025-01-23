@@ -6,6 +6,7 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
+import { PositionsRecipeManager } from "./_components/positions-recipe-manager";
 
 const Page = () => {
   const Content = () => {
