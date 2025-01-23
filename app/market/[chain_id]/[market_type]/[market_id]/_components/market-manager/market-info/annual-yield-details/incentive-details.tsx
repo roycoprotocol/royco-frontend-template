@@ -24,6 +24,7 @@ import LightningIcon from "./icons/lightning";
 import { Vibrant } from "node-vibrant/browser";
 import ShieldIcon from "./icons/shield";
 import SparkleIcon from "./icons/sparkle";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
@@ -158,7 +159,7 @@ const IncentiveTokenDetails = React.forwardRef<
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
         {showEstimate && currentMarketData.annual_change_ratio === 0 ? (
-          <TokenEstimatePopover token_data={token_data}>
+          <TokenEstimator defaultTokenId={token_data.id}>
             <Button
               variant="link"
               className="flex w-full items-center gap-1 py-0 outline-none"
@@ -166,7 +167,7 @@ const IncentiveTokenDetails = React.forwardRef<
               <LightningIcon className="h-5 w-5 fill-black" />
               <span className="text-sm font-medium underline">Estimate</span>
             </Button>
-          </TokenEstimatePopover>
+          </TokenEstimator>
         ) : (
           <>
             {category === "base" ? (
