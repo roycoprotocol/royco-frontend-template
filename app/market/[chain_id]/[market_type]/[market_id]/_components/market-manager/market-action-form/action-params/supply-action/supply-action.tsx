@@ -28,8 +28,8 @@ import { BigNumber } from "ethers";
 import { TokenDisplayer } from "@/components/common";
 import { VaultActionForms } from "./vault-action-forms";
 import { OfferTypeSelector } from "./components/offer-type-selector";
-import { TokenEstimatePopover } from "../../../market-info/annual-yield-details/incentive-details";
 import LightningIcon from "../../../market-info/annual-yield-details/icons/lightning";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -114,14 +114,14 @@ export const SupplyAction = React.forwardRef<
             layoutId="motion:market:supply-action:token-estimate-popover"
             delay={0.2}
           >
-            <TokenEstimatePopover token_data={highestIncentiveToken}>
+            <TokenEstimator defaultTokenId={highestIncentiveToken?.id}>
               <Button className="flex w-full items-center justify-center gap-2">
                 <LightningIcon className="h-5 w-5 fill-white" />
                 <span className="text-sm font-medium">
                   Estimate APY to Place Limit Offer
                 </span>
               </Button>
-            </TokenEstimatePopover>
+            </TokenEstimator>
           </SlideUpWrapper>
         </div>
       ) : (

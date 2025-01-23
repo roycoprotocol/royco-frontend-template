@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import LightningIcon from "./icons/lightning";
 import { PrimaryLabel, SecondaryLabel } from "../../../composables";
 import { TertiaryLabel } from "../../../composables";
-import { IncentiveDetails, TokenEstimatePopover } from "./incentive-details";
+import { IncentiveDetails } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
@@ -52,7 +53,7 @@ export const AnnualYieldDetails = React.forwardRef<
         <div>
           <TertiaryLabel className="text-sm">APY</TertiaryLabel>
           {breakdowns.length > 0 ? (
-            <TokenEstimatePopover token_data={point_token_data}>
+            <TokenEstimator defaultTokenId={point_token_data?.id}>
               <Button
                 variant="outline"
                 className="flex w-full items-center justify-center gap-2"
@@ -60,7 +61,7 @@ export const AnnualYieldDetails = React.forwardRef<
                 <LightningIcon className="h-5 w-5 fill-black" />
                 <span className="text-sm font-medium">Estimate</span>
               </Button>
-            </TokenEstimatePopover>
+            </TokenEstimator>
           ) : (
             <PrimaryLabel className="mt-1 text-2xl font-medium">
               <SpringNumber
