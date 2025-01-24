@@ -18,21 +18,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  PositionsRecipeColumnDataElement,
-  positionsRecipeColumns,
-  PositionsRecipeDataElement,
-} from "./positions-recipe-columns";
+import { OffersColumnDataElement, offersColumns } from "./offers-columns";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { FallMotion } from "@/components/animations";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AlertIndicator } from "@/components/common";
 
-export const PositionsRecipeTable = React.forwardRef<
+export const OffersTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    data: PositionsRecipeColumnDataElement[];
-    columns: typeof positionsRecipeColumns;
+    data: OffersColumnDataElement[];
+    columns: typeof offersColumns;
   }
 >(({ className, data, columns, ...props }, ref) => {
   const table = useReactTable({
@@ -86,13 +83,21 @@ export const PositionsRecipeTable = React.forwardRef<
               })}
             </TableRow>
           ))}
+
+          <tr
+            suppressHydrationWarning
+            className="absolute bottom-0 left-0 h-[1px] w-full bg-divider"
+          />
         </TableHeader>
 
-        <TableBody className={cn("bg-white")}>
+        <TableBody className={cn("overflow-y-scroll bg-white")}>
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 grow text-center"
+              >
+                No offers found
               </TableCell>
             </TableRow>
           ) : (
@@ -112,7 +117,7 @@ export const PositionsRecipeTable = React.forwardRef<
                     <TableCell
                       key={`row:cell:${cell.id}`}
                       className={cn(
-                        "min-w-fit whitespace-nowrap px-3 py-0 text-sm font-normal text-black",
+                        "min-w-fit whitespace-nowrap px-3 py-0 text-sm font-light text-black",
                         "h-[4rem]",
                         index === 0 && "pl-5",
                         index !== 0 &&
@@ -120,18 +125,6 @@ export const PositionsRecipeTable = React.forwardRef<
                           "pr-5"
                       )}
                     >
-                      {/* <FallMotion
-                        customKey={`list:content:${row.original.id}`}
-                        height="4rem"
-                        delay={rowIndex * 0.02}
-                        className="h-full"
-                        contentClassName="flex flex-col items-center justify-center"
-                      >
-                        {flexRender(cell.column.columnDef.cell, {
-                          ...cell.getContext(),
-                        })}
-                      </FallMotion> */}
-
                       {flexRender(cell.column.columnDef.cell, {
                         ...cell.getContext(),
                       })}

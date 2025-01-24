@@ -99,11 +99,7 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
           : input_token_value + incentive_tokens_value;
 
         return (
-          <div
-            className={cn(
-              "flex h-full w-full flex-col items-center justify-center"
-            )}
-          >
+          <div className={cn("w-full text-center")}>
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
@@ -185,7 +181,7 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
         return (
-          <div className={cn("")}>
+          <div className={cn("w-full text-center")}>
             {Intl.NumberFormat("en-US", {
               style: "percent",
               notation: "compact",
@@ -216,7 +212,7 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
         );
 
         return (
-          <div className={cn("")}>
+          <div className={cn("w-full text-center")}>
             {time_to_unlock_in_seconds <= 0
               ? "Now"
               : (Number(row.original.lockup_time) ?? 0) > 0
@@ -234,7 +230,7 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
       meta: "min-w-40 text-center",
       cell: ({ row }) => {
         return (
-          <div className={cn("")}>
+          <div className={cn("w-full text-center")}>
             {row.original.reward_style !== 2
               ? "Lockup Enforced"
               : "Anytime, but forfeit"}
@@ -261,10 +257,10 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
         }
 
         if (row.original.offer_side === 1) {
-          return <div className={cn("")}>Not Applicable</div>;
+          return <div className={cn("w-full text-center")}>Not Applicable</div>;
         } else {
           return (
-            <div className={cn("")}>
+            <div className={cn("w-full text-center")}>
               {Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",

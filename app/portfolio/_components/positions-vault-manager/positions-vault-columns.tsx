@@ -96,11 +96,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
         const market_value = input_token_value + incentive_tokens_value;
 
         return (
-          <div
-            className={cn(
-              "flex h-full w-full flex-col items-center justify-center"
-            )}
-          >
+          <div className={cn("w-full text-center")}>
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
@@ -182,7 +178,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
         return (
-          <div className={cn("")}>
+          <div className={cn("w-full text-center")}>
             {Intl.NumberFormat("en-US", {
               style: "percent",
               notation: "compact",
@@ -201,7 +197,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
       header: "Time to Incentive",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
-        return <div className={cn("")}>None</div>;
+        return <div className={cn("w-full text-center")}>None</div>;
       },
     },
     {
@@ -211,7 +207,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
       header: "Exit",
       meta: "min-w-40 text-center",
       cell: ({ row }) => {
-        return <div className={cn("")}>Anytime</div>;
+        return <div className={cn("w-full text-center")}>Anytime</div>;
       },
     },
     {
@@ -229,10 +225,10 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
         }
 
         if (row.original.offer_side === 1) {
-          return <div className={cn("")}>Not Applicable</div>;
+          return <div className={cn("w-full text-center")}>Not Applicable</div>;
         } else {
           return (
-            <div className={cn("")}>
+            <div className={cn("w-full text-center")}>
               {Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",

@@ -37,7 +37,7 @@ const nextConfig = {
     },
     rewrites: true,
   },
-  // Reverse proxy to Posthog and Royco Analytics
+
   rewrites: async () => {
     return [
       {
@@ -75,6 +75,14 @@ const nextConfig = {
       {
         source: "/api/rpc/146/:path*",
         destination: process.env.RPC_API_KEY_146,
+      },
+      {
+        source: "/api/rpc/80000/:path*",
+        destination: process.env.RPC_API_KEY_80000,
+      },
+      {
+        source: "/api/rpc/80094/:path*",
+        destination: process.env.RPC_API_KEY_80094,
       },
     ];
   },

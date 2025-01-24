@@ -120,7 +120,7 @@ export const PositionsVaultTable = React.forwardRef<
                           "pr-5"
                       )}
                     >
-                      <FallMotion
+                      {/* <FallMotion
                         customKey={`list:content:${row.original.id}`}
                         height="4rem"
                         delay={rowIndex * 0.02}
@@ -130,7 +130,11 @@ export const PositionsVaultTable = React.forwardRef<
                         {flexRender(cell.column.columnDef.cell, {
                           ...cell.getContext(),
                         })}
-                      </FallMotion>
+                      </FallMotion> */}
+
+                      {flexRender(cell.column.columnDef.cell, {
+                        ...cell.getContext(),
+                      })}
                     </TableCell>
                   ))}
                 </TableRow>
