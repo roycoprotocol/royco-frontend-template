@@ -43,6 +43,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { MarketType } from "@/store";
+import validator from "validator";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -137,7 +138,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             />
 
             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {props.row.original.name.trim()}
+              {validator.unescape(props.row.original.name.trim())}
             </div>
 
             <div className="ml-2">
