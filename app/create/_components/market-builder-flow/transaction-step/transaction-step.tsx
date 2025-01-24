@@ -75,7 +75,7 @@ export const TransactionStep = React.forwardRef<
         const response2 = await fetch(`/api/market`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "content-type": "application/json",
           },
           body: JSON.stringify({
             chain_id: marketBuilderForm.watch("chain").id,

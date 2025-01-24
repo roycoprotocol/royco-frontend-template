@@ -23,9 +23,9 @@ const logIncomingRequest = (request: NextRequest) => {
 };
 
 export async function middleware(request: NextRequest) {
-  // if (process.env.NODE_ENV === "development") {
-  //   logIncomingRequest(request);
-  // }
+  if (process.env.NODE_ENV === "development") {
+    // logIncomingRequest(request);
+  }
 
   /**
    * Current path
@@ -139,25 +139,25 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-    // Check if the request is for the auth/verify route
-    if (
-      pathname.startsWith("/api/") &&
-      !pathname.startsWith("/api/auth/verify") &&
-      !pathname.startsWith("/api/push/token")
-    ) {
-      const authToken = request.headers.get("auth-token");
+  // if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+  //   // Check if the request is for the auth/verify route
+  //   if (
+  //     pathname.startsWith("/api/") &&
+  //     !pathname.startsWith("/api/auth/verify") &&
+  //     !pathname.startsWith("/api/push/token")
+  //   ) {
+  //     const authToken = request.headers.get("auth-token");
 
-      const isValid = await fetch("/api/auth/verify?auth_token=" + authToken);
+  //     const isValid = await fetch("/api/auth/verify?auth_token=" + authToken);
 
-      if (!isValid) {
-        return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-    }
-  }
+  //     if (!isValid) {
+  //       return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
+  //         status: 401,
+  //         headers: { "Content-Type": "application/json" },
+  //       });
+  //     }
+  //   }
+  // }
 
   return NextResponse.next();
 }
