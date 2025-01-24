@@ -9,10 +9,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { LoadingSpinner } from "@/components/composables";
-import { AlertIndicator } from "@/components/common";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { Vibrant } from "node-vibrant/browser";
 import { useActiveMarket } from "../../hooks";
-import { TertiaryLabel } from "../../composables";
+import { SecondaryLabel, TertiaryLabel } from "../../composables";
 import { Circle } from "lucide-react";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
@@ -259,62 +259,75 @@ export const OfferListVisualizer = React.forwardRef<
       {/**
        * Offer Chart
        */}
-      <ChartContainer
-        className={cn("mt-5 flex grow flex-col")}
-        config={chartConfig}
-      >
-        <BarChart
-          margin={{
-            left: 10,
-            bottom: 20,
-          }}
-          accessibilityLayer
-          data={chartData}
+      <div className="relative">
+        {/**
+         * Y Axis Label
+         */}
+        <div className="absolute bottom-0 left-0 top-0 flex w-5 items-center justify-center">
+          <div className="flex shrink-0 -rotate-90 items-center gap-1">
+            <TokenDisplayer
+              tokens={[currentMarketData.input_token_data]}
+              size={4}
+              symbols={true}
+              symbolClassName="text-black text-xs font-medium"
+            />
+            <SecondaryLabel className="font-regular text-xs">
+              Offer Size
+            </SecondaryLabel>
+          </div>
+        </div>
+
+        <ChartContainer
+          className={cn("mt-5 flex grow flex-col")}
+          config={chartConfig}
         >
-          <XAxis
-            dataKey="annual_change_ratio"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            interval={0}
-            tick={<CustomizedXAxisTick data={chartData} />}
-          />
-
-          <YAxis
-            dataKey="input_token_amount"
-            orientation="left"
-            tickLine={false}
-            axisLine={false}
-            label={{
-              value: YAxisLabel,
-              position: "center",
-              dx: -30,
-              angle: -90,
+          <BarChart
+            margin={{
+              left: 10,
+              bottom: 20,
             }}
-            tickMargin={0}
-            tickFormatter={(value) => {
-              const formattedValue = Intl.NumberFormat("en-US", {
-                notation: "compact",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }).format(value as number);
-              return formattedValue;
-            }}
-          />
+            accessibilityLayer
+            data={chartData}
+          >
+            <XAxis
+              dataKey="annual_change_ratio"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              interval={0}
+              tick={<CustomizedXAxisTick data={chartData} />}
+            />
 
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent hideLabel />}
-          />
+            <YAxis
+              dataKey="input_token_amount"
+              orientation="left"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={0}
+              tickFormatter={(value) => {
+                const formattedValue = Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }).format(value as number);
+                return formattedValue;
+              }}
+            />
 
-          <Bar
-            maxBarSize={20}
-            dataKey="input_token_amount"
-            strokeWidth={2}
-            radius={[10, 10, 10, 10]}
-          />
-        </BarChart>
-      </ChartContainer>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+
+            <Bar
+              maxBarSize={20}
+              dataKey="input_token_amount"
+              strokeWidth={2}
+              radius={[10, 10, 10, 10]}
+            />
+          </BarChart>
+        </ChartContainer>
+      </div>
     </div>
   );
 });

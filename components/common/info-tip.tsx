@@ -24,7 +24,8 @@ export const InfoTip = React.forwardRef<
             "shrink-0",
             size === "md" && "h-5 w-5",
             size === "sm" && "h-4 w-4",
-            type === "secondary" && "text-secondary"
+            type === "secondary" && "text-secondary",
+            type === "tertiary" && "text-tertiary"
           )}
         />
       </TooltipTrigger>

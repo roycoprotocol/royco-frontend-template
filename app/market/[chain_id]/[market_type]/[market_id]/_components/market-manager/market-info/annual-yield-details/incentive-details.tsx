@@ -25,6 +25,9 @@ import { Vibrant } from "node-vibrant/browser";
 import ShieldIcon from "./icons/shield";
 import SparkleIcon from "./icons/sparkle";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@/components/ui/tooltip";
+import { createPortal } from "react-dom";
 
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
@@ -90,13 +93,32 @@ const IncentiveToken = React.forwardRef<
 >(({ className, token_data, symbolClassName, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("", className)} {...props}>
-      <TokenDisplayer
-        className={cn("", className)}
-        symbolClassName={cn("text-sm font-medium", symbolClassName)}
-        tokens={[token_data]}
-        size={4}
-        symbols={true}
-      />
+      {token_data.length && token_data.length > 0 ? (
+        <div className="flex items-center">
+          <TokenDisplayer
+            className={cn("")}
+            imageClassName="grayscale"
+            tokens={token_data}
+            size={4}
+            symbols={false}
+          />
+          <div className="text-sm font-medium">
+            {token_data
+              .map((token: any) => {
+                return token.symbol;
+              })
+              .join(", ")}
+          </div>
+        </div>
+      ) : (
+        <TokenDisplayer
+          className={cn("")}
+          symbolClassName={cn("text-sm font-medium", symbolClassName)}
+          tokens={[token_data]}
+          size={4}
+          symbols={true}
+        />
+      )}
     </div>
   );
 });
@@ -158,7 +180,7 @@ const IncentiveTokenDetails = React.forwardRef<
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {showEstimate && currentMarketData.annual_change_ratio === 0 ? (
+        {showEstimate ? (
           <TokenEstimator defaultTokenId={token_data.id}>
             <Button
               variant="link"
@@ -172,17 +194,31 @@ const IncentiveTokenDetails = React.forwardRef<
           <>
             {category === "base" ? (
               <div className="flex items-center gap-1">
-                {currentMarketData.market_type === MarketType.recipe.value ? (
-                  <ShieldIcon
-                    className="h-5 w-5"
-                    style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                  />
-                ) : (
-                  <SparkleIcon
-                    className="h-5 w-5"
-                    style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                  />
-                )}
+                <Tooltip>
+                  <TooltipTrigger className={cn("cursor-pointer")}>
+                    {currentMarketData.market_type ===
+                    MarketType.recipe.value ? (
+                      <ShieldIcon
+                        className="h-5 w-5"
+                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                      />
+                    ) : (
+                      <SparkleIcon
+                        className="h-5 w-5"
+                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                      />
+                    )}
+                  </TooltipTrigger>
+                  {createPortal(
+                    <TooltipContent className={cn("bg-white", "max-w-80")}>
+                      {currentMarketData.market_type === MarketType.recipe.value
+                        ? "Fixed Incentive Rate"
+                        : "Variable Incentive Rate, based on # of participants"}
+                    </TooltipContent>,
+                    document.body
+                  )}
+                </Tooltip>
+
                 <span
                   className="flex h-5 items-center font-medium"
                   style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
@@ -248,10 +284,10 @@ const IncentiveTokenDetails = React.forwardRef<
             {Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-              notation: "standard",
+              notation: "compact",
               useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
             }).format(token_data.fdv)}{" "}
             FDV
           </TertiaryLabel>
@@ -297,9 +333,19 @@ export const IncentiveDetails = React.forwardRef<
     }
   }, [currentMarketData, currentHighestOffers, marketMetadata]);
 
-  const currentNativeIncentives = currentMarketData.yield_breakdown.filter(
-    (yield_breakdown) => yield_breakdown.category !== "base"
-  );
+  const currentNativeIncentives = useMemo(() => {
+    const tokens = currentMarketData.yield_breakdown.filter(
+      (yield_breakdown) => yield_breakdown.category !== "base"
+    );
+    const annual_change_ratio = tokens.reduce(
+      (acc, curr) => acc + curr.annual_change_ratio,
+      0
+    );
+    return {
+      tokens,
+      annual_change_ratio,
+    };
+  }, [currentMarketData]);
 
   if (isLoading) {
     return (
@@ -388,47 +434,44 @@ export const IncentiveDetails = React.forwardRef<
           </InfoCard>
         )}
 
-        {currentNativeIncentives && currentNativeIncentives.length !== 0 && (
-          <InfoCard
-            className={cn(
-              "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll",
-              "-mx-4 -mb-3 bg-z2 px-4 py-3",
-              BASE_MARGIN_TOP.MD
-            )}
-          >
-            {currentNativeIncentives.map((token_data, token_data_index) => {
-              return (
-                <SlideUpWrapper
-                  layout="position"
-                  layoutId={`motion:market:market-info:native-incentive-details:${viewType}:${token_data.id}`}
-                  delay={0.1 + token_data_index * 0.1}
-                >
-                  <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-                    <InfoCard.Row.Key>
-                      <IncentiveToken
-                        className="mb-1"
-                        symbolClassName="text-secondary font-normal"
-                        token_data={token_data}
-                      />
+        {currentNativeIncentives &&
+          currentNativeIncentives.tokens.length !== 0 && (
+            <InfoCard
+              className={cn(
+                "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll rounded-b-lg",
+                "-mx-4 -mb-3 bg-z2 px-4 py-3",
+                BASE_MARGIN_TOP.MD
+              )}
+            >
+              <SlideUpWrapper
+                layout="position"
+                layoutId={`motion:market:market-info:native-incentive-details:${viewType}:${currentNativeIncentives.tokens[0].id}`}
+                delay={0.1}
+              >
+                <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                  <InfoCard.Row.Key>
+                    <IncentiveToken
+                      className="mb-1"
+                      symbolClassName="text-secondary font-normal"
+                      token_data={currentNativeIncentives.tokens}
+                    />
 
-                      <TertiaryLabel className="ml-5">
-                        Underlying Rate(s)
-                      </TertiaryLabel>
-                    </InfoCard.Row.Key>
+                    <TertiaryLabel className="ml-5">
+                      Underlying Rate
+                    </TertiaryLabel>
+                  </InfoCard.Row.Key>
 
-                    <InfoCard.Row.Value>
-                      <IncentiveTokenDetails
-                        token_data={token_data}
-                        category={"underlying_native"}
-                        labelClassName="text-secondary"
-                      />
-                    </InfoCard.Row.Value>
-                  </InfoCard.Row>
-                </SlideUpWrapper>
-              );
-            })}
-          </InfoCard>
-        )}
+                  <InfoCard.Row.Value>
+                    <IncentiveTokenDetails
+                      token_data={currentNativeIncentives}
+                      category={"underlying_native"}
+                      labelClassName="text-secondary"
+                    />
+                  </InfoCard.Row.Value>
+                </InfoCard.Row>
+              </SlideUpWrapper>
+            </InfoCard>
+          )}
       </div>
     );
   }

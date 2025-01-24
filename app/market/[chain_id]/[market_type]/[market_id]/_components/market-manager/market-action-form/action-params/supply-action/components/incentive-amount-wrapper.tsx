@@ -24,16 +24,6 @@ export const IncentiveAmountWrapper = React.forwardRef<
   const selectedIncentiveToken =
     marketActionForm.watch("incentive_tokens")?.[0] || null;
 
-  if (!selectedIncentiveToken) {
-    return (
-      <div ref={ref} className={cn("contents", className)} {...props}>
-        <AlertIndicator className="w-full rounded-md border border-dashed">
-          No incentives selected
-        </AlertIndicator>
-      </div>
-    );
-  }
-
   const handleAmountChange = (value: string) => {
     const amount = value;
     const rawAmount = parseTokenAmountToRawAmount(
@@ -68,9 +58,19 @@ export const IncentiveAmountWrapper = React.forwardRef<
     }
   };
 
+  if (!selectedIncentiveToken) {
+    return (
+      <div ref={ref} className={cn("contents", className)} {...props}>
+        <AlertIndicator className="w-full rounded-md border border-dashed">
+          No add. incentives offered
+        </AlertIndicator>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <FormInputLabel size="sm" label="Amount Requested" />
+      <FormInputLabel size="sm" label="Incentives Requested" />
 
       {/**
        * Input amount selector

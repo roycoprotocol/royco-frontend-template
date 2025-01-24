@@ -14,6 +14,10 @@ import { RoycoMarketType } from "royco/market";
 import { useActiveMarket } from "../../../../../hooks/use-active-market";
 import { Vibrant } from "node-vibrant/browser";
 import SparkleIcon from "../../../../market-info/annual-yield-details/icons/sparkle";
+import { TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
+import { createPortal } from "react-dom";
 
 export const IncentiveYieldWrapper = React.forwardRef<
   HTMLDivElement,
@@ -132,17 +136,29 @@ export const IncentiveYieldWrapper = React.forwardRef<
         Suffix={() => {
           return (
             <div className="flex flex-row items-center gap-1">
-              {marketMetadata.market_type === RoycoMarketType.recipe.id ? (
-                <ShieldIcon
-                  className="h-5 w-5"
-                  style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                />
-              ) : (
-                <SparkleIcon
-                  className="h-5 w-5"
-                  style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                />
-              )}
+              <Tooltip>
+                <TooltipTrigger className={cn("cursor-pointer")}>
+                  {marketMetadata.market_type === RoycoMarketType.recipe.id ? (
+                    <ShieldIcon
+                      className="h-5 w-5"
+                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                    />
+                  ) : (
+                    <SparkleIcon
+                      className="h-5 w-5"
+                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                    />
+                  )}
+                </TooltipTrigger>
+                {createPortal(
+                  <TooltipContent className={cn("bg-white", "max-w-80")}>
+                    {marketMetadata.market_type === RoycoMarketType.recipe.id
+                      ? "Fixed Incentive Rate"
+                      : "Variable Incentive Rate, based on # of participants"}
+                  </TooltipContent>,
+                  document.body
+                )}
+              </Tooltip>
               <span
                 className="text-sm"
                 style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
