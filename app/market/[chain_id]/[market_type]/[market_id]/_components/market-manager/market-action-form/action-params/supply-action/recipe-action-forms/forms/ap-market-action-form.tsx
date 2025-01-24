@@ -7,6 +7,8 @@ import { FundingSourceSelector } from "../../components/funding-source-selector"
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
 import { useMarketManager } from "@/store/use-market-manager";
+import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
+import { useActiveMarket } from "../../../../../../hooks/use-active-market";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -15,6 +17,8 @@ export const APMarketActionForm = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { viewType } = useMarketManager();
+
+  const { currentMarketData } = useActiveMarket();
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -33,6 +37,17 @@ export const APMarketActionForm = React.forwardRef<
           }}
         />
       </SlideUpWrapper>
+
+      {/**
+       * Enso Shortcuts Widget
+       */}
+      <div className="mt-2">
+        <EnsoShortcutsWidget
+          token={currentMarketData?.input_token_data.contract_address!}
+          symbol={currentMarketData?.input_token_data.symbol}
+          chainId={currentMarketData?.chain_id!}
+        />
+      </div>
 
       {/**
        * Input Amount

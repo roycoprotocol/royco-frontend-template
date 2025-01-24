@@ -22,7 +22,7 @@ import { Form } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
-import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/icons/lightning";
+import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { CustomTokenDataElementType } from "royco/types";
 import { LoadingSpinner } from "@/components/composables";
 import { useTokenQuotes } from "royco/hooks";
