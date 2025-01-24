@@ -209,12 +209,15 @@ export const SupplyAction = React.forwardRef<
                   className="w-full"
                 >
                   {offerType === MarketOfferType.market.id ? (
-                    userType === MarketUserType.ap.id ? (
+                    userType === MarketUserType.ap.id &&
+                    highestIncentiveToken ? (
                       <>
-                        <span>Supply</span>
                         {highestIncentiveToken && (
                           <div className="ml-1 flex items-center gap-1">
+                            <span>Supply</span>
+
                             <span>for</span>
+
                             <span>
                               {Intl.NumberFormat("en-US", {
                                 style: "percent",
@@ -223,15 +226,19 @@ export const SupplyAction = React.forwardRef<
                                 maximumFractionDigits: 2,
                                 useGrouping: true,
                               }).format(
-                                highestIncentiveToken?.annual_change_ratio || 0
+                                highestIncentiveToken.annual_change_ratio || 0
                               )}
                             </span>
 
-                            <span>
+                            <span className="font-regular text-white">
+                              {highestIncentiveToken?.symbol}
+                            </span>
+
+                            <span className="mb-px">
                               <TokenDisplayer
                                 size={4}
                                 tokens={[highestIncentiveToken]}
-                                symbols={true}
+                                symbols={false}
                                 symbolClassName="text-white font-regular"
                               />
                             </span>
@@ -241,12 +248,15 @@ export const SupplyAction = React.forwardRef<
                     ) : (
                       <span>Supply Now</span>
                     )
-                  ) : userType === MarketUserType.ap.id ? (
+                  ) : userType === MarketUserType.ap.id &&
+                    selectedIncentiveToken ? (
                     <>
-                      <span>Bid</span>
                       {selectedIncentiveToken && (
                         <div className="ml-1 flex items-center gap-1">
+                          <span>Bid</span>
+
                           <span>for</span>
+
                           <span>
                             {Intl.NumberFormat("en-US", {
                               style: "percent",
@@ -255,15 +265,19 @@ export const SupplyAction = React.forwardRef<
                               maximumFractionDigits: 2,
                               useGrouping: true,
                             }).format(
-                              selectedIncentiveToken?.annual_change_ratio || 0
+                              selectedIncentiveToken.annual_change_ratio || 0
                             )}
                           </span>
 
-                          <span>
+                          <span className="font-regular text-white">
+                            {selectedIncentiveToken.symbol}
+                          </span>
+
+                          <span className="mb-px">
                             <TokenDisplayer
                               size={4}
                               tokens={[selectedIncentiveToken]}
-                              symbols={true}
+                              symbols={false}
                               symbolClassName="text-white font-regular"
                             />
                           </span>

@@ -37,7 +37,7 @@ export const MarketDetails = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("mt-5 rounded-lg border px-4 py-3", className)}
+      className={cn("rounded-lg border px-4 py-3", className)}
       {...props}
     >
       {/**
@@ -90,6 +90,7 @@ export const MarketDetails = React.forwardRef<
                 tokens={[currentMarketData.input_token_data]}
                 symbols={true}
                 symbolClassName="text-xs font-medium"
+                size={4}
               />
               <span>
                 {shortAddress(

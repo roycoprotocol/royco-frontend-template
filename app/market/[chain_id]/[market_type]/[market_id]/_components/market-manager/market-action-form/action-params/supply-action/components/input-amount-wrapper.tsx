@@ -147,6 +147,17 @@ export const InputAmountWrapper = React.forwardRef<
     marketActionForm.watch("quantity.raw_amount"),
   ]);
 
+  const fillableBalance = useMemo(() => {
+    if (!currentMarketData) {
+      return;
+    }
+
+    return parseRawAmountToTokenAmount(
+      currentMarketData?.quantity_ap ?? "0",
+      currentMarketData?.input_token_data.decimals ?? 0
+    );
+  }, [currentMarketData]);
+
   const isLoadingBalance = isLoadingWalletBalance || isLoadingVaultBalance;
 
   return (
@@ -221,30 +232,58 @@ export const InputAmountWrapper = React.forwardRef<
       />
 
       {/**
+       * Fillable balance indicator
+       */}
+      {marketMetadata.market_type === MarketType.recipe.id &&
+        userType === MarketUserType.ap.id && (
+          <TertiaryLabel className="mt-2 justify-end space-x-1">
+            <span>Fillable:</span>
+
+            <span className="flex items-center justify-center">
+              <span>
+                {Intl.NumberFormat("en-US", {
+                  style: "decimal",
+                  notation: "compact",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                  useGrouping: true,
+                }).format(fillableBalance || 0)}
+              </span>
+              <span className="ml-1">
+                {currentMarketData?.input_token_data.symbol.toUpperCase()}
+              </span>
+            </span>
+          </TertiaryLabel>
+        )}
+
+      {/**
        * Balance indicator
        */}
-      {userType === MarketUserType.ap.id && (
-        <TertiaryLabel className="mt-2 justify-end space-x-1">
-          <span>Balance:</span>
+      {marketMetadata.market_type === MarketType.vault.id &&
+        userType === MarketUserType.ap.id && (
+          <TertiaryLabel className="mt-2 justify-end space-x-1">
+            <span>Balance:</span>
 
-          <span className="flex items-center justify-center">
-            {isLoadingBalance ? (
-              <LoadingSpinner className="ml-1 h-4 w-4" />
-            ) : (
-              Intl.NumberFormat("en-US", {
-                style: "decimal",
-                notation: "standard",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 8,
-                useGrouping: true,
-              }).format(userBalance || 0)
-            )}
-            <span className="ml-1">
-              {currentMarketData?.input_token_data.symbol.toUpperCase()}
+            <span className="flex items-center justify-center">
+              {isLoadingBalance ? (
+                <LoadingSpinner className="ml-1 h-4 w-4" />
+              ) : (
+                <span>
+                  {Intl.NumberFormat("en-US", {
+                    style: "decimal",
+                    notation: "standard",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 8,
+                    useGrouping: true,
+                  }).format(userBalance || 0)}
+                </span>
+              )}
+              <span className="ml-1">
+                {currentMarketData?.input_token_data.symbol.toUpperCase()}
+              </span>
             </span>
-          </span>
-        </TertiaryLabel>
-      )}
+          </TertiaryLabel>
+        )}
 
       {/**
        * Insufficient balance indicator
@@ -264,40 +303,3 @@ export const InputAmountWrapper = React.forwardRef<
     </div>
   );
 });
-
-// {/**
-//  * Indicator to show remaining balance to fill
-//  */}
-//  {offerType === MarketOfferType.market.id &&
-//   (marketMetadata.market_type === MarketType.recipe.id ||
-//     userType === MarketUserType.ip.id) ? (
-//     <TertiaryLabel className="mt-2 flex flex-row items-center justify-between">
-//       <div>
-//         {userType === MarketUserType.ap.id
-//           ? Intl.NumberFormat("en-US", {
-//               notation: "standard",
-//               useGrouping: true,
-//               minimumFractionDigits: 0,
-//               maximumFractionDigits: 8,
-//             }).format(
-//               parseRawAmountToTokenAmount(
-//                 currentMarketData?.quantity_ip ?? "0", // @note: AP fills IP quantity
-//                 currentMarketData?.input_token_data.decimals ?? 0
-//               )
-//             )
-//           : Intl.NumberFormat("en-US", {
-//               notation: "standard",
-//               useGrouping: true,
-//               minimumFractionDigits: 0,
-//               maximumFractionDigits: 8,
-//             }).format(
-//               parseRawAmountToTokenAmount(
-//                 currentMarketData?.quantity_ap ?? "0", // @note: IP fills AP quantity
-//                 currentMarketData?.input_token_data.decimals ?? 0
-//               )
-//             )}{" "}
-//         {currentMarketData?.input_token_data.symbol.toUpperCase()} Fillable
-//         in Total
-//       </div>
-//     </TertiaryLabel>
-//   ) : null}

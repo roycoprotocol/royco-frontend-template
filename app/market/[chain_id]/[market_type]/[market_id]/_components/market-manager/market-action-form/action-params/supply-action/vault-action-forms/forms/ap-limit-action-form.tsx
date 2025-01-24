@@ -3,17 +3,13 @@ import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
-import {
-  IncentiveTokenSelector,
-  InputExpirySelector,
-} from "../../../composables";
+import { InputExpirySelector } from "../../../composables";
 import { useMarketManager } from "@/store";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
 import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper";
 import { useActiveMarket } from "../../../../../../hooks";
 import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrapper";
-import { FormInputLabel } from "@/components/composables";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
 import { APR_LOCKUP_CONSTANT } from "../../recipe-action-forms/forms/ap-limit-action-form";
@@ -189,7 +185,7 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Token Selector
        */}
-      <div className="mt-3">
+      {/* <div className="mt-3">
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:vault:ap-limit:incentive-token-selector:${viewType}`}
@@ -226,7 +222,7 @@ export const APLimitActionForm = React.forwardRef<
             className="mt-2"
           />
         </SlideUpWrapper>
-      </div>
+      </div> */}
 
       {/**
        * Incentive Amount
@@ -235,7 +231,7 @@ export const APLimitActionForm = React.forwardRef<
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:vault:ap-limit:incentive-amount-wrapper:${viewType}`}
-          delay={0.5}
+          delay={0.3}
         >
           <IncentiveAmountWrapper
             marketActionForm={marketActionForm}
@@ -277,7 +273,7 @@ export const APLimitActionForm = React.forwardRef<
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:vault:ap-limit:disclaimer:${viewType}`}
-          delay={0.5}
+          delay={0.1}
         >
           <div className="flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
             <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />

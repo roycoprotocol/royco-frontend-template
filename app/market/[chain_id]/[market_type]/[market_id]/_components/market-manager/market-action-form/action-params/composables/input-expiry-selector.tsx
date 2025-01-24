@@ -7,6 +7,8 @@ import { UseFormReturn } from "react-hook-form";
 import { MarketActionFormSchema } from "../..";
 import { Switch } from "@/components/ui/switch";
 import { SecondaryLabel } from "../../../../composables";
+import { SlideUpWrapper } from "@/components/animations";
+import { useMarketManager } from "@/store/use-market-manager";
 
 export const InputExpirySelector = React.forwardRef<
   HTMLDivElement,
@@ -14,12 +16,14 @@ export const InputExpirySelector = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
+  const { viewType } = useMarketManager();
+
   return (
     <div ref={ref} className={cn("", className)} {...props}>
-      <FormInputLabel size="sm" label="Expiry" info="The expiry of the offer" />
-
-      <div className={cn("mt-2 flex flex-row items-center justify-between")}>
-        <SecondaryLabel>Never Expire?</SecondaryLabel>
+      <div className={cn("flex flex-row items-center justify-between")}>
+        <SecondaryLabel className="font-medium text-black">
+          Offer Expiry?
+        </SecondaryLabel>
 
         <Switch
           onCheckedChange={(e) => {
@@ -29,23 +33,28 @@ export const InputExpirySelector = React.forwardRef<
               marketActionForm.setValue("no_expiry", false);
             }
           }}
-          checked={marketActionForm.watch("no_expiry")}
+          checked={!marketActionForm.watch("no_expiry")}
         />
       </div>
 
-      <TimestampSelector
-        className="mt-3"
-        customValue={
-          marketActionForm.watch("no_expiry") ? "Never Expire" : undefined
-        }
-        currentValue={marketActionForm.watch("expiry")}
-        setCurrentValue={(date) => {
-          if (date && marketActionForm.watch("no_expiry") === true) {
-            marketActionForm.setValue("no_expiry", false);
-          }
-          marketActionForm.setValue("expiry", date);
-        }}
-      />
+      {!marketActionForm.watch("no_expiry") && (
+        <SlideUpWrapper
+          layout="position"
+          layoutId={`motion:market:vault:ap-limit:input-expiry-selector:${viewType}`}
+          delay={0.1}
+        >
+          <TimestampSelector
+            className="mt-3"
+            customValue={
+              marketActionForm.watch("no_expiry") ? "Never Expire" : undefined
+            }
+            currentValue={marketActionForm.watch("expiry")}
+            setCurrentValue={(date) => {
+              marketActionForm.setValue("expiry", date);
+            }}
+          />
+        </SlideUpWrapper>
+      )}
     </div>
   );
 });

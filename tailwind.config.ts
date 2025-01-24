@@ -55,7 +55,7 @@ const config = {
 
         focus: "#EFEFF0",
         primary: "#2A2A27",
-        secondary: "#606055",
+        secondary: "#737373",
         tertiary: "#A6A69A",
         z0: "#FFFFFF",
         z2: "#F7F7F6",

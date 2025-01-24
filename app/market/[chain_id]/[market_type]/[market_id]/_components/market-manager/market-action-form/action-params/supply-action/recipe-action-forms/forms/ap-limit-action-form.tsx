@@ -217,7 +217,7 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Incentive Token Selector
        */}
-      <div className="mt-3">
+      {/* <div className="mt-3">
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:recipe:ap-limit:incentive-token-selector:${viewType}`}
@@ -253,7 +253,7 @@ export const APLimitActionForm = React.forwardRef<
             className="mt-2"
           />
         </SlideUpWrapper>
-      </div>
+      </div> */}
 
       {/**
        * Incentive Amount
@@ -262,7 +262,7 @@ export const APLimitActionForm = React.forwardRef<
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:recipe:ap-limit:incentive-amount-wrapper:${viewType}`}
-          delay={0.5}
+          delay={0.4}
         >
           <IncentiveAmountWrapper
             marketActionForm={marketActionForm}
@@ -292,7 +292,7 @@ export const APLimitActionForm = React.forwardRef<
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:recipe:ap-limit:input-expiry-selector:${viewType}`}
-          delay={0.6}
+          delay={0.5}
         >
           <InputExpirySelector marketActionForm={marketActionForm} />
         </SlideUpWrapper>

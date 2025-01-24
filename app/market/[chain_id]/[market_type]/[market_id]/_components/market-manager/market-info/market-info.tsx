@@ -7,6 +7,8 @@ import { MarketDetails } from "./market-details/market-details";
 import { AnnualYieldDetails } from "./annual-yield-details/annual-yield-details";
 import { useActiveMarket } from "../../hooks";
 import { PrimaryLabel } from "../../composables";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { Button } from "@/components/ui/button";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -41,12 +43,31 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Market Details
          */}
-        <MarketDetails />
+        <div className="mt-5">
+          <MarketDetails />
+        </div>
 
         {/**
          * Annual Incentive Percent
          */}
-        <AnnualYieldDetails />
+        <div className="mt-5">
+          <AnnualYieldDetails />
+        </div>
+
+        {/**
+         * Token Estimate
+         */}
+        <div className="mt-2">
+          <TokenEstimator>
+            <Button
+              variant="link"
+              size="sm"
+              className="w-fit p-0 underline outline-none"
+            >
+              Estimate APY
+            </Button>
+          </TokenEstimator>
+        </div>
       </div>
     );
   }

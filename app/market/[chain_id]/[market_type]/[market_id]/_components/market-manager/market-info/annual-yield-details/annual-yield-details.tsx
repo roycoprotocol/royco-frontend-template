@@ -1,11 +1,9 @@
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useMemo } from "react";
 import { InfoIcon } from "lucide-react";
 import { SpringNumber } from "@/components/composables";
 import { MarketRewardStyle } from "@/store";
 import { LogOutIcon } from "lucide-react";
-import { formatDuration } from "date-fns";
-import { secondsToDuration } from "@/app/create/_components/market-builder-form";
 import { MarketType } from "@/store/market-manager-props";
 import { Button } from "@/components/ui/button";
 import LightningIcon from "./icons/lightning";
@@ -14,6 +12,7 @@ import { TertiaryLabel } from "../../../composables";
 import { IncentiveDetails } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { InfoTip } from "@/components/common";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
@@ -40,10 +39,18 @@ export const AnnualYieldDetails = React.forwardRef<
     };
   }
 
+  const aprInfo = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return "APR calculated assuming deposit made at market creation";
+    }
+
+    return;
+  }, []);
+
   return (
     <div
       ref={ref}
-      className={cn("mt-5 rounded-lg border px-4 py-3", className)}
+      className={cn("rounded-lg border px-4 py-3", className)}
       {...props}
     >
       <div className="grid grid-cols-2 gap-6">
@@ -51,7 +58,14 @@ export const AnnualYieldDetails = React.forwardRef<
          * APY
          */}
         <div>
-          <TertiaryLabel className="text-sm">APY</TertiaryLabel>
+          <TertiaryLabel className="gap-1 text-sm">
+            <div>APY</div>
+            {aprInfo && (
+              <InfoTip size="sm" type="tertiary">
+                {aprInfo}
+              </InfoTip>
+            )}
+          </TertiaryLabel>
           {breakdowns.length > 0 ? (
             <TokenEstimator defaultTokenId={point_token_data?.id}>
               <Button
@@ -102,17 +116,18 @@ export const AnnualYieldDetails = React.forwardRef<
           <PrimaryLabel className="mt-1 text-2xl font-medium">
             {currentMarketData.market_type === MarketType.recipe.value &&
             currentMarketData.lockup_time !== "0"
-              ? formatDuration(
-                  Object.entries(
-                    secondsToDuration(currentMarketData.lockup_time)
-                  )
-                    .filter(([_, value]) => value > 0)
-                    .slice(0, 2)
-                    .reduce(
-                      (acc, [unit, value]) => ({ ...acc, [unit]: value }),
-                      {}
-                    )
-                ).replace(/months?/g, "Mo.")
+              ? (() => {
+                  const seconds = Number(currentMarketData.lockup_time);
+                  if (seconds < 3600) {
+                    return `${seconds} ${seconds === 1 ? "Second" : "Seconds"}`;
+                  }
+                  const hours = Math.ceil(seconds / 3600);
+                  if (seconds < 86400) {
+                    return `${hours} ${hours === 1 ? "Hour" : "Hours"}`;
+                  }
+                  const days = Math.ceil(seconds / 86400);
+                  return `${days} ${days === 1 ? "Day" : "Days"}`;
+                })()
               : "None"}
           </PrimaryLabel>
         </div>
