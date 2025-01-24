@@ -46,7 +46,7 @@ export default defineMarket({
   name: \`${name}\`,
   description: \`${description}\`,
   is_verified: false,
-  category: "boyco",
+  category: \`boyco\`,
 });`
   ).toString("base64");
 };
