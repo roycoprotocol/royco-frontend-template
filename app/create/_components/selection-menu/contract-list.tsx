@@ -80,6 +80,11 @@ export const ContractList = React.forwardRef<
       ]["WeirollWalletHelper"].address.toLowerCase(),
   });
 
+  const { data: depositLockerContractOnEthMainnet } = useContract({
+    chain_id: 1,
+    contract_address: "0x63e8209caa13bba1838e3946a50d717071a28cfb",
+  });
+
   const pinContractList = useMemo(() => {
     const arr = [];
 
@@ -97,6 +102,18 @@ export const ContractList = React.forwardRef<
         ...(tokenContract as any)[0],
         id: (tokenContract as any)[0]?.contract_id,
       });
+    }
+
+    if (
+      process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" &&
+      marketBuilderForm.watch("chain").id === 1
+    ) {
+      if (depositLockerContractOnEthMainnet) {
+        arr.push({
+          ...(depositLockerContractOnEthMainnet as any)[0],
+          id: (depositLockerContractOnEthMainnet as any)[0]?.contract_id,
+        });
+      }
     }
 
     return arr;
