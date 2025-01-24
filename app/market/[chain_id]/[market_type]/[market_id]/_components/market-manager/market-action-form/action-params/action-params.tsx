@@ -21,39 +21,37 @@ export const ActionParams = React.forwardRef<
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       {userType === MarketUserType.ap.id && (
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:action-type:${viewType}`}
-          className={cn("flex flex-col")}
-        >
-          <HorizontalTabs
-            className={cn("")}
-            size="sm"
-            key="market:action-type:container"
-            baseId="market:action-type"
-            tabs={Object.values(MarketActionType)}
-            activeTab={actionType}
-            setter={setActionType}
-          />
-        </SlideUpWrapper>
+        <div className={cn("mb-3")}>
+          <SlideUpWrapper
+            layout="position"
+            layoutId={`motion:market:action-type:${viewType}`}
+            className={cn("flex flex-col")}
+          >
+            <HorizontalTabs
+              className={cn("")}
+              size="sm"
+              key="market:action-type:container"
+              baseId="market:action-type"
+              tabs={Object.values(MarketActionType)}
+              activeTab={actionType}
+              setter={setActionType}
+            />
+          </SlideUpWrapper>
+        </div>
       )}
 
       {/**
        * Supply Action
        */}
       {actionType === MarketActionType.supply.id && (
-        <div className={cn("mt-3")}>
-          <SupplyAction marketActionForm={marketActionForm} />
-        </div>
+        <SupplyAction marketActionForm={marketActionForm} />
       )}
 
       {/**
        * Withdraw Action
        */}
       {actionType === MarketActionType.withdraw.id && (
-        <div className={cn("mt-3")}>
-          <WithdrawAction marketActionForm={marketActionForm} />
-        </div>
+        <WithdrawAction marketActionForm={marketActionForm} />
       )}
     </div>
   );

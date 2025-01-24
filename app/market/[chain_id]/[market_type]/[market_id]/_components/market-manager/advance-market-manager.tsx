@@ -8,12 +8,13 @@ import { motion } from "framer-motion";
 import { OfferVisualizer } from "./offer-visualizer";
 import { BalanceIndicator } from "./balance-indicator";
 import { StatsTables } from "./stats-tables/stats-tables";
+import { MarketUserType } from "@/store/market-manager-props";
 
 export const AdvanceMarketManager = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { viewType } = useMarketManager();
+  const { viewType, userType } = useMarketManager();
 
   return (
     <motion.div
@@ -64,9 +65,13 @@ export const AdvanceMarketManager = forwardRef<
             "md:w-[50%] xl:w-[25%]"
           )}
         >
-          <BalanceIndicator />
+          {userType === MarketUserType.ap.id && (
+            <div className="mb-4">
+              <BalanceIndicator />
+            </div>
+          )}
 
-          <div className="mt-4 flex-1">
+          <div className="flex-1">
             <MarketActionForm />
           </div>
         </div>
