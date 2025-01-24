@@ -1,1 +1,1 @@
-export * from "./offer-table";
+export * from "./stats-tables";
