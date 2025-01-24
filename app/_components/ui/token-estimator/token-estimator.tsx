@@ -25,6 +25,7 @@ import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/icons/lightning";
 import { CustomTokenDataElementType } from "royco/types";
 import { LoadingSpinner } from "@/components/composables";
+import { useTokenQuotes } from "royco/hooks";
 
 export const EstimatorCustomTokenDataSchema = z.object({
   customTokenData: z.array(
@@ -67,9 +68,35 @@ export const TokenEstimator = React.forwardRef<
   }, [customTokenData, open]);
 
   const handleTokenSelect = (token: CustomTokenDataElementType) => {
-    const formToken = [token, ...form.getValues("customTokenData")] as any;
-    form.setValue("customTokenData", formToken);
+    const currentTokens = form.getValues("customTokenData");
+    const hasToken = currentTokens.some((t) => t.token_id === token.token_id);
+
+    if (!hasToken) {
+      const formToken = [token, ...currentTokens] as any;
+      form.setValue("customTokenData", formToken);
+    }
   };
+
+  const { data: defaultTokenQuotes } = useTokenQuotes({
+    token_ids: [defaultTokenId || ""],
+  });
+
+  useEffect(() => {
+    if (
+      open &&
+      defaultTokenId &&
+      defaultTokenQuotes &&
+      defaultTokenQuotes.length > 0
+    ) {
+      const token = {
+        token_id: defaultTokenId,
+        fdv: defaultTokenQuotes[0].fdv.toString(),
+        total_supply: defaultTokenQuotes[0].total_supply.toString(),
+        price: defaultTokenQuotes[0].price.toString(),
+      };
+      handleTokenSelect(token);
+    }
+  }, [defaultTokenQuotes, defaultTokenId, open]);
 
   const handleRemoveToken = (index: number) => {
     const formTokens = form.getValues("customTokenData");
@@ -121,7 +148,6 @@ export const TokenEstimator = React.forwardRef<
                 className="flex flex-col overflow-x-auto"
               >
                 <TokenSelector
-                  defaultTokenId={defaultTokenId}
                   customTokenForm={form}
                   onTokenSelect={(token) => handleTokenSelect(token)}
                 />

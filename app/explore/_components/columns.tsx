@@ -43,6 +43,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { MarketType } from "@/store";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { Button } from "@/components/ui/button";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -456,40 +458,13 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           {breakdowns.length > 0 && currentValue === 0 ? (
-            <HoverCard openDelay={200} closeDelay={200}>
-              <HoverCardTrigger
-                className="cursor-pointer underline"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Calculate
-              </HoverCardTrigger>
-              {typeof window !== "undefined" &&
-                createPortal(
-                  <HoverCardContent
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-96 overflow-hidden p-0"
-                  >
-                    <TokenEditor
-                      closeHoverCard={() => {}}
-                      token_data={{
-                        ...breakdowns[0],
-                        fdv: breakdowns[0].fdv ?? 0,
-                        total_supply: breakdowns[0].total_supply
-                          ? breakdowns[0].total_supply === 0
-                            ? 1
-                            : breakdowns[0].total_supply
-                          : 0,
-                        price: breakdowns[0].price ?? 0,
-                        allocation: breakdowns[0].allocation
-                          ? breakdowns[0].allocation * 100
-                          : 100,
-                        token_amount: breakdowns[0].token_amount ?? 0,
-                      }}
-                    />
-                  </HoverCardContent>,
-                  document.body
-                )}
-            </HoverCard>
+            <div onClick={(e) => e.stopPropagation()}>
+              <TokenEstimator defaultTokenId={breakdowns[0].id}>
+                <Button variant="link" className="underline outline-none">
+                  Calculate
+                </Button>
+              </TokenEstimator>
+            </div>
           ) : (
             <YieldBreakdown
               onClick={(e) => e.stopPropagation()}
