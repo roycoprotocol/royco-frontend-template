@@ -130,7 +130,8 @@ export default function RootLayout({
           >
             {/* <AppKitProvider cookies={cookies}> */}
             <WalletProvider>
-              <UserInfoSetter />
+              {/* <UserInfoSetter /> */}
+
               <GeoDetector />
               <ToasterSonner richColors={true} position="top-center" />
 
