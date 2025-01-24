@@ -45,6 +45,7 @@ import {
 import { MarketType } from "@/store";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
+import validator from "validator";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -139,7 +140,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             />
 
             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {props.row.original.name.trim()}
+              {validator.unescape(props.row.original.name.trim())}
             </div>
 
             <div className="ml-2">

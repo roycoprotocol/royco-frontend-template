@@ -1,27 +1,15 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  MarketStatsView,
-  MarketType,
-  MarketUserType,
-  useGlobalStates,
-  useMarketManager,
-} from "@/store";
+import { MarketStatsView, MarketType, useMarketManager } from "@/store";
 import React from "react";
-import { OfferTable } from "./offer-table";
 import { useAccount } from "wagmi";
 import { AlertIndicator } from "@/components/common";
-import {
-  BASE_PADDING,
-  BASE_UNDERLINE,
-  SecondaryLabel,
-  TertiaryLabel,
-} from "../../composables";
-import { PositionsRecipeTable } from "./positions-recipe-table";
 import { useActiveMarket } from "../../hooks";
-import { PositionsVaultTable } from "./positions-vault-table";
-import { useEnrichedOffers } from "royco/hooks";
+import { PositionsRecipeManager } from "./positions-recipe-manager";
+import { PositionsVaultManager } from "./positions-vault-manager";
+import { ListPlusIcon } from "lucide-react";
+import { OffersManager } from "./offers-manager";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,
@@ -31,67 +19,68 @@ export const StatsTables = React.forwardRef<
   const { address, isConnected } = useAccount();
 
   const { marketMetadata } = useActiveMarket();
-  const { customTokenData } = useGlobalStates();
-
-  const { data: offers } = useEnrichedOffers({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
-    creator: (address?.toLowerCase() as string) ?? "",
-    market_type: marketMetadata.market_type === MarketType.recipe.id ? 0 : 1,
-    filters: [
-      { id: "is_cancelled", value: false },
-      {
-        id: "offer_side",
-        value: userType === MarketUserType.ap.id ? 0 : 1,
-      },
-    ],
-    custom_token_data: undefined,
-  });
 
   return (
     <div ref={ref} className={cn("flex w-full flex-col", className)}>
       <div
         className={cn(
-          "flex w-full flex-row items-center space-x-2",
-          BASE_PADDING,
-          "pb-2"
+          "flex w-full flex-row items-center space-x-10 border-b border-divider px-6 py-3 font-light"
         )}
       >
-        <TertiaryLabel
+        <div
           onClick={() => setStatsView(MarketStatsView.positions.id)}
           className={cn(
-            BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
-            statsView === MarketStatsView.positions.id && "decoration-tertiary"
+            "flex cursor-pointer flex-row items-center gap-2 text-secondary transition-all duration-200 ease-in-out hover:opacity-80",
+            statsView === MarketStatsView.positions.id
+              ? "text-black"
+              : "text-tertiary"
           )}
         >
-          POSITIONS
-        </TertiaryLabel>
+          <svg
+            strokeWidth={1.5}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="lucide lucide-list-check h-5 w-5"
+          >
+            <path d="M11 18H3" />
+            <path d="m15 18 2 2 4-4" />
+            <path d="M16 12H3" />
+            <path d="M16 6H3" />
+          </svg>{" "}
+          <div className="">Positions</div>
+        </div>
 
-        <TertiaryLabel>/</TertiaryLabel>
-
-        <TertiaryLabel
+        <div
           onClick={() => setStatsView(MarketStatsView.offers.id)}
           className={cn(
-            BASE_UNDERLINE.MD,
-            "cursor-pointer decoration-transparent transition-all duration-200 ease-in-out hover:text-black",
-            statsView === MarketStatsView.offers.id && "decoration-tertiary"
+            "flex cursor-pointer flex-row items-center gap-2 text-secondary transition-all duration-200 ease-in-out hover:opacity-80",
+            statsView === MarketStatsView.offers.id
+              ? "text-black"
+              : "text-tertiary"
           )}
         >
-          {`OFFERS ${offers?.count ? `(${offers?.count})` : ""}`}
-        </TertiaryLabel>
+          <ListPlusIcon strokeWidth={1.5} className="h-5 w-5" />{" "}
+          <div className="">Offers</div>
+        </div>
       </div>
 
       {isConnected ? (
         statsView === MarketStatsView.positions.id ? (
           marketMetadata &&
           marketMetadata.market_type === MarketType.recipe.id ? (
-            <PositionsRecipeTable />
+            <PositionsRecipeManager />
           ) : (
-            <PositionsVaultTable />
+            <PositionsVaultManager />
           )
         ) : (
-          <OfferTable />
+          <OffersManager />
         )
       ) : (
         <AlertIndicator className="w-full grow bg-white">
