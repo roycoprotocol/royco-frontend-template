@@ -153,7 +153,7 @@ export const BalanceIndicator = React.forwardRef<
     }
   }, [userType, placeholderData]);
 
-  if (!currentMarketData || userType === MarketUserType.ip.id) return null;
+  if (!currentMarketData) return null;
 
   if (!isConnected) {
     return (

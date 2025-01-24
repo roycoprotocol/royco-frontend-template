@@ -200,7 +200,7 @@ export const TransactionModal = React.forwardRef<
   }, [isTxError]);
 
   useEffect(() => {
-    if (allTransactionsExecuted) {
+    if (allTransactionsExecuted && isOpen) {
       setTimeout(() => {
         queryClient.invalidateQueries();
         setIsTransactionTimeout(false);
