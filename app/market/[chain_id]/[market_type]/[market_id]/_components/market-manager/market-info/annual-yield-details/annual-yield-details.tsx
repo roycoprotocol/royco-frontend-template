@@ -6,7 +6,7 @@ import { MarketRewardStyle } from "@/store";
 import { LogOutIcon } from "lucide-react";
 import { MarketType } from "@/store/market-manager-props";
 import { Button } from "@/components/ui/button";
-import LightningIcon from "./icons/lightning";
+import LightningIcon from "../../../icons/lightning";
 import { PrimaryLabel, SecondaryLabel } from "../../../composables";
 import { TertiaryLabel } from "../../../composables";
 import { IncentiveDetails } from "./incentive-details";

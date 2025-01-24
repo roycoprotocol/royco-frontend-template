@@ -15,6 +15,7 @@ import { BigNumber } from "ethers";
 import { APR_LOCKUP_CONSTANT } from "../../recipe-action-forms/forms/ap-limit-action-form";
 import { InfoIcon } from "lucide-react";
 import { SecondaryLabel } from "../../../../../../composables";
+import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 
 export const APLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -129,29 +130,41 @@ export const APLimitActionForm = React.forwardRef<
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
+       * Enso Shortcuts Widget
+       */}
+
+      <EnsoShortcutsWidget
+        token={currentMarketData?.input_token_data.contract_address!}
+        symbol={currentMarketData?.input_token_data.symbol}
+        chainId={currentMarketData?.chain_id!}
+      />
+
+      {/**
        * Incentive Yield
        */}
-      <SlideUpWrapper
-        layout="position"
-        layoutId={`motion:market:vault:ap-limit:incentive-yield-wrapper:${viewType}`}
-        delay={0.1}
-      >
-        <IncentiveYieldWrapper
-          marketActionForm={marketActionForm}
-          onYieldChange={(value) => {
-            if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-              return;
-            }
+      <div className="mt-3">
+        <SlideUpWrapper
+          layout="position"
+          layoutId={`motion:market:vault:ap-limit:incentive-yield-wrapper:${viewType}`}
+          delay={0.1}
+        >
+          <IncentiveYieldWrapper
+            marketActionForm={marketActionForm}
+            onYieldChange={(value) => {
+              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
+                return;
+              }
 
-            updateIncentiveTokenAmount(
-              value,
-              parseFloat(marketActionForm.watch("quantity.amount") || "0"),
-              selectedInputToken,
-              selectedIncentiveTokens[0]
-            );
-          }}
-        />
-      </SlideUpWrapper>
+              updateIncentiveTokenAmount(
+                value,
+                parseFloat(marketActionForm.watch("quantity.amount") || "0"),
+                selectedInputToken,
+                selectedIncentiveTokens[0]
+              );
+            }}
+          />
+        </SlideUpWrapper>
+      </div>
 
       {/**
        * Input Amount

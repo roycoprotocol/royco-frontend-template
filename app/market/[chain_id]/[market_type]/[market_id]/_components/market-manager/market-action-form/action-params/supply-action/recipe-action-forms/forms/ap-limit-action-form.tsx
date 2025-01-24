@@ -17,6 +17,7 @@ import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrappe
 import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper";
 import { parseTokenAmountToRawAmount } from "royco/utils";
 import { useMarketManager } from "@/store/use-market-manager";
+import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 
 export const APR_LOCKUP_CONSTANT = 365 * 24 * 60 * 60;
 
@@ -157,6 +158,17 @@ export const APLimitActionForm = React.forwardRef<
           }}
         />
       </SlideUpWrapper>
+
+      {/**
+       * Enso Shortcuts Widget
+       */}
+      <div className="mt-2">
+        <EnsoShortcutsWidget
+          token={currentMarketData?.input_token_data.contract_address!}
+          symbol={currentMarketData?.input_token_data.symbol}
+          chainId={currentMarketData?.chain_id!}
+        />
+      </div>
 
       {/**
        * Incentive Yield
