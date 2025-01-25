@@ -57,12 +57,14 @@ export const EnsoShortcutsWidget = React.forwardRef<
       <div className={"flex w-full items-center justify-end gap-2"}>
         <Wrapper>
           <TertiaryLabel
-            className={"cursor-pointer gap-1 underline"}
+            className={
+              "cursor-pointer gap-2 text-sm underline  decoration-1 underline-offset-2 transition-opacity duration-200 ease-in-out hover:opacity-80"
+            }
             onClick={
               zapDisabled ? undefined : () => setZapInEnabled((val) => !val)
             }
           >
-            <DottedBracket className="h-4 w-4" />
+            <DottedBracket className="h-6 w-6 text-inherit" />
             Get {symbol}
           </TertiaryLabel>
         </Wrapper>
