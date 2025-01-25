@@ -153,7 +153,7 @@ export const InputAmountWrapper = React.forwardRef<
     }
 
     return parseRawAmountToTokenAmount(
-      currentMarketData?.quantity_ap ?? "0",
+      currentMarketData?.quantity_ip ?? "0",
       currentMarketData?.input_token_data.decimals ?? 0
     );
   }, [currentMarketData]);
