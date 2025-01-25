@@ -432,4 +432,4 @@ export const lpTokenAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;

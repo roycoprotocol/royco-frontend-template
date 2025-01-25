@@ -11,6 +11,9 @@ import { createPublicClient, erc4626Abi } from "viem";
 import { erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
 import { type NextRequest } from "next/server";
+import { lpTokenAbi } from "./lp-token-abi";
+import { getSupportedToken, UnknownToken } from "royco/constants";
+import { getContent } from "../token/route";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -61,122 +64,94 @@ Token Details:
 - Image: ${tokenData.image}
 - Decimals: ${tokenData.decimals}
 - Source: ${tokenData.source}
-- Search Id: ${tokenData.search_id}`;
+- Search Id: ${tokenData.search_id}
+- Token 0: ${tokenData.token0}
+- Token 1: ${tokenData.token1}`;
 };
 
-export const fetchTokenFromCoinmarketCap = async ({
+export const fetchLpTokenFromContract = async ({
   chainId,
   contractAddress,
-  decimals,
 }: {
   chainId: number;
   contractAddress: string;
-  decimals: number;
 }) => {
-  const fetchResponse = await fetch(
-    `https://pro-api.coinmarketcap.com/v2/cryptocurrency/info?address=${contractAddress}`,
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(chainId),
+    transport: http(
+      SERVER_RPC_API_KEYS[chainId as keyof typeof SERVER_RPC_API_KEYS]
+    ),
+  });
+
+  const contracts = [
     {
-      headers: {
-        "X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY!,
-      },
+      address: contractAddress as Address,
+      abi: lpTokenAbi,
+      functionName: "token0",
+    },
+    {
+      address: contractAddress as Address,
+      abi: lpTokenAbi,
+      functionName: "token1",
+    },
+    {
+      address: contractAddress as Address,
+      abi: lpTokenAbi,
+      functionName: "decimals",
+    },
+  ];
+
+  const [token0_data, token1_data, decimals_data] = await chainClient.multicall(
+    {
+      contracts,
     }
   );
-  const fetchData = await fetchResponse.json();
 
-  // Get search id
-  const searchId = Object.keys(fetchData.data)[0];
+  if (
+    token0_data.status !== "success" ||
+    token1_data.status !== "success" ||
+    decimals_data.status !== "success" ||
+    typeof token0_data.result !== "string" ||
+    typeof token1_data.result !== "string" ||
+    typeof decimals_data.result !== "number"
+  ) {
+    throw new Error("Invalid LP token");
+  }
 
-  // Get raw token data
-  const tokenData = fetchData.data[searchId];
+  const token0 = token0_data.result.toLowerCase();
+  const token1 = token1_data.result.toLowerCase();
+  const decimals = decimals_data.result;
 
-  // Get chain slug
-  const chainSlug =
-    CHAIN_SLUG.coinmarketcap[chainId as keyof typeof CHAIN_SLUG.coinmarketcap];
+  if (
+    !isSolidityAddressValid("address", token0) ||
+    !isSolidityAddressValid("address", token1)
+  ) {
+    throw new Error("Invalid LP token");
+  }
 
-  // Find contract address for the chain
-  const contractInfo = tokenData.contract_address.find(
-    (c: any) => c.platform.coin.slug === chainSlug
-  );
+  const token0_info = getSupportedToken(`${chainId}-${token0}`);
+  const token1_info = getSupportedToken(`${chainId}-${token1}`);
 
-  // Check if contract info is found
-  if (!contractInfo) {
-    return null;
+  if (token0_info.symbol === UnknownToken.symbol) {
+    throw new Error("Token 0 doesn't exist in SDK");
+  } else if (token1_info.symbol === UnknownToken.symbol) {
+    throw new Error("Token 1 doesn't exist in SDK");
   }
 
   // Create enriched token data
   const enrichedTokenData = {
     id: `${chainId}-${contractAddress}`.toLowerCase(),
     chain_id: chainId,
-    contract_address: contractAddress,
-    name: tokenData.name,
-    symbol: tokenData.symbol,
-    image: tokenData.logo,
+    contract_address: contractAddress.toLowerCase(),
+    name: `${token0_info.name}-${token1_info.name} LP Token`,
+    symbol: `${token0_info.symbol}-${token1_info.symbol}`,
+    image: UnknownToken.image,
     decimals: decimals,
-    source: "coinmarketcap",
-    search_id: searchId.toString(),
-    type: "token",
-  };
-
-  return enrichedTokenData;
-};
-
-export const fetchTokenFromCoingecko = async ({
-  chainId,
-  contractAddress,
-  decimals,
-}: {
-  chainId: number;
-  contractAddress: string;
-  decimals: number;
-}) => {
-  // Get asset platform id
-  const chainSlug =
-    CHAIN_SLUG.coingecko[chainId as keyof typeof CHAIN_SLUG.coingecko];
-
-  const fetchResponse = await fetch(
-    // Public API endpoint (can be used with Demo API key on free plan)
-    // `https://api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
-
-    // Pro API endpoint (requires paid plan)
-    `https://pro-api.coingecko.com/api/v3/coins/${chainSlug}/contract/${contractAddress}`,
-    {
-      headers: {
-        // Demo API key
-        // "x-cg-demo-api-key": process.env.COINGECKO_API_KEY!,
-
-        // Pro API key
-        "x-cg-pro-api-key": process.env.COINGECKO_API_KEY!,
-      },
-    }
-  );
-  const fetchData = await fetchResponse.json();
-
-  // Get search id
-  const searchId = fetchData.id;
-
-  // Get raw token data
-  const tokenData = fetchData;
-
-  // Find contract address for the chain
-  const contractInfo = tokenData.detail_platforms[chainSlug];
-
-  // Check if contract info is found
-  if (!contractInfo) {
-    return null;
-  }
-
-  // Create enriched token data
-  const enrichedTokenData = {
-    id: `${chainId}-${contractAddress}`.toLowerCase(),
-    chain_id: chainId,
-    contract_address: contractAddress,
-    name: tokenData.name,
-    symbol: tokenData.symbol.toUpperCase(),
-    image: tokenData.image.large,
-    decimals: decimals,
-    source: "coingecko",
-    search_id: searchId,
-    type: "token",
+    source: "lp",
+    search_id: `${chainId}-${contractAddress}`.toLowerCase(),
+    type: "lp",
+    token0: token0_info.id,
+    token1: token1_info.id,
   };
 
   return enrichedTokenData;
@@ -202,7 +177,7 @@ export const checkTokenFileExists = async (
   }
 };
 
-export const getContent = (enrichedTokenData: any) => {
+export const getLpTokenContent = (enrichedTokenData: any) => {
   return Buffer.from(
     `import { defineToken } from "@/sdk/constants";
 
@@ -217,6 +192,8 @@ export default defineToken({
   source: "${enrichedTokenData.source}",
   search_id: "${enrichedTokenData.search_id}",
   type: "${enrichedTokenData.type}",
+  token0: "${enrichedTokenData.token0}",
+  token1: "${enrichedTokenData.token1}",
 });`
   ).toString("base64");
 };
@@ -228,9 +205,6 @@ export async function GET(request: NextRequest) {
     const raw_contract_address = searchParams
       .get("contract_address")
       ?.toLowerCase();
-
-    // const body = await request.json();
-    // let { chain_id, contract_address: raw_contract_address } = body;
 
     // Check if chain id is provided
     if (!chain_id) {
@@ -295,57 +269,31 @@ export async function GET(request: NextRequest) {
       return Response.json({ status: "Token already exists" }, { status: 409 });
     }
 
-    // Create public client
-    const publicClient = createPublicClient({
-      // @ts-ignore
-      chain: getSupportedChain(chain_id),
-      transport: http(
-        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
-      ),
-    });
-
-    // Get token decimals
-    const decimals = await publicClient.readContract({
-      address: contract_address as Address,
-      abi: erc20Abi,
-      functionName: "decimals",
-    });
-
-    // Check if decimals is a number
-    if (typeof decimals !== "number" || isNaN(decimals)) {
-      return Response.json({ status: "Invalid ERC20 token" }, { status: 400 });
-    }
-
     // Store enriched token data
     let enrichedTokenData = null;
 
     try {
       // Try to fetch token from coinmarketcap
-      enrichedTokenData = await fetchTokenFromCoinmarketCap({
+      enrichedTokenData = await fetchLpTokenFromContract({
         chainId: chain_id,
         contractAddress: contract_address,
-        decimals: decimals,
       });
     } catch (error) {
-      try {
-        // Try to fetch token from coingecko
-        enrichedTokenData = await fetchTokenFromCoingecko({
-          chainId: chain_id,
-          contractAddress: contract_address,
-          decimals: decimals,
-        });
-      } catch (error) {}
+      return Response.json(
+        { status: "Internal Server Error" },
+        { status: 500 }
+      );
     }
 
     if (enrichedTokenData === null) {
       // Token was not found on coinmarketcap or coingecko
       return Response.json(
-        { status: "Token not found on coinmarketcap or coingecko" },
+        { status: "Token is not a valid LP token" },
         { status: 404 }
       );
     }
 
-    const content = getContent(enrichedTokenData);
+    const content = getLpTokenContent(enrichedTokenData);
 
     const commitMessage = createCommitMessage(enrichedTokenData);
 
