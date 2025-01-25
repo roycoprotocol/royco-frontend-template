@@ -34,23 +34,23 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Forward to 🐻⛓ RPC
-  if (pathname.startsWith("/api/rpc/80094")) {
-    // Clone the request headers
-    const requestHeaders = new Headers(request.headers);
+  // if (pathname.startsWith("/api/rpc/80094")) {
+  //   // Clone the request headers
+  //   const requestHeaders = new Headers(request.headers);
 
-    // Add the Authorization header
-    requestHeaders.set(
-      "Authorization",
-      `Bearer ${process.env.RPC_80094_AUTH_TOKEN}`
-    );
+  //   // Add the Authorization header
+  //   requestHeaders.set(
+  //     "Authorization",
+  //     `Bearer ${process.env.RPC_80094_AUTH_TOKEN}`
+  //   );
 
-    // Return response with the modified headers
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  }
+  //   // Return response with the modified headers
+  //   return NextResponse.next({
+  //     request: {
+  //       headers: requestHeaders,
+  //     },
+  //   });
+  // }
 
   /**
    * Content-type checking for all API routes
