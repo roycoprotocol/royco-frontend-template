@@ -76,14 +76,14 @@ const nextConfig = {
         source: "/api/rpc/146/:path*",
         destination: process.env.RPC_API_KEY_146,
       },
-      {
-        source: "/api/rpc/80000/:path*",
-        destination: process.env.RPC_API_KEY_80000,
-      },
-      {
-        source: "/api/rpc/80094/:path*",
-        destination: process.env.RPC_API_KEY_80094,
-      },
+      // {
+      //   source: "/api/rpc/80000/:path*",
+      //   destination: process.env.RPC_API_KEY_80000,
+      // },
+      // {
+      //   source: "/api/rpc/80094/:path*",
+      //   destination: process.env.RPC_API_KEY_80094,
+      // },
     ];
   },
   // CORS for API routes
