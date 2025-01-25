@@ -60,25 +60,33 @@ export const InfoStep = React.forwardRef<
         />
       </MotionWrapper>
 
-      <MotionWrapper delay={0.2}>
-        <FormActionType
-          className="mt-9"
-          marketBuilderForm={marketBuilderForm}
-        />
-      </MotionWrapper>
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
+        <MotionWrapper delay={0.2}>
+          <FormActionType
+            className="mt-9"
+            marketBuilderForm={marketBuilderForm}
+          />
+        </MotionWrapper>
+      )}
 
-      <MotionWrapper delay={0.3}>
-        <FormChain className="mt-9" marketBuilderForm={marketBuilderForm} />
-      </MotionWrapper>
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
+        <MotionWrapper delay={0.3}>
+          <FormChain className="mt-9" marketBuilderForm={marketBuilderForm} />
+        </MotionWrapper>
+      )}
 
-      <MotionWrapper delay={0.4}>
-        <FormIncentiveSchedule
-          className="mt-9"
-          marketBuilderForm={marketBuilderForm}
-        />
-      </MotionWrapper>
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
+        <MotionWrapper delay={0.4}>
+          <FormIncentiveSchedule
+            className="mt-9"
+            marketBuilderForm={marketBuilderForm}
+          />
+        </MotionWrapper>
+      )}
 
-      <MotionWrapper delay={0.5}>
+      <MotionWrapper
+        delay={process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? 0.2 : 0.5}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             initial={{ height: 0, opacity: 0 }}
@@ -92,7 +100,8 @@ export const InfoStep = React.forwardRef<
             }}
             exit={{ height: 0, opacity: 0 }}
             transition={{
-              duration: 0.5,
+              duration:
+                process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? 0.3 : 0.5,
               height: {
                 type: "spring",
                 damping: 25,
@@ -103,10 +112,12 @@ export const InfoStep = React.forwardRef<
           >
             <FormAsset className="mt-9" marketBuilderForm={marketBuilderForm} />
 
-            <FormLockupTime
-              className="mt-9"
-              marketBuilderForm={marketBuilderForm}
-            />
+            {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
+              <FormLockupTime
+                className="mt-9"
+                marketBuilderForm={marketBuilderForm}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
         {/* <FormExpiry className="mt-9" marketBuilderForm={marketBuilderForm} /> */}

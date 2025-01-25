@@ -426,4 +426,18 @@ export const PoolFormDefaults = {
       duration_type: "months",
     },
   },
+  ["boyco"]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[EthereumMainnet.id],
+    asset: TokenMap1["1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "0",
+      duration_type: "minutes",
+    },
+  },
 };
