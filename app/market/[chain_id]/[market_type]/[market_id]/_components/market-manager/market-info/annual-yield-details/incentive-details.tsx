@@ -359,12 +359,20 @@ export const IncentiveDetails = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn("flex h-fit w-full shrink-0 flex-col", className)}
+        className={cn(
+          "flex h-fit w-full shrink-0 flex-col",
+          className,
+          currentMarketData.incentive_tokens_data.length === 0 &&
+            currentMarketData.yield_breakdown.length === 0 &&
+            currentMarketData.external_incentives.length === 0
+            ? "mt-0"
+            : "mt-4"
+        )}
         {...props}
       >
-        {(!highestIncentives || highestIncentives.length === 0) && (
+        {/* {(!highestIncentives || highestIncentives.length === 0) && (
           <AlertIndicator>No add. incentives offered</AlertIndicator>
-        )}
+        )} */}
 
         {/**
          * Market Incentives
@@ -372,7 +380,7 @@ export const IncentiveDetails = React.forwardRef<
         {highestIncentives && highestIncentives.length !== 0 && (
           <InfoCard
             className={cn(
-              "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll"
+              "-mx-4 flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll border-t border-divider px-4 py-2"
             )}
           >
             {highestIncentives.map((token_data, token_data_index) => {

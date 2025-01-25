@@ -1,17 +1,30 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { SupportedMarketMap } from "royco/constants";
-import { RPC_API_KEYS } from "@/components/constants";
 import { createPublicClient, http } from "viem";
 import { getSupportedChain } from "royco/utils";
+import { Database } from "royco/types";
+import { TypedRoycoClient } from "royco/client";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 
+const SERVER_RPC_API_KEYS = {
+  1: process.env.RPC_API_KEY_1,
+  11155111: process.env.RPC_API_KEY_11155111,
+  42161: process.env.RPC_API_KEY_42161,
+  8453: process.env.RPC_API_KEY_8453,
+  146: process.env.RPC_API_KEY_146,
+  80094: process.env.RPC_API_KEY_80094,
+  80000: process.env.RPC_API_KEY_80000,
+  21000000: process.env.RPC_API_KEY_21000000,
+  98865: process.env.RPC_API_KEY_98865,
+};
+
 const updateExternalIncentives = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -37,7 +50,9 @@ const updateExternalIncentives = async ({
 
         const chainClient = createPublicClient({
           chain: chain,
-          transport: http(RPC_API_KEYS[chain_id]),
+          transport: http(
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+          ),
         });
 
         const token_ids = market.external_incentives!.map(
@@ -47,7 +62,8 @@ const updateExternalIncentives = async ({
         const values = await Promise.all(
           market.external_incentives!.map(async (incentie_token) => {
             const value = await incentie_token.value!({
-              roycoClient: supabaseClient,
+              // @ts-ignore
+              roycoClient: supabaseClient as TypedRoycoClient,
               chainClient,
             });
             return value;
@@ -61,7 +77,7 @@ const updateExternalIncentives = async ({
           market_id,
           token_ids,
           values,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -83,7 +99,7 @@ const updateExternalIncentives = async ({
 const updateNativeYields = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -109,7 +125,9 @@ const updateNativeYields = async ({
 
         const chainClient = createPublicClient({
           chain: chain,
-          transport: http(RPC_API_KEYS[chain_id]),
+          transport: http(
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+          ),
         });
 
         const token_ids = market.native_yield!.map(
@@ -120,7 +138,8 @@ const updateNativeYields = async ({
           market.native_yield!.map(async (incentie_token) => {
             const annual_change_ratio =
               await incentie_token.annual_change_ratio!({
-                roycoClient: supabaseClient,
+                // @ts-ignore
+                roycoClient: supabaseClient as TypedRoycoClient,
                 chainClient,
               });
             return annual_change_ratio;
@@ -140,7 +159,7 @@ const updateNativeYields = async ({
           token_ids,
           annual_change_ratios,
           annual_change_ratio,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -162,7 +181,7 @@ const updateNativeYields = async ({
 const updateUnderlyingYields = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -188,11 +207,14 @@ const updateUnderlyingYields = async ({
 
         const chainClient = createPublicClient({
           chain: chain,
-          transport: http(RPC_API_KEYS[chain_id]),
+          transport: http(
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+          ),
         });
 
         const annual_change_ratio = await market.underlying_yield!({
-          roycoClient: supabaseClient,
+          // @ts-ignore
+          roycoClient: supabaseClient as TypedRoycoClient,
           chainClient,
         });
 
@@ -202,7 +224,7 @@ const updateUnderlyingYields = async ({
           market_type,
           market_id,
           annual_change_ratio,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -223,7 +245,7 @@ const updateUnderlyingYields = async ({
 
 export async function GET(request: Request) {
   try {
-    const supabaseClient = createClient(
+    const supabaseClient = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );

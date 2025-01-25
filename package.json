@@ -26,7 +26,7 @@
   "dependencies": {
     "@blockaid/client": "^0.21.0",
     "@celo/compliance": "^1.0.25",
-    "@ensofinance/shortcuts-widget": "^0.2.35",
+    "@ensofinance/shortcuts-widget": "^0.2.36",
     "@ethersproject/providers": "^5.7.2",
     "@hello-pangea/dnd": "^16.6.0",
     "@hookform/resolvers": "^3.3.4",
@@ -115,7 +115,7 @@
     "react-waypoint": "^10.3.0",
     "recharts": "^2.12.7",
     "resend": "^4.1.1",
-    "royco": "^0.9.273",
+    "royco": "^0.9.274",
     "sonner": "^1.7.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

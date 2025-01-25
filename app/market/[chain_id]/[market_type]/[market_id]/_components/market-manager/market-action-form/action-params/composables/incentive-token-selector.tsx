@@ -52,7 +52,7 @@ export const IncentiveTokenSelector = React.forwardRef<
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(0);
-    const [type, setType] = useState<"point" | "token">("token");
+    const [type, setType] = useState<"point" | "token" | "lp">("token");
 
     const { data, count, total_pages, isLoading } = useAllowedTokens({
       chain_id: marketMetadata.chain_id,
@@ -187,7 +187,11 @@ export const IncentiveTokenSelector = React.forwardRef<
               <Fragment>
                 <div className="mb-2 flex flex-row items-center gap-1">
                   <Badge
-                    variant={type === "token" ? "default" : "secondary"}
+                    variant={
+                      type === "token" || type === "lp"
+                        ? "default"
+                        : "secondary"
+                    }
                     onClick={() => {
                       setType("token");
                     }}
@@ -226,7 +230,9 @@ export const IncentiveTokenSelector = React.forwardRef<
                 <ul className="list mt-1 flex w-full grow flex-col gap-0 overflow-x-hidden overflow-y-scroll">
                   {data.length === 0 && (
                     <AlertIndicator className="h-full">
-                      No {type === "token" ? "tokens" : "points"} found
+                      No{" "}
+                      {type === "token" || type === "lp" ? "tokens" : "points"}{" "}
+                      found
                     </AlertIndicator>
                   )}
 

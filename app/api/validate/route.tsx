@@ -4,7 +4,7 @@ import { Address } from "abitype";
 import { getSupportedChain } from "royco/utils";
 import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
-import { RPC_API_KEYS } from "@/components/constants";
+
 import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi } from "viem";
@@ -12,6 +12,18 @@ import { erc20Abi } from "viem";
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
+
+const SERVER_RPC_API_KEYS = {
+  1: process.env.RPC_API_KEY_1,
+  11155111: process.env.RPC_API_KEY_11155111,
+  42161: process.env.RPC_API_KEY_42161,
+  8453: process.env.RPC_API_KEY_8453,
+  146: process.env.RPC_API_KEY_146,
+  80094: process.env.RPC_API_KEY_80094,
+  80000: process.env.RPC_API_KEY_80000,
+  21000000: process.env.RPC_API_KEY_21000000,
+  98865: process.env.RPC_API_KEY_98865,
+};
 
 export type OfferValidationDataType = {
   id: string; // Global offer ID [ <CHAIN_ID>_<MARKET_TYPE>_<OFFER_SIDE>_<OFFER_ID> ]
@@ -93,7 +105,11 @@ async function getInvalidApOffers(
         if (!chain) throw new Error("Chain not found");
         const client = createPublicClient({
           chain,
-          transport: http(RPC_API_KEYS[offer.chain_id]),
+          transport: http(
+            SERVER_RPC_API_KEYS[
+              offer.chain_id as keyof typeof SERVER_RPC_API_KEYS
+            ]
+          ),
         });
 
         const inputTokenAddress = offer.input_token_id.split("-")[1];

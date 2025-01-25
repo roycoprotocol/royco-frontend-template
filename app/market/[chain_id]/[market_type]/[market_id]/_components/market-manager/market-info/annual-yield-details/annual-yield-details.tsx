@@ -147,7 +147,7 @@ export const AnnualYieldDetails = React.forwardRef<
         </div>
       )}
 
-      <hr className="-mx-4 my-3" />
+      {/* <hr className="-mx-4 my-3" /> */}
 
       {/**
        * Incentive Details
