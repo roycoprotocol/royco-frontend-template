@@ -2,7 +2,7 @@ import { getSupportedChain, shortAddress } from "royco/utils";
 import { createClient } from "@supabase/supabase-js";
 import { http } from "@wagmi/core";
 import { createPublicClient } from "viem";
-import { RPC_API_KEYS } from "@/components/constants";
+
 import { getMarketIdFromEventLog } from "royco/market";
 import { Octokit } from "@octokit/rest";
 import validator from "validator";
@@ -10,6 +10,18 @@ import validator from "validator";
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
+
+const SERVER_RPC_API_KEYS = {
+  1: process.env.RPC_API_KEY_1,
+  11155111: process.env.RPC_API_KEY_11155111,
+  42161: process.env.RPC_API_KEY_42161,
+  8453: process.env.RPC_API_KEY_8453,
+  146: process.env.RPC_API_KEY_146,
+  80094: process.env.RPC_API_KEY_80094,
+  80000: process.env.RPC_API_KEY_80000,
+  21000000: process.env.RPC_API_KEY_21000000,
+  98865: process.env.RPC_API_KEY_98865,
+};
 
 export const createCommitMessage = ({
   chainId,
@@ -105,7 +117,9 @@ export async function POST(request: Request) {
 
     const viemClient = createPublicClient({
       chain,
-      transport: http(RPC_API_KEYS[chain_id]),
+      transport: http(
+        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+      ),
     });
 
     const receipt = await viemClient.getTransactionReceipt({
