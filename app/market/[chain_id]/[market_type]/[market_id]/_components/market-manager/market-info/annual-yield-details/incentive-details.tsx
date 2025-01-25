@@ -446,7 +446,7 @@ export const IncentiveDetails = React.forwardRef<
           currentNativeIncentives.tokens.length !== 0 && (
             <InfoCard
               className={cn(
-                "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll",
+                "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll border-t border-divider",
                 "-mx-4 -mb-3 bg-z2 px-4 py-3",
                 BASE_MARGIN_TOP.MD
               )}
