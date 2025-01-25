@@ -171,12 +171,7 @@ export const VaultWithdrawModal = React.forwardRef<
           />
 
           {isAmountExceedingPosition && (
-            <SlideUpWrapper
-              layout="position"
-              layoutId="motion:market:warning-alert:withdraw"
-              className="mt-3"
-              delay={0.4}
-            >
+            <SlideUpWrapper className="mt-3" delay={0.4}>
               <WarningAlert>
                 WARNING: You don't have sufficient balance.
               </WarningAlert>

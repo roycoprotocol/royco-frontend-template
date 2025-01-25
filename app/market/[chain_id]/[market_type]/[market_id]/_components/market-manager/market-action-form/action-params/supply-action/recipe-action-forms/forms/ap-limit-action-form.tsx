@@ -146,11 +146,7 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Funding Source Selector
        */}
-      <SlideUpWrapper
-        layout="position"
-        layoutId={`motion:market:recipe:ap-limit:funding-source-selector:${viewType}`}
-        delay={0.1}
-      >
+      <SlideUpWrapper delay={0.1}>
         <FundingSourceSelector
           fundingVaultAddress={marketActionForm.watch("funding_vault") || ""}
           onSelectFundingVaultAddress={(value) => {
@@ -174,11 +170,7 @@ export const APLimitActionForm = React.forwardRef<
        * Incentive Yield
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:recipe:ap-limit:incentive-yield-wrapper:${viewType}`}
-          delay={0.2}
-        >
+        <SlideUpWrapper delay={0.2}>
           <IncentiveYieldWrapper
             marketActionForm={marketActionForm}
             onYieldChange={(value) => {
@@ -201,11 +193,7 @@ export const APLimitActionForm = React.forwardRef<
        * Input Amount
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:recipe:ap-limit:input-amount-wrapper:${viewType}`}
-          delay={0.3}
-        >
+        <SlideUpWrapper delay={0.3}>
           <InputAmountWrapper
             marketActionForm={marketActionForm}
             onAmountChange={(value) => {
@@ -271,11 +259,7 @@ export const APLimitActionForm = React.forwardRef<
        * Incentive Amount
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:recipe:ap-limit:incentive-amount-wrapper:${viewType}`}
-          delay={0.4}
-        >
+        <SlideUpWrapper delay={0.4}>
           <IncentiveAmountWrapper
             marketActionForm={marketActionForm}
             onAmountChange={(value) => {
@@ -301,11 +285,7 @@ export const APLimitActionForm = React.forwardRef<
        * Input Expiry
        */}
       <div className="mt-5">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:recipe:ap-limit:input-expiry-selector:${viewType}`}
-          delay={0.5}
-        >
+        <SlideUpWrapper delay={0.5}>
           <InputExpirySelector marketActionForm={marketActionForm} />
         </SlideUpWrapper>
       </div>

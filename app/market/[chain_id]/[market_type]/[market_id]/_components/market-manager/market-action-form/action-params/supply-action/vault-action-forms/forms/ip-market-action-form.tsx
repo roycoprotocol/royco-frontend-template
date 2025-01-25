@@ -22,11 +22,7 @@ export const IPMarketActionForm = React.forwardRef<
         {/**
          * Quantity Selector for IP
          */}
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ip-market:input-amount-wrapper:${viewType}`}
-          delay={0.1}
-        >
+        <SlideUpWrapper delay={0.1}>
           <InputAmountWrapper marketActionForm={marketActionForm} />
         </SlideUpWrapper>
 

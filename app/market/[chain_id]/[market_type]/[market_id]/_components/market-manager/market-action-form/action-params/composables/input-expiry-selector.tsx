@@ -38,11 +38,7 @@ export const InputExpirySelector = React.forwardRef<
       </div>
 
       {!marketActionForm.watch("no_expiry") && (
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:input-expiry-selector:${viewType}`}
-          delay={0.1}
-        >
+        <SlideUpWrapper delay={0.1}>
           <TimestampSelector
             className="mt-3"
             customValue={

@@ -37,12 +37,7 @@ export const IncentivesRateSelector = React.forwardRef<
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:incentive-tokens-selector:${userType}`}
-          className="mt-5"
-          delay={delayTitle}
-        >
+        <SlideUpWrapper className="mt-5" delay={delayTitle}>
           <FormInputLabel
             size="sm"
             label="Incentive Tokens"
@@ -104,12 +99,7 @@ export const IncentivesRateSelector = React.forwardRef<
           />
         </SlideUpWrapper>
 
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:incentive-tokens-list:${userType}`}
-          className="mt-2"
-          delay={delayContent}
-        >
+        <SlideUpWrapper className="mt-2" delay={delayContent}>
           <div className="flex h-fit w-full flex-col gap-1 rounded-xl border border-divider bg-z2">
             {marketActionForm.watch("incentive_tokens").length === 0 ? (
               <AlertIndicator className="w-full ">

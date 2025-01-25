@@ -400,11 +400,7 @@ export const IncentiveDetails = React.forwardRef<
               );
 
               return (
-                <SlideUpWrapper
-                  layout="position"
-                  layoutId={`motion:market:market-info:incentive-details:${viewType}:${token_data.id}`}
-                  delay={0.1 + token_data_index * 0.1}
-                >
+                <SlideUpWrapper delay={0.1 + token_data_index * 0.1}>
                   <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
                     <InfoCard.Row.Key>
                       <IncentiveToken
@@ -451,11 +447,7 @@ export const IncentiveDetails = React.forwardRef<
                 BASE_MARGIN_TOP.MD
               )}
             >
-              <SlideUpWrapper
-                layout="position"
-                layoutId={`motion:market:market-info:native-incentive-details:${viewType}:${currentNativeIncentives.tokens[0].id}`}
-                delay={0.1}
-              >
+              <SlideUpWrapper delay={0.1}>
                 <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
                   <InfoCard.Row.Key>
                     <IncentiveToken

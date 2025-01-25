@@ -289,12 +289,7 @@ export const InputAmountWrapper = React.forwardRef<
        * Insufficient balance indicator
        */}
       {!hasSufficientBalance && (
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:input-amount-wrapper:warning-alert:${fundingType}`}
-          className="mt-3"
-          delay={0.4}
-        >
+        <SlideUpWrapper className="mt-3" delay={0.4}>
           <WarningAlert>
             WARNING: You don't have sufficient balance.
           </WarningAlert>

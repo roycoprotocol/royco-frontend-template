@@ -142,11 +142,7 @@ export const TokenEstimator = React.forwardRef<
               {/**
                * Token selector
                */}
-              <SlideUpWrapper
-                layout="position"
-                layoutId="motion:market:token-estimator:token-selector"
-                className="flex flex-col overflow-x-auto"
-              >
+              <SlideUpWrapper className="flex flex-col overflow-x-auto">
                 <TokenSelector
                   customTokenForm={form}
                   onTokenSelect={(token) => handleTokenSelect(token)}
@@ -158,11 +154,7 @@ export const TokenEstimator = React.forwardRef<
                */}
               <form className="mt-6 space-y-4">
                 {estimatorCustomTokenData.map((token, index) => (
-                  <SlideUpWrapper
-                    layout="position"
-                    layoutId={`motion:market:token-estimator:token-editor:${index}`}
-                    className="flex flex-col"
-                  >
+                  <SlideUpWrapper className="flex flex-col">
                     <TokenEditor
                       key={token.token_id}
                       index={index}

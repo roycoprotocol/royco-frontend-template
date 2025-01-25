@@ -82,11 +82,7 @@ export const FundingSourceSelector = React.forwardRef<
         </Select>
 
         {fundingType === RoycoMarketFundingType.vault.id && (
-          <SlideUpWrapper
-            layout="position"
-            layoutId="motion:market:funding-source-selector:funding-vault-selector"
-            delay={0.1}
-          >
+          <SlideUpWrapper delay={0.1}>
             <FundingVaultSelector
               fundingVaultAddress={fundingVaultAddress}
               onSelectFundingVaultAddress={onSelectFundingVaultAddress}
