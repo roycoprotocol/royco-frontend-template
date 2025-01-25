@@ -13,6 +13,7 @@ import {
   MarketType,
   MarketUserType,
   MarketVaultIncentiveAction,
+  useGlobalStates,
   useMarketManager,
 } from "@/store";
 import { useAccount } from "wagmi";
@@ -79,6 +80,8 @@ export const useMarketFormDetails = (
   });
 
   const { address, isConnected } = useAccount();
+
+  const { customTokenData } = useGlobalStates();
 
   const {
     isValid,
@@ -177,7 +180,7 @@ export const useMarketFormDetails = (
                 fdv?: string;
               } => Object.keys(data).length > 1
             )
-        : undefined,
+        : customTokenData,
 
     start_timestamps: marketActionForm
       .watch("incentive_tokens")
