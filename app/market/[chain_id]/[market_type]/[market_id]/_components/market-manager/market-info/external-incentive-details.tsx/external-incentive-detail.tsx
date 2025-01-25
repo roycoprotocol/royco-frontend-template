@@ -3,7 +3,6 @@ import React, { useMemo } from "react";
 import { SlideUpWrapper } from "@/components/animations";
 import { SecondaryLabel } from "../../../composables";
 import { INFO_ROW_CLASSES } from "../../../composables/base-classes";
-import { useMarketManager } from "@/store/use-market-manager";
 import { InfoCard } from "@/components/common/info-card";
 import { IncentiveToken } from "../annual-yield-details/incentive-details";
 import { useActiveMarket } from "../../../hooks";
@@ -12,7 +11,6 @@ export const ExternalIncentiveDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { viewType } = useMarketManager();
   const { currentMarketData } = useActiveMarket();
 
   const externalIncentives = useMemo(() => {
@@ -21,10 +19,6 @@ export const ExternalIncentiveDetails = React.forwardRef<
     }
     return currentMarketData.external_incentives;
   }, [currentMarketData]);
-
-  if (externalIncentives.length === 0) {
-    return null;
-  }
 
   return (
     <div
