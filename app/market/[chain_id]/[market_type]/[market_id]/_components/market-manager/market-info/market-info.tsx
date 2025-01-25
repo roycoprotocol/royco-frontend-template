@@ -9,6 +9,7 @@ import { useActiveMarket } from "../../hooks";
 import { PrimaryLabel } from "../../composables";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
+import { ExternalIncentiveDetails } from "./external-incentive-details.tsx/external-incentive-detail";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -52,6 +53,13 @@ export const MarketInfo = React.forwardRef<
          */}
         <div className="mt-5">
           <AnnualYieldDetails />
+        </div>
+
+        {/**
+         * External Incentive Details
+         */}
+        <div className="mt-5">
+          <ExternalIncentiveDetails />
         </div>
 
         {/**
