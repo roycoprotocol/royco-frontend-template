@@ -86,9 +86,14 @@ export const ContractList = React.forwardRef<
   });
 
   const pinContractList = useMemo(() => {
-    const arr = [];
+    const arr: any[] = [];
 
-    if (weirollContract) {
+    if (
+      !!weirollContract &&
+      !arr.find(
+        (contract) => contract.address === (weirollContract as any)[0].address
+      )
+    ) {
       arr.push({
         ...(weirollContract as any)[0],
         id: (weirollContract as any)[0]?.contract_id,
@@ -97,7 +102,12 @@ export const ContractList = React.forwardRef<
       });
     }
 
-    if (tokenContract) {
+    if (
+      !!tokenContract &&
+      !arr.find(
+        (contract) => contract.address === (tokenContract as any)[0].address
+      )
+    ) {
       arr.push({
         ...(tokenContract as any)[0],
         id: (tokenContract as any)[0]?.contract_id,
@@ -108,7 +118,14 @@ export const ContractList = React.forwardRef<
       process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" &&
       marketBuilderForm.watch("chain").id === 1
     ) {
-      if (depositLockerContractOnEthMainnet) {
+      if (
+        !!depositLockerContractOnEthMainnet &&
+        !arr.find(
+          (contract) =>
+            contract.address ===
+            (depositLockerContractOnEthMainnet as any)[0].address
+        )
+      ) {
         arr.push({
           ...(depositLockerContractOnEthMainnet as any)[0],
           id: (depositLockerContractOnEthMainnet as any)[0]?.contract_id,
@@ -117,7 +134,7 @@ export const ContractList = React.forwardRef<
     }
 
     return arr;
-  }, [tokenContract, weirollContract]);
+  }, [tokenContract, weirollContract, depositLockerContractOnEthMainnet]);
 
   const contractList = useMemo(() => {
     return data.filter(
