@@ -2,6 +2,8 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { SupportedMarketMap } from "royco/constants";
 import { createPublicClient, http } from "viem";
 import { getSupportedChain } from "royco/utils";
+import { Database } from "royco/types";
+import { TypedRoycoClient } from "royco/client";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -22,7 +24,7 @@ const SERVER_RPC_API_KEYS = {
 const updateExternalIncentives = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -60,7 +62,8 @@ const updateExternalIncentives = async ({
         const values = await Promise.all(
           market.external_incentives!.map(async (incentie_token) => {
             const value = await incentie_token.value!({
-              roycoClient: supabaseClient,
+              // @ts-ignore
+              roycoClient: supabaseClient as TypedRoycoClient,
               chainClient,
             });
             return value;
@@ -74,7 +77,7 @@ const updateExternalIncentives = async ({
           market_id,
           token_ids,
           values,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -96,7 +99,7 @@ const updateExternalIncentives = async ({
 const updateNativeYields = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -135,7 +138,8 @@ const updateNativeYields = async ({
           market.native_yield!.map(async (incentie_token) => {
             const annual_change_ratio =
               await incentie_token.annual_change_ratio!({
-                roycoClient: supabaseClient,
+                // @ts-ignore
+                roycoClient: supabaseClient as TypedRoycoClient,
                 chainClient,
               });
             return annual_change_ratio;
@@ -155,7 +159,7 @@ const updateNativeYields = async ({
           token_ids,
           annual_change_ratios,
           annual_change_ratio,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -177,7 +181,7 @@ const updateNativeYields = async ({
 const updateUnderlyingYields = async ({
   supabaseClient,
 }: {
-  supabaseClient: SupabaseClient;
+  supabaseClient: SupabaseClient<Database>;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -209,7 +213,8 @@ const updateUnderlyingYields = async ({
         });
 
         const annual_change_ratio = await market.underlying_yield!({
-          roycoClient: supabaseClient,
+          // @ts-ignore
+          roycoClient: supabaseClient as TypedRoycoClient,
           chainClient,
         });
 
@@ -219,7 +224,7 @@ const updateUnderlyingYields = async ({
           market_type,
           market_id,
           annual_change_ratio,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
       } catch (error) {
         console.error(`Error fetching yield for market ${market.id}:`, error);
@@ -240,7 +245,7 @@ const updateUnderlyingYields = async ({
 
 export async function GET(request: Request) {
   try {
-    const supabaseClient = createClient(
+    const supabaseClient = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );

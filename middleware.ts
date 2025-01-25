@@ -7,6 +7,7 @@ const SupabaseRoutes = [
   "/api/evm/contract",
   "/api/users/update",
   "/api/push/lp-token",
+  "/api/update/quotes",
 ];
 const RateLimits = {
   rpc: {
