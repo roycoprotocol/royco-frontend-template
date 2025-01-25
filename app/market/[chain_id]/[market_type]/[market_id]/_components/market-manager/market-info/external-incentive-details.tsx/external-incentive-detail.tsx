@@ -22,6 +22,10 @@ export const ExternalIncentiveDetails = React.forwardRef<
     return currentMarketData.external_incentives;
   }, [currentMarketData]);
 
+  if (externalIncentives.length === 0) {
+    return null;
+  }
+
   return (
     <div
       ref={ref}
