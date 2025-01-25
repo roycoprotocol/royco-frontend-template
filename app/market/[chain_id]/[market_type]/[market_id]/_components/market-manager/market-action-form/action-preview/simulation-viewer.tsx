@@ -43,11 +43,7 @@ export const SimulationViewer = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <SlideUpWrapper
-        layout="position"
-        layoutId="motion:market:preview-step:simulation-viewer:title"
-        delay={0.2}
-      >
+      <SlideUpWrapper delay={0.2}>
         <SecondaryLabel className={cn(BASE_LABEL_BORDER, "font-normal")}>
           Tenderly Simulation
         </SecondaryLabel>
@@ -71,8 +67,6 @@ export const SimulationViewer = React.forwardRef<
               return (
                 <SlideUpWrapper
                   key={key}
-                  layout="position"
-                  layoutId={`motion:market:preview-step:simulation-viewer:token-displayer:${key}`}
                   delay={0.3 + txIndex * 0.1}
                   className={cn(
                     "flex h-fit w-[49%] shrink-0 flex-col rounded-xl bg-z2 p-3"

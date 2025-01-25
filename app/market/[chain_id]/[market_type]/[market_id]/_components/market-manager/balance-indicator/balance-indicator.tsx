@@ -222,11 +222,7 @@ export const BalanceIndicator = React.forwardRef<
 
         {inputTokenData ? (
           <InfoCard>
-            <SlideUpWrapper
-              layout="position"
-              layoutId={`motion:market:balance-indicator:input-token:${inputTokenData.id}`}
-              delay={0.1}
-            >
+            <SlideUpWrapper delay={0.1}>
               <InfoCard.Row className={INFO_ROW_CLASSES}>
                 <InfoCard.Row.Key>
                   <TokenDisplayer
@@ -272,11 +268,7 @@ export const BalanceIndicator = React.forwardRef<
           <InfoCard className="flex flex-col gap-2">
             {incentivesTokenData.map((incentive, index) => {
               return (
-                <SlideUpWrapper
-                  layout="position"
-                  layoutId={`motion:market:balance-indicator:incentive-token:${incentive.id}`}
-                  delay={0.1 + index * 0.1}
-                >
+                <SlideUpWrapper delay={0.1 + index * 0.1}>
                   <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
                     <InfoCard.Row.Key>
                       <TokenDisplayer

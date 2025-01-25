@@ -22,11 +22,7 @@ export const ActionParams = React.forwardRef<
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       {userType === MarketUserType.ap.id && (
         <div className={cn("mb-3")}>
-          <SlideUpWrapper
-            layout="position"
-            layoutId={`motion:market:action-type:${viewType}`}
-            className={cn("flex flex-col")}
-          >
+          <SlideUpWrapper className={cn("flex flex-col")}>
             <HorizontalTabs
               className={cn("")}
               size="sm"

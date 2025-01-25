@@ -143,11 +143,7 @@ export const APLimitActionForm = React.forwardRef<
        * Incentive Yield
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:incentive-yield-wrapper:${viewType}`}
-          delay={0.1}
-        >
+        <SlideUpWrapper delay={0.1}>
           <IncentiveYieldWrapper
             marketActionForm={marketActionForm}
             onYieldChange={(value) => {
@@ -170,11 +166,7 @@ export const APLimitActionForm = React.forwardRef<
        * Input Amount
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:input-amount-wrapper:${viewType}`}
-          delay={0.2}
-        >
+        <SlideUpWrapper delay={0.2}>
           <InputAmountWrapper
             marketActionForm={marketActionForm}
             onAmountChange={(value) => {
@@ -241,11 +233,7 @@ export const APLimitActionForm = React.forwardRef<
        * Incentive Amount
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:incentive-amount-wrapper:${viewType}`}
-          delay={0.3}
-        >
+        <SlideUpWrapper delay={0.3}>
           <IncentiveAmountWrapper
             marketActionForm={marketActionForm}
             onAmountChange={(value) => {
@@ -270,11 +258,7 @@ export const APLimitActionForm = React.forwardRef<
        * Input Expiry
        */}
       <div className="mt-5">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:input-expiry-selector:${viewType}`}
-          delay={0.4}
-        >
+        <SlideUpWrapper delay={0.4}>
           <InputExpirySelector marketActionForm={marketActionForm} />
         </SlideUpWrapper>
       </div>
@@ -283,11 +267,7 @@ export const APLimitActionForm = React.forwardRef<
        * Disclaimer
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:vault:ap-limit:disclaimer:${viewType}`}
-          delay={0.1}
-        >
+        <SlideUpWrapper delay={0.1}>
           <div className="flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
             <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
             <SecondaryLabel className="break-normal text-xs">

@@ -98,22 +98,14 @@ export const SupplyAction = React.forwardRef<
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       {viewType === MarketViewType.advanced.id && (
-        <SlideUpWrapper
-          layout="position"
-          layoutId="motion:market:supply-action:offer-type-selector"
-          delay={0.1}
-        >
+        <SlideUpWrapper delay={0.1}>
           <OfferTypeSelector />
         </SlideUpWrapper>
       )}
 
       {offerType === MarketOfferType.limit.id && showIncentiveTokenEstimate ? (
         <div className="mt-3">
-          <SlideUpWrapper
-            layout="position"
-            layoutId="motion:market:supply-action:token-estimate-popover"
-            delay={0.2}
-          >
+          <SlideUpWrapper delay={0.2}>
             <TokenEstimator defaultTokenId={highestIncentiveToken?.id}>
               <Button className="flex w-full items-center justify-center gap-2">
                 <LightningIcon className="h-5 w-5 fill-white" />

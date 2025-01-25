@@ -25,11 +25,7 @@ export const APMarketActionForm = React.forwardRef<
       {/**
        * Funding Source Selector
        */}
-      <SlideUpWrapper
-        layout="position"
-        layoutId={`motion:market:recipe:ap-market:funding-source-selector:${viewType}`}
-        delay={0.1}
-      >
+      <SlideUpWrapper delay={0.1}>
         <FundingSourceSelector
           fundingVaultAddress={marketActionForm.watch("funding_vault") || ""}
           onSelectFundingVaultAddress={(value) => {
@@ -53,11 +49,7 @@ export const APMarketActionForm = React.forwardRef<
        * Input Amount
        */}
       <div className="mt-3">
-        <SlideUpWrapper
-          layout="position"
-          layoutId={`motion:market:recipe:ap-market:input-amount-wrapper:${viewType}`}
-          delay={0.2}
-        >
+        <SlideUpWrapper delay={0.2}>
           <InputAmountWrapper marketActionForm={marketActionForm} />
         </SlideUpWrapper>
       </div>

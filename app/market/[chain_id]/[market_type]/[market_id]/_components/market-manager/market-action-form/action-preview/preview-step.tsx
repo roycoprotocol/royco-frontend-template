@@ -112,11 +112,7 @@ export const PreviewStep = React.forwardRef<
         )}
 
         <div className={cn("rounded-2xl border px-3 pb-3 pt-5")}>
-          <SlideUpWrapper
-            layout="position"
-            layoutId="motion:market:preview-step:incentives-title"
-            delay={0.3}
-          >
+          <SlideUpWrapper delay={0.3}>
             <SecondaryLabel className={cn(BASE_LABEL_BORDER)}>
               Incentives{" "}
               {userType === MarketUserType.ap.id
@@ -140,8 +136,6 @@ export const PreviewStep = React.forwardRef<
                 return (
                   <SlideUpWrapper
                     key={key}
-                    layout="position"
-                    layoutId={`motion:market:preview-step:incentives-table:token-displayer:${key}`}
                     delay={0.4 + index * 0.05}
                     className={cn(
                       "flex h-fit w-full flex-row place-content-center items-center justify-between border-b border-divider py-3"
@@ -243,11 +237,7 @@ export const PreviewStep = React.forwardRef<
               </AlertIndicator>
             )}
 
-            <SlideUpWrapper
-              layout="position"
-              layoutId="motion:market:preview-step:net-total-indicator"
-              delay={0.6}
-            >
+            <SlideUpWrapper delay={0.6}>
               {/**
                * Incentives Schedule
                */}
@@ -433,11 +423,7 @@ export const PreviewStep = React.forwardRef<
             "rounded-2xl border px-3 pb-3 pt-5"
           )}
         >
-          <SlideUpWrapper
-            layout="position"
-            layoutId="motion:market:preview-step:transactions-title"
-            delay={0.4}
-          >
+          <SlideUpWrapper delay={0.4}>
             <SecondaryLabel className={cn(BASE_LABEL_BORDER)}>
               Transactions
             </SecondaryLabel>
@@ -452,8 +438,6 @@ export const PreviewStep = React.forwardRef<
                   return (
                     <SlideUpWrapper
                       key={`preview-step:transaction-row:${BASE_KEY}`}
-                      layout="position"
-                      layoutId={`motion:market:preview-step:transaction-row:${txIndex}`}
                       delay={0.5 + txIndex * 0.05}
                     >
                       <TransactionRow
@@ -470,11 +454,7 @@ export const PreviewStep = React.forwardRef<
 
         {canBePerformedCompletely === false &&
           canBePerformedPartially === true && (
-            <SlideUpWrapper
-              layout="position"
-              layoutId="motion:market:preview-step:warning:offer-cannot-be-filled-completely"
-              delay={0.6}
-            >
+            <SlideUpWrapper delay={0.6}>
               <div
                 className={cn(
                   BASE_MARGIN_TOP.XL,

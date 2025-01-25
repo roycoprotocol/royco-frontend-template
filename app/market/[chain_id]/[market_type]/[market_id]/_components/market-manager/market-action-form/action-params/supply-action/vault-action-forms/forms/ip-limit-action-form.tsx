@@ -21,11 +21,7 @@ export const IPLimitActionForm = React.forwardRef<
       {/**
        * Vault Incentive Action Type Selector
        */}
-      <SlideUpWrapper
-        layout="position"
-        layoutId={`motion:market:vault:ip-limit:incentive-action-type:${viewType}`}
-        delay={0.1}
-      >
+      <SlideUpWrapper delay={0.1}>
         <ActionTypeSelector />
       </SlideUpWrapper>
 

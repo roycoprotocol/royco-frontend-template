@@ -37,8 +37,6 @@ export const ActionPreview = React.forwardRef<
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       <SlideUpWrapper
-        layout="position"
-        layoutId={`motion:market:back-button:${marketStep}`}
         className={cn(
           "mt-5 flex w-full flex-row place-content-start items-center text-left"
         )}

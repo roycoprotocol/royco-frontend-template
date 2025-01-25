@@ -40,12 +40,7 @@ export const ExternalIncentiveDetails = React.forwardRef<
         className={cn("flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll")}
       >
         {externalIncentives.map((externalIncentive, index) => (
-          <SlideUpWrapper
-            key={externalIncentive.id}
-            layout="position"
-            layoutId={`motion:market:market-info:external-incentive-details:${viewType}:${externalIncentive.id}`}
-            delay={0.1 + index * 0.1}
-          >
+          <SlideUpWrapper key={externalIncentive.id} delay={0.1 + index * 0.1}>
             <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
               <InfoCard.Row.Key>
                 <IncentiveToken
