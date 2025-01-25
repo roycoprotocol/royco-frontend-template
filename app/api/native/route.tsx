@@ -3,12 +3,24 @@ import { http } from "@wagmi/core";
 import { Address } from "abitype";
 import { getSupportedChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
-import { RPC_API_KEYS } from "@/components/constants";
+
 import { BigNumber } from "ethers";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
+
+const SERVER_RPC_API_KEYS = {
+  1: process.env.RPC_API_KEY_1,
+  11155111: process.env.RPC_API_KEY_11155111,
+  42161: process.env.RPC_API_KEY_42161,
+  8453: process.env.RPC_API_KEY_8453,
+  146: process.env.RPC_API_KEY_146,
+  80094: process.env.RPC_API_KEY_80094,
+  80000: process.env.RPC_API_KEY_80000,
+  21000000: process.env.RPC_API_KEY_21000000,
+  98865: process.env.RPC_API_KEY_98865,
+};
 
 export async function POST(request: Request) {
   try {
@@ -36,7 +48,9 @@ export async function POST(request: Request) {
           if (!chain) throw new Error("Chain not found");
           const publicClient = createPublicClient({
             chain,
-            transport: http(RPC_API_KEYS[chain.id]),
+            transport: http(
+              SERVER_RPC_API_KEYS[chain.id as keyof typeof SERVER_RPC_API_KEYS]
+            ),
           });
 
           // Run multicall and getBlock in parallel
