@@ -58,9 +58,13 @@ export const MarketInfo = React.forwardRef<
         {/**
          * External Incentive Details
          */}
-        <div className="mt-5">
-          <ExternalIncentiveDetails />
-        </div>
+        {currentMarketData &&
+          currentMarketData.external_incentives &&
+          currentMarketData.external_incentives.length > 0 && (
+            <div className="mt-5">
+              <ExternalIncentiveDetails />
+            </div>
+          )}
 
         {/**
          * Token Estimate
@@ -70,7 +74,7 @@ export const MarketInfo = React.forwardRef<
             <Button
               variant="link"
               size="sm"
-              className="w-fit p-0 underline outline-none"
+              className="w-fit p-0 text-tertiary underline outline-none"
             >
               Adjust APY
             </Button>
