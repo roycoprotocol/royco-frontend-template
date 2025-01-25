@@ -84,7 +84,7 @@ export const TokenEstimatePopover = React.forwardRef<
   );
 });
 
-const IncentiveToken = React.forwardRef<
+export const IncentiveToken = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     token_data: any;
@@ -123,7 +123,7 @@ const IncentiveToken = React.forwardRef<
   );
 });
 
-const IncentiveTokenDetails = React.forwardRef<
+export const IncentiveTokenDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     token_data: any;
@@ -272,7 +272,7 @@ const IncentiveTokenDetails = React.forwardRef<
           <TokenDisplayer
             className="h-4 w-4"
             size={4}
-            tokens={[currentMarketData.input_token_data]}
+            tokens={[currentMarketData.input_token_data] as any}
             symbols={false}
           />
         </TertiaryLabel>
@@ -446,8 +446,9 @@ export const IncentiveDetails = React.forwardRef<
           currentNativeIncentives.tokens.length !== 0 && (
             <InfoCard
               className={cn(
-                "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll rounded-b-lg border-t border-divider",
-                "-mx-4 -mb-3 bg-z2 px-4 py-3"
+                "flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll border-t border-divider",
+                "-mx-4 -mb-3 bg-z2 px-4 py-3",
+                BASE_MARGIN_TOP.MD
               )}
             >
               <SlideUpWrapper

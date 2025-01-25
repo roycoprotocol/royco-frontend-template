@@ -50,7 +50,7 @@ export const AnnualYieldDetails = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("rounded-lg border px-4 py-3", className)}
+      className={cn("overflow-hidden rounded-lg border px-4 py-3", className)}
       {...props}
     >
       <div className="grid grid-cols-2 gap-6">

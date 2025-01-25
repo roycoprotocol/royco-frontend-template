@@ -53,7 +53,7 @@ export const AdvanceMarketManager = forwardRef<
         >
           <OfferVisualizer />
 
-          <StatsTables className="max-h-[42rem] flex-1" />
+          <StatsTables className="h-[42rem] flex-1" />
         </div>
 
         {/**
@@ -86,7 +86,7 @@ export const AdvanceMarketManager = forwardRef<
       >
         <OfferVisualizer />
 
-        <StatsTables className="max-h-[24rem] flex-1" />
+        <StatsTables className="h-[24rem] flex-1" />
       </div>
     </motion.div>
   );
