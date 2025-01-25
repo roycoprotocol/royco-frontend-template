@@ -6,11 +6,12 @@ import {
   refineSolidityAddress,
   shortAddress,
 } from "royco/utils";
-import { createPublicClient } from "viem";
+import { createPublicClient, erc4626Abi } from "viem";
 import { RPC_API_KEYS } from "@/components/constants";
 import { erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
 import { type NextRequest } from "next/server";
+import { lpTokenAbi } from "./lp-token-abi";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -168,6 +169,32 @@ export const fetchTokenFromCoingecko = async ({
   };
 
   return enrichedTokenData;
+};
+
+export const fetchLpTokenFromContract = async ({
+  chainId,
+  contractAddress,
+}: {
+  chainId: number;
+  contractAddress: string;
+}) => {
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(chainId),
+    transport: http(RPC_API_KEYS[chainId]),
+  });
+
+  const contracts = [
+    {
+      address: contractAddress as Address,
+      abi: lpTokenAbi,
+      functionName: "token0",
+    },
+    {
+      address: contractAddress as Address,
+      abi: lpTokenAbi,
+      functionName: "token1",
+    },
+  ];
 };
 
 export const checkTokenFileExists = async (
