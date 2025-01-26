@@ -155,6 +155,13 @@ export const getExploreFilters = () => {
     });
   }
 
+  if (frontendTag === "boyco") {
+    filters.push({
+      id: "category",
+      value: "boyco",
+    });
+  }
+
   return filters;
 };
 
