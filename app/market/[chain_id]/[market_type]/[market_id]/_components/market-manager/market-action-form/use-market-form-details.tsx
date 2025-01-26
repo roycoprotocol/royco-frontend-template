@@ -117,7 +117,7 @@ export const useMarketFormDetails = (
 
     expiry:
       currentMarketData?.category === "boyco"
-        ? "1234567890"
+        ? "1738540800"
         : marketActionForm.watch("no_expiry")
           ? "0"
           : Math.floor(

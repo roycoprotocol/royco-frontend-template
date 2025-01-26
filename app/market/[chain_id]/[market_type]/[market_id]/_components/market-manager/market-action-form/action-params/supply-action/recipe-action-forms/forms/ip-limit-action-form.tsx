@@ -9,6 +9,7 @@ import { IncentivesAmountSelector } from "../../../composables";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
 import { useMarketManager } from "@/store/use-market-manager";
+import { useActiveMarket } from "../../../../../../hooks";
 
 export const IPLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -17,6 +18,7 @@ export const IPLimitActionForm = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { viewType } = useMarketManager();
+  const { currentMarketData } = useActiveMarket();
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -39,11 +41,13 @@ export const IPLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      <div className="mt-5">
-        <SlideUpWrapper delay={0.4}>
-          <InputExpirySelector marketActionForm={marketActionForm} />
-        </SlideUpWrapper>
-      </div>
+      {currentMarketData.category !== "boyco" && (
+        <div className="mt-5">
+          <SlideUpWrapper delay={0.4}>
+            <InputExpirySelector marketActionForm={marketActionForm} />
+          </SlideUpWrapper>
+        </div>
+      )}
 
       <IPQuantityIndicator marketActionForm={marketActionForm} />
     </div>
