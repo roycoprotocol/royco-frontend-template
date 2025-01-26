@@ -1,8 +1,11 @@
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { Fragment } from "react";
 import { detect } from "detect-browser";
+import { TokenDisplayer } from "./token-displayer";
+import { getSupportedToken } from "royco/constants";
 
 type Token = {
+  id?: string;
   image?: string;
   symbol: string;
 };
@@ -25,11 +28,54 @@ export const TokenBadge = React.forwardRef<HTMLDivElement, TokenBadgeProps>(
         )}
         onClick={onClick}
       >
-        {token.image && (
+        {!!token.image && !!token.id && typeof token.id === "string" && (
+          <Fragment>
+            {getSupportedToken(token.id).type === "lp" ? (
+              <Fragment>
+                <img
+                  key={`token:${token.id}:image:token0`}
+                  src={
+                    getSupportedToken(getSupportedToken(token.id).token0).image
+                  }
+                  alt={token.symbol}
+                  className={cn(
+                    "h-5 w-5 shrink-0 rounded-full bg-z2 transition-transform"
+                  )}
+                />
+
+                <img
+                  key={`token:${token.id}:image:token1`}
+                  src={
+                    getSupportedToken(getSupportedToken(token.id).token1).image
+                  }
+                  alt={token.symbol}
+                  className={cn(
+                    "h-5 w-5 shrink-0 rounded-full bg-z2 transition-transform",
+                    "-ml-3"
+                  )}
+                />
+              </Fragment>
+            ) : (
+              <img
+                key={`token:${token.id}:image:token1`}
+                src={token.image}
+                alt={token.symbol}
+                className={cn(
+                  "h-5 w-5 shrink-0 rounded-full bg-z2 transition-transform"
+                )}
+              />
+            )}
+          </Fragment>
+        )}
+
+        {token.image && typeof token.id !== "string" && (
           <img
+            key={`token:${token.id}:image:token1`}
             src={token.image}
-            alt={`Logo of ${token.symbol} token`}
-            className="h-5 w-5 rounded-full"
+            alt={token.symbol}
+            className={cn(
+              "h-5 w-5 shrink-0 rounded-full bg-z2 transition-transform"
+            )}
           />
         )}
 
