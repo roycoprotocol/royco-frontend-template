@@ -39,6 +39,7 @@ export type OfferValidationDataType = {
 
 export async function POST(request: Request) {
   try {
+    const origin = request.headers.get("origin") || "https://app.royco.xyz";
     const body = await request.json();
     const { offer_ids }: { offer_ids: string[] } = body; // Changed from offers to offer_ids
 
@@ -108,7 +109,14 @@ async function getInvalidApOffers(
           transport: http(
             SERVER_RPC_API_KEYS[
               offer.chain_id as keyof typeof SERVER_RPC_API_KEYS
-            ]
+            ],
+            {
+              fetchOptions: {
+                headers: {
+                  Origin: origin,
+                },
+              },
+            }
           ),
         });
 

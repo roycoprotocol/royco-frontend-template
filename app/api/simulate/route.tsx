@@ -22,10 +22,12 @@ const SERVER_RPC_API_KEYS = {
 };
 
 export const simulateTransaction = async ({
+  origin,
   chainId,
   transactions,
   account,
 }: {
+  origin: string;
   chainId: number;
   transactions: Array<TransactionOptionsType>;
   account: Address;
@@ -37,7 +39,14 @@ export const simulateTransaction = async ({
     const client = createPublicClient({
       chain,
       transport: http(
-        SERVER_RPC_API_KEYS[chainId as keyof typeof SERVER_RPC_API_KEYS]
+        SERVER_RPC_API_KEYS[chainId as keyof typeof SERVER_RPC_API_KEYS],
+        {
+          fetchOptions: {
+            headers: {
+              Origin: origin,
+            },
+          },
+        }
       ),
     });
     // const blockNumberRes = await client.getBlockNumber();
@@ -106,8 +115,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { chainId, transactions, account } = body;
+    const origin = request.headers.get("origin") || "https://app.royco.xyz";
 
     const result = await simulateTransaction({
+      origin,
       chainId,
       transactions,
       account,

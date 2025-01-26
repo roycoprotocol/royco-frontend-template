@@ -23,8 +23,10 @@ const SERVER_RPC_API_KEYS = {
 
 const updateExternalIncentives = async ({
   supabaseClient,
+  origin,
 }: {
   supabaseClient: SupabaseClient<Database>;
+  origin: string;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -51,7 +53,14 @@ const updateExternalIncentives = async ({
         const chainClient = createPublicClient({
           chain: chain,
           transport: http(
-            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS],
+            {
+              fetchOptions: {
+                headers: {
+                  Origin: origin,
+                },
+              },
+            }
           ),
         });
 
@@ -98,8 +107,10 @@ const updateExternalIncentives = async ({
 
 const updateNativeYields = async ({
   supabaseClient,
+  origin,
 }: {
   supabaseClient: SupabaseClient<Database>;
+  origin: string;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -126,7 +137,14 @@ const updateNativeYields = async ({
         const chainClient = createPublicClient({
           chain: chain,
           transport: http(
-            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS],
+            {
+              fetchOptions: {
+                headers: {
+                  Origin: origin,
+                },
+              },
+            }
           ),
         });
 
@@ -180,8 +198,10 @@ const updateNativeYields = async ({
 
 const updateUnderlyingYields = async ({
   supabaseClient,
+  origin,
 }: {
   supabaseClient: SupabaseClient<Database>;
+  origin: string;
 }) => {
   // Filter markets and calculate batch
   const mapEntries = Object.values(SupportedMarketMap).filter(
@@ -208,7 +228,14 @@ const updateUnderlyingYields = async ({
         const chainClient = createPublicClient({
           chain: chain,
           transport: http(
-            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+            SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS],
+            {
+              fetchOptions: {
+                headers: {
+                  Origin: origin,
+                },
+              },
+            }
           ),
         });
 
@@ -245,15 +272,16 @@ const updateUnderlyingYields = async ({
 
 export async function GET(request: Request) {
   try {
+    const origin = request.headers.get("origin") || "https://app.royco.xyz";
     const supabaseClient = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
     );
 
     await Promise.all([
-      updateNativeYields({ supabaseClient }),
-      updateUnderlyingYields({ supabaseClient }),
-      updateExternalIncentives({ supabaseClient }),
+      updateNativeYields({ supabaseClient, origin }),
+      updateUnderlyingYields({ supabaseClient, origin }),
+      updateExternalIncentives({ supabaseClient, origin }),
     ]);
 
     return Response.json(
