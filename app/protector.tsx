@@ -84,28 +84,66 @@ export const Protector = ({
           onSubmit={onSubmit}
           className="flex h-screen w-full flex-col place-content-center items-center"
         >
-          <div className="heading-3">Royco Protocol</div>
+          <div className="heading-3">
+            {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+              ? "🐻 BOYCO ⛓️"
+              : "Royco Protocol"}
+          </div>
 
           <div className="body-2 mt-5 font-gt">
             <InputOTP
               className=""
               value={protectorKey}
-              maxLength={7}
+              maxLength={
+                process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? 27 : 7
+              }
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               onChange={(e: string) => {
                 setProtectorKey(e.toUpperCase());
               }}
               inputMode="text"
             >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-                <InputOTPSlot index={6} />
-              </InputOTPGroup>
+              {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                  <InputOTPSlot index={6} />
+                  <InputOTPSlot index={7} />
+                  <InputOTPSlot index={8} />
+                  <InputOTPSlot index={9} />
+                  <InputOTPSlot index={10} />
+                  <InputOTPSlot index={11} />
+                  <InputOTPSlot index={12} />
+                  <InputOTPSlot index={13} />
+                  <InputOTPSlot index={14} />
+                  <InputOTPSlot index={15} />
+                  <InputOTPSlot index={16} />
+                  <InputOTPSlot index={17} />
+                  <InputOTPSlot index={18} />
+                  <InputOTPSlot index={19} />
+                  <InputOTPSlot index={20} />
+                  <InputOTPSlot index={21} />
+                  <InputOTPSlot index={22} />
+                  <InputOTPSlot index={23} />
+                  <InputOTPSlot index={24} />
+                  <InputOTPSlot index={25} />
+                  <InputOTPSlot index={26} />
+                </InputOTPGroup>
+              ) : (
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                  <InputOTPSlot index={6} />
+                </InputOTPGroup>
+              )}
             </InputOTP>
           </div>
 

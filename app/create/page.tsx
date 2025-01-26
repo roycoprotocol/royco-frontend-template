@@ -23,7 +23,11 @@ const Page = () => {
 
   const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
-  if (frontendTag === "internal" || frontendTag === "testnet") {
+  if (
+    frontendTag === "internal" ||
+    frontendTag === "testnet" ||
+    frontendTag === "boyco"
+  ) {
     return <Protector children={<Content />} />;
   } else {
     return <Content />;
