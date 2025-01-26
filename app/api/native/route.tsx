@@ -24,6 +24,7 @@ const SERVER_RPC_API_KEYS = {
 
 export async function POST(request: Request) {
   try {
+    const origin = request.headers.get("origin") || "https://app.royco.xyz";
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL as string,
       process.env.SUPABASE_SERVICE_ROLE_KEY as string
@@ -49,7 +50,14 @@ export async function POST(request: Request) {
           const publicClient = createPublicClient({
             chain,
             transport: http(
-              SERVER_RPC_API_KEYS[chain.id as keyof typeof SERVER_RPC_API_KEYS]
+              SERVER_RPC_API_KEYS[chain.id as keyof typeof SERVER_RPC_API_KEYS],
+              {
+                fetchOptions: {
+                  headers: {
+                    Origin: origin,
+                  },
+                },
+              }
             ),
           });
 
