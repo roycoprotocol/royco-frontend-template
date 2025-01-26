@@ -1,33 +1,46 @@
 import { NextResponse } from "next/server";
 import { kv } from "@vercel/kv";
+import { SignJWT, jwtVerify } from "jose";
+
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
+const JWT_EXPIRY = "15m";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 
-const CACHE_DURATION = 23 * 60 * 60; // 23 hours in seconds
+const CACHE_DURATION = 15 * 60; // 15 minutes in seconds
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const auth_token = searchParams.get("auth_token");
+    const turnstileToken = searchParams.get("turnstile_token");
+    const sessionToken = searchParams.get("session_token");
 
-    if (!auth_token) {
-      return NextResponse.json({ success: false }, { status: 400 });
+    // If session token is provided, verify it
+    if (sessionToken) {
+      try {
+        const { payload } = await jwtVerify(sessionToken, SECRET_KEY);
+        return NextResponse.json(
+          { status: "success", sessionToken },
+          { status: 200 }
+        );
+      } catch (error) {
+        return NextResponse.json({ status: "invalid_token" }, { status: 401 });
+      }
     }
 
-    // Check Redis cache first
-    const cached = await kv.get(auth_token);
-
-    if (cached !== null) {
+    // If no turnstile token provided when no session token exists
+    if (!turnstileToken) {
       return NextResponse.json(
-        { status: cached ? "success" : "failed" },
-        { status: cached ? 200 : 400 }
+        { status: "verification_required" },
+        { status: 401 }
       );
     }
 
     const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
 
+    // Verify turnstile token
     const response = await fetch(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
       {
@@ -37,41 +50,50 @@ export async function GET(request: Request) {
         },
         body: JSON.stringify({
           secret: process.env.TURNSTILE_SECRET_KEY,
-          response: auth_token,
+          response: turnstileToken,
           remoteip: ip,
         }),
       }
     );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          status: `Verification request failed with status ${response.status}`,
-        },
-        { status: 400 }
-      );
-    }
-
     const data = await response.json();
 
     if (!data.success) {
-      // Cache failed verification
-      await kv.set(auth_token, false, { ex: CACHE_DURATION });
       return NextResponse.json(
         {
-          status: `Verification failed: ${
-            data["error-codes"]
-              ? data["error-codes"].join(", ")
-              : "Unknown error"
-          }`,
+          status: "verification_failed",
+          error: data["error-codes"]
+            ? data["error-codes"].join(", ")
+            : "Unknown error",
         },
         { status: 400 }
       );
     }
 
-    // Cache successful verification
-    await kv.set(auth_token, true, { ex: CACHE_DURATION });
-    return NextResponse.json({ status: "success" }, { status: 200 });
+    // Create new JWT token
+    const newToken = await new SignJWT({})
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime(JWT_EXPIRY)
+      .sign(SECRET_KEY);
+
+    const newResponse = NextResponse.json(
+      { status: "success", sessionToken: newToken },
+      { status: 200 }
+    );
+
+    // Set the session token as an HTTP-only cookie
+    newResponse.cookies.set({
+      name: "session-token",
+      value: newToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60, // 15 minutes in seconds
+      path: "/",
+    });
+
+    return newResponse;
   } catch (error) {
     console.error("Error in /api/auth/verify route", error);
     return Response.json({ status: "Internal Server Error" }, { status: 500 });
