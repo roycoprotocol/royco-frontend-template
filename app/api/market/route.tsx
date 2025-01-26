@@ -107,6 +107,7 @@ export const getContent = (marketData: any) => {
 
 export async function POST(request: Request) {
   try {
+    const origin = request.headers.get("origin") || "https://app.royco.xyz";
     const body = await request.json();
     const { chain_id, market_type, tx_hash, name, description, push } = body;
 
@@ -118,7 +119,14 @@ export async function POST(request: Request) {
     const viemClient = createPublicClient({
       chain,
       transport: http(
-        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS],
+        {
+          fetchOptions: {
+            headers: {
+              Origin: origin,
+            },
+          },
+        }
       ),
     });
 

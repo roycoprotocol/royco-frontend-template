@@ -10,7 +10,21 @@ export const RoycoClientProvider = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 3,
+            refetchOnWindowFocus: false,
+            refetchIntervalInBackground: true,
+            refetchOnReconnect: false,
+            staleTime: 1000 * 60 * 60, // 1 hour
+            gcTime: 1000 * 60 * 60 * 24, // 1 day
+          },
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
