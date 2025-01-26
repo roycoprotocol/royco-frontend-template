@@ -21,6 +21,8 @@ import { useParams, usePathname } from "next/navigation";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
+const noChainSelectors = ["boyco", "corn", "sonic", "plume"];
+
 export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
   ({ className }, ref) => {
     const pathname = usePathname();
@@ -207,13 +209,18 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           {/**
            * @description Chain filter
            */}
-          <div className="body-2 mt-[1.375rem] flex flex-col gap-2 text-primary">
-            <h5 className="">Chain</h5>
 
-            <div className="flex flex-wrap gap-2">
-              <ChainsFilter />
+          {!noChainSelectors.includes(
+            process.env.NEXT_PUBLIC_FRONTEND_TAG ?? ""
+          ) && (
+            <div className="body-2 mt-[1.375rem] flex flex-col gap-2 text-primary">
+              <h5 className="">Chain</h5>
+
+              <div className="flex flex-wrap gap-2">
+                <ChainsFilter />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     );
