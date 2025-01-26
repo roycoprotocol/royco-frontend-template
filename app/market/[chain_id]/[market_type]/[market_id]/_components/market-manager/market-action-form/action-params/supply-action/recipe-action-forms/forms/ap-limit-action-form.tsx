@@ -284,11 +284,13 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      <div className="mt-5">
-        <SlideUpWrapper delay={0.5}>
-          <InputExpirySelector marketActionForm={marketActionForm} />
-        </SlideUpWrapper>
-      </div>
+      {currentMarketData.category !== "boyco" && (
+        <div className="mt-5">
+          <SlideUpWrapper delay={0.5}>
+            <InputExpirySelector marketActionForm={marketActionForm} />
+          </SlideUpWrapper>
+        </div>
+      )}
     </div>
   );
 });
