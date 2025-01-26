@@ -20,15 +20,15 @@ export const dynamicParams = true;
 export const fetchCache = "force-no-store";
 
 const SERVER_RPC_API_KEYS = {
-  1: process.env.RPC_API_KEY_1,
-  11155111: process.env.RPC_API_KEY_11155111,
-  42161: process.env.RPC_API_KEY_42161,
-  8453: process.env.RPC_API_KEY_8453,
-  146: process.env.RPC_API_KEY_146,
-  80094: process.env.RPC_API_KEY_80094,
-  80000: process.env.RPC_API_KEY_80000,
-  21000000: process.env.RPC_API_KEY_21000000,
-  98865: process.env.RPC_API_KEY_98865,
+  1: process.env.SERVER_RPC_1_1,
+  11155111: process.env.SERVER_RPC_11155111_1,
+  42161: process.env.SERVER_RPC_42161_1,
+  8453: process.env.SERVER_RPC_8453_1,
+  146: process.env.SERVER_RPC_146_1,
+  80094: process.env.SERVER_RPC_80094_1,
+  80000: process.env.SERVER_RPC_80000_1,
+  21000000: process.env.SERVER_RPC_21000000_1,
+  98865: process.env.SERVER_RPC_98865_1,
 };
 
 /**
