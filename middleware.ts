@@ -34,47 +34,53 @@ export async function middleware(request: NextRequest) {
    */
   const pathname = request.nextUrl.pathname;
 
-  // // Skip authentication for the verify endpoint and static files
-  // if (
-  //   pathname.startsWith("/api/auth/verify") ||
-  //   pathname.startsWith("/_next/") ||
-  //   pathname.startsWith("/static/") ||
-  //   pathname.startsWith("/api/push/token") ||
-  //   pathname.startsWith("/api/evm/contract") ||
-  //   pathname.startsWith("/api/users/update") ||
-  //   pathname.startsWith("/api/push/lp-token") ||
-  //   pathname.startsWith("/api/update/quotes") ||
-  //   pathname === "/verify"
-  // ) {
-  //   // skip
-  // } else {
-  //   // Get session token from cookie
-  //   const sessionToken = request.cookies.get("session-token")?.value;
+  // Skip authentication for the verify endpoint and static files
+  if (
+    pathname.startsWith("/api/auth/verify") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/api/push/token") ||
+    pathname.startsWith("/api/evm/contract") ||
+    pathname.startsWith("/api/users/update") ||
+    pathname.startsWith("/api/push/lp-token") ||
+    pathname.startsWith("/api/update/quotes") ||
+    pathname === "/verify"
+  ) {
+    // skip
+  } else {
+    // Get session token from cookie
+    const sessionToken = request.cookies.get("session-token")?.value;
 
-  //   // If no session token, redirect to verification page
-  //   if (!sessionToken) {
-  //     return NextResponse.redirect(new URL("/verify", request.url));
-  //   }
+    // If no session token, redirect to verification page
+    if (!sessionToken) {
+      const verifyUrl = new URL("/verify", request.url);
+      verifyUrl.searchParams.set("redirect", request.url);
+      return NextResponse.redirect(verifyUrl);
+    }
 
-  //   // Verify session token
-  //   try {
-  //     const verifyResponse = await fetch(
-  //       `${request.nextUrl.origin}/api/auth/verify?session_token=${sessionToken}`
-  //     );
+    // Verify session token
+    try {
+      const verifyResponse = await fetch(
+        `${request.nextUrl.origin}/api/auth/verify?session_token=${sessionToken}`
+      );
 
-  //     if (!verifyResponse.ok) {
-  //       // Clear the invalid cookie
-  //       const response = NextResponse.redirect(new URL("/verify", request.url));
-  //       response.cookies.delete("session-token");
-  //       return response;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error verifying session token:", error);
-  //     const response = NextResponse.redirect(new URL("/verify", request.url));
-  //     response.cookies.delete("session-token");
-  //     return response;
-  //   }
-  // }
+      if (!verifyResponse.ok) {
+        // Clear the invalid cookie and redirect to verify with original URL
+        const verifyUrl = new URL("/verify", request.url);
+        verifyUrl.searchParams.set("redirect", request.url);
+        const response = NextResponse.redirect(verifyUrl);
+        response.cookies.delete("session-token");
+        return response;
+      }
+    } catch (error) {
+      console.error("Error verifying session token:", error);
+      const verifyUrl = new URL("/verify", request.url);
+      verifyUrl.searchParams.set("redirect", request.url);
+      const response = NextResponse.redirect(verifyUrl);
+      response.cookies.delete("session-token");
+      return response;
+    }
+  }
 
   // Forward to 🐻⛓ RPC
   if (pathname.startsWith("/api/rpc/80094")) {
