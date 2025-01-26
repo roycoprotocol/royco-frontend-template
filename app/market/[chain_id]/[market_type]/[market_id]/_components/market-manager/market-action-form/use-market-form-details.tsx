@@ -115,11 +115,14 @@ export const useMarketFormDetails = (
       return parseRawAmount(token.raw_amount);
     }),
 
-    expiry: marketActionForm.watch("no_expiry")
-      ? "0"
-      : Math.floor(
-          (marketActionForm.watch("expiry") || new Date(0)).getTime() / 1000
-        ).toString(),
+    expiry:
+      currentMarketData?.category === "boyco"
+        ? "1234567890"
+        : marketActionForm.watch("no_expiry")
+          ? "0"
+          : Math.floor(
+              (marketActionForm.watch("expiry") || new Date(0)).getTime() / 1000
+            ).toString(),
 
     token_rates: marketActionForm
       .watch("incentive_tokens")
