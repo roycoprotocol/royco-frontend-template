@@ -133,7 +133,7 @@ export const TokenEstimator = React.forwardRef<
 
             <SheetTitle className="text-3xl font-bold">Estimate APY</SheetTitle>
             <SheetDescription className="text-base">
-              Adjust token FDV to re-estimate APY.
+              Adjust token FDV or points to re-estimate APY.
             </SheetDescription>
           </SheetHeader>
 

@@ -103,7 +103,9 @@ export const SupplyAction = React.forwardRef<
         </SlideUpWrapper>
       )}
 
-      {offerType === MarketOfferType.limit.id && showIncentiveTokenEstimate ? (
+      {userType === MarketUserType.ap.id &&
+      offerType === MarketOfferType.limit.id &&
+      showIncentiveTokenEstimate ? (
         <div className="mt-3">
           <SlideUpWrapper delay={0.2}>
             <TokenEstimator defaultTokenId={highestIncentiveToken?.id}>
@@ -229,7 +231,7 @@ export const SupplyAction = React.forwardRef<
                             <span className="mb-px">
                               <TokenDisplayer
                                 size={4}
-                                tokens={[highestIncentiveToken]}
+                                tokens={[highestIncentiveToken] as any}
                                 symbols={false}
                                 symbolClassName="text-white font-regular"
                               />

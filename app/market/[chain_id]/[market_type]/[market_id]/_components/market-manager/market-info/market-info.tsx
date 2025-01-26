@@ -76,7 +76,7 @@ export const MarketInfo = React.forwardRef<
               size="sm"
               className="w-fit p-0 text-tertiary underline outline-none"
             >
-              Adjust APY
+              APY Calculator
             </Button>
           </TokenEstimator>
         </div>

@@ -87,7 +87,7 @@ export const MarketDetails = React.forwardRef<
               className="flex items-center gap-2"
             >
               <TokenDisplayer
-                tokens={[currentMarketData.input_token_data]}
+                tokens={[currentMarketData.input_token_data] as any}
                 symbols={true}
                 symbolClassName="text-xs font-medium"
                 size={4}

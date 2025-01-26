@@ -8,7 +8,7 @@ import {
 } from "royco/utils";
 import { UseFormReturn } from "react-hook-form";
 import { LoadingSpinner } from "@/components/composables";
-import { FormInputLabel } from "../../../../../composables";
+import { SecondaryLabel } from "../../../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { InputAmountSelector } from "../../composables";
 import { MarketActionFormSchema } from "../../../market-action-form-schema";
@@ -132,7 +132,7 @@ export const InputAmountWrapper = React.forwardRef<
       return true;
     }
 
-    return BigNumber.from(parseRawAmount(rawUserBalance)).gt(
+    return BigNumber.from(parseRawAmount(rawUserBalance)).gte(
       BigNumber.from(
         parseRawAmount(marketActionForm.watch("quantity.raw_amount"))
       )
@@ -162,12 +162,42 @@ export const InputAmountWrapper = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
-      <FormInputLabel
-        size="sm"
-        label={
-          userType === MarketUserType.ip.id ? "Desired Amount" : "Input Amount"
-        }
-      />
+      <div className={cn("flex flex-row items-center justify-between")}>
+        <SecondaryLabel className="font-medium text-black">
+          {userType === MarketUserType.ip.id
+            ? "Desired Amount"
+            : "Input Amount"}
+        </SecondaryLabel>
+
+        {/**
+         * Balance indicator
+         */}
+        {marketMetadata.market_type === MarketType.recipe.id &&
+          userType === MarketUserType.ap.id && (
+            <TertiaryLabel className="justify-end space-x-1">
+              <span>Balance:</span>
+
+              <span className="flex items-center justify-center">
+                {isLoadingBalance ? (
+                  <LoadingSpinner className="ml-1 h-4 w-4" />
+                ) : (
+                  <span>
+                    {Intl.NumberFormat("en-US", {
+                      style: "decimal",
+                      notation: "standard",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 8,
+                      useGrouping: true,
+                    }).format(userBalance || 0)}
+                  </span>
+                )}
+                <span className="ml-1">
+                  {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                </span>
+              </span>
+            </TertiaryLabel>
+          )}
+      </div>
 
       {/**
        * Input amount selector
@@ -222,7 +252,7 @@ export const InputAmountWrapper = React.forwardRef<
               size={4}
               tokens={
                 currentMarketData?.input_token_data
-                  ? [currentMarketData.input_token_data]
+                  ? ([currentMarketData.input_token_data] as any)
                   : []
               }
               symbols={true}

@@ -10,6 +10,8 @@ import { FilterWrapper } from "../composables";
 import { AlertIndicator } from "@/components/common";
 import { getSupportedChain } from "royco/utils";
 import { getSupportedToken } from "royco/constants";
+import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
 
 const excludedToken = ["1-0x4f8e1426a9d10bddc11d26042ad270f16ccb95f2"];
 
@@ -85,6 +87,8 @@ const boycoAssets = boycoAssetIds.map((assetId) => {
   };
 });
 
+const minifiedFilterTokenSymbols = ["wBTC", "WETH", "USDT", "USDC", "USDe"];
+
 export const AssetsFilter = () => {
   const [mounted, setMounted] = useState(false);
 
@@ -92,34 +96,41 @@ export const AssetsFilter = () => {
     setMounted(true);
   }, []);
 
-  const { data, isLoading, isError, isRefetching } = useDistinctAssets();
+  const { data, isLoading } = useDistinctAssets();
 
-  const tokens =
-    process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-      ? boycoAssets
-      : !!data
-        ? (data as TypedArrayDistinctAsset[]).filter((token) => {
-            const frontendTag =
-              process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
+  const [showAllTokens, setShowAllTokens] = useState(false);
 
-            // if (frontendTag === "testnet") {
-            //   return token.ids.every((id) => {
-            //     const [chain_id] = id.split("-");
-            //     const chain = getSupportedChain(parseInt(chain_id));
-            //     return chain?.id === 11155111;
-            //   });
-            // } else
-            if (frontendTag !== "dev" && frontendTag !== "testnet") {
-              return !token.ids.every((id) => {
-                const [chain_id, token_address] = id.split("-");
-                const chain = getSupportedChain(parseInt(chain_id));
-                return chain?.testnet === true;
-              });
-            } else {
-              return true;
-            }
-          })
-        : [];
+  const tokens = useMemo(() => {
+    let result: TypedArrayDistinctAsset[] = [];
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      result = boycoAssets;
+    } else if (data) {
+      result = (data as TypedArrayDistinctAsset[]).filter((token) => {
+        const tag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
+
+        if (tag === "dev" || tag === "testnet") {
+          return true;
+        } else {
+          const isTestnetToken = token.ids.every((id) => {
+            const [chain_id] = id.split("-");
+
+            const chain = getSupportedChain(parseInt(chain_id));
+            return chain?.testnet === true;
+          });
+
+          return !isTestnetToken;
+        }
+      });
+    }
+
+    if (!showAllTokens) {
+      result = result.filter((token) => {
+        return minifiedFilterTokenSymbols.includes(token.symbol);
+      });
+    }
+
+    return result;
+  }, [data, showAllTokens]);
 
   const filteredTokens = useMemo(() => {
     return tokens.filter((token: any) => {
@@ -141,27 +152,53 @@ export const AssetsFilter = () => {
   if (data && mounted) {
     return (
       <Fragment>
-        {filteredTokens.map((token, index) => {
-          if (token) {
-            return (
-              <div key={`filter-wrapper:assets:${token.symbol}`}>
-                <FilterWrapper
-                  filter={{
-                    id: "input_token_id",
-                    value: token.symbol,
-                    matches: token.ids,
-                  }}
-                  token={{
-                    id: token.id,
-                    image: token.image,
-                    symbol: token.symbol,
-                    ids: token.ids,
-                  }}
-                />
-              </div>
-            );
-          }
-        })}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={
+              showAllTokens
+                ? "assets-filter-expanded"
+                : "assets-filter-collapsed"
+            }
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="flex flex-wrap gap-2">
+              {filteredTokens.map((token, index) => {
+                if (token) {
+                  return (
+                    <div key={`filter-wrapper:assets:${token.symbol}`}>
+                      <FilterWrapper
+                        filter={{
+                          id: "input_token_id",
+                          value: token.symbol,
+                          matches: token.ids,
+                        }}
+                        token={{
+                          id: (token as any).id,
+                          image: token.image,
+                          symbol: token.symbol,
+                          ids: token.ids,
+                        }}
+                      />
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/**
+         * Show/Hide All Tokens
+         */}
+        <button
+          className="mt-1 flex flex-row justify-between text-sm font-light text-secondary"
+          onClick={() => setShowAllTokens((prev) => !prev)}
+        >
+          {showAllTokens ? "View Less" : "View More"}
+        </button>
       </Fragment>
     );
   }

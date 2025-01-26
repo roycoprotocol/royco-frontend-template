@@ -78,7 +78,7 @@ export const TokenSelector = React.forwardRef<
       {/**
        * label
        */}
-      <PrimaryLabel>Add a Token to estimate</PrimaryLabel>
+      <PrimaryLabel>Add Tokens or Points to estimate</PrimaryLabel>
 
       {/**
        * Search input
@@ -96,7 +96,7 @@ export const TokenSelector = React.forwardRef<
           }}
           className="w-full"
           containerClassName="font-light px-3 py-2 gap-2"
-          placeholder="Search Tokens"
+          placeholder="Search"
         />
       </div>
 
@@ -117,7 +117,7 @@ export const TokenSelector = React.forwardRef<
                 }}
               >
                 <TokenDisplayer
-                  tokens={[token]}
+                  tokens={[token] as any}
                   size={4}
                   symbols={true}
                   symbolClassName="font-medium"

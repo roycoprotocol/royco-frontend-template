@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   HoverCard,
@@ -8,12 +8,20 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { EnrichedMarketDataType } from "royco/queries";
-import { InfoTip, TokenDisplayer } from "@/components/common";
+import { TokenDisplayer } from "@/components/common";
 import { SparklesIcon, SquarePenIcon } from "lucide-react";
-import { TokenEditor } from "../token-editor";
 import { createPortal } from "react-dom";
-import { TertiaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { MarketType } from "@/store";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { DEFAULT_TOKEN_COLOR } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
+import { Vibrant } from "node-vibrant/browser";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import ShieldIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/shield";
+import SparkleIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/sparkle";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -35,79 +43,111 @@ const BreakdownRow = React.forwardRef<
     item: EnrichedMarketDataType["yield_breakdown"][number];
     base_key: string;
     closeParentModal?: () => void;
+    marketType?: number;
   }
->(({ className, item, base_key, closeParentModal, ...props }, ref) => {
-  const [open, setOpen] = useState(false);
+>(
+  (
+    { className, item, base_key, closeParentModal, marketType, ...props },
+    ref
+  ) => {
+    const [tokenColor, setTokenColor] = useState<string | null>(null);
 
-  const triggerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+      const getTokenColor = async () => {
+        if (item.image) {
+          const url = new URL(item.image);
+          url.search = "";
+          try {
+            const palette = await Vibrant.from(url.toString()).getPalette();
+            if (palette) {
+              const swatches = Object.values(palette).filter(
+                (swatch) => swatch !== null
+              );
+              const color = swatches.reduce((prev, current) => {
+                return (prev?.population ?? 0) > (current?.population ?? 0)
+                  ? prev
+                  : current;
+              });
+              if (color) {
+                setTokenColor(color.hex);
+              }
+            }
+          } catch (error) {
+            setTokenColor(DEFAULT_TOKEN_COLOR);
+          }
+        }
+      };
 
-  return (
-    <div
-      ref={ref}
-      key={`yield-breakdown:${base_key}:${item.category}:${item.id}`}
-      className="flex flex-row items-center justify-between font-light"
-      {...props}
-    >
-      <TokenDisplayer tokens={[item]} symbols={true} />
+      getTokenColor();
+    }, [item.image]);
 
-      <div className="flex flex-row items-center gap-2">
-        <div>
-          {Intl.NumberFormat("en-US", {
-            style: "percent",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(item.annual_change_ratio)}
-        </div>
+    return (
+      <div
+        ref={ref}
+        key={`yield-breakdown:${base_key}:${item.category}:${item.id}`}
+        className="flex flex-row items-center justify-between font-light"
+        {...props}
+      >
+        <TokenDisplayer tokens={[item] as any} symbols={true} />
 
-        {item.category === "base" && (
-          <HoverCard
-            openDelay={200}
-            closeDelay={200}
-            open={open}
-            onOpenChange={setOpen}
-          >
-            <HoverCardTrigger
-              asChild
-              onClick={() => {
-                if (open === false) {
-                  setOpen(true);
-                }
+        <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center">
+            {item.category === "base" && (
+              <Tooltip>
+                <TooltipTrigger className={cn("cursor-pointer")}>
+                  {marketType === MarketType.recipe.value ? (
+                    <ShieldIcon
+                      className="h-5 w-5"
+                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                    />
+                  ) : (
+                    <SparkleIcon
+                      className="h-5 w-5"
+                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                    />
+                  )}
+                </TooltipTrigger>
+                {createPortal(
+                  <TooltipContent className={cn("bg-white", "max-w-80")}>
+                    {marketType === MarketType.recipe.value
+                      ? "Fixed Incentive Rate"
+                      : "Variable Incentive Rate, based on # of participants"}
+                  </TooltipContent>,
+                  document.body
+                )}
+              </Tooltip>
+            )}
+
+            <span
+              style={{
+                color:
+                  item.category === "base"
+                    ? tokenColor || DEFAULT_TOKEN_COLOR
+                    : "black",
               }}
             >
+              {Intl.NumberFormat("en-US", {
+                style: "percent",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(item.annual_change_ratio)}
+            </span>
+          </div>
+
+          {item.category === "base" && (
+            <TokenEstimator defaultTokenId={item.id}>
               <SquarePenIcon
                 strokeWidth={2}
                 className="h-4 w-4 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
+                color={tokenColor || DEFAULT_TOKEN_COLOR}
               />
-            </HoverCardTrigger>
-            <HoverCardContent className="w-96 overflow-hidden p-0">
-              <TokenEditor
-                closeHoverCard={() => {
-                  setOpen(false);
-                  triggerRef.current?.blur();
-                  if (closeParentModal) {
-                    closeParentModal();
-                  }
-                }}
-                token_data={{
-                  ...item,
-                  fdv: item.fdv ?? 0,
-                  total_supply: item.total_supply
-                    ? item.total_supply === 0
-                      ? 1
-                      : item.total_supply
-                    : 0,
-                  price: item.price ?? 0,
-                  allocation: item.allocation ? item.allocation * 100 : 100,
-                  token_amount: item.token_amount ?? 0,
-                }}
-              />
-            </HoverCardContent>
-          </HoverCard>
-        )}
+            </TokenEstimator>
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const BreakdownContent = React.forwardRef<
   HTMLDivElement,
@@ -115,21 +155,28 @@ const BreakdownContent = React.forwardRef<
     breakdown: EnrichedMarketDataType["yield_breakdown"];
     base_key: string;
     closeParentModal?: () => void;
+    marketType?: number;
   }
->(({ className, breakdown, base_key, closeParentModal, ...props }, ref) => {
-  return (
-    <div ref={ref} className={cn("", className)} {...props}>
-      {breakdown.map((item) => (
-        <BreakdownRow
-          key={item.id}
-          item={item}
-          base_key={base_key}
-          closeParentModal={closeParentModal}
-        />
-      ))}
-    </div>
-  );
-});
+>(
+  (
+    { className, breakdown, base_key, closeParentModal, marketType, ...props },
+    ref
+  ) => {
+    return (
+      <div ref={ref} className={cn("", className)} {...props}>
+        {breakdown.map((item) => (
+          <BreakdownRow
+            key={item.id}
+            item={item}
+            base_key={base_key}
+            closeParentModal={closeParentModal}
+            marketType={marketType}
+          />
+        ))}
+      </div>
+    );
+  }
+);
 
 const NetYield = React.forwardRef<
   HTMLDivElement,
@@ -193,35 +240,22 @@ export const YieldBreakdown = React.forwardRef<
               {breakdown.some((item) => item.category === "base") && (
                 <div>
                   <BreakdownItem>
-                    <BreakdownTitle>Incentives Offered on Royco</BreakdownTitle>
+                    <BreakdownTitle>Negotiable Rate</BreakdownTitle>
                     <BreakdownContent
                       className="mt-1"
                       breakdown={breakdown.filter(
                         (item) => item.category === "base"
                       )}
                       base_key={base_key}
+                      marketType={marketType}
                     />
                   </BreakdownItem>
-                  {marketType !== undefined && (
-                    <div className="flex justify-end gap-2">
-                      <TertiaryLabel className="self-end italic">
-                        {marketType === MarketType.recipe.value
-                          ? "Fixed Rate"
-                          : "Variable Rate"}
-                      </TertiaryLabel>
-                      <InfoTip size="sm">
-                        {marketType === MarketType.recipe.value
-                          ? "Rate of incentives received is fixed, and cannot be diluted"
-                          : "Rate of incentives is variable, and can change based on the number of market participants."}
-                      </InfoTip>
-                    </div>
-                  )}
                 </div>
               )}
 
               {breakdown.some((item) => item.category !== "base") && (
                 <BreakdownItem>
-                  <BreakdownTitle>Native Incentives</BreakdownTitle>
+                  <BreakdownTitle>Underlying Rate</BreakdownTitle>
                   <BreakdownContent
                     className="mt-1"
                     breakdown={breakdown.filter(
