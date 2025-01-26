@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function VerifyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -19,8 +21,8 @@ export default function VerifyPage() {
             const data = await response.json();
 
             if (data.status === "success" && data.sessionToken) {
-              // Redirect back to the original page - the verify endpoint will set the cookie
-              router.push("/");
+              // Redirect back to the original page
+              router.push(redirectUrl);
             }
           } catch (error) {
             console.error("Error during verification:", error);

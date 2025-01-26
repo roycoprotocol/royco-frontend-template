@@ -53,7 +53,9 @@ export async function middleware(request: NextRequest) {
 
     // If no session token, redirect to verification page
     if (!sessionToken) {
-      return NextResponse.redirect(new URL("/verify", request.url));
+      const verifyUrl = new URL("/verify", request.url);
+      verifyUrl.searchParams.set("redirect", request.url);
+      return NextResponse.redirect(verifyUrl);
     }
 
     // Verify session token
@@ -63,14 +65,18 @@ export async function middleware(request: NextRequest) {
       );
 
       if (!verifyResponse.ok) {
-        // Clear the invalid cookie
-        const response = NextResponse.redirect(new URL("/verify", request.url));
+        // Clear the invalid cookie and redirect to verify with original URL
+        const verifyUrl = new URL("/verify", request.url);
+        verifyUrl.searchParams.set("redirect", request.url);
+        const response = NextResponse.redirect(verifyUrl);
         response.cookies.delete("session-token");
         return response;
       }
     } catch (error) {
       console.error("Error verifying session token:", error);
-      const response = NextResponse.redirect(new URL("/verify", request.url));
+      const verifyUrl = new URL("/verify", request.url);
+      verifyUrl.searchParams.set("redirect", request.url);
+      const response = NextResponse.redirect(verifyUrl);
       response.cookies.delete("session-token");
       return response;
     }

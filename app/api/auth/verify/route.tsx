@@ -3,13 +3,12 @@ import { kv } from "@vercel/kv";
 import { SignJWT, jwtVerify } from "jose";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
-const JWT_EXPIRY = "15m";
+// const JWT_EXPIRY = "15m";
+const JWT_EXPIRY = "1h"; // 1 hour
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
-
-const CACHE_DURATION = 15 * 60; // 15 minutes in seconds
 
 export async function GET(request: Request) {
   try {
@@ -21,6 +20,7 @@ export async function GET(request: Request) {
     if (sessionToken) {
       try {
         const { payload } = await jwtVerify(sessionToken, SECRET_KEY);
+
         return NextResponse.json(
           { status: "success", sessionToken },
           { status: 200 }
@@ -32,10 +32,40 @@ export async function GET(request: Request) {
 
     // If no turnstile token provided when no session token exists
     if (!turnstileToken) {
+      console.log("No turnstile token provided");
       return NextResponse.json(
         { status: "verification_required" },
         { status: 401 }
       );
+    }
+
+    // Check if turnstile token is already verified in cache
+    const cachedVerification = await kv.get(`turnstile:${turnstileToken}`);
+    if (cachedVerification) {
+      // Create new JWT token if verification was cached
+      const newToken = await new SignJWT({})
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime(JWT_EXPIRY)
+        .sign(SECRET_KEY);
+
+      const newResponse = NextResponse.json(
+        { status: "success", sessionToken: newToken },
+        { status: 200 }
+      );
+
+      // Set cookie as before
+      newResponse.cookies.set({
+        name: "session-token",
+        value: newToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60, // 1 hour in seconds
+        path: "/",
+      });
+
+      return newResponse;
     }
 
     const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
@@ -70,6 +100,9 @@ export async function GET(request: Request) {
       );
     }
 
+    // Cache successful verification for 1 hour
+    await kv.set(`turnstile:${turnstileToken}`, true, { ex: 3600 });
+
     // Create new JWT token
     const newToken = await new SignJWT({})
       .setProtectedHeader({ alg: "HS256" })
@@ -89,7 +122,7 @@ export async function GET(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 15 * 60, // 15 minutes in seconds
+      maxAge: 60 * 60, // 1 hour in seconds
       path: "/",
     });
 
