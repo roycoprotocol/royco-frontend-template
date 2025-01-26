@@ -11,6 +11,7 @@ import { useExplore } from "@/store";
 interface FilterWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
   filter: MarketFilter;
   token: {
+    id?: string;
     image: string;
     symbol: string;
     ids?: Array<string>;

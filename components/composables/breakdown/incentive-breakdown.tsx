@@ -5,6 +5,13 @@ import { cn } from "@/lib/utils";
 import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
 
+const BreakdownTitle = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  return <div ref={ref} className={cn("font-normal", className)} {...props} />;
+});
+
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -15,7 +22,7 @@ const BreakdownItem = React.forwardRef<
 const BreakdownRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    item: EnrichedMarketDataType["incentive_tokens_data"][number];
+    item: EnrichedMarketDataType["yield_breakdown"][number];
     base_key: string;
   }
 >(({ className, item, base_key, ...props }, ref) => {
@@ -26,18 +33,20 @@ const BreakdownRow = React.forwardRef<
       className="flex flex-row items-center justify-between font-light"
       {...props}
     >
-      <TokenDisplayer tokens={[item]} symbols={true} />
+      <TokenDisplayer tokens={[item] as any} symbols={true} />
 
-      <div className="flex flex-row items-center gap-2">
-        <div>
-          {Intl.NumberFormat("en-US", {
-            notation: "compact",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            useGrouping: true,
-          }).format(item.token_amount)}
+      {item.token_amount && (
+        <div className="flex flex-row items-center gap-2">
+          <div>
+            {Intl.NumberFormat("en-US", {
+              notation: "compact",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+              useGrouping: true,
+            }).format(item.token_amount)}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 });
@@ -45,7 +54,7 @@ const BreakdownRow = React.forwardRef<
 const BreakdownContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["incentive_tokens_data"];
+    breakdown: EnrichedMarketDataType["yield_breakdown"];
     base_key: string;
   }
 >(({ className, breakdown, base_key, ...props }, ref) => {
@@ -61,7 +70,7 @@ const BreakdownContent = React.forwardRef<
 export const IncentiveBreakdown = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["incentive_tokens_data"];
+    breakdown: EnrichedMarketDataType["yield_breakdown"];
     base_key: string;
   }
 >(({ className, breakdown, base_key, ...props }, ref) => {
@@ -74,9 +83,27 @@ export const IncentiveBreakdown = React.forwardRef<
       )}
       {...props}
     >
-      <BreakdownItem>
-        <BreakdownContent breakdown={breakdown} base_key={base_key} />
-      </BreakdownItem>
+      {breakdown.some((item) => item.category === "base") && (
+        <div>
+          <BreakdownItem>
+            <BreakdownContent
+              breakdown={breakdown.filter((item) => item.category === "base")}
+              base_key={base_key}
+            />
+          </BreakdownItem>
+        </div>
+      )}
+
+      {breakdown.some((item) => item.category !== "base") && (
+        <BreakdownItem>
+          <BreakdownTitle>Underlying Incentives</BreakdownTitle>
+          <BreakdownContent
+            className="mt-1"
+            breakdown={breakdown.filter((item) => item.category !== "base")}
+            base_key={base_key}
+          />
+        </BreakdownItem>
+      )}
     </div>
   );
 });

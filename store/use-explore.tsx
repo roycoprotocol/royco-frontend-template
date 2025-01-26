@@ -52,11 +52,11 @@ interface ExploreState {
 }
 
 export const exploreColumnNames = {
-  name: "Action Market",
+  name: "Market",
   input_token_id: "Asset",
   chain_id: "Chain",
   market_type: "Lockup",
-  total_incentive_amounts_usd: "Incentives Offered",
+  total_incentive_amounts_usd: "Incentives",
   locked_quantity_usd: "TVL",
   annual_change_ratio: "Net APY",
   chain: "Chain",

@@ -30,11 +30,21 @@ const Page = () => {
           )}
         >
           <div className="flex w-full shrink flex-col items-start lg:w-1/2">
-            <h2 className="heading-2 text-black">Explore</h2>
-
-            <div className="body-1 mt-2 text-secondary">
-              Explore Royco Markets & bid for more incentives today.
-            </div>
+            {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
+              <>
+                <h2 className="heading-2 text-black">Explore Boyco</h2>
+                <div className="body-1 mt-2 text-secondary">
+                  Pre-deposit to Berachain to earn incentives.
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="heading-2 text-black">Explore</h2>
+                <div className="body-1 mt-2 text-secondary">
+                  Explore Royco Markets & bid for more incentives today.
+                </div>
+              </>
+            )}
           </div>
 
           <RoycoStats className="w-full" />

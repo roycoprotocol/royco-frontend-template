@@ -46,6 +46,7 @@ import { MarketType } from "@/store";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
 import validator from "validator";
+import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -337,9 +338,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       className: "min-w-48",
     },
     cell: (props: any) => {
-      const rowIndex = props.row.index;
-      const tokens = props.row.original.incentive_tokens_data;
-      const points = tokens.filter((token: any) => token.type === "point");
+      const breakdowns = props.row.original.yield_breakdown;
+      const points = breakdowns.filter((token: any) => token.type === "point");
 
       if (!props) return null;
 
@@ -374,14 +374,14 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     bounce
                     className="gap-0"
                     symbolClassName="gap-0"
-                    tokens={tokens}
+                    tokens={breakdowns}
                     symbols={false}
                     size={props.view === "list" ? 5 : 6}
                   />
                   <span className="font-gt text-base font-300">
-                    {tokens.length === 1
-                      ? tokens[0].symbol
-                      : `${tokens[0].symbol} + ${tokens.length - 1}`}
+                    {breakdowns.length === 1
+                      ? breakdowns[0].symbol
+                      : `${breakdowns[0].symbol} + ${breakdowns.length - 1}`}
                   </span>
                 </div>
               ) : (
@@ -391,7 +391,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               )}
             </HoverCardTrigger>
             {typeof window !== "undefined" &&
-              props.row.original.incentive_tokens_data.length > 0 &&
+              breakdowns.length > 0 &&
               createPortal(
                 <HoverCardContent
                   className="w-64"
@@ -399,7 +399,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 >
                   <IncentiveBreakdown
                     base_key={props.row.original.id}
-                    breakdown={tokens}
+                    breakdown={breakdowns}
                   />
                 </HoverCardContent>,
                 document.body
@@ -462,7 +462,8 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             <div onClick={(e) => e.stopPropagation()}>
               <TokenEstimator defaultTokenId={breakdowns[0].id}>
                 <Button variant="link" className="underline outline-none">
-                  Calculate
+                  <LightningIcon className="h-5 w-5 fill-black" />
+                  <span className="text-sm font-medium">Estimate</span>
                 </Button>
               </TokenEstimator>
             </div>
