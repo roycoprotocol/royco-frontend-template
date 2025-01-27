@@ -133,14 +133,14 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             "min-w flex w-full flex-row items-center"
           )}
         >
-          <div className="flex min-w-0 flex-row items-center">
+          <div className="flex w-full flex-row items-center">
             <TokenDisplayer
               tokens={[props.row.original.input_token_data]}
               symbols={false}
               className={cn("mr-1 flex items-center")}
             />
 
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
               {validator.unescape(props.row.original.name.trim())}
             </div>
 

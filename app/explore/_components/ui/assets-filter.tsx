@@ -87,7 +87,14 @@ const boycoAssets = boycoAssetIds.map((assetId) => {
   };
 });
 
-const minifiedFilterTokenSymbols = ["wBTC", "WETH", "USDT", "USDC", "USDe"];
+const minifiedFilterTokenSymbols = [
+  "wBTC",
+  "WETH",
+  "USDT",
+  "USDC",
+  "USDe",
+  "STONE",
+];
 
 export const AssetsFilter = () => {
   const [mounted, setMounted] = useState(false);
