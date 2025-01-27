@@ -200,23 +200,14 @@ export const IncentiveTokenDetails = React.forwardRef<
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {showEstimate || beraToken ? (
-          <TokenEstimator
-            defaultTokenId={beraToken ? beraToken.id : token_data.id}
-          >
+        {showEstimate ? (
+          <TokenEstimator defaultTokenId={token_data.id}>
             <Button
               variant="link"
               className="flex w-full items-center gap-1 py-0 outline-none"
             >
               <LightningIcon className="h-5 w-5 fill-black" />
               <span className="text-sm font-medium underline">Estimate</span>
-              {beraToken && (
-                <InfoTip size="sm">
-                  Rate is estimated based on user-entered projections and not
-                  guranteed. Rate is variable based on total TVL supplied into
-                  Boyco.
-                </InfoTip>
-              )}
             </Button>
           </TokenEstimator>
         ) : (
@@ -259,11 +250,19 @@ export const IncentiveTokenDetails = React.forwardRef<
                 </span>
               </div>
             ) : (
-              <span className="flex h-5 items-center font-medium">
-                {formatNumber(token_data.annual_change_ratio, {
-                  type: "percent",
-                })}
-              </span>
+              <div className="flex gap-1">
+                <span className="flex h-5 items-center font-medium">
+                  {formatNumber(token_data.annual_change_ratio, {
+                    type: "percent",
+                  })}
+                </span>
+
+                <InfoTip size="sm">
+                  Rate is estimated based on user-entered projections and not
+                  guranteed. Rate is variable based on total TVL supplied into
+                  Boyco.
+                </InfoTip>
+              </div>
             )}
           </>
         )}
