@@ -73,6 +73,8 @@ export const updateTokenQuotesFromCoingecko = async () => {
 
   const res = await req.json();
 
+  const last_updated = new Date().toISOString();
+
   const quotes = res.map((quote: any) => {
     return {
       id: generateId({
@@ -84,17 +86,35 @@ export const updateTokenQuotesFromCoingecko = async () => {
       price: quote.current_price ?? 0,
       fdv: quote.fully_diluted_valuation ?? 0,
       total_supply: quote.total_supply ?? 0,
-      last_updated: new Date().toISOString(),
+      last_updated,
     };
   });
 
   if (quotes.length === 0) return;
 
-  const [{ data: tokensUpdated, error: tokensUpdatedError }] =
-    await Promise.all([supabaseClient.from("raw_token_quotes").upsert(quotes)]);
+  const [
+    { data: tokensUpdated, error: tokensUpdatedError },
+    { data: tokensIndexUpdated, error: tokensIndexUpdatedError },
+  ] = await Promise.all([
+    supabaseClient.from("raw_token_quotes").upsert(quotes),
 
-  if (tokensUpdatedError) {
-    throw new Error(`Supabase Error: ${tokensUpdatedError.message}`);
+    // update the token_index table's last_updated column
+    supabaseClient
+      .from("token_index")
+      .update({
+        last_updated,
+      })
+      .in(
+        "search_id",
+        quotes.map((quote: any) => quote.search_id)
+      )
+      .eq("source", "coingecko"),
+  ]);
+
+  if (tokensUpdatedError || tokensIndexUpdatedError) {
+    throw new Error(
+      `Supabase Error: ${tokensUpdatedError?.message || tokensIndexUpdatedError?.message}`
+    );
   }
 };
 
@@ -137,6 +157,8 @@ export const updateTokenQuotesFromCoinmarketCap = async () => {
     throw new Error(`CoinmarketCap API Error: ${res.status.error_message}`);
   }
 
+  const last_updated = new Date().toISOString();
+
   const quotes = Object.values(res.data).map((quote: any) => {
     return {
       id: generateId({
@@ -148,17 +170,35 @@ export const updateTokenQuotesFromCoinmarketCap = async () => {
       price: quote.quote.USD.price ?? 0,
       fdv: quote.quote.USD.fully_diluted_market_cap ?? 0,
       total_supply: quote.total_supply ?? 0,
-      last_updated: new Date().toISOString(),
+      last_updated,
     };
   });
 
   if (quotes.length === 0) return;
 
-  const [{ data: tokensUpdated, error: tokensUpdatedError }] =
-    await Promise.all([supabaseClient.from("raw_token_quotes").upsert(quotes)]);
+  const [
+    { data: tokensUpdated, error: tokensUpdatedError },
+    { data: tokensIndexUpdated, error: tokensIndexUpdatedError },
+  ] = await Promise.all([
+    supabaseClient.from("raw_token_quotes").upsert(quotes),
 
-  if (tokensUpdatedError) {
-    throw new Error(`Supabase Error: ${tokensUpdatedError.message}`);
+    // update the token_index table's last_updated column
+    supabaseClient
+      .from("token_index")
+      .update({
+        last_updated,
+      })
+      .in(
+        "search_id",
+        quotes.map((quote: any) => quote.search_id)
+      )
+      .eq("source", "coinmarketcap"),
+  ]);
+
+  if (tokensUpdatedError || tokensIndexUpdatedError) {
+    throw new Error(
+      `Supabase Error: ${tokensUpdatedError?.message || tokensIndexUpdatedError?.message}`
+    );
   }
 };
 

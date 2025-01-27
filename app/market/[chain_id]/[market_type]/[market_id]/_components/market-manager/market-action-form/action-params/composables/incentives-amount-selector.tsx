@@ -30,7 +30,8 @@ export const IncentivesAmountSelector = React.forwardRef<
   ) => {
     const { userType } = useMarketManager();
 
-    const { marketMetadata, currentHighestOffers } = useActiveMarket();
+    const { marketMetadata, currentHighestOffers, currentMarketData } =
+      useActiveMarket();
     const currentIncentives =
       marketMetadata.market_type === RoycoMarketType.recipe.id &&
       !!currentHighestOffers &&
@@ -83,6 +84,7 @@ export const IncentivesAmountSelector = React.forwardRef<
                 marketActionForm.setValue("incentive_tokens", [token]);
               }
             }}
+            token_ids={currentMarketData.incentive_ids}
             // onSelect={(token) => {
             //   const incentiveTokens =
             //     marketActionForm.watch("incentive_tokens");
