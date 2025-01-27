@@ -30,6 +30,7 @@ import { VaultActionForms } from "./vault-action-forms";
 import { OfferTypeSelector } from "./components/offer-type-selector";
 import LightningIcon from "../../../../icons/lightning";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import formatNumber from "@/utils/numbers";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -213,14 +214,11 @@ export const SupplyAction = React.forwardRef<
                             <span>for</span>
 
                             <span>
-                              {Intl.NumberFormat("en-US", {
-                                style: "percent",
-                                notation: "compact",
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 2,
-                                useGrouping: true,
-                              }).format(
-                                highestIncentiveToken.annual_change_ratio || 0
+                              {formatNumber(
+                                highestIncentiveToken.annual_change_ratio || 0,
+                                {
+                                  type: "percent",
+                                }
                               )}
                             </span>
 
@@ -252,14 +250,11 @@ export const SupplyAction = React.forwardRef<
                           <span>for</span>
 
                           <span>
-                            {Intl.NumberFormat("en-US", {
-                              style: "percent",
-                              notation: "compact",
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 2,
-                              useGrouping: true,
-                            }).format(
-                              selectedIncentiveToken.annual_change_ratio || 0
+                            {formatNumber(
+                              selectedIncentiveToken.annual_change_ratio || 0,
+                              {
+                                type: "percent",
+                              }
                             )}
                           </span>
 
@@ -291,13 +286,9 @@ export const SupplyAction = React.forwardRef<
                   <span>Total APY:</span>
 
                   <span className="flex items-center justify-center">
-                    {Intl.NumberFormat("en-US", {
-                      style: "percent",
-                      notation: "standard",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 2,
-                      useGrouping: true,
-                    }).format(currentMarketData?.annual_change_ratio || 0)}
+                    {formatNumber(currentMarketData?.annual_change_ratio || 0, {
+                      type: "percent",
+                    })}
                   </span>
                 </TertiaryLabel>
               )}

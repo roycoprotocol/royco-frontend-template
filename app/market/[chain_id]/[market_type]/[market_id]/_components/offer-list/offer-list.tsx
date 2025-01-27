@@ -16,6 +16,7 @@ import { FallMotion } from "@/components/animations";
 import { RoycoMarketType } from "royco/market";
 import { EnrichedOfferDataType } from "royco/queries";
 import { parseRawAmountToTokenAmount } from "royco/utils";
+import formatNumber from "@/utils/numbers";
 
 export const CentralBar = React.forwardRef<
   HTMLDivElement,
@@ -41,14 +42,7 @@ export const CentralBar = React.forwardRef<
          * For Recipe, this should be currentMarketData.quantity_value_usd
          * For Vault, this needs to be calculated
          */}
-        {Intl.NumberFormat("en-US", {
-          // style: "currency",
-          // currency: "USD",
-          notation: "standard",
-          useGrouping: true,
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 8,
-        }).format(
+        {formatNumber(
           marketMetadata.market_type === RoycoMarketType.recipe.id
             ? parseRawAmountToTokenAmount(
                 currentMarketData?.quantity_ap ?? "",
@@ -62,10 +56,6 @@ export const CentralBar = React.forwardRef<
                 currentMarketData?.quantity_ap ?? "",
                 currentMarketData?.input_token_data.decimals ?? 0
               )
-          // marketMetadata.market_type === RoycoMarketType.recipe.id
-          //   ? (currentMarketData?.quantity_ap_usd ?? 0) +
-          //       (currentMarketData?.quantity_ip_usd ?? 0)
-          //   : (currentMarketData?.quantity_ap_usd ?? 0)
         )}
       </SecondaryLabel>
 

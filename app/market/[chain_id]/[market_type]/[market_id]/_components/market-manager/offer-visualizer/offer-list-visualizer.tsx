@@ -17,6 +17,7 @@ import { Circle } from "lucide-react";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
 import { DEFAULT_TOKEN_COLOR } from "../market-info/annual-yield-details/incentive-details";
+import formatNumber from "@/utils/numbers";
 
 const DEFAULT_OFFER_TEXT_COLOR = "#737373";
 
@@ -35,14 +36,9 @@ function CustomizedXAxisTick(props: any) {
   const formatted_apr = (
     <tspan textAnchor="middle" x="0" dy="16">
       {apr >= 0 ? "+" : "-"}
-      {Intl.NumberFormat("en-US", {
-        style: "percent",
-        notation: "compact",
-        useGrouping: true,
-        compactDisplay: "short",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(Math.abs(apr))}
+      {formatNumber(Math.abs(apr), {
+        type: "percent",
+      })}
     </tspan>
   );
 
@@ -305,11 +301,7 @@ export const OfferListVisualizer = React.forwardRef<
               axisLine={false}
               tickMargin={0}
               tickFormatter={(value) => {
-                const formattedValue = Intl.NumberFormat("en-US", {
-                  notation: "compact",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-                }).format(value as number);
+                const formattedValue = formatNumber(value as number);
                 return formattedValue;
               }}
             />

@@ -100,6 +100,7 @@
     "next-themes": "^0.3.0",
     "node-telegram-bot-api": "^0.66.0",
     "node-vibrant": "^4.0.3",
+    "numbro": "^2.5.0",
     "obscenity": "^0.4.1",
     "posthog-js": "^1.148.0",
     "react": "^18.3.1",

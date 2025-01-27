@@ -30,6 +30,7 @@ import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { WarningAlert } from "../../composables/warning-alert";
 import { cn } from "@/lib/utils";
+import formatNumber from "@/utils/numbers";
 
 export const InputAmountWrapper = React.forwardRef<
   HTMLDivElement,
@@ -181,15 +182,7 @@ export const InputAmountWrapper = React.forwardRef<
                 {isLoadingBalance ? (
                   <LoadingSpinner className="ml-1 h-4 w-4" />
                 ) : (
-                  <span>
-                    {Intl.NumberFormat("en-US", {
-                      style: "decimal",
-                      notation: "standard",
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 8,
-                      useGrouping: true,
-                    }).format(userBalance || 0)}
-                  </span>
+                  <span>{formatNumber(userBalance || 0)}</span>
                 )}
                 <span className="ml-1">
                   {currentMarketData?.input_token_data.symbol.toUpperCase()}
@@ -270,15 +263,7 @@ export const InputAmountWrapper = React.forwardRef<
             <span>Fillable:</span>
 
             <span className="flex items-center justify-center">
-              <span>
-                {Intl.NumberFormat("en-US", {
-                  style: "decimal",
-                  notation: "compact",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-                  useGrouping: true,
-                }).format(fillableBalance || 0)}
-              </span>
+              <span>{formatNumber(fillableBalance || 0)}</span>
               <span className="ml-1">
                 {currentMarketData?.input_token_data.symbol.toUpperCase()}
               </span>
@@ -298,15 +283,7 @@ export const InputAmountWrapper = React.forwardRef<
               {isLoadingBalance ? (
                 <LoadingSpinner className="ml-1 h-4 w-4" />
               ) : (
-                <span>
-                  {Intl.NumberFormat("en-US", {
-                    style: "decimal",
-                    notation: "standard",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 8,
-                    useGrouping: true,
-                  }).format(userBalance || 0)}
-                </span>
+                <span>{formatNumber(userBalance || 0)}</span>
               )}
               <span className="ml-1">
                 {currentMarketData?.input_token_data.symbol.toUpperCase()}

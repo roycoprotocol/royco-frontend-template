@@ -25,6 +25,7 @@ import { Button } from "../ui/button";
 import useMeasure from "react-use-measure";
 import { Popover } from "../ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
+import formatNumber from "@/utils/numbers";
 
 const FormSchema = z.object({
   id: z.string(),
@@ -288,10 +289,7 @@ export const MarketEditorPanel = ({
                         }}
                         type="number"
                         containerClassName="border-none shrink-0 flex-grow"
-                        placeholder={`${Intl.NumberFormat("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }).format(tokenDetails?.fdv || 0)}`}
+                        placeholder={`${formatNumber(tokenDetails?.fdv || 0)}`}
                         value={watch("fdv") || ""}
                         onChange={(e) => {
                           setValue("fdv", parseFloat(e.target.value));

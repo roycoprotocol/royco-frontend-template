@@ -18,6 +18,7 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { LoadingSpinner } from "@/components/composables";
 import { MarketActionFormSchema } from "../market-action-form-schema";
 import { SlideUpWrapper } from "@/components/animations";
+import formatNumber from "@/utils/numbers";
 
 export const SimulationViewer = React.forwardRef<
   HTMLDivElement,
@@ -74,29 +75,15 @@ export const SimulationViewer = React.forwardRef<
                 >
                   <TokenDisplayer symbols={false} tokens={[tokenData]} />
                   <SecondaryLabel className="mt-2 font-normal text-black">
-                    {`${tokenData.type === "in" ? "+" : "-"}${Intl.NumberFormat(
-                      "en-US",
-                      {
-                        style: "decimal",
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }
-                    ).format(
+                    {`${tokenData.type === "in" ? "+" : "-"}${formatNumber(
                       tokenData.token_amount
                     )} ${tokenData.symbol.toUpperCase()}`}
                   </SecondaryLabel>
 
                   <TertiaryLabel className="text-xs">
-                    {Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      notation: "standard",
-                      useGrouping: true,
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 8,
-                    }).format(tokenData.token_amount_usd)}
+                    {formatNumber(tokenData.token_amount_usd, {
+                      type: "currency",
+                    })}
                   </TertiaryLabel>
                 </SlideUpWrapper>
               );

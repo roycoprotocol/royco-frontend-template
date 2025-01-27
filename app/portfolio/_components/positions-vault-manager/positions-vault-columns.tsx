@@ -41,6 +41,7 @@ import { differenceInDays } from "date-fns";
 import { RoycoMarketType } from "royco/market";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form/market-builder-form-schema";
+import formatNumber from "@/utils/numbers";
 
 export type PositionsVaultDataElement = NonNullable<
   NonNullable<
@@ -97,14 +98,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
 
         return (
           <div className={cn("w-full text-center")}>
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(market_value)}
+            {formatNumber(market_value, { type: "currency" })}
           </div>
         );
       },
@@ -179,13 +173,9 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
       cell: ({ row }) => {
         return (
           <div className={cn("w-full text-center")}>
-            {Intl.NumberFormat("en-US", {
-              style: "percent",
-              notation: "compact",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(row.original.annual_change_ratio)}
+            {formatNumber(row.original.annual_change_ratio, {
+              type: "percent",
+            })}
           </div>
         );
       },
@@ -229,14 +219,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
         } else {
           return (
             <div className={cn("w-full text-center")}>
-              {Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(unclaimed_incentives_usd)}
+              {formatNumber(unclaimed_incentives_usd, { type: "currency" })}
             </div>
           );
         }

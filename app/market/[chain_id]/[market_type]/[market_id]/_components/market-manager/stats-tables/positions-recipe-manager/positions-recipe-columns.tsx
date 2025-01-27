@@ -23,6 +23,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { createPortal } from "react-dom";
+import formatNumber from "@/utils/numbers";
 
 export type PositionsRecipeDataElement = NonNullable<
   NonNullable<
@@ -218,14 +219,9 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
 
         return (
           <div className={cn("")}>
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(market_value)}
+            {formatNumber(market_value, {
+              type: "currency",
+            })}
           </div>
         );
       },
@@ -243,16 +239,7 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
 
         return (
           <div className={cn("flex w-fit flex-row items-center gap-2")}>
-            <div>
-              {Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-                notation: "standard",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(input_token_value)}
-            </div>
+            <div>{formatNumber(input_token_value, { type: "currency" })}</div>
 
             <TokenDisplayer
               size={4}
@@ -285,14 +272,7 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
                 <HoverCardTrigger
                   className={cn("flex cursor-pointer items-end gap-1")}
                 >
-                  <span>
-                    {Intl.NumberFormat("en-US", {
-                      notation: "standard",
-                      useGrouping: true,
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 8,
-                    }).format(unclaimed_first_incentive)}
-                  </span>
+                  <span>{formatNumber(unclaimed_first_incentive)}</span>
 
                   <TokenDisplayer
                     size={4}
@@ -320,12 +300,7 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
 
                           {item.token_amount && (
                             <div className="ml-2 flex flex-row items-center gap-2 text-sm">
-                              {Intl.NumberFormat("en-US", {
-                                notation: "standard",
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 8,
-                                useGrouping: true,
-                              }).format(item.token_amount)}
+                              {formatNumber(item.token_amount)}
                             </div>
                           )}
                         </div>

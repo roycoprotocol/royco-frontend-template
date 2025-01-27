@@ -8,6 +8,7 @@ import { z } from "zod";
 import { InfoIcon } from "lucide-react";
 import { useMarketManager } from "@/store";
 import { useActiveMarket } from "../../../../hooks";
+import formatNumber from "@/utils/numbers";
 
 export const IPQuantityIndicator = React.forwardRef<
   HTMLDivElement,
@@ -33,11 +34,7 @@ export const IPQuantityIndicator = React.forwardRef<
 
             <div>
               You are requesting{" "}
-              {Intl.NumberFormat("en-US", {
-                style: "decimal",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 8,
-              }).format(
+              {formatNumber(
                 parseRawAmountToTokenAmount(
                   marketActionForm.watch("quantity.raw_amount"),
                   currentMarketData?.input_token_data?.decimals

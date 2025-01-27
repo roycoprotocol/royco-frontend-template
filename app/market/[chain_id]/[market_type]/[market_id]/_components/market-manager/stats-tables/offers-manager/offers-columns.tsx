@@ -64,6 +64,7 @@ import { getRecipeForfeitTransactionOptions } from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { TokenDisplayer } from "@/components/common";
 import { TransactionOptionsType } from "royco/types";
+import formatNumber from "@/utils/numbers";
 
 export type OffersDataElement = NonNullable<
   NonNullable<NonNullable<ReturnType<typeof useEnrichedOffers>>["data"]>["data"]
@@ -196,13 +197,7 @@ export const offersColumns: ColumnDef<OffersColumnDataElement>[] = [
             return (
               <div key={tokenIndex} className="flex items-center space-x-3">
                 <div className="">
-                  {Intl.NumberFormat("en-US", {
-                    style: "decimal",
-                    notation: "standard",
-                    useGrouping: true,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 8,
-                  }).format(
+                  {formatNumber(
                     row.original.market_type === MarketType.recipe.value
                       ? token.token_amount
                       : token.rate_per_year
@@ -211,15 +206,17 @@ export const offersColumns: ColumnDef<OffersColumnDataElement>[] = [
 
                 <TokenDisplayer
                   size={4}
-                  tokens={[
-                    {
-                      ...token,
-                      symbol:
-                        row.original.market_type === MarketType.recipe.value
-                          ? token.symbol
-                          : `${token.symbol}/year`,
-                    },
-                  ]}
+                  tokens={
+                    [
+                      {
+                        ...token,
+                        symbol:
+                          row.original.market_type === MarketType.recipe.value
+                            ? token.symbol
+                            : `${token.symbol}/year`,
+                      },
+                    ] as any
+                  }
                   symbols={true}
                 />
               </div>
@@ -239,24 +236,13 @@ export const offersColumns: ColumnDef<OffersColumnDataElement>[] = [
       return (
         <div className={cn("flex flex-col items-start gap-[0.2rem]")}>
           <div className="text-black">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(row.original.input_token_data.token_amount_usd)}
+            {formatNumber(row.original.input_token_data.token_amount_usd, {
+              type: "currency",
+            })}
           </div>
 
           <div className="text-tertiary">
-            {Intl.NumberFormat("en-US", {
-              style: "decimal",
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(row.original.input_token_data.token_amount)}{" "}
+            {formatNumber(row.original.input_token_data.token_amount)}{" "}
             {row.original.input_token_data.symbol.toUpperCase()}
           </div>
         </div>

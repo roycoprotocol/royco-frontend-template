@@ -6,6 +6,7 @@ import { TransactionOptionsType } from "@/sdk/types";
 import { BigNumber } from "ethers";
 import { BadgeLink, ContentBadge, TokenDisplayer } from "@/components/common";
 import { getExplorerUrl } from "royco/utils";
+import formatNumber from "@/utils/numbers";
 
 export const TransactionRow = React.forwardRef<
   HTMLDivElement,
@@ -58,14 +59,7 @@ export const TransactionRow = React.forwardRef<
                     <ContentBadge key={key}>
                       <div className="font-gt text-xs font-300 text-secondary">
                         -
-                        {`${new Intl.NumberFormat("en-US", {
-                          notation: "standard",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }).format(
-                          token.token_amount
-                        )} ${token.symbol.toUpperCase()}`}
+                        {`${formatNumber(token.token_amount)} ${token.symbol.toUpperCase()}`}
                       </div>
                     </ContentBadge>
                   );
@@ -78,14 +72,7 @@ export const TransactionRow = React.forwardRef<
                     <ContentBadge key={key}>
                       <div className="font-gt text-xs font-300 text-secondary">
                         +
-                        {`${new Intl.NumberFormat("en-US", {
-                          notation: "standard",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }).format(
-                          token.token_amount
-                        )} ${token.symbol.toUpperCase()}`}
+                        {`${formatNumber(token.token_amount)} ${token.symbol.toUpperCase()}`}
                       </div>
                     </ContentBadge>
                   );
