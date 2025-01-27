@@ -184,12 +184,7 @@ export const IncentiveTokenDetails = React.forwardRef<
       const token = token_data.tokens.find(
         (token: any) => token.id === BERA_TOKEN_ID
       );
-      if (
-        token &&
-        !customTokenData.find(
-          (token) => token.token_id === token_data.tokens[0].id
-        )
-      ) {
+      if (token && !customTokenData.find((_t) => _t.token_id === token.id)) {
         return token;
       }
     }
