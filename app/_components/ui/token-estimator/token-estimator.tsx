@@ -26,6 +26,7 @@ import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_co
 import { CustomTokenDataElementType } from "royco/types";
 import { LoadingSpinner } from "@/components/composables";
 import { useTokenQuotes } from "royco/hooks";
+import { AlertIndicator } from "@/components/common";
 
 export const EstimatorCustomTokenDataSchema = z.object({
   customTokenData: z.array(
@@ -144,35 +145,43 @@ export const TokenEstimator = React.forwardRef<
               {/**
                * Token selector
                */}
-              <SlideUpWrapper className="flex flex-col overflow-x-auto">
+              {/* <SlideUpWrapper className="flex flex-col overflow-x-auto">
                 <TokenSelector
                   customTokenForm={form}
                   onTokenSelect={(token) => handleTokenSelect(token)}
                 />
-              </SlideUpWrapper>
+              </SlideUpWrapper> */}
 
               {/**
                * Custom token editor
                */}
-              <form className="mt-6 space-y-4">
-                {estimatorCustomTokenData.map((token, index) => (
-                  <SlideUpWrapper className="flex flex-col">
-                    <TokenEditor
-                      key={token.token_id}
-                      index={index}
-                      token={token}
-                      customTokenForm={form}
-                      onRemove={() => handleRemoveToken(index)}
-                    />
-                  </SlideUpWrapper>
-                ))}
+              <form className="space-y-4">
+                {estimatorCustomTokenData.length > 0 ? (
+                  estimatorCustomTokenData.map((token, index) => (
+                    <SlideUpWrapper className="flex flex-col">
+                      <TokenEditor
+                        key={token.token_id}
+                        index={index}
+                        token={token}
+                        customTokenForm={form}
+                        onRemove={() => handleRemoveToken(index)}
+                      />
+                    </SlideUpWrapper>
+                  ))
+                ) : (
+                  <div>
+                    <AlertIndicator className="w-full rounded-md border border-dashed">
+                      No tokens selected
+                    </AlertIndicator>
+                  </div>
+                )}
               </form>
             </div>
 
             <SheetClose asChild>
               <Button
                 className="flex w-full items-center justify-center gap-2"
-                disabled={loading}
+                disabled={loading || estimatorCustomTokenData.length === 0}
                 onClick={() => {
                   setCustomTokenData(form.getValues().customTokenData);
                   setLoading(true);

@@ -72,33 +72,20 @@ const Page = () => {
           </div>
 
           <div className="flex h-full w-full shrink-0 flex-col gap-3 md:h-[80vh] lg:w-9/12">
-            <div className="flex w-full flex-col items-center justify-between lg:flex-row">
-              <div className="flex w-full">
-                <SearchBar />
-
-                <div className="ml-3 flex lg:hidden">
-                  <TokenEstimator>
-                    <Button className="flex aspect-square h-11 items-center gap-2 rounded-xl">
-                      <LightningIcon className="h-5 w-5" />
-                    </Button>
-                  </TokenEstimator>
-                </div>
+            <div className="flex w-full flex-col items-center justify-between md:flex-row">
+              <div className="mr-3 hidden md:flex lg:hidden">
+                <MobileMenu />
               </div>
 
-              <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 lg:flex">
+              <SearchBar />
+
+              <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
                 <Sorter />
 
                 <ColumnToggler />
-
-                <TokenEstimator>
-                  <Button className="flex h-full items-center gap-2 rounded-xl px-4">
-                    <LightningIcon className="h-5 w-5" />
-                    <span className="text-sm font-medium">Estimate APY</span>
-                  </Button>
-                </TokenEstimator>
               </div>
 
-              <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 lg:hidden">
+              <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 md:hidden">
                 <div className="flex h-full flex-row space-x-2">
                   <MobileMenu />
                 </div>
