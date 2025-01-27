@@ -61,9 +61,11 @@ export const AnnualYieldDetails = React.forwardRef<
           <TertiaryLabel className="gap-1 text-sm">
             <div>APY</div>
             {aprInfo && (
-              <InfoTip size="sm" type="tertiary">
-                {aprInfo}
-              </InfoTip>
+              <div>
+                <InfoTip size="sm" type="tertiary">
+                  {aprInfo}
+                </InfoTip>
+              </div>
             )}
           </TertiaryLabel>
           {currentMarketData.annual_change_ratio === 0 &&
