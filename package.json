@@ -69,6 +69,7 @@
     "@types/react-dom": "^18.3.0",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.3",
+    "@vercel/analytics": "^1.4.1",
     "@vercel/kv": "^1.0.1",
     "@wagmi/core": "^2.10.3",
     "@web3modal/wagmi": "^4.2.3",
