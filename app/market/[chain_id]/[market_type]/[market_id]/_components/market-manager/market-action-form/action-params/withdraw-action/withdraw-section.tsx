@@ -32,6 +32,8 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
     disabled: boolean;
   }
 >(({ className, token, disabled, ...props }, ref) => {
+  const { currentMarketData } = useActiveMarket();
+
   return (
     <div
       ref={ref}
@@ -56,11 +58,11 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
       </div>
       <div className="w-24">
         <Button
-          disabled={disabled}
+          disabled={disabled || currentMarketData?.category === "boyco"}
           onClick={(e) => props.onClick?.(e as any)}
           className="py-1 text-sm"
         >
-          Withdraw
+          {currentMarketData?.category === "boyco" ? "Locked" : "Withdraw"}
         </Button>
       </div>
     </div>
@@ -96,7 +98,7 @@ export const WithdrawSection = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { marketMetadata } = useActiveMarket();
+  const { marketMetadata, currentMarketData } = useActiveMarket();
   const { address, isConnected } = useAccount();
 
   const { transactions, setTransactions } = useMarketManager();
@@ -354,9 +356,12 @@ export const WithdrawSection = React.forwardRef<
                         {withdrawType === MarketWithdrawType.input_token.id && (
                           <div className="w-24 shrink-0">
                             <Button
-                              disabled={BigNumber.from(
-                                position?.input_token_data?.raw_amount
-                              ).isZero()}
+                              disabled={
+                                BigNumber.from(
+                                  position?.input_token_data?.raw_amount
+                                ).isZero() ||
+                                currentMarketData?.category === "boyco"
+                              }
                               onClick={() => {
                                 if (!!position) {
                                   if (
@@ -389,7 +394,9 @@ export const WithdrawSection = React.forwardRef<
                               }}
                               className="text-sm"
                             >
-                              Withdraw
+                              {currentMarketData?.category === "boyco"
+                                ? "Locked"
+                                : "Withdraw"}
                             </Button>
                           </div>
                         )}
