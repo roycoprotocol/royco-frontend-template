@@ -273,7 +273,13 @@ export const InputAmountWrapper = React.forwardRef<
          */}
         <div>
           <TertiaryLabel className="justify-start italic">
-            {formatNumber(userInputAmountUsd || 0, { type: "currency" })}
+            {formatNumber(
+              userInputAmountUsd || 0,
+              { type: "currency" },
+              {
+                average: false,
+              }
+            )}
           </TertiaryLabel>
         </div>
 

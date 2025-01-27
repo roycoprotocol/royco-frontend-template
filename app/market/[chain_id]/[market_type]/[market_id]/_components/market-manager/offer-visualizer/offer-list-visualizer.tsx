@@ -33,7 +33,7 @@ function CustomizedXAxisTick(props: any) {
   const token_data = data[payload.index]?.tokens_data?.[0] ?? null;
   const textColor = data[payload.index]?.textColor;
 
-  const formatted_apr = (
+  let formatted_data = (
     <tspan textAnchor="middle" x="0" dy="16">
       {apr >= 0 ? "+" : "-"}
       {formatNumber(Math.abs(apr), {
@@ -42,10 +42,18 @@ function CustomizedXAxisTick(props: any) {
     </tspan>
   );
 
+  if (token_data && token_data.type === "point" && apr === 0) {
+    formatted_data = (
+      <tspan textAnchor="middle" x="0" dy="16">
+        {formatNumber(token_data.token_amount)}
+      </tspan>
+    );
+  }
+
   return (
     <g transform={`translate(${x},${y})`}>
       <text x={0} y={0} dy={10} fill={textColor} textAnchor="middle">
-        {formatted_apr}
+        {formatted_data}
       </text>
       {token_data && (
         <text x={0} y={0} dy={30} fill={textColor} textAnchor="middle">
@@ -262,7 +270,7 @@ export const OfferListVisualizer = React.forwardRef<
         <div className="absolute bottom-0 left-0 top-0 flex w-5 items-center justify-center">
           <div className="flex shrink-0 -rotate-90 items-center gap-1">
             <TokenDisplayer
-              tokens={[currentMarketData.input_token_data]}
+              tokens={[currentMarketData.input_token_data] as any}
               size={4}
               symbols={true}
               symbolClassName="text-black text-xs font-medium"
