@@ -200,10 +200,8 @@ export const IncentiveTokenDetails = React.forwardRef<
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {showEstimate || beraToken ? (
-          <TokenEstimator
-            defaultTokenId={beraToken ? beraToken.id : token_data.id}
-          >
+        {showEstimate ? (
+          <TokenEstimator defaultTokenId={token_data.id}>
             <Button
               variant="link"
               className="flex w-full items-center gap-1 py-0 outline-none"
