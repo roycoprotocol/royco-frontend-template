@@ -184,37 +184,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       );
     },
   },
-  // {
-  //   accessorKey: "input_token_id",
-  //   enableResizing: false,
-  //   // header: exploreColumnNames.assets_info,
-
-  //   enableSorting: false,
-  //   header: ({ column }: { column: any }) => {
-  //     return <HeaderWrapper column={column} />;
-  //   },
-
-  //   meta: {
-  //     className: "min-w-24",
-  //   },
-  //   cell: (props: any) => {
-  //     return (
-  //       <TokenDisplayer
-  //         hover
-  //         bounce
-  //         tokens={[props.row.original.input_token_data]}
-  //         symbols={true}
-  //         // key={`${props.view}:market:${props.row.original.id}:assets`}
-  //         className={cn(
-  //           props.view === "list" && props.column.columnDef.meta.className,
-  //           "flex flex-row place-content-start items-center text-left",
-  //           props.view === "grid" &&
-  //             "body-2 w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"
-  //         )}
-  //       />
-  //     );
-  //   },
-  // },
   {
     accessorKey: "chain_id",
     enableResizing: true,

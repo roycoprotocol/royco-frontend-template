@@ -21,6 +21,7 @@ import {
   parseTextToFormattedValue,
 } from "royco/utils";
 import { useGlobalStates } from "@/store/use-global-states";
+import { BERA_TOKEN_ID } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
 
 export const TokenEditor = React.forwardRef<
   HTMLDivElement,
@@ -103,52 +104,60 @@ export const TokenEditor = React.forwardRef<
       {/**
        * Token Stats
        */}
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <div>
-          <SecondaryLabel className="break-normal font-light">
-            {tokenData.type === "point" ? "# Points on Royco" : "Total Supply"}
-          </SecondaryLabel>
-          <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
-            <SpringNumber
-              previousValue={parseFloat(previousTokenData?.total_supply || "0")}
-              currentValue={parseFloat(
-                customTokenForm.watch(
-                  `customTokenData.${index}.total_supply`
-                ) || "0"
-              )}
-              numberFormatOptions={{
-                style: "decimal",
-                notation: "compact",
-                useGrouping: true,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }}
-            />
-          </PrimaryLabel>
-        </div>
+      {tokenData.id !== BERA_TOKEN_ID && (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div>
+            <SecondaryLabel className="break-normal font-light">
+              {tokenData.type === "point"
+                ? "# Points on Royco"
+                : "Total Supply"}
+            </SecondaryLabel>
+            <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
+              <SpringNumber
+                previousValue={parseFloat(
+                  previousTokenData?.total_supply || "0"
+                )}
+                currentValue={parseFloat(
+                  customTokenForm.watch(
+                    `customTokenData.${index}.total_supply`
+                  ) || "0"
+                )}
+                numberFormatOptions={{
+                  style: "decimal",
+                  notation: "compact",
+                  useGrouping: true,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }}
+              />
+            </PrimaryLabel>
+          </div>
 
-        <div>
-          <SecondaryLabel className="break-normal font-light">
-            {tokenData.type === "point" ? "Estimated Price per Point" : "Price"}
-          </SecondaryLabel>
-          <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
-            <SpringNumber
-              previousValue={parseFloat(previousTokenData?.price || "0")}
-              currentValue={parseFloat(
-                customTokenForm.watch(`customTokenData.${index}.price`) || "0"
-              )}
-              numberFormatOptions={{
-                style: "currency",
-                currency: "USD",
-                notation: "compact",
-                useGrouping: true,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 8,
-              }}
-            />
-          </PrimaryLabel>
+          <div>
+            <SecondaryLabel className="break-normal font-light">
+              {tokenData.type === "point"
+                ? "Estimated Price per Point"
+                : "Price"}
+            </SecondaryLabel>
+            <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
+              <SpringNumber
+                previousValue={parseFloat(previousTokenData?.price || "0")}
+                currentValue={parseFloat(
+                  customTokenForm.watch(`customTokenData.${index}.price`) || "0"
+                )}
+                numberFormatOptions={{
+                  style: "currency",
+                  currency: "USD",
+                  notation: "compact",
+                  useGrouping: true,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 8,
+                }}
+              />
+            </PrimaryLabel>
+          </div>
         </div>
-      </div>
+      )}
 
       <hr className="my-3" />
 
