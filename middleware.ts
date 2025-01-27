@@ -125,7 +125,7 @@ export async function middleware(request: NextRequest) {
   let rateLimitTag: string | null = null;
 
   if (pathname.startsWith("/api/rpc/")) {
-    rateLimitTag = "rpc";
+    // rateLimitTag = "rpc";
   } else if (pathname.startsWith("/api/simulation/")) {
     rateLimitTag = "simulation";
   }
