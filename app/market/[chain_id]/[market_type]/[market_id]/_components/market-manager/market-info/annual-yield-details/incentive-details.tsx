@@ -1,7 +1,12 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MarketType, useGlobalStates, useMarketManager } from "@/store";
-import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
+import {
+  AlertIndicator,
+  InfoCard,
+  InfoTip,
+  TokenDisplayer,
+} from "@/components/common";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
 import { BigNumber } from "ethers";
@@ -204,13 +209,23 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenEstimator
             defaultTokenId={beraToken ? beraToken.id : token_data.id}
           >
-            <Button
-              variant="link"
-              className="flex w-full items-center gap-1 py-0 outline-none"
-            >
-              <LightningIcon className="h-5 w-5 fill-black" />
-              <span className="text-sm font-medium underline">Estimate</span>
-            </Button>
+            <>
+              <Button
+                variant="link"
+                className="flex w-full items-center gap-1 py-0 outline-none"
+              >
+                <LightningIcon className="h-5 w-5 fill-black" />
+                <span className="text-sm font-medium underline">Estimate</span>
+              </Button>
+
+              {beraToken && (
+                <InfoTip size="sm">
+                  Rate is estimated based on user-entered projections and not
+                  guranteed. Rate is variable based on total TVL supplied into
+                  Boyco.
+                </InfoTip>
+              )}
+            </>
           </TokenEstimator>
         ) : (
           <>
