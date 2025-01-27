@@ -222,7 +222,12 @@ export const SupplyAction = React.forwardRef<
                                       marketActionForm.watch(
                                         "quantity.amount"
                                       ) || "0"
-                                    )
+                                    ) *
+                                      (isNaN(
+                                        highestIncentiveToken.per_input_token
+                                      )
+                                        ? 0
+                                        : highestIncentiveToken.per_input_token)
                                   )
                                 : formatNumber(
                                     highestIncentiveToken.annual_change_ratio ||
@@ -268,7 +273,12 @@ export const SupplyAction = React.forwardRef<
                                   parseFloat(
                                     marketActionForm.watch("quantity.amount") ||
                                       "0"
-                                  )
+                                  ) *
+                                    (isNaN(
+                                      selectedIncentiveToken.per_input_token
+                                    )
+                                      ? 0
+                                      : selectedIncentiveToken.per_input_token)
                                 )
                               : formatNumber(
                                   selectedIncentiveToken.annual_change_ratio ||
