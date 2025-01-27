@@ -209,15 +209,12 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenEstimator
             defaultTokenId={beraToken ? beraToken.id : token_data.id}
           >
-            <>
-              <Button
-                variant="link"
-                className="flex w-full items-center gap-1 py-0 outline-none"
-              >
-                <LightningIcon className="h-5 w-5 fill-black" />
-                <span className="text-sm font-medium underline">Estimate</span>
-              </Button>
-
+            <Button
+              variant="link"
+              className="flex w-full items-center gap-1 py-0 outline-none"
+            >
+              <LightningIcon className="h-5 w-5 fill-black" />
+              <span className="text-sm font-medium underline">Estimate</span>
               {beraToken && (
                 <InfoTip size="sm">
                   Rate is estimated based on user-entered projections and not
@@ -225,7 +222,7 @@ export const IncentiveTokenDetails = React.forwardRef<
                   Boyco.
                 </InfoTip>
               )}
-            </>
+            </Button>
           </TokenEstimator>
         ) : (
           <>
