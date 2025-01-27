@@ -27,7 +27,7 @@ export const ExternalIncentiveDetails = React.forwardRef<
       className={cn("overflow-hidden rounded-lg border px-4 py-3", className)}
       {...props}
     >
-      <SecondaryLabel>Additional Rewards</SecondaryLabel>
+      <SecondaryLabel>Additional Incentives</SecondaryLabel>
 
       <hr className="-mx-4 my-3" />
 
