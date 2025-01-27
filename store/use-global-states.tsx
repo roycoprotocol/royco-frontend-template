@@ -24,7 +24,14 @@ interface GlobalState {
 }
 
 export const useGlobalStates = create<GlobalState>((set) => ({
-  customTokenData: [],
+  customTokenData: [
+    {
+      token_id: process.env.NEXT_PUBLIC_B_DEFAULT_TOKEN_ID!,
+      price: process.env.NEXT_PUBLIC_B_DEFAULT_TOKEN_PRICE!,
+      fdv: process.env.NEXT_PUBLIC_B_DEFAULT_TOKEN_FDV!,
+      total_supply: process.env.NEXT_PUBLIC_B_DEFAULT_TOKEN_TOTAL_SUPPLY!,
+    },
+  ],
   setCustomTokenData: (customTokenData: CustomTokenData) =>
     set({ customTokenData }),
   isUserInfoPaused: false,
