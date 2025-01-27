@@ -72,6 +72,14 @@ function formatNumber(
   } else if (num < 0.01) {
     const [part0, part1] = str.split(".");
     if (part1 === undefined || parseFloat(part1) === 0) {
+      if (options.type === "percent") {
+        return `${part0}%`;
+      }
+
+      if (options.type === "currency") {
+        return `$${part0}`;
+      }
+
       return part0;
     }
     const leadingZerosCount = part1.match(/^0+/)?.[0]?.length || 0;
@@ -81,6 +89,14 @@ function formatNumber(
       .slice(0, format.mantissa ?? 5)
       .replace(/0+$/, "")
       .padEnd(format.mantissa ?? 5, "0");
+
+    if (options.type === "percent") {
+      return `${part0}.0${leadingZeroes(leadingZerosCount)}${formattedPart1}%`;
+    }
+
+    if (options.type === "currency") {
+      return `$${part0}.0${leadingZeroes(leadingZerosCount)}${formattedPart1}`;
+    }
     return `${part0}.0${leadingZeroes(leadingZerosCount)}${formattedPart1}`;
   }
 

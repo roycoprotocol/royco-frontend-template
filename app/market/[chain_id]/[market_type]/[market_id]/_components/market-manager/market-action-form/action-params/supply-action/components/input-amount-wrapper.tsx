@@ -159,6 +159,19 @@ export const InputAmountWrapper = React.forwardRef<
     );
   }, [currentMarketData]);
 
+  const userInputAmountUsd = useMemo(() => {
+    if (!currentMarketData) {
+      return;
+    }
+
+    const inputTokenPrice = currentMarketData.input_token_data.price;
+    const userInputAmount = parseFloat(
+      marketActionForm.watch("quantity.amount") || "0"
+    );
+
+    return userInputAmount * inputTokenPrice;
+  }, [marketActionForm.watch("quantity.amount")]);
+
   const isLoadingBalance = isLoadingWalletBalance || isLoadingVaultBalance;
 
   return (
@@ -254,43 +267,56 @@ export const InputAmountWrapper = React.forwardRef<
         }}
       />
 
-      {/**
-       * Fillable balance indicator
-       */}
-      {marketMetadata.market_type === MarketType.recipe.id &&
-        userType === MarketUserType.ap.id && (
-          <TertiaryLabel className="mt-2 justify-end space-x-1">
-            <span>Fillable:</span>
-
-            <span className="flex items-center justify-center">
-              <span>{formatNumber(fillableBalance || 0)}</span>
-              <span className="ml-1">
-                {currentMarketData?.input_token_data.symbol.toUpperCase()}
-              </span>
-            </span>
+      <div className="mt-2 flex flex-row items-center justify-between">
+        {/**
+         * User input amount usd
+         */}
+        <div>
+          <TertiaryLabel className="justify-start italic">
+            {formatNumber(userInputAmountUsd || 0, { type: "currency" })}
           </TertiaryLabel>
-        )}
+        </div>
 
-      {/**
-       * Balance indicator
-       */}
-      {marketMetadata.market_type === MarketType.vault.id &&
-        userType === MarketUserType.ap.id && (
-          <TertiaryLabel className="mt-2 justify-end space-x-1">
-            <span>Balance:</span>
+        {/**
+         * Fillable balance indicator
+         */}
+        <div>
+          {marketMetadata.market_type === MarketType.recipe.id &&
+            userType === MarketUserType.ap.id && (
+              <TertiaryLabel className="justify-end space-x-1">
+                <span>Fillable:</span>
 
-            <span className="flex items-center justify-center">
-              {isLoadingBalance ? (
-                <LoadingSpinner className="ml-1 h-4 w-4" />
-              ) : (
-                <span>{formatNumber(userBalance || 0)}</span>
-              )}
-              <span className="ml-1">
-                {currentMarketData?.input_token_data.symbol.toUpperCase()}
-              </span>
-            </span>
-          </TertiaryLabel>
-        )}
+                <span className="flex items-center justify-center">
+                  <span>{formatNumber(fillableBalance || 0)}</span>
+                  <span className="ml-1">
+                    {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                  </span>
+                </span>
+              </TertiaryLabel>
+            )}
+
+          {/**
+           * Balance indicator
+           */}
+          {marketMetadata.market_type === MarketType.vault.id &&
+            userType === MarketUserType.ap.id && (
+              <TertiaryLabel className="justify-end space-x-1">
+                <span>Balance:</span>
+
+                <span className="flex items-center justify-center">
+                  {isLoadingBalance ? (
+                    <LoadingSpinner className="ml-1 h-4 w-4" />
+                  ) : (
+                    <span>{formatNumber(userBalance || 0)}</span>
+                  )}
+                  <span className="ml-1">
+                    {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                  </span>
+                </span>
+              </TertiaryLabel>
+            )}
+        </div>
+      </div>
 
       {/**
        * Insufficient balance indicator
