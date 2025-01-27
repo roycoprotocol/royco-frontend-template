@@ -115,7 +115,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { chainId, transactions, account } = body;
-    const origin = request.headers.get("origin") || "https://app.royco.xyz";
+    const origin = request.headers.get("origin") || "https://app.royco.org";
 
     const result = await simulateTransaction({
       origin,

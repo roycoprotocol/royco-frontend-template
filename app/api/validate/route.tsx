@@ -39,7 +39,7 @@ export type OfferValidationDataType = {
 
 export async function POST(request: Request) {
   try {
-    const origin = request.headers.get("origin") || "https://app.royco.xyz";
+    const origin = request.headers.get("origin") || "https://app.royco.org";
     const body = await request.json();
     const { offer_ids }: { offer_ids: string[] } = body; // Changed from offers to offer_ids
 

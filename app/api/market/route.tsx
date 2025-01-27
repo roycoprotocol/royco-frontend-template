@@ -107,7 +107,7 @@ export const getContent = (marketData: any) => {
 
 export async function POST(request: Request) {
   try {
-    const origin = request.headers.get("origin") || "https://app.royco.xyz";
+    const origin = request.headers.get("origin") || "https://app.royco.org";
     const body = await request.json();
     const { chain_id, market_type, tx_hash, name, description, push } = body;
 
