@@ -69,7 +69,10 @@ export const OffersManager = React.forwardRef<
     }
   }, [propsOffers.data]);
 
-  if (userType === MarketUserType.ip.id) {
+  if (
+    userType === MarketUserType.ip.id &&
+    currentMarketData?.market_type === 1
+  ) {
     return <div className="w-full p-5 text-center">Not Applicable</div>;
   }
 
