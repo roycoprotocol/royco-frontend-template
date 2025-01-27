@@ -66,7 +66,8 @@ export const AnnualYieldDetails = React.forwardRef<
               </InfoTip>
             )}
           </TertiaryLabel>
-          {breakdowns.length > 0 ? (
+          {currentMarketData.annual_change_ratio === 0 &&
+          breakdowns.length > 0 ? (
             <TokenEstimator defaultTokenId={point_token_data?.id}>
               <Button
                 variant="outline"
