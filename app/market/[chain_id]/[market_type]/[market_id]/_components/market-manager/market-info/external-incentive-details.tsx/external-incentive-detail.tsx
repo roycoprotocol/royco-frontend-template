@@ -6,6 +6,7 @@ import { INFO_ROW_CLASSES } from "../../../composables/base-classes";
 import { InfoCard } from "@/components/common/info-card";
 import { IncentiveToken } from "../annual-yield-details/incentive-details";
 import { useActiveMarket } from "../../../hooks";
+import { TokenDisplayer } from "@/components/common/token-displayer";
 
 export const ExternalIncentiveDetails = React.forwardRef<
   HTMLDivElement,
@@ -37,10 +38,18 @@ export const ExternalIncentiveDetails = React.forwardRef<
           <SlideUpWrapper key={externalIncentive.id} delay={0.1 + index * 0.1}>
             <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
               <InfoCard.Row.Key>
-                <IncentiveToken
-                  className="mb-1"
-                  token_data={externalIncentive}
-                />
+                <div className="flex items-center">
+                  <TokenDisplayer
+                    className={cn("")}
+                    tokens={[externalIncentive as any]}
+                    size={4}
+                    symbols={false}
+                  />
+
+                  <span className="text-sm font-medium text-black">
+                    {externalIncentive.label || externalIncentive.symbol}
+                  </span>
+                </div>
               </InfoCard.Row.Key>
 
               <InfoCard.Row.Value>

@@ -226,7 +226,7 @@ export const BalanceIndicator = React.forwardRef<
               <InfoCard.Row className={INFO_ROW_CLASSES}>
                 <InfoCard.Row.Key>
                   <TokenDisplayer
-                    tokens={inputTokenData ? [inputTokenData] : []}
+                    tokens={inputTokenData ? ([inputTokenData] as any) : []}
                     symbols={true}
                     symbolClassName="text-sm font-medium"
                   />
@@ -272,7 +272,7 @@ export const BalanceIndicator = React.forwardRef<
                   <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
                     <InfoCard.Row.Key>
                       <TokenDisplayer
-                        tokens={[incentive]}
+                        tokens={[incentive] as any}
                         symbols={true}
                         symbolClassName="text-sm font-medium"
                       />
