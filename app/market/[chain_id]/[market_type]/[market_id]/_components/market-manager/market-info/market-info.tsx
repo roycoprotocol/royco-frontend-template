@@ -56,17 +56,6 @@ export const MarketInfo = React.forwardRef<
         </div>
 
         {/**
-         * External Incentive Details
-         */}
-        {currentMarketData &&
-          currentMarketData.external_incentives &&
-          currentMarketData.external_incentives.length > 0 && (
-            <div className="mt-5">
-              <ExternalIncentiveDetails />
-            </div>
-          )}
-
-        {/**
          * Token Estimate
          */}
         <div className="mt-2">
@@ -80,6 +69,17 @@ export const MarketInfo = React.forwardRef<
             </Button>
           </TokenEstimator>
         </div>
+
+        {/**
+         * External Incentive Details
+         */}
+        {currentMarketData &&
+          currentMarketData.external_incentives &&
+          currentMarketData.external_incentives.length > 0 && (
+            <div className="mt-5">
+              <ExternalIncentiveDetails />
+            </div>
+          )}
       </div>
     );
   }

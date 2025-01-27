@@ -106,9 +106,7 @@ export const TokenEditor = React.forwardRef<
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div>
           <SecondaryLabel className="break-normal font-light">
-            {tokenData.type === "point"
-              ? "dApp Points Supply on Royco"
-              : "Total Supply"}
+            {tokenData.type === "point" ? "# Points on Royco" : "Total Supply"}
           </SecondaryLabel>
           <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
@@ -131,7 +129,7 @@ export const TokenEditor = React.forwardRef<
 
         <div>
           <SecondaryLabel className="break-normal font-light">
-            {tokenData.type === "point" ? "Estimated Points Price" : "Price"}
+            {tokenData.type === "point" ? "Estimated Price per Point" : "Price"}
           </SecondaryLabel>
           <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
@@ -163,7 +161,7 @@ export const TokenEditor = React.forwardRef<
             size="sm"
             label={
               tokenData.type === "point"
-                ? "Estimated Value of dApp Point Supply on Royco Markets"
+                ? "Estimated Total Value of Points on Royco"
                 : "Adjust FDV"
             }
           />
@@ -185,7 +183,7 @@ export const TokenEditor = React.forwardRef<
 
       {tokenData.type === "point" && (
         <div className="mt-4">
-          <FormInputLabel size="sm" label="Points Price" />
+          <FormInputLabel size="sm" label="Estimated Price per Point" />
 
           <Input
             type="text"
