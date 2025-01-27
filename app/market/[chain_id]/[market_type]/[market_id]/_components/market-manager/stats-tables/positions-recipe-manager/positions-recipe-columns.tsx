@@ -1,49 +1,11 @@
-import { SpringNumber } from "@/components/composables";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { useEnrichedPositionsRecipe } from "royco/hooks";
 
 import { cn } from "@/lib/utils";
 import React from "react";
 
-import { EnrichedPositionsRecipeDataType } from "royco/queries";
-
-import { MarketType } from "@/store";
-import { getSupportedChain, shortAddress } from "royco/utils";
-import Link from "next/link";
-import { createPortal } from "react-dom";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  IncentiveBreakdown,
-  TokenEditor,
-  YieldBreakdown,
-} from "@/components/composables";
-import { differenceInMonths, formatDuration } from "date-fns";
-import { addMonths } from "date-fns";
-import { differenceInDays } from "date-fns";
-import { RoycoMarketType } from "royco/market";
-import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { secondsToDuration } from "@/app/create/_components/market-builder-form/market-builder-form-schema";
-
-import { EnrichedOfferDataType } from "royco/queries";
-
-import { formatDistanceToNow } from "date-fns";
-import { MarketUserType, RewardStyleMap, useMarketManager } from "@/store";
-import { RoycoMarketOfferType, RoycoMarketUserType } from "royco/market";
+import { getSupportedChain } from "royco/utils";
+import { useMarketManager } from "@/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,12 +13,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { ContractMap } from "royco/contracts";
 import { getExplorerUrl } from "royco/utils";
 import { BigNumber } from "ethers";
-import { getRecipeForfeitTransactionOptions } from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { TokenDisplayer } from "@/components/common";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { createPortal } from "react-dom";
 
 export type PositionsRecipeDataElement = NonNullable<
   NonNullable<
@@ -290,7 +256,7 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
 
             <TokenDisplayer
               size={4}
-              tokens={[row.original.input_token_data]}
+              tokens={[row.original.input_token_data] as any}
               symbols={true}
             />
           </div>
@@ -304,15 +270,10 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
       header: "Unclaimed Incentives",
       meta: "text-left",
       cell: ({ row }) => {
-        let unclaimed_incentives_usd = 0;
+        let unclaimed_first_incentive = 0;
 
-        if (row.original.is_forfeited === false) {
-          for (let i = 0; i < row.original.tokens_data.length; i++) {
-            if (row.original.is_claimed?.[i] === false) {
-              unclaimed_incentives_usd +=
-                row.original.tokens_data[i].token_amount_usd;
-            }
-          }
+        if (row.original.tokens_data.length > 0) {
+          unclaimed_first_incentive = row.original.tokens_data[0].token_amount;
         }
 
         if (row.original.offer_side === 1) {
@@ -320,22 +281,59 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
         } else {
           return (
             <div className={cn("flex w-fit flex-row items-center gap-2")}>
-              <div className="">
-                {Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                  notation: "standard",
-                  useGrouping: true,
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 8,
-                }).format(unclaimed_incentives_usd)}
-              </div>
+              <HoverCard openDelay={200} closeDelay={200}>
+                <HoverCardTrigger
+                  className={cn("flex cursor-pointer items-end gap-1")}
+                >
+                  <span>
+                    {Intl.NumberFormat("en-US", {
+                      notation: "standard",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 8,
+                    }).format(unclaimed_first_incentive)}
+                  </span>
 
-              <TokenDisplayer
-                size={4}
-                tokens={row.original.tokens_data}
-                symbols={true}
-              />
+                  <TokenDisplayer
+                    size={4}
+                    tokens={row.original.tokens_data as any}
+                    symbols={true}
+                  />
+                </HoverCardTrigger>
+                {typeof window !== "undefined" &&
+                  row.original.tokens_data.length > 0 &&
+                  createPortal(
+                    <HoverCardContent
+                      className="min-w-40 p-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {row.original.tokens_data.map((item) => (
+                        <div
+                          key={`incentive-breakdown:${row.original.id}:${item.id}`}
+                          className="flex flex-row items-center justify-between font-light"
+                        >
+                          <TokenDisplayer
+                            size={4}
+                            tokens={[item] as any}
+                            symbols={true}
+                          />
+
+                          {item.token_amount && (
+                            <div className="ml-2 flex flex-row items-center gap-2 text-sm">
+                              {Intl.NumberFormat("en-US", {
+                                notation: "standard",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 8,
+                                useGrouping: true,
+                              }).format(item.token_amount)}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </HoverCardContent>,
+                    document.body
+                  )}
+              </HoverCard>
             </div>
           );
         }

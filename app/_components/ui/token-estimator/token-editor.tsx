@@ -84,7 +84,7 @@ export const TokenEditor = React.forwardRef<
        */}
       <div className="flex items-center justify-between">
         <TokenDisplayer
-          tokens={[tokenData]}
+          tokens={[tokenData] as any}
           size={4}
           symbols={true}
           symbolClassName="font-medium"
@@ -105,7 +105,9 @@ export const TokenEditor = React.forwardRef<
        */}
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div>
-          <SecondaryLabel className="font-light">Total Supply</SecondaryLabel>
+          <SecondaryLabel className="break-normal font-light">
+            dApp Points Supply on Royco
+          </SecondaryLabel>
           <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
               previousValue={parseFloat(previousTokenData?.total_supply || "0")}
@@ -126,7 +128,9 @@ export const TokenEditor = React.forwardRef<
         </div>
 
         <div>
-          <SecondaryLabel className="font-light">Price</SecondaryLabel>
+          <SecondaryLabel className="break-normal font-light">
+            Estimated Points Price
+          </SecondaryLabel>
           <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
             <SpringNumber
               previousValue={parseFloat(previousTokenData?.price || "0")}
@@ -152,7 +156,12 @@ export const TokenEditor = React.forwardRef<
        * FDV Input
        */}
       <div>
-        <FormInputLabel size="sm" label="Adjust FDV" />
+        <div className="hide-scrollbar max-w-full overflow-scroll">
+          <FormInputLabel
+            size="sm"
+            label="Estimated Value of dApp Point Supply on Royco Markets"
+          />
+        </div>
 
         <Input
           type="text"
