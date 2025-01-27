@@ -162,7 +162,7 @@ export const AnnualYieldDetails = React.forwardRef<
               </span>
               <span className="underline">
                 <a
-                  href="https://docs.berachain.com/berachain-mainnet/overview"
+                  href="https://blog.berachain.com/blog/boyco-markets-overview"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
