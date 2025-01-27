@@ -41,7 +41,7 @@ export const AnnualYieldDetails = React.forwardRef<
 
   const aprInfo = useMemo(() => {
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-      return "APR calculated assuming deposit made at market creation";
+      return "APY calculated assuming deposit made at market creation";
     }
 
     return;

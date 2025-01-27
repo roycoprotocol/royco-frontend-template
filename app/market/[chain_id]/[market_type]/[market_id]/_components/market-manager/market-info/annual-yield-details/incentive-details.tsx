@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MarketType, useMarketManager } from "@/store";
+import { MarketType, useGlobalStates, useMarketManager } from "@/store";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
@@ -29,8 +29,9 @@ import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
-
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
+
+export const BERA_TOKEN_ID = "1-0xbe9abe9abe9abe9abe9abe9abe9abe9abe9abe9a";
 
 export const TokenEstimatePopover = React.forwardRef<
   HTMLDivElement,
@@ -133,6 +134,7 @@ export const IncentiveTokenDetails = React.forwardRef<
   }
 >(({ className, token_data, category, labelClassName, ...props }, ref) => {
   const { currentMarketData } = useActiveMarket();
+  const { customTokenData } = useGlobalStates();
 
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
@@ -172,6 +174,23 @@ export const IncentiveTokenDetails = React.forwardRef<
     return false;
   }, [token_data]);
 
+  const beraToken = useMemo(() => {
+    if (token_data && token_data.tokens && token_data.tokens.length > 0) {
+      const token = token_data.tokens.find(
+        (token: any) => token.id === BERA_TOKEN_ID
+      );
+      if (
+        token &&
+        !customTokenData.find(
+          (token) => token.token_id === token_data.tokens[0].id
+        )
+      ) {
+        return token;
+      }
+    }
+    return;
+  }, [token_data]);
+
   return (
     <div
       ref={ref}
@@ -181,8 +200,10 @@ export const IncentiveTokenDetails = React.forwardRef<
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {showEstimate ? (
-          <TokenEstimator defaultTokenId={token_data.id}>
+        {showEstimate || beraToken ? (
+          <TokenEstimator
+            defaultTokenId={beraToken ? beraToken.id : token_data.id}
+          >
             <Button
               variant="link"
               className="flex w-full items-center gap-1 py-0 outline-none"

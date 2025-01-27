@@ -225,7 +225,7 @@ export const YieldBreakdown = React.forwardRef<
       {typeof window !== "undefined" &&
         breakdown.length > 0 &&
         createPortal(
-          <HoverCardContent className="w-64">
+          <HoverCardContent className="w-full min-w-64">
             <div
               ref={ref}
               className={cn(
