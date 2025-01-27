@@ -47,7 +47,27 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/api/sync") ||
     pathname === "/verify"
   ) {
-    // skip
+    // For /verify endpoint, validate redirect parameter
+    if (pathname === "/verify") {
+      const redirectUrl = request.nextUrl.searchParams.get("redirect");
+      if (redirectUrl) {
+        try {
+          // Parse the URL to validate it
+          const parsedUrl = new URL(redirectUrl, request.url);
+          // Only allow redirects to the same origin
+          if (parsedUrl.origin !== request.nextUrl.origin) {
+            // If invalid redirect, default to homepage
+            const safeUrl = new URL("/", request.url);
+            return NextResponse.redirect(safeUrl);
+          }
+        } catch {
+          // If URL parsing fails, default to homepage
+          const safeUrl = new URL("/", request.url);
+          return NextResponse.redirect(safeUrl);
+        }
+      }
+    }
+    // skip other auth checks
   } else {
     // Get session token from cookie
     const sessionToken = request.cookies.get("session-token")?.value;
