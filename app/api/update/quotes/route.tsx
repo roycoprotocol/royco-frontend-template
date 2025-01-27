@@ -379,7 +379,10 @@ export const updateLpTokenQuotesFromContract = async () => {
   });
 
   // Run final database updates in parallel
-  await Promise.all([
+  const [
+    { data: tokensUpdated, error: tokensUpdatedError },
+    { data: tokensIndexUpdated, error: tokensIndexUpdatedError },
+  ] = await Promise.all([
     supabaseClient.from("raw_token_quotes").upsert(quotesWithPrices),
     supabaseClient
       .from("token_index")
@@ -392,6 +395,12 @@ export const updateLpTokenQuotesFromContract = async () => {
       )
       .eq("source", "lp"),
   ]);
+
+  if (tokensUpdatedError || tokensIndexUpdatedError) {
+    throw new Error(
+      `Supabase Error: ${tokensUpdatedError?.message || tokensIndexUpdatedError?.message}`
+    );
+  }
 };
 
 export const updateTokenQuotesFromCoingecko = async () => {
