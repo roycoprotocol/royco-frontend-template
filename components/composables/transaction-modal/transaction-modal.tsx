@@ -155,7 +155,20 @@ export const TransactionModal = React.forwardRef<
       setIsTransactionTimeout(false);
     } else {
       if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-        setIsBoycoWithdrawalModalOpen(true);
+        const transactionId = currentTransaction?.id;
+        if (
+          transactionId &&
+          [
+            MarketTransactionType.fill_ap_offers.id,
+            MarketTransactionType.fill_ip_offers.id,
+            MarketTransactionType.create_ap_offer.id,
+            MarketTransactionType.create_ip_offer.id,
+          ].includes(transactionId as TypedRoycoTransactionType)
+        ) {
+          setIsBoycoWithdrawalModalOpen(true);
+        } else {
+          setIsConfirmationModalOpen(true);
+        }
       } else {
         setIsConfirmationModalOpen(true);
       }
