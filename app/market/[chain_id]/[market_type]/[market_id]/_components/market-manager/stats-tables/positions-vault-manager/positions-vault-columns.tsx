@@ -242,7 +242,7 @@ export const baseVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[] = [
     accessorKey: "unclaimed_incentives",
     enableResizing: true,
     enableSorting: false,
-    header: "Unclaimed Incentives",
+    header: "Accumulated Incentives",
     meta: "text-left",
     cell: ({ row }) => {
       let unclaimed_first_incentive = 0;

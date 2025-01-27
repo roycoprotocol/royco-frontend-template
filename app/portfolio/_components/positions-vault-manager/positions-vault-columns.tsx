@@ -214,7 +214,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
       accessorKey: "unclaimed_incentives",
       enableResizing: false,
       enableSorting: false,
-      header: "Unclaimed Incentives",
+      header: "Accumulated Incentives",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
         let unclaimed_incentives_usd = 0;
