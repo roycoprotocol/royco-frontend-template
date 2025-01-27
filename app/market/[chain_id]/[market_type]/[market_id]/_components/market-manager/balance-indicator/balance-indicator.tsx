@@ -254,53 +254,56 @@ export const BalanceIndicator = React.forwardRef<
         )}
       </div>
 
-      <hr className="my-3" />
+      {currentMarketData?.category !== "boyco" && (
+        <Fragment>
+          <hr className="my-3" />
+          {/**
+           * Incentives Tokens
+           */}
+          <div>
+            <TertiaryLabel className="mb-3 text-sm">
+              Incentives Accumulated
+            </TertiaryLabel>
 
-      {/**
-       * Incentives Tokens
-       */}
-      <div>
-        <TertiaryLabel className="mb-3 text-sm">
-          Incentives Accumulated
-        </TertiaryLabel>
+            {incentivesTokenData && incentivesTokenData.length > 0 ? (
+              <InfoCard className="flex flex-col gap-2">
+                {incentivesTokenData.map((incentive, index) => {
+                  return (
+                    <SlideUpWrapper delay={0.1 + index * 0.1}>
+                      <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                        <InfoCard.Row.Key>
+                          <TokenDisplayer
+                            tokens={[incentive] as any}
+                            symbols={true}
+                            symbolClassName="text-sm font-medium"
+                          />
+                        </InfoCard.Row.Key>
 
-        {incentivesTokenData && incentivesTokenData.length > 0 ? (
-          <InfoCard className="flex flex-col gap-2">
-            {incentivesTokenData.map((incentive, index) => {
-              return (
-                <SlideUpWrapper delay={0.1 + index * 0.1}>
-                  <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-                    <InfoCard.Row.Key>
-                      <TokenDisplayer
-                        tokens={[incentive] as any}
-                        symbols={true}
-                        symbolClassName="text-sm font-medium"
-                      />
-                    </InfoCard.Row.Key>
-
-                    <InfoCard.Row.Value className="gap-0">
-                      <SpringNumber
-                        className="text-sm font-medium"
-                        previousValue={0}
-                        currentValue={incentive.token_amount ?? 0}
-                        numberFormatOptions={{
-                          style: "decimal",
-                          notation: "standard",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 8,
-                        }}
-                      />
-                    </InfoCard.Row.Value>
-                  </InfoCard.Row>
-                </SlideUpWrapper>
-              );
-            })}
-          </InfoCard>
-        ) : (
-          <span>--</span>
-        )}
-      </div>
+                        <InfoCard.Row.Value className="gap-0">
+                          <SpringNumber
+                            className="text-sm font-medium"
+                            previousValue={0}
+                            currentValue={incentive.token_amount ?? 0}
+                            numberFormatOptions={{
+                              style: "decimal",
+                              notation: "standard",
+                              useGrouping: true,
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 8,
+                            }}
+                          />
+                        </InfoCard.Row.Value>
+                      </InfoCard.Row>
+                    </SlideUpWrapper>
+                  );
+                })}
+              </InfoCard>
+            ) : (
+              <span>--</span>
+            )}
+          </div>{" "}
+        </Fragment>
+      )}
     </div>
   );
 });
