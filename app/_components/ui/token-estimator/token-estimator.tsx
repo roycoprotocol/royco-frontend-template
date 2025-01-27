@@ -131,8 +131,10 @@ export const TokenEstimator = React.forwardRef<
               </SecondaryLabel>
             </Button>
 
-            <SheetTitle className="text-3xl font-bold">Estimate APY</SheetTitle>
-            <SheetDescription className="text-base">
+            <SheetTitle className="text-left text-3xl font-bold">
+              Estimate APY
+            </SheetTitle>
+            <SheetDescription className="text-left text-base">
               Adjust token FDV or points to re-estimate APY.
             </SheetDescription>
           </SheetHeader>
