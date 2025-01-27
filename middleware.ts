@@ -44,6 +44,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/api/users/update") ||
     pathname.startsWith("/api/push/lp-token") ||
     pathname.startsWith("/api/update/quotes") ||
+    pathname.startsWith("/api/sync") ||
     pathname === "/verify"
   ) {
     // skip
