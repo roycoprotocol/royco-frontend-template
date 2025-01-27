@@ -162,7 +162,7 @@ export const TokenEditor = React.forwardRef<
           <FormInputLabel
             size="sm"
             label={
-              tokenData.type
+              tokenData.type === "point"
                 ? "Estimated Value of dApp Point Supply on Royco Markets"
                 : "Adjust FDV"
             }
