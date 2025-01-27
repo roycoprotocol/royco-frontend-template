@@ -26,10 +26,16 @@ const Page = () => {
             )}
           >
             <div className="flex w-full shrink flex-col items-start lg:w-1/2">
-              <h2 className="heading-2 text-black">Account</h2>
+              <h2 className="heading-2 text-black">
+                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                  ? "Portfolio"
+                  : "Account"}
+              </h2>
 
               <div className="body-1 mt-2 text-secondary">
-                View your positions across all Royco Action Markets.
+                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                  ? "View your positions across all Royco Markets."
+                  : "View your positions across all Royco Action Markets."}
               </div>
             </div>
 
