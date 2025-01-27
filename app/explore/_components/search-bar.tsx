@@ -8,7 +8,7 @@ export const SearchBar = () => {
   const { exploreSearch, setExploreSearch, setExplorePageIndex } = useExplore();
 
   return (
-    <div className="h-[2.875rem] w-full pr-1 md:min-w-40 lg:w-1/3 lg:min-w-40">
+    <div className="h-[2.875rem] w-full md:min-w-40 lg:w-2/3 lg:min-w-40">
       <div className="flex h-full w-full flex-row items-center gap-2 rounded-full border border-divider bg-white px-4">
         <SearchIcon className="h-5 w-5 shrink-0 text-secondary" />
         <Input
