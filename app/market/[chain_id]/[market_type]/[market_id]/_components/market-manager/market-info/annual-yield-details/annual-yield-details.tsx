@@ -128,9 +128,7 @@ export const AnnualYieldDetails = React.forwardRef<
                   const days = Math.ceil(seconds / 86400);
                   return `${days} ${days === 1 ? "Day" : "Days"}`;
                 })()
-              : "None"}{" "}
-            {currentMarketData?.category === "boyco" &&
-              "From Berachain Mainnet Launch"}
+              : "None"}
           </PrimaryLabel>
         </div>
       </div>
@@ -157,7 +155,11 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
-              <span>Asset may only be withdrawn after the lockup period. </span>
+              <span>
+                After Berachain Mainnet launch, assets will be bridged
+                trustlessly to the dApp. Asset may only be withdrawn after the
+                lockup period.{" "}
+              </span>
               <span className="underline">
                 <a
                   href="https://docs.berachain.com/berachain-mainnet/overview"
