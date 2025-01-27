@@ -30,7 +30,7 @@ pnpm run dev
 pnpm run build
 ```
 
-5. Run the project.
+5. Run the project..
 
 ```bash
 pnpm run start
