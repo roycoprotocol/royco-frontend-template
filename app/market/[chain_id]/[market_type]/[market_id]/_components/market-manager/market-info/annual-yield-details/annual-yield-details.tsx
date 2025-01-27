@@ -128,9 +128,7 @@ export const AnnualYieldDetails = React.forwardRef<
                   const days = Math.ceil(seconds / 86400);
                   return `${days} ${days === 1 ? "Day" : "Days"}`;
                 })()
-              : "None"}{" "}
-            {currentMarketData?.category === "boyco" &&
-              "From Berachain Mainnet Launch"}
+              : "None"}
           </PrimaryLabel>
         </div>
       </div>
