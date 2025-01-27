@@ -7,8 +7,8 @@ import { TertiaryLabel } from "../../../../../../composables/common-labels";
 
 const ENSO_KEY = process.env.NEXT_PUBLIC_ENSO_API_KEY;
 
-const DISABLED_ZAPS = [
-  "0x42a094364bbdca0efac8af2cf7d6b9ec885ee554", // WABTC/WBTC uni-v2
+const DISABLED_ZAPS: string[] = [
+  // "0x42a094364bbdca0efac8af2cf7d6b9ec885ee554", // WABTC/WBTC uni-v2
 ];
 
 // Paste styling according to the design system
