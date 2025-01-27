@@ -144,77 +144,81 @@ export const updateLpTokenQuotesFromContract = async () => {
           chainClients[parseInt(chain_id) as keyof typeof chainClients];
         if (!client) return;
 
-        // Run both multicalls in parallel for each chain
-        const [initialResults, reserveResults] = await Promise.all([
-          client
-            .multicall({
-              contracts: chainContracts.flatMap(
-                (contract) =>
-                  [
-                    {
-                      address: contract.address as Address,
-                      abi: erc20Abi,
-                      functionName: "totalSupply",
-                    },
-                    {
-                      address: contract.address as Address,
-                      abi: [
-                        {
-                          inputs: [],
-                          name: "token0",
-                          outputs: [{ type: "address", name: "" }],
-                          stateMutability: "view",
-                          type: "function",
-                        },
-                      ],
-                      functionName: "token0",
-                    },
-                    {
-                      address: contract.address as Address,
-                      abi: [
-                        {
-                          inputs: [],
-                          name: "token1",
-                          outputs: [{ type: "address", name: "" }],
-                          stateMutability: "view",
-                          type: "function",
-                        },
-                      ],
-                      functionName: "token1",
-                    },
-                    {
-                      address: contract.address as Address,
-                      abi: erc20Abi,
-                      functionName: "decimals",
-                    },
-                  ] as const
-              ),
-            })
-            .catch(() => ({
-              results: Array(chainContracts.length * 4).fill({ result: null }),
-            })),
-
-          client
-            .multicall({
-              contracts: chainContracts.map((contract) => ({
-                address: contract.address as Address,
-                abi: getReservesAbi,
-                functionName: "getReserves",
-              })),
-            })
-            .catch(() => ({
-              results: Array(chainContracts.length).fill({ result: null }),
-            })),
-        ]);
-
-        // After getting token0 and token1 addresses, fetch their decimals
-        for (let i = 0; i < initialResults.length; i += 4) {
+        // Single multicall with all contract calls
+        const results = await client
+          .multicall({
+            contracts: chainContracts.flatMap(
+              (contract) =>
+                [
+                  {
+                    address: contract.address as Address,
+                    abi: erc20Abi,
+                    functionName: "totalSupply",
+                  },
+                  {
+                    address: contract.address as Address,
+                    abi: [
+                      {
+                        inputs: [],
+                        name: "token0",
+                        outputs: [{ type: "address", name: "" }],
+                        stateMutability: "view",
+                        type: "function",
+                      },
+                    ],
+                    functionName: "token0",
+                  },
+                  {
+                    address: contract.address as Address,
+                    abi: [
+                      {
+                        inputs: [],
+                        name: "token1",
+                        outputs: [{ type: "address", name: "" }],
+                        stateMutability: "view",
+                        type: "function",
+                      },
+                    ],
+                    functionName: "token1",
+                  },
+                  {
+                    address: contract.address as Address,
+                    abi: erc20Abi,
+                    functionName: "decimals",
+                  },
+                  {
+                    address: contract.address as Address,
+                    abi: getReservesAbi,
+                    functionName: "getReserves",
+                  },
+                ] as const
+            ),
+          })
+          .catch(() => ({
+            results: Array(chainContracts.length * 5).fill({ result: null }),
+          }));
+        // Process results with updated indexing
+        for (
+          let i = 0;
+          i < (Array.isArray(results) ? results.length : 0);
+          i += 5
+        ) {
           try {
-            const totalSupply = initialResults[i]?.result;
-            const token0Address = initialResults[i + 1]?.result;
-            const token1Address = initialResults[i + 2]?.result;
-            const lpDecimals = initialResults[i + 3]?.result;
-            const reserves = reserveResults[Math.floor(i / 4)]?.result;
+            const totalSupply = Array.isArray(results)
+              ? results[i]?.result
+              : undefined;
+            const token0Address = Array.isArray(results)
+              ? results[i + 1]?.result
+              : undefined;
+            const token1Address = Array.isArray(results)
+              ? results[i + 2]?.result
+              : undefined;
+            const lpDecimals = Array.isArray(results)
+              ? results[i + 3]?.result
+              : undefined;
+            const reserves = Array.isArray(results)
+              ? results[i + 4]?.result
+              : undefined;
 
             // Skip if any required data is missing or addresses are invalid
             if (
@@ -226,36 +230,44 @@ export const updateLpTokenQuotesFromContract = async () => {
             )
               continue;
             if (
-              !isSolidityAddressValid("address", token0Address) ||
-              !isSolidityAddressValid("address", token1Address)
+              !isSolidityAddressValid("address", token0Address.toString()) ||
+              !isSolidityAddressValid("address", token1Address.toString())
             )
               continue;
 
             // Fetch decimals for token0 and token1
             const [token0Decimals, token1Decimals] = await Promise.all([
               client.readContract({
-                address: token0Address,
+                address: token0Address as Address,
                 abi: erc20Abi,
                 functionName: "decimals",
               }),
               client.readContract({
-                address: token1Address,
+                address: token1Address as Address,
                 abi: erc20Abi,
                 functionName: "decimals",
               }),
             ]);
-
-            const [reserve0, reserve1] = reserves;
+            // Destructure reserves array after ensuring it's an array
+            const [reserve0, reserve1] = Array.isArray(reserves)
+              ? reserves
+              : [0, 0];
 
             quotes.push({
-              id: `${chain_id}-${chainContracts[i / 4].address.toLowerCase()}`,
+              id: `${chain_id}-${chainContracts[i / 5].address.toLowerCase()}`,
               source: "lp",
-              search_id: `${chain_id}-${chainContracts[i / 4].address.toLowerCase()}`,
+              search_id: `${chain_id}-${chainContracts[i / 5].address.toLowerCase()}`,
               total_supply: totalSupply.toString(),
               token0_balance: reserve0.toString(),
               token1_balance: reserve1.toString(),
-              token0_address: refineSolidityAddress("address", token0Address),
-              token1_address: refineSolidityAddress("address", token1Address),
+              token0_address: refineSolidityAddress(
+                "address",
+                token0Address.toString()
+              ),
+              token1_address: refineSolidityAddress(
+                "address",
+                token1Address.toString()
+              ),
               token0_decimals: token0Decimals,
               token1_decimals: token1Decimals,
               lp_decimals: lpDecimals,
@@ -263,7 +275,7 @@ export const updateLpTokenQuotesFromContract = async () => {
             });
           } catch (error) {
             console.error(
-              `Error processing LP token ${chainContracts[i / 4]?.address} on chain ${chain_id}:`,
+              `Error processing LP token ${chainContracts[i / 5]?.address} on chain ${chain_id}:`,
               error
             );
             continue;
@@ -357,8 +369,8 @@ export const updateLpTokenQuotesFromContract = async () => {
       id: quote.id,
       source: "lp",
       search_id: quote.search_id,
-      price: pricePerToken,
-      fdv: totalValueUSD,
+      price: isNaN(pricePerToken) ? 0 : pricePerToken,
+      fdv: isNaN(totalValueUSD) ? 0 : totalValueUSD,
       total_supply: parseFloat(
         ethers.utils.formatUnits(totalSupply, quote.lp_decimals)
       ),
@@ -366,21 +378,19 @@ export const updateLpTokenQuotesFromContract = async () => {
     };
   });
 
-  console.log(quotesWithPrices);
-
   // Run final database updates in parallel
   await Promise.all([
-    // supabaseClient.from("raw_token_quotes").upsert(quotesWithPrices),
-    // supabaseClient
-    //   .from("token_index")
-    //   .update({
-    //     last_updated,
-    //   })
-    //   .in(
-    //     "search_id",
-    //     quotesWithPrices.map((quote) => quote.search_id)
-    //   )
-    //   .eq("source", "lp"),
+    supabaseClient.from("raw_token_quotes").upsert(quotesWithPrices),
+    supabaseClient
+      .from("token_index")
+      .update({
+        last_updated,
+      })
+      .in(
+        "search_id",
+        quotesWithPrices.map((quote) => quote.search_id)
+      )
+      .eq("source", "lp"),
   ]);
 };
 
@@ -553,7 +563,7 @@ export async function GET(request: NextRequest) {
     const results = await Promise.allSettled([
       updateTokenQuotesFromCoingecko(),
       updateTokenQuotesFromCoinmarketCap(),
-      // updateLpTokenQuotesFromContract(),
+      updateLpTokenQuotesFromContract(),
     ]);
 
     // Check for any errors
