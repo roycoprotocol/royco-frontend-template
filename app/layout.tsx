@@ -23,6 +23,7 @@ import { TurnstileWrapper } from "@/auth";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 import { UserInfoSetter } from "@/components/user/hooks";
 import { RoycoAnalytics } from "./royco-analytics";
+import { Analytics } from "@vercel/analytics/next";
 
 /**
  * @description Inter Font
@@ -149,6 +150,8 @@ export default function RootLayout({
             )} */}
 
             <Toaster />
+
+            <Analytics />
           </body>
         </html>
       </TooltipProvider>
