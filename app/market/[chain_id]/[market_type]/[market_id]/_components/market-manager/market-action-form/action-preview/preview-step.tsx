@@ -29,6 +29,7 @@ import { SimulationViewer } from "../action-preview/simulation-viewer";
 import { SlideUpWrapper } from "@/components/animations";
 import { formatUnits } from "viem";
 import { SupportedChainMap } from "royco/constants";
+import formatNumber from "@/utils/numbers";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -146,33 +147,7 @@ export const PreviewStep = React.forwardRef<
                     <div className="flex w-fit flex-col items-end text-right">
                       <SecondaryLabel className="font-light text-black">
                         +
-                        {Intl.NumberFormat("en-US", {
-                          // style:
-                          //   marketMetadata.market_type === MarketType.vault.id &&
-                          //   userType === MarketUserType.ip.id &&
-                          //   marketForm.watch("offer_type") ===
-                          //     MarketOfferType.limit.id
-                          //     ? "decimal"
-                          //     : "percent",
-                          style:
-                            // recipe market
-                            marketMetadata.market_type === MarketType.recipe.id
-                              ? "percent"
-                              : // vault market
-                                userType === MarketUserType.ap.id &&
-                                  offerType === MarketOfferType.limit.id
-                                ? "percent"
-                                : userType === MarketUserType.ip.id &&
-                                    MarketOfferType.limit.id
-                                  ? "decimal"
-                                  : "percent",
-
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(
-                          // recipe market
+                        {formatNumber(
                           marketMetadata.market_type === MarketType.recipe.id
                             ? incentive.annual_change_ratio
                             : // vault market
@@ -182,14 +157,22 @@ export const PreviewStep = React.forwardRef<
                               : userType === MarketUserType.ip.id &&
                                   MarketOfferType.limit.id
                                 ? incentive.token_amount
-                                : incentive.annual_change_ratio
-
-                          // marketMetadata.market_type === MarketType.vault.id &&
-                          //   userType === MarketUserType.ip.id &&
-                          //   marketForm.watch("offer_type") ===
-                          //     MarketOfferType.limit.id
-                          //   ? incentive.token_amount
-                          //   : incentive.annual_change_ratio
+                                : incentive.annual_change_ratio,
+                          {
+                            type:
+                              // recipe market
+                              marketMetadata.market_type ===
+                              MarketType.recipe.id
+                                ? "percent"
+                                : // vault market
+                                  userType === MarketUserType.ap.id &&
+                                    offerType === MarketOfferType.limit.id
+                                  ? "percent"
+                                  : userType === MarketUserType.ip.id &&
+                                      MarketOfferType.limit.id
+                                    ? "number"
+                                    : "percent",
+                          }
                         )}
                       </SecondaryLabel>
 
@@ -197,30 +180,15 @@ export const PreviewStep = React.forwardRef<
                       userType === MarketUserType.ip.id &&
                       offerType === MarketOfferType.limit.id ? (
                         <TertiaryLabel>
-                          (
-                          {Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                            notation: "standard",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 8,
-                          }).format(incentive.token_amount_usd)}
-                          )
+                          {formatNumber(incentive.token_amount_usd, {
+                            type: "currency",
+                          })}
                         </TertiaryLabel>
                       ) : (
                         <TertiaryLabel>
-                          (
-                          {Intl.NumberFormat("en-US", {
-                            style: "decimal",
-                            notation: "standard",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 8,
-                          }).format(incentive.per_input_token)}{" "}
+                          {formatNumber(incentive.per_input_token)}{" "}
                           {incentive.symbol.toUpperCase()} /{" 1.00 "}
                           {currentMarketData?.input_token_data.symbol.toUpperCase()}
-                          )
                         </TertiaryLabel>
                       )}
                     </div>
@@ -274,11 +242,9 @@ export const PreviewStep = React.forwardRef<
                           <InfoTip size="sm" className="max-w-fit">
                             <div>
                               {`Net fees: ` +
-                                Intl.NumberFormat("en-US", {
-                                  style: "percent",
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                }).format(Number(frontendFee)) +
+                                formatNumber(Number(frontendFee), {
+                                  type: "percent",
+                                }) +
                                 ` of incentives.`}
                             </div>
                             <div className="italic">
@@ -297,13 +263,7 @@ export const PreviewStep = React.forwardRef<
                         ).length > 0
                           ? "+"
                           : null}
-                        {Intl.NumberFormat("en-US", {
-                          style: "percent",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(
+                        {formatNumber(
                           currentMarketData.yield_breakdown
                             .filter(
                               (yield_breakdown) =>
@@ -313,7 +273,10 @@ export const PreviewStep = React.forwardRef<
                               (acc, yield_breakdown) =>
                                 acc + yield_breakdown.annual_change_ratio,
                               0
-                            )
+                            ),
+                          {
+                            type: "percent",
+                          }
                         )}
                       </SecondaryLabel>
                     </div>
@@ -341,11 +304,9 @@ export const PreviewStep = React.forwardRef<
                         <InfoTip size="sm" className="max-w-fit">
                           <div>
                             {`Net fees: ` +
-                              Intl.NumberFormat("en-US", {
-                                style: "percent",
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }).format(Number(frontendFee)) +
+                              formatNumber(Number(frontendFee), {
+                                type: "percent",
+                              }) +
                               ` of incentives.`}
                           </div>
                           <div className="italic">
@@ -361,19 +322,15 @@ export const PreviewStep = React.forwardRef<
                       {marketMetadata.market_type === MarketType.vault.id &&
                       userType === MarketUserType.ip.id &&
                       offerType === MarketOfferType.limit.id
-                        ? Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                            notation: "compact",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 8,
-                          }).format(
+                        ? formatNumber(
                             incentiveData.reduce(
                               (acc, incentive) =>
                                 acc + incentive.token_amount_usd,
                               0
-                            )
+                            ),
+                            {
+                              type: "currency",
+                            }
                           )
                         : incentiveData.reduce(
                               (acc, incentive) =>
@@ -381,13 +338,7 @@ export const PreviewStep = React.forwardRef<
                               0
                             ) >= Math.pow(10, 18)
                           ? "N/D"
-                          : Intl.NumberFormat("en-US", {
-                              style: "percent",
-                              notation: "compact",
-                              useGrouping: true,
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }).format(
+                          : formatNumber(
                               incentiveData.reduce(
                                 (acc, incentive) =>
                                   acc + incentive.annual_change_ratio,
@@ -406,7 +357,10 @@ export const PreviewStep = React.forwardRef<
                                         0
                                       )
                                   : 0
-                              )
+                              ),
+                              {
+                                type: "percent",
+                              }
                             )}
                     </SecondaryLabel>
                     <TertiaryLabel>Estimated (May Change)</TertiaryLabel>

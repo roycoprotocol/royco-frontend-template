@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { MarketEditorPanel } from "./market-editor-panel";
+import formatNumber from "@/utils/numbers";
 
 const variants = {
   initial: (direction: number) => {
@@ -181,20 +182,14 @@ export const IncentiveBreakdown = ({
                 <div className="flex flex-row items-center space-x-2">
                   <div className="h-5">
                     <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: incentives_info.token_amount_usd
-                          ? "currency"
-                          : undefined,
-                        currency: incentives_info.token_amount_usd
-                          ? "USD"
-                          : undefined,
-                        notation: "standard",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 8,
-                      }).format(
+                      {formatNumber(
                         incentives_info.token_amount_usd ||
-                          incentives_info.token_amount
+                          incentives_info.token_amount,
+                        {
+                          type: incentives_info.token_amount_usd
+                            ? "currency"
+                            : "number",
+                        }
                       )}
                     </span>
                   </div>
@@ -303,13 +298,9 @@ export const AipBreakdown = ({
                 <div className="flex flex-row items-center space-x-2">
                   <div className="h-5">
                     <span className="leading-5">
-                      {Intl.NumberFormat("en-US", {
-                        style: "percent",
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).format(aip_info.annual_change_ratio)}
+                      {formatNumber(aip_info.annual_change_ratio, {
+                        type: "percent",
+                      })}
                     </span>
                   </div>
 
@@ -417,14 +408,9 @@ export const AssetBreakdown = ({
                 <div className="flex flex-row items-center space-x-2">
                   <div className="h-5">
                     <span className="leading-5">
-                      {new Intl.NumberFormat("en-US", {
-                        style: asset_info.tvl_usd ? "currency" : undefined,
-                        currency: asset_info.tvl_usd ? "USD" : undefined,
-                        notation: "compact",
-                        useGrouping: true,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }).format(asset_info.tvl_usd || asset_info.tvl)}
+                      {formatNumber(asset_info.tvl_usd || asset_info.tvl, {
+                        type: asset_info.tvl_usd ? "currency" : "number",
+                      })}
                     </span>
                   </div>
 

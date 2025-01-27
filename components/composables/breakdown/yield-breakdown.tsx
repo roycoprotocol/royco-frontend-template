@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import ShieldIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/shield";
 import SparkleIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/sparkle";
+import formatNumber from "@/utils/numbers";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -126,11 +127,9 @@ const BreakdownRow = React.forwardRef<
                     : "black",
               }}
             >
-              {Intl.NumberFormat("en-US", {
-                style: "percent",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(item.annual_change_ratio)}
+              {formatNumber(item.annual_change_ratio, {
+                type: "percent",
+              })}
             </span>
           </div>
 
@@ -201,11 +200,9 @@ const NetYield = React.forwardRef<
           <span>Net APY</span>
         </div>
         <div className="">
-          {Intl.NumberFormat("en-US", {
-            style: "percent",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(annual_change_ratio)}
+          {formatNumber(annual_change_ratio, {
+            type: "percent",
+          })}
         </div>
       </div>
     </div>

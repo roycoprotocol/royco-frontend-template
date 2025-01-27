@@ -18,6 +18,7 @@ import { TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { Tooltip } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
+import formatNumber from "@/utils/numbers";
 
 export const IncentiveYieldWrapper = React.forwardRef<
   HTMLDivElement,
@@ -177,13 +178,9 @@ export const IncentiveYieldWrapper = React.forwardRef<
         <span>Total APY:</span>
 
         <span className="flex items-center justify-center">
-          {Intl.NumberFormat("en-US", {
-            style: "percent",
-            notation: "standard",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-            useGrouping: true,
-          }).format(totalYield || 0)}
+          {formatNumber(totalYield || 0, {
+            type: "percent",
+          })}
         </span>
       </TertiaryLabel>
     </div>

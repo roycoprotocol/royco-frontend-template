@@ -28,6 +28,7 @@ import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
+import formatNumber from "@/utils/numbers";
 
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
@@ -224,26 +225,16 @@ export const IncentiveTokenDetails = React.forwardRef<
                   style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
                 >
                   {token_data.annual_change_ratio >= 0 ? "+" : "-"}
-                  {Intl.NumberFormat("en-US", {
-                    style: "percent",
-                    notation: "standard",
-                    useGrouping: true,
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits:
-                      token_data.annual_change_ratio > 0.0001 ? 2 : 8,
-                  }).format(Math.abs(token_data.annual_change_ratio))}
+                  {formatNumber(Math.abs(token_data.annual_change_ratio), {
+                    type: "percent",
+                  })}
                 </span>
               </div>
             ) : (
               <span className="flex h-5 items-center font-medium">
-                {Intl.NumberFormat("en-US", {
-                  style: "percent",
-                  notation: "standard",
-                  useGrouping: true,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits:
-                    token_data.annual_change_ratio > 0.0001 ? 2 : 8,
-                }).format(token_data.annual_change_ratio)}
+                {formatNumber(token_data.annual_change_ratio, {
+                  type: "percent",
+                })}
               </span>
             )}
           </>
@@ -255,12 +246,7 @@ export const IncentiveTokenDetails = React.forwardRef<
           className={cn("mt-1 flex items-center justify-end gap-1", className)}
         >
           <span className="text-right">
-            {Intl.NumberFormat("en-US", {
-              notation: "standard",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 8,
-            }).format(token_data.per_input_token)}{" "}
+            {formatNumber(token_data.per_input_token)}{" "}
           </span>
           <TokenDisplayer
             className="h-4 w-4"
@@ -281,14 +267,9 @@ export const IncentiveTokenDetails = React.forwardRef<
       {category === "base" && (
         <div className="mt-1 flex flex-row items-center gap-1">
           <TertiaryLabel className={cn("text-right", className)}>
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              notation: "compact",
-              useGrouping: true,
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }).format(token_data.fdv)}{" "}
+            {formatNumber(token_data.fdv, {
+              type: "currency",
+            })}{" "}
             FDV
           </TertiaryLabel>
         </div>

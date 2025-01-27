@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
+import formatNumber from "@/utils/numbers";
 
 const BreakdownTitle = React.forwardRef<
   HTMLDivElement,
@@ -37,14 +38,7 @@ const BreakdownRow = React.forwardRef<
 
       {item.token_amount && (
         <div className="flex flex-row items-center gap-2">
-          <div>
-            {Intl.NumberFormat("en-US", {
-              notation: "compact",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-              useGrouping: true,
-            }).format(item.token_amount)}
-          </div>
+          <div>{formatNumber(item.token_amount)}</div>
         </div>
       )}
     </div>

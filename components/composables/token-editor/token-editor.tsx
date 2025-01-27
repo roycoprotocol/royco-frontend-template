@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useGlobalStates } from "@/store";
 import useMeasure from "react-use-measure";
 import { TokenEditorSuccessScreen } from "./success-screen";
+import formatNumber from "@/utils/numbers";
 
 export const TokenEditorInputSelector = React.forwardRef<
   HTMLInputElement,
@@ -170,12 +171,7 @@ export const TokenEditor = React.forwardRef<
             <div>Fully diluted valution (FDV)</div>
 
             <TokenEditorInputSelector
-              placeholder={Intl.NumberFormat("en-US", {
-                style: "decimal",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                useGrouping: true,
-              }).format(token_data.fdv)}
+              placeholder={formatNumber(token_data.fdv) as string}
               currentValue={TokenEditorForm.watch("fdv")}
               setCurrentValue={(value) => {
                 TokenEditorForm.setValue("fdv", value);
@@ -188,12 +184,7 @@ export const TokenEditor = React.forwardRef<
               <div>% of network allocated to the campaign</div>
 
               <TokenEditorInputSelector
-                placeholder={Intl.NumberFormat("en-US", {
-                  style: "decimal",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  useGrouping: true,
-                }).format(token_data.allocation)}
+                placeholder={formatNumber(token_data.allocation) as string}
                 currentValue={TokenEditorForm.watch("allocation") ?? ""}
                 setCurrentValue={(value) => {
                   TokenEditorForm.setValue("allocation", value);

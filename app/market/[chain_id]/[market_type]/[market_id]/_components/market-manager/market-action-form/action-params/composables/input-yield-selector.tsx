@@ -1,17 +1,16 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import formatNumber from "@/utils/numbers";
 
 const formatYieldValue = (value: string): string => {
   if (!value || isNaN(Number(value))) {
     value = "0";
   }
 
-  const numValue = Intl.NumberFormat("en-US", {
-    style: "percent",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 8,
-  }).format(parseFloat(value) / 100);
+  const numValue = formatNumber(parseFloat(value) / 100, {
+    type: "percent",
+  });
 
   return parseFloat(value) < 0 ? `${numValue}` : `+${numValue}`;
 };
