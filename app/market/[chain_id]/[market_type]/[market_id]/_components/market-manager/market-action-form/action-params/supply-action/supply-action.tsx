@@ -205,7 +205,8 @@ export const SupplyAction = React.forwardRef<
                 >
                   {offerType === MarketOfferType.market.id ? (
                     userType === MarketUserType.ap.id &&
-                    highestIncentiveToken ? (
+                    highestIncentiveToken &&
+                    marketActionForm.watch("quantity.amount") ? (
                       <>
                         {highestIncentiveToken && (
                           <div className="ml-1 flex items-center gap-1">
@@ -251,7 +252,8 @@ export const SupplyAction = React.forwardRef<
                       <span>Supply Now</span>
                     )
                   ) : userType === MarketUserType.ap.id &&
-                    selectedIncentiveToken ? (
+                    selectedIncentiveToken &&
+                    marketActionForm.watch("quantity.amount") ? (
                     <>
                       {selectedIncentiveToken && (
                         <div className="ml-1 flex items-center gap-1">
@@ -260,12 +262,21 @@ export const SupplyAction = React.forwardRef<
                           <span>for</span>
 
                           <span>
-                            {formatNumber(
-                              selectedIncentiveToken.annual_change_ratio || 0,
-                              {
-                                type: "percent",
-                              }
-                            )}
+                            {selectedIncentiveToken.annual_change_ratio === 0 &&
+                            selectedIncentiveToken.type === "point"
+                              ? formatNumber(
+                                  parseFloat(
+                                    marketActionForm.watch("quantity.amount") ||
+                                      "0"
+                                  )
+                                )
+                              : formatNumber(
+                                  selectedIncentiveToken.annual_change_ratio ||
+                                    0,
+                                  {
+                                    type: "percent",
+                                  }
+                                )}
                           </span>
 
                           <span className="font-regular text-white">
