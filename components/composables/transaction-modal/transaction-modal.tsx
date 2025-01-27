@@ -31,6 +31,7 @@ import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
 import { TypedRoycoTransactionType } from "royco/market";
 import { TransactionOptionsType } from "royco/types";
+import { BoycoWithdrawalModal } from "./boyco-withdrawal-modal";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -54,6 +55,8 @@ export const TransactionModal = React.forwardRef<
 
   const [isTransactionTimeout, setIsTransactionTimeout] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [isBoycoWithdrawalModalOpen, setIsBoycoWithdrawalModalOpen] =
+    useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
     React.useState<TransactionOptionsType | null>(null);
@@ -151,7 +154,11 @@ export const TransactionModal = React.forwardRef<
       setTransactions([]);
       setIsTransactionTimeout(false);
     } else {
-      setIsConfirmationModalOpen(true);
+      if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+        setIsBoycoWithdrawalModalOpen(true);
+      } else {
+        setIsConfirmationModalOpen(true);
+      }
     }
   };
 
@@ -422,6 +429,14 @@ export const TransactionModal = React.forwardRef<
                   <ErrorAlert message="Error submitting transaction" />
                 );
               }
+            }}
+          />
+
+          <BoycoWithdrawalModal
+            isOpen={isBoycoWithdrawalModalOpen}
+            onOpenModal={(open) => setIsBoycoWithdrawalModalOpen(open)}
+            onConfirm={() => {
+              setIsConfirmationModalOpen(true);
             }}
           />
         </DialogContent>
