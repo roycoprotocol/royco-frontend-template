@@ -147,6 +147,33 @@ export const AnnualYieldDetails = React.forwardRef<
         </div>
       )}
 
+      {/**
+       * Boyco Market Info
+       */}
+      {currentMarketData?.category === "boyco" && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span>
+                After Berachain Mainnet launch, assets will be bridged
+                trustlessly to the dApp. Asset may only be withdrawn after
+                market ends.{" "}
+              </span>
+              <span className="underline">
+                <a
+                  href="https://docs.berachain.com/berachain-mainnet/overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn more.
+                </a>
+              </span>
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
       {/* <hr className="-mx-4 my-3" /> */}
 
       {/**
