@@ -214,12 +214,22 @@ export const SupplyAction = React.forwardRef<
                             <span>for</span>
 
                             <span>
-                              {formatNumber(
-                                highestIncentiveToken.annual_change_ratio || 0,
-                                {
-                                  type: "percent",
-                                }
-                              )}
+                              {highestIncentiveToken.annual_change_ratio ===
+                                0 && highestIncentiveToken.type === "point"
+                                ? formatNumber(
+                                    parseFloat(
+                                      marketActionForm.watch(
+                                        "quantity.amount"
+                                      ) || "0"
+                                    )
+                                  )
+                                : formatNumber(
+                                    highestIncentiveToken.annual_change_ratio ||
+                                      0,
+                                    {
+                                      type: "percent",
+                                    }
+                                  )}
                             </span>
 
                             <span className="font-regular text-white">
