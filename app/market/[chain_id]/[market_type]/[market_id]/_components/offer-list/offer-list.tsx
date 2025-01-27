@@ -113,7 +113,11 @@ export const OfferListRow = React.forwardRef<
 
                 <TokenDisplayer
                   size={4}
-                  tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                  tokens={
+                    offer?.tokens_data[0]
+                      ? ([offer?.tokens_data[0]] as any)
+                      : []
+                  }
                   symbols={false}
                 />
               </div>
@@ -146,7 +150,9 @@ export const OfferListRow = React.forwardRef<
               <TokenDisplayer
                 size={4}
                 tokens={
-                  offer?.input_token_data ? [offer?.input_token_data] : []
+                  offer?.input_token_data
+                    ? ([offer?.input_token_data] as any)
+                    : []
                 }
                 symbols={false}
               />
@@ -173,7 +179,11 @@ export const OfferListRow = React.forwardRef<
 
                 <TokenDisplayer
                   size={4}
-                  tokens={offer?.tokens_data[0] ? [offer?.tokens_data[0]] : []}
+                  tokens={
+                    offer?.tokens_data[0]
+                      ? ([offer?.tokens_data[0]] as any)
+                      : []
+                  }
                   symbols={false}
                 />
               </div>

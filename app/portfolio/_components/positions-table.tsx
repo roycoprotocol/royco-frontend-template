@@ -60,42 +60,36 @@ export const PositionsTable = React.forwardRef<
           <Profile />
         </div> */}
 
-        <div className="min-w-0 flex-1">
+        <div
+          className={cn(
+            "flex min-w-0 flex-1 gap-10",
+            process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+              ? "flex-col-reverse"
+              : "flex-col"
+          )}
+        >
           <div>
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
               <div className={cn("flex min-w-52 flex-col")}>
-                <PrimaryLabel>Your Positions: Supply to Vault</PrimaryLabel>
+                <PrimaryLabel>
+                  {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                    ? "Your Positions: 4626 Vaults"
+                    : "Your Positions: Supply to Vault"}
+                </PrimaryLabel>
               </div>
-
-              {/* <SlideUpWrapper
-                layout="position"
-                layoutId="motion:position:user-type"
-                className={cn("flex flex-col")}
-              >
-                <div className="flex flex-row items-center justify-start gap-2 md:justify-end">
-                  <div className="font-gt text-sm font-light text-secondary">
-                    Incentive Provider
-                  </div>
-                  <Switch
-                    checked={userType === MarketUserType.ip.id}
-                    onCheckedChange={() => {
-                      setUserType(
-                        userType === MarketUserType.ap.id
-                          ? MarketUserType.ip.id
-                          : MarketUserType.ap.id
-                      );
-                    }}
-                  />
-                </div>
-              </SlideUpWrapper> */}
             </div>
+
             <PositionsVaultManager />
           </div>
 
-          <div className="mt-10">
+          <div>
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
               <div className={cn("flex min-w-52 flex-col")}>
-                <PrimaryLabel>Your Positions: All Other Actions</PrimaryLabel>
+                <PrimaryLabel>
+                  {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                    ? "Your Positions"
+                    : "Your Positions: All Other Actions"}
+                </PrimaryLabel>
               </div>
             </div>
 
