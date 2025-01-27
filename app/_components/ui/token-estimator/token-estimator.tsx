@@ -181,7 +181,7 @@ export const TokenEstimator = React.forwardRef<
             <SheetClose asChild>
               <Button
                 className="flex w-full items-center justify-center gap-2"
-                disabled={loading || estimatorCustomTokenData.length === 0}
+                disabled={loading}
                 onClick={() => {
                   setCustomTokenData(form.getValues().customTokenData);
                   setLoading(true);
