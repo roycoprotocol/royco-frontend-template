@@ -315,7 +315,7 @@ export const ActualNavbar = React.forwardRef<
               <ShieldCheckIcon className="h-4 w-4 text-black" />
 
               <span className="text-sm text-black">
-                Boyco ends on Feb 3th 2AM UTC. Learn more.
+                Boyco ends on Feb 3th 2AM UTC.
               </span>
             </div>
 
