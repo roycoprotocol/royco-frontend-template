@@ -219,7 +219,12 @@ export const MarketDetails = React.forwardRef<
                 "No description available"}
             </SecondaryLabel>
 
-            {marketMetadata.market_type === MarketType.recipe.id && (
+            {/**
+             * @note Actions are currently hidden
+             * -- do not un-hide this, otherwise it will break the frontend
+             * -- i repeat, "DO NOT UN-HIDE THIS"
+             */}
+            {/* {marketMetadata.market_type === MarketType.recipe.id && (
               <>
                 <hr className="my-3" />
 
@@ -261,7 +266,7 @@ export const MarketDetails = React.forwardRef<
                   </div>
                 </div>
               </>
-            )}
+            )} */}
           </motion.div>
         )}
       </AnimatePresence>
