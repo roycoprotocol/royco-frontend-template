@@ -49,7 +49,7 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Deposit Cap Hit
          */}
-        {fillableAmount === 0 && (
+        {currentMarketData?.category === "boyco" && fillableAmount === 0 && (
           <div className="mt-2 w-fit rounded-lg bg-primary px-4 py-3">
             <SecondaryLabel className="flex items-center gap-1 font-500 text-white">
               <LockIcon className="h-4 w-4" />

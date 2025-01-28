@@ -425,7 +425,10 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           )}
         >
           {(() => {
-            if (fillableAmount === 0) {
+            if (
+              props.row.original?.category === "boyco" &&
+              fillableAmount === 0
+            ) {
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
             } else {
               if (breakdowns.length > 0 && currentValue === 0) {
