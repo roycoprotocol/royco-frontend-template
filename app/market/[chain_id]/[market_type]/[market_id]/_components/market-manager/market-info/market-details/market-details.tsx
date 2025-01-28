@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { InfoCard } from "@/components/common";
 import { ChevronDown, ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { MarketType } from "@/store/market-manager-props";
 import { AnimatePresence, motion } from "framer-motion";
 import { ActionFlow, SpringNumber } from "@/components/composables";
 import validator from "validator";
-import { shortAddress } from "royco/utils";
+import { parseRawAmountToTokenAmount, shortAddress } from "royco/utils";
 import { getExplorerUrl } from "royco/utils";
 import {
   BASE_MARGIN_TOP,
@@ -19,6 +19,7 @@ import {
 } from "../../../composables";
 import { useActiveMarket } from "../../../hooks";
 import { TertiaryLabel } from "../../../composables";
+import formatNumber from "@/utils/numbers";
 
 export const MarketDetails = React.forwardRef<
   HTMLDivElement,
@@ -33,6 +34,18 @@ export const MarketDetails = React.forwardRef<
   } = useActiveMarket();
 
   const [showActionDetails, setShowActionDetails] = useState(true);
+
+  const formattedFillableAmount = useMemo(() => {
+    if (!currentMarketData) {
+      return;
+    }
+
+    const _fillableAmount = parseRawAmountToTokenAmount(
+      currentMarketData?.quantity_ip ?? "0",
+      currentMarketData?.input_token_data.decimals ?? 0
+    );
+    return `${formatNumber(_fillableAmount)} ${currentMarketData.input_token_data.symbol} (${formatNumber(currentMarketData.quantity_ip_usd ?? 0, { type: "currency" })})`;
+  }, [currentMarketData]);
 
   return (
     <div
@@ -180,6 +193,14 @@ export const MarketDetails = React.forwardRef<
             </InfoCard.Row.Value>
           </InfoCard.Row>
         )}
+
+        <InfoCard.Row className={INFO_ROW_CLASSES}>
+          <InfoCard.Row.Key>Left to Fill</InfoCard.Row.Key>
+
+          <InfoCard.Row.Value>
+            <span>{formattedFillableAmount}</span>
+          </InfoCard.Row.Value>
+        </InfoCard.Row>
       </InfoCard>
 
       {/**
