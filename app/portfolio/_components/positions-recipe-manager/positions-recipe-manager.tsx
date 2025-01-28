@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { produce } from "immer";
 import { isEqual } from "lodash";
@@ -57,6 +57,19 @@ export const PositionsRecipeManager = React.forwardRef<
     }
   }, [propsPositionsRecipe.data]);
 
+  const updatedPositionsRecipeColumns = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return positionsRecipeColumns.filter(
+        (column) =>
+          !["APR", "Time to Incentive", "Accumulated Incentives"].includes(
+            column.header as string
+          )
+      );
+    }
+
+    return positionsRecipeColumns;
+  }, []);
+
   if (propsPositionsRecipe.isLoading) {
     return (
       <div
@@ -98,7 +111,7 @@ export const PositionsRecipeManager = React.forwardRef<
                 }))
               : []
           }
-          columns={positionsRecipeColumns}
+          columns={updatedPositionsRecipeColumns}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

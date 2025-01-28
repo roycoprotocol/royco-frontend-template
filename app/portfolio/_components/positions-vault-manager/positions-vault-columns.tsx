@@ -237,7 +237,9 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
             href={`/market/${row.original.chain_id}/${RoycoMarketType.vault.value}/${row.original.market_id}`}
             className="underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70"
           >
-            Withdraw from Market Page
+            {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+              ? "Market Page"
+              : "Withdraw from Market Page"}
           </Link>
         );
       },
