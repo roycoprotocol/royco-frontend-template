@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import validator from "validator";
 import { MarketDetails } from "./market-details/market-details";
 import { AnnualYieldDetails } from "./annual-yield-details/annual-yield-details";
@@ -18,6 +18,27 @@ export const MarketInfo = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { isLoading, marketMetadata, currentMarketData, propsReadMarket } =
     useActiveMarket();
+
+  const [showDescription, setShowDescription] = useState(false);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(false);
+
+  useEffect(() => {
+    const checkDescriptionTruncation = () => {
+      if (descriptionRef.current) {
+        setIsDescriptionTruncated(
+          descriptionRef.current.scrollHeight >
+            descriptionRef.current.clientHeight
+        );
+      }
+    };
+
+    checkDescriptionTruncation();
+    window.addEventListener("resize", checkDescriptionTruncation);
+
+    return () =>
+      window.removeEventListener("resize", checkDescriptionTruncation);
+  }, [currentMarketData?.description]);
 
   const fillableAmount = useMemo(() => {
     return parseFloat(currentMarketData?.quantity_ip ?? "0");
@@ -47,10 +68,38 @@ export const MarketInfo = React.forwardRef<
         </PrimaryLabel>
 
         {/**
+         * Market Description
+         */}
+        <div className="mt-3 h-auto overflow-hidden">
+          <div
+            ref={descriptionRef}
+            className={cn(
+              "overflow-hidden break-normal text-sm font-light text-black",
+              !showDescription && "line-clamp-2"
+            )}
+          >
+            {validator.unescape(currentMarketData.description ?? "") ||
+              "No description available"}
+          </div>
+        </div>
+
+        {/**
+         * Show/Hide Market Details
+         */}
+        {isDescriptionTruncated && (
+          <button
+            className="mt-2 flex w-full flex-row justify-between text-sm font-light text-tertiary underline underline-offset-4"
+            onClick={() => setShowDescription((prev) => !prev)}
+          >
+            {showDescription ? "View Less" : "View More"}
+          </button>
+        )}
+
+        {/**
          * Deposit Cap Hit
          */}
         {currentMarketData?.category === "boyco" && fillableAmount === 0 && (
-          <div className="mt-2 w-fit rounded-lg bg-primary px-4 py-3">
+          <div className="mt-5 w-fit rounded-lg bg-primary px-4 py-3">
             <SecondaryLabel className="flex items-center gap-1 font-500 text-white">
               <LockIcon className="h-4 w-4" />
               <span>Deposit Cap Reached</span>

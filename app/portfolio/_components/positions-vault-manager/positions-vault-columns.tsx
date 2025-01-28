@@ -42,6 +42,7 @@ import { RoycoMarketType } from "royco/market";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { secondsToDuration } from "@/app/create/_components/market-builder-form/market-builder-form-schema";
 import formatNumber from "@/utils/numbers";
+import validator from "validator";
 
 export type PositionsVaultDataElement = NonNullable<
   NonNullable<
@@ -67,7 +68,7 @@ export const positionsVaultColumns: ColumnDef<PositionsVaultColumnDataElement>[]
             className={cn("flex h-fit w-full shrink-0 flex-col items-start")}
           >
             <div className="max-w-56 overflow-hidden truncate text-ellipsis font-normal text-black">
-              {row.original.name || "Unknown market"}
+              {validator.unescape(row.original.name ?? "Unknown market")}
             </div>
 
             <div className="font-light text-tertiary">
