@@ -304,7 +304,7 @@ export const ActualNavbar = React.forwardRef<
       </div>
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
-        <div className="flex w-full justify-center bg-white py-2">
+        <div className="flex w-full justify-center border-b border-divider bg-white py-2">
           <a
             href="https://blog.berachain.com/blog/boyco-markets-overview"
             target="_blank"
@@ -315,7 +315,7 @@ export const ActualNavbar = React.forwardRef<
               <ShieldCheckIcon className="h-4 w-4 text-black" />
 
               <span className="text-sm text-black">
-                Learn more about Boyco and view audits here.
+                Boyco ends on Feb 3th 2AM UTC. Learn more.
               </span>
             </div>
 
