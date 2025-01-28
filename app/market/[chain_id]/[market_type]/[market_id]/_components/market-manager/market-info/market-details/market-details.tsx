@@ -32,7 +32,7 @@ export const MarketDetails = React.forwardRef<
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
 
-  const [showActionDetails, setShowActionDetails] = useState(false);
+  const [showActionDetails, setShowActionDetails] = useState(true);
 
   return (
     <div
