@@ -363,12 +363,13 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               breakdowns.length > 0 &&
               createPortal(
                 <HoverCardContent
-                  className="w-64"
+                  className="w-fit max-w-96"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <IncentiveBreakdown
                     base_key={props.row.original.id}
                     breakdown={breakdowns}
+                    external_incentives={props.row.original.external_incentives}
                   />
                 </HoverCardContent>,
                 document.body

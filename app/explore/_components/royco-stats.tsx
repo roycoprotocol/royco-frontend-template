@@ -52,7 +52,8 @@ export const RoycoStats = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "grid grid-cols-2 flex-nowrap place-content-center items-center gap-3 sm:grid-cols-3 lg:w-fit",
+        "grid grid-cols-2 flex-nowrap place-content-center items-center gap-3 sm:grid-cols-2 lg:w-fit",
+        // "sm:grid-cols-3",
         // "md:w-1/2",
         className
       )}
@@ -67,10 +68,10 @@ export const RoycoStats = React.forwardRef<
           key: "total_tvl",
           name: "Total Value Locked",
         },
-        {
-          key: "total_incentives",
-          name: "Incentives",
-        },
+        // {
+        //   key: "total_incentives",
+        //   name: "Incentives",
+        // },
       ].map((item, index) => {
         return (
           <div

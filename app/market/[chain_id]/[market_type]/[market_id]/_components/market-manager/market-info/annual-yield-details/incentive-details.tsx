@@ -213,7 +213,7 @@ export const IncentiveTokenDetails = React.forwardRef<
               {beraToken && (
                 <InfoTip size="sm">
                   Rate is estimated based on user-entered projections and not
-                  guranteed. Rate is variable based on total TVL supplied into
+                  guaranteed. Rate is variable based on total TVL supplied into
                   Boyco.
                 </InfoTip>
               )}
