@@ -6,6 +6,7 @@ import { useExplore, useGlobalStates } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 
 export const Pagination = () => {
   const {
@@ -67,7 +68,7 @@ export const Pagination = () => {
          * @position left
          * @description Current page indicator
          */}
-        <div className="caption flex h-8 shrink-0 items-center rounded-lg border border-divider bg-white px-3 text-secondary">
+        <div className="caption flex h-full shrink-0 items-center rounded-lg border border-divider bg-white px-3 text-secondary">
           <span className="leading-8">
             Page {pageIndex + 1} of {totalPages}
           </span>
@@ -81,26 +82,44 @@ export const Pagination = () => {
           {/**
            * @description Previous page button
            */}
-          <button
-            disabled={!getCanPrevPage()}
-            onClick={prevPage}
-            className={cn(
-              "flex h-8 w-8 flex-col place-content-center items-center rounded-lg border border-divider bg-white transition-all duration-200 ease-in-out",
-              getCanPrevPage()
-                ? "cursor-pointer text-secondary hover:bg-focus"
-                : "cursor-not-allowed text-tertiary opacity-40"
-            )}
-          >
-            <ChevronLeftIcon
-              strokeWidth={1.5}
-              className="h-6 w-6 p-[0.15rem]"
-            />
-          </button>
+          {getCanPrevPage() && (
+            <Button
+              disabled={!getCanPrevPage()}
+              onClick={prevPage}
+              className="px-2"
+              // className={cn(
+              //   "flex h-8 w-8 flex-col place-content-center items-center rounded-lg border border-divider bg-white transition-all duration-200 ease-in-out",
+              //   getCanPrevPage()
+              //     ? "cursor-pointer text-secondary hover:bg-focus"
+              //     : "cursor-not-allowed text-tertiary opacity-40"
+              // )}
+            >
+              <ChevronLeftIcon
+                strokeWidth={1.5}
+                className="h-6 w-6 p-[0.15rem]"
+              />
+            </Button>
+          )}
 
           {/**
            * @description Next page button
            */}
-          <button
+          <Button
+            disabled={!getCanNextPage()}
+            onClick={nextPage}
+            className="pl-4 pr-2"
+          >
+            <span className="text-sm">View More Markets</span>
+            <ChevronRightIcon
+              strokeWidth={1.5}
+              className="h-6 w-6 p-[0.15rem]"
+            />
+          </Button>
+
+          {/**
+           * @description Next page button
+           */}
+          {/* <Button
             disabled={!getCanNextPage()}
             onClick={nextPage}
             className={cn(
@@ -114,7 +133,7 @@ export const Pagination = () => {
               strokeWidth={1.5}
               className="h-8 w-8 p-[0.15rem]"
             />
-          </button>
+          </Button> */}
         </div>
       </div>
     );
