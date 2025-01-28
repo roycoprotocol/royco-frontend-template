@@ -122,13 +122,13 @@ export const getExploreFilters = () => {
     });
   }
 
-  if (frontendTag !== "boyco" && frontendTag !== "dev") {
-    filters.push({
-      id: "category",
-      value: "boyco",
-      condition: "NOT",
-    });
-  }
+  // if (frontendTag !== "boyco" && frontendTag !== "dev") {
+  //   filters.push({
+  //     id: "category",
+  //     value: "boyco",
+  //     condition: "NOT",
+  //   });
+  // }
 
   // Filters based on Chain
   if (frontendTag === "ethereum") {

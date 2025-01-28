@@ -23,7 +23,9 @@ const BreakdownItem = React.forwardRef<
 const BreakdownRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    item: EnrichedMarketDataType["yield_breakdown"][number];
+    item:
+      | EnrichedMarketDataType["yield_breakdown"][number]
+      | EnrichedMarketDataType["external_incentives"][number];
     base_key: string;
   }
 >(({ className, item, base_key, ...props }, ref) => {
@@ -31,7 +33,7 @@ const BreakdownRow = React.forwardRef<
     <div
       ref={ref}
       key={`incentive-breakdown:${base_key}:${item.id}`}
-      className="flex flex-row items-center justify-between font-light"
+      className="flex flex-row items-center justify-between gap-8 font-light"
       {...props}
     >
       <TokenDisplayer tokens={[item] as any} symbols={true} />
@@ -41,6 +43,12 @@ const BreakdownRow = React.forwardRef<
           <div>{formatNumber(item.token_amount)}</div>
         </div>
       )}
+
+      {item.value && (
+        <div className="flex flex-row items-center gap-2">
+          <div>{item.value}</div>
+        </div>
+      )}
     </div>
   );
 });
@@ -48,7 +56,9 @@ const BreakdownRow = React.forwardRef<
 const BreakdownContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["yield_breakdown"];
+    breakdown:
+      | EnrichedMarketDataType["yield_breakdown"]
+      | EnrichedMarketDataType["external_incentives"];
     base_key: string;
   }
 >(({ className, breakdown, base_key, ...props }, ref) => {
@@ -65,9 +75,10 @@ export const IncentiveBreakdown = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     breakdown: EnrichedMarketDataType["yield_breakdown"];
+    external_incentives: EnrichedMarketDataType["external_incentives"];
     base_key: string;
   }
->(({ className, breakdown, base_key, ...props }, ref) => {
+>(({ className, breakdown, external_incentives, base_key, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -94,6 +105,17 @@ export const IncentiveBreakdown = React.forwardRef<
           <BreakdownContent
             className="mt-1"
             breakdown={breakdown.filter((item) => item.category !== "base")}
+            base_key={base_key}
+          />
+        </BreakdownItem>
+      )}
+
+      {external_incentives.length > 0 && (
+        <BreakdownItem>
+          <BreakdownTitle>Additional Incentives</BreakdownTitle>
+          <BreakdownContent
+            className="mt-1"
+            breakdown={external_incentives}
             base_key={base_key}
           />
         </BreakdownItem>
