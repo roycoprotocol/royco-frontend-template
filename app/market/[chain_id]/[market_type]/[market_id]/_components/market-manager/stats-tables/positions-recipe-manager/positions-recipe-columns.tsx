@@ -1,5 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useEnrichedPositionsRecipe } from "royco/hooks";
+import {
+  getRecipeForfeitTransactionOptions,
+  useEnrichedPositionsRecipe,
+} from "royco/hooks";
 
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -70,19 +73,19 @@ export const actionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[]
               <DotsHorizontalIcon className="h-4 w-4 text-secondary" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="text-sm" align="end">
-              {/* {can_be_forfeited && (
-              <DropdownMenuItem
-                onClick={() => {
-                  const txOptions = getRecipeForfeitTransactionOptions({
-                    position: props.row.original,
-                  });
+              {can_be_forfeited && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    const txOptions = getRecipeForfeitTransactionOptions({
+                      position: row.original,
+                    });
 
-                  setTransactions([...transactions, txOptions]);
-                }}
-              >
-                Forfeit All Royco Incentives for Input Asset
-              </DropdownMenuItem>
-            )} */}
+                    setTransactions([...transactions, txOptions]);
+                  }}
+                >
+                  Forfeit All Royco Incentives for Input Asset
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuItem
                 onClick={() => {

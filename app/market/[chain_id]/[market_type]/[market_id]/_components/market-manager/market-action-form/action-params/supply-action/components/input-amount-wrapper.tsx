@@ -109,6 +109,14 @@ export const InputAmountWrapper = React.forwardRef<
     );
   }, [rawUserBalance]);
 
+  const usdUserBalance = useMemo(() => {
+    if (!userBalance || !currentMarketData) {
+      return;
+    }
+
+    return userBalance * currentMarketData.input_token_data.price;
+  }, [userBalance, currentMarketData]);
+
   const hasSufficientBalance = useMemo(() => {
     if (isLoadingWalletBalance || isLoadingVaultBalance) {
       return true;
@@ -159,6 +167,14 @@ export const InputAmountWrapper = React.forwardRef<
     );
   }, [currentMarketData]);
 
+  const usdFillableBalance = useMemo(() => {
+    if (!fillableBalance || !currentMarketData) {
+      return;
+    }
+
+    return fillableBalance * currentMarketData.input_token_data.price;
+  }, [fillableBalance, currentMarketData]);
+
   const userInputAmountUsd = useMemo(() => {
     if (!currentMarketData) {
       return;
@@ -200,6 +216,10 @@ export const InputAmountWrapper = React.forwardRef<
                 <span className="ml-1">
                   {currentMarketData?.input_token_data.symbol.toUpperCase()}
                 </span>
+              </span>
+
+              <span>
+                {`(${formatNumber(usdUserBalance || 0, { type: "currency" })})`}
               </span>
             </TertiaryLabel>
           )}
@@ -298,6 +318,10 @@ export const InputAmountWrapper = React.forwardRef<
                     {currentMarketData?.input_token_data.symbol.toUpperCase()}
                   </span>
                 </span>
+
+                <span>
+                  {`(${formatNumber(usdFillableBalance || 0, { type: "currency" })})`}
+                </span>
               </TertiaryLabel>
             )}
 
@@ -318,6 +342,10 @@ export const InputAmountWrapper = React.forwardRef<
                   <span className="ml-1">
                     {currentMarketData?.input_token_data.symbol.toUpperCase()}
                   </span>
+                </span>
+
+                <span>
+                  {`(${formatNumber(usdUserBalance || 0, { type: "currency" })})`}
                 </span>
               </TertiaryLabel>
             )}
