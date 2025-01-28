@@ -33,7 +33,7 @@ export const MarketDetails = React.forwardRef<
     propsActionsDecoderExitMarket,
   } = useActiveMarket();
 
-  const [showActionDetails, setShowActionDetails] = useState(true);
+  const [showActionDetails, setShowActionDetails] = useState(false);
 
   const formattedFillableAmount = useMemo(() => {
     if (!currentMarketData) {
@@ -206,7 +206,7 @@ export const MarketDetails = React.forwardRef<
       {/**
        * Show/Hide Market Details
        */}
-      <button
+      {/* <button
         className="mt-3 flex w-full flex-row justify-between text-sm font-light text-secondary"
         onClick={() => setShowActionDetails((prev) => !prev)}
       >
@@ -219,7 +219,7 @@ export const MarketDetails = React.forwardRef<
         >
           <ChevronDown className="h-5" strokeWidth={1} />
         </motion.div>
-      </button>
+      </button> */}
 
       {/**
        * Action Details
@@ -234,6 +234,20 @@ export const MarketDetails = React.forwardRef<
             className="mt-3 overflow-hidden"
           >
             {marketMetadata.market_type === MarketType.recipe.id && (
+              <SecondaryLabel
+                className={cn("break-normal font-light text-secondary")}
+              >
+                {validator.unescape(currentMarketData.description ?? "") ??
+                  "No description available"}
+              </SecondaryLabel>
+            )}
+
+            {/**
+             * @note Actions are currently hidden
+             * -- do not un-hide this, otherwise it will break the frontend
+             * -- i repeat, "DO NOT UN-HIDE THIS"
+             */}
+            {/* {marketMetadata.market_type === MarketType.recipe.id && (
               <>
                 <hr className="my-3" />
 
@@ -275,7 +289,7 @@ export const MarketDetails = React.forwardRef<
                   </div>
                 </div>
               </>
-            )}
+            )} */}
           </motion.div>
         )}
       </AnimatePresence>

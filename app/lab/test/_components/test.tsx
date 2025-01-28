@@ -1,48 +1,53 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { createClient } from "@supabase/supabase-js";
+import { useRoycoClient } from "royco/client";
+// import { Database } from "@/components/data";
 
 export const Test = () => {
+  const roycoClient = useRoycoClient();
+
   const testFunction = async () => {
     try {
-      // Fetch the custom APY from your API
-      const custom_apy_res = await fetch(
-        "https://app.nest.credit/api/nest-rwa-vault"
-      );
+      // const client = createClient<Database>(
+      //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      //   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      // );
 
-      // Parse the response as JSON
-      const custom_apy_data = await custom_apy_res.json();
-
-      // Extract the underlying yield from the custom APY data & perform calculations, if needed and then update the underlying_annual_change_ratio
-      const new_underlying_annual_change_ratio =
-        Number(custom_apy_data.estimatedAPY) ?? 0;
-
-      console.log(
-        "new_underlying_annual_change_ratio",
-        new_underlying_annual_change_ratio
-      );
-
-      // const chainClient = createPublicClient({
-      //   batch: {
-      //     multicall: true,
-      //   },
-      //   chain: getSupportedChain(1),
-      //   transport: http(RPC_API_KEYS[1]),
-      // });
-
-      // const contracts = [
+      // const { data, error } = await client.rpc(
+      //   "get_enriched_markets_test",
       //   {
-      //     address: "0x887d57a509070a0843c6418eb5cffc090dcbbe95" as Address,
-      //     abi: ContractMap[1 as keyof typeof ContractMap]["WrappedVault"]
-      //       .abi as Abi,
-      //     functionName: "rewardToInterval",
-      //     args: ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" as Address],
+      //     custom_token_data: [
+      //       {
+      //         token_id: "0x1",
+      //         price: "100",
+      //         fdv: "1000",
+      //         total_supply: "1000000",
+      //       },
+      //     ],
       //   },
-      // ];
+      //   {
+      //     get: true,
+      //   }
+      // );
 
-      // const query = await chainClient.multicall({ contracts });
+      // console.log(data);
 
-      // console.log("query", query);
+      const { data, error } = await roycoClient.rpc("get_token_quotes_test", {
+        token_ids: ["0x1"],
+        custom_token_data: [
+          {
+            token_id: "0x1",
+            price: 100,
+            fdv: 1000,
+            total_supply: 1000000,
+          },
+        ],
+      });
+
+      console.log("data", data);
+      console.log("error", error);
     } catch (error) {
       console.error(error);
     }
