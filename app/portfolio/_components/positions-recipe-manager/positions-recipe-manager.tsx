@@ -68,7 +68,7 @@ export const PositionsRecipeManager = React.forwardRef<
     }
 
     return positionsRecipeColumns;
-  }, []);
+  }, [positionsRecipeColumns]);
 
   if (propsPositionsRecipe.isLoading) {
     return (
