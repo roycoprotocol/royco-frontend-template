@@ -53,39 +53,34 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
     const { exploreSort, setExploreSort } = useExplore();
 
     const name = (exploreColumnNames as any)[column.id];
-    const tooltip = (exploreColumnTooltips as any)[column.id];
+    const enableSort = name === "TVL" && column.getCanSort();
 
     return (
       <div
         onClick={() => {
-          if (column.id === "market_type") {
+          if (!enableSort) {
             return;
           }
-
-          if (column.getCanSort()) {
-            setExploreSort([
-              {
-                id: column.id,
-                desc:
-                  exploreSort[0].id === column.id ? !exploreSort[0].desc : true,
-              },
-            ]);
-          }
+          setExploreSort([
+            {
+              id: column.id,
+              desc:
+                exploreSort[0].id === column.id ? !exploreSort[0].desc : true,
+            },
+          ]);
         }}
         className={cn(
-          "flex flex-row items-center",
-          column.getCanSort() &&
-            column.id !== "market_type" &&
-            "cursor-pointer text-primary transition-all duration-200 ease-in-out hover:text-black",
+          "flex flex-row items-center text-primary",
+          enableSort &&
+            "cursor-pointer transition-all duration-200 ease-in-out hover:text-black",
           className
         )}
         {...props}
       >
         <div className="body-2 item-center flex justify-center gap-1">
           <span>{name}</span>
-          {tooltip && <InfoTip>{tooltip}</InfoTip>}
         </div>
-        {column.getCanSort() && column.id !== "market_type" && (
+        {enableSort && (
           <div className="body-2 ml-[6px] h-4 w-4 opacity-90">
             {exploreSort[0].id === column.id ? (
               exploreSort[0].desc ? (
