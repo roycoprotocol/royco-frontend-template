@@ -47,16 +47,35 @@ export const AnnualYieldDetails = React.forwardRef<
     return;
   }, []);
 
+  const fillableAmount = useMemo(() => {
+    if (!currentMarketData) {
+      return;
+    }
+
+    return parseFloat(currentMarketData?.quantity_ip ?? "0");
+  }, [currentMarketData]);
+
   return (
     <div
       ref={ref}
       className={cn("overflow-hidden rounded-lg border px-4 py-3", className)}
       {...props}
     >
+      {/* {fillableAmount !== undefined && fillableAmount <= 0 ? (
+        <>
+          <PrimaryLabel className="mt-1 text-2xl font-medium">
+            This Market has reached its cap.
+          </PrimaryLabel>
+
+          <hr className="-mx-4 my-3" />
+        </>
+      ) : null} */}
+
       <div className="grid grid-cols-2 gap-6">
         {/**
          * APY
          */}
+
         <div>
           <TertiaryLabel className="gap-1 text-sm">
             <div>APY</div>
