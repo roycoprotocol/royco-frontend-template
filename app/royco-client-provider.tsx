@@ -49,7 +49,7 @@ export const RoycoClientProvider = ({
   return (
     <QueryClientProvider client={queryClient}>
       <RoycoProvider
-        originUrl={getRandomOriginUrl()}
+        originUrl={process.env.NEXT_PUBLIC_ROYCO_ORIGIN_URL!}
         originKey={process.env.NEXT_PUBLIC_ROYCO_ORIGIN_KEY!}
         originId={process.env.NEXT_PUBLIC_ROYCO_ORIGIN_ID!}
         rpcApiKeys={RPC_API_KEYS}
