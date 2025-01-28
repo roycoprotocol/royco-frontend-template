@@ -184,7 +184,7 @@ export const IncentiveTokenDetails = React.forwardRef<
       const token = token_data.tokens.find(
         (token: any) => token.id === BERA_TOKEN_ID
       );
-      if (token && !customTokenData.find((_t) => _t.token_id === token.id)) {
+      if (token) {
         return token;
       }
     }
@@ -200,10 +200,8 @@ export const IncentiveTokenDetails = React.forwardRef<
       <SecondaryLabel
         className={cn("flex items-center gap-2 text-black", labelClassName)}
       >
-        {showEstimate || beraToken ? (
-          <TokenEstimator
-            defaultTokenId={beraToken ? beraToken.id : token_data.id}
-          >
+        {showEstimate ? (
+          <TokenEstimator defaultTokenId={token_data.id}>
             <Button
               variant="link"
               className="flex w-full items-center gap-1 py-0 outline-none"
@@ -259,11 +257,37 @@ export const IncentiveTokenDetails = React.forwardRef<
                 </span>
               </div>
             ) : (
-              <span className="flex h-5 items-center font-medium">
-                {formatNumber(token_data.annual_change_ratio, {
-                  type: "percent",
-                })}
-              </span>
+              <div className="flex gap-1">
+                {beraToken && (
+                  <Tooltip>
+                    <TooltipTrigger className={cn("cursor-pointer")}>
+                      <SparkleIcon className="h-5 w-5 text-secondary" />
+                    </TooltipTrigger>
+                    {createPortal(
+                      <TooltipContent
+                        className={cn("bg-white text-sm", "max-w-80")}
+                      >
+                        Variable Rate, will change based on # of deposits
+                      </TooltipContent>,
+                      document.body
+                    )}
+                  </Tooltip>
+                )}
+
+                <span className="flex h-5 items-center font-medium">
+                  {formatNumber(token_data.annual_change_ratio, {
+                    type: "percent",
+                  })}
+                </span>
+
+                {beraToken && (
+                  <InfoTip size="sm">
+                    Rate is estimated based on user-entered projections and not
+                    guranteed. Rate is variable based on total TVL supplied into
+                    Boyco.
+                  </InfoTip>
+                )}
+              </div>
             )}
           </>
         )}
