@@ -80,20 +80,20 @@ export const useActiveMarket = () => {
   /**
    * @notice Actions Decoder Enter Market
    */
-  const propsActionsDecoderEnterMarket = useActionsDecoder({
-    // @ts-ignore
-    chain_id: parseInt(chain_id),
-    script: propsReadMarket.data?.enter_market_script ?? null,
-  });
+  // const propsActionsDecoderEnterMarket = useActionsDecoder({
+  //   // @ts-ignore
+  //   chain_id: parseInt(chain_id),
+  //   script: propsReadMarket.data?.enter_market_script ?? null,
+  // });
 
-  /**
-   * @notice Actions Decoder Exit Market
-   */
-  const propsActionsDecoderExitMarket = useActionsDecoder({
-    // @ts-ignore
-    chain_id: parseInt(chain_id),
-    script: propsReadMarket.data?.exit_market_script ?? null,
-  });
+  // /**
+  //  * @notice Actions Decoder Exit Market
+  //  */
+  // const propsActionsDecoderExitMarket = useActionsDecoder({
+  //   // @ts-ignore
+  //   chain_id: parseInt(chain_id),
+  //   script: propsReadMarket.data?.exit_market_script ?? null,
+  // });
 
   /**
    * @notice Update Top Offers Recipe Data
@@ -155,11 +155,10 @@ export const useActiveMarket = () => {
   // console.log("Previous Market Data:", placeholderDatas[0]);
 
   const isLoading =
-    propsEnrichedMarket.isLoading ||
-    propsHighestOffers.isLoading ||
-    // propsReadMarket.isLoading ||
-    propsActionsDecoderEnterMarket.isLoading ||
-    propsActionsDecoderExitMarket.isLoading;
+    propsEnrichedMarket.isLoading || propsHighestOffers.isLoading;
+  // propsReadMarket.isLoading ||
+  // propsActionsDecoderEnterMarket.isLoading ||
+  // propsActionsDecoderExitMarket.isLoading;
 
   return {
     isLoading,
@@ -196,8 +195,18 @@ export const useActiveMarket = () => {
     propsHighestOffers,
     previousHighestOffers: placeholderDatasHighestOffers[0],
     currentHighestOffers: placeholderDatasHighestOffers[1],
-    propsActionsDecoderEnterMarket,
-    propsActionsDecoderExitMarket,
+    propsActionsDecoderEnterMarket: {
+      data: [],
+      isLoading: false,
+      isRefetching: false,
+      isError: false,
+    },
+    propsActionsDecoderExitMarket: {
+      data: [],
+      isLoading: false,
+      isRefetching: false,
+      isError: false,
+    },
     propsReadMarket,
   };
 };

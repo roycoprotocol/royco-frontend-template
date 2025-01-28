@@ -8,6 +8,7 @@ import { encodeFunctionData, createPublicClient, Chain } from "viem";
 import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi } from "viem";
+import { Database } from "royco/types";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -15,10 +16,6 @@ export const fetchCache = "force-no-store";
 
 export async function GET(request: Request) {
   try {
-    console.log("test api called");
-
-    console.log("request", request);
-
     return Response.json(
       {
         status: "Success",
