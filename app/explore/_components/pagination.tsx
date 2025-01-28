@@ -68,11 +68,17 @@ export const Pagination = () => {
          * @position left
          * @description Current page indicator
          */}
-        <div className="caption flex h-full shrink-0 items-center rounded-lg border border-divider bg-white px-3 text-secondary">
+        <Button className="h-full w-fit px-3 ">
+          <span className="text-sm">
+            Page {pageIndex + 1} of {totalPages}
+          </span>
+        </Button>
+
+        {/* <div className="caption flex h-full shrink-0 items-center rounded-lg border border-divider bg-white px-3 text-secondary">
           <span className="leading-8">
             Page {pageIndex + 1} of {totalPages}
           </span>
-        </div>
+        </div> */}
 
         {/**
          * @position right
@@ -116,9 +122,6 @@ export const Pagination = () => {
             />
           </Button>
 
-          {/**
-           * @description Next page button
-           */}
           {/* <Button
             disabled={!getCanNextPage()}
             onClick={nextPage}
