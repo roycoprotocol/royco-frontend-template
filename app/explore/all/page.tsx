@@ -77,7 +77,7 @@ const Page = () => {
               <SearchBar />
 
               <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
-                <Sorter />
+                {/* <Sorter /> */}
 
                 <ColumnToggler />
               </div>
@@ -88,7 +88,7 @@ const Page = () => {
                 </div>
 
                 <div className="flex w-fit flex-row items-center space-x-3">
-                  <Sorter />
+                  {/* <Sorter /> */}
                   <ColumnToggler />
                 </div>
               </div>
