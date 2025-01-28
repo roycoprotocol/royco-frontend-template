@@ -208,13 +208,6 @@ export const IncentiveTokenDetails = React.forwardRef<
             >
               <LightningIcon className="h-5 w-5 fill-black" />
               <span className="text-sm font-medium underline">Estimate</span>
-              {beraToken && (
-                <InfoTip size="sm">
-                  Rate is estimated based on user-entered projections and not
-                  guaranteed. Rate is variable based on total TVL supplied into
-                  Boyco.
-                </InfoTip>
-              )}
             </Button>
           </TokenEstimator>
         ) : (
@@ -282,9 +275,8 @@ export const IncentiveTokenDetails = React.forwardRef<
 
                 {beraToken && (
                   <InfoTip size="sm">
-                    Rate is estimated based on user-entered projections and not
-                    guranteed. Rate is variable based on total TVL supplied into
-                    Boyco.
+                    BERA is distributed among all depositors in Boyco. Rate is
+                    variable based on Total TVL supplied, and not guaranteed.
                   </InfoTip>
                 )}
               </div>

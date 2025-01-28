@@ -195,7 +195,7 @@ export const MarketDetails = React.forwardRef<
         )}
 
         <InfoCard.Row className={INFO_ROW_CLASSES}>
-          <InfoCard.Row.Key>Left to Fill</InfoCard.Row.Key>
+          <InfoCard.Row.Key>Amount Fillable</InfoCard.Row.Key>
 
           <InfoCard.Row.Value>
             <span>{formattedFillableAmount}</span>
