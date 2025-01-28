@@ -233,13 +233,6 @@ export const MarketDetails = React.forwardRef<
             transition={{ duration: 0.3 }}
             className="mt-3 overflow-hidden"
           >
-            <SecondaryLabel
-              className={cn("break-normal font-light text-secondary")}
-            >
-              {validator.unescape(currentMarketData.description ?? "") ??
-                "No description available"}
-            </SecondaryLabel>
-
             {marketMetadata.market_type === MarketType.recipe.id && (
               <>
                 <hr className="my-3" />
