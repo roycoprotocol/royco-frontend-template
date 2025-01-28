@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { produce } from "immer";
 import { isEqual } from "lodash";
-import {
-  useEnrichedPositionsRecipe,
-  useEnrichedPositionsVault,
-} from "royco/hooks";
+import { useEnrichedPositionsVault } from "royco/hooks";
 import { useImmer } from "use-immer";
 import { PositionsVaultTable } from "./positions-vault-table";
 import { positionsVaultColumns } from "./positions-vault-columns";
@@ -60,6 +57,19 @@ export const PositionsVaultManager = React.forwardRef<
     }
   }, [propsPositionsVault.data]);
 
+  const updatedPositionsVaultColumns = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return positionsVaultColumns.filter(
+        (column) =>
+          !["APR", "Time to Incentive", "Accumulated Incentives"].includes(
+            column.header as string
+          )
+      );
+    }
+
+    return positionsVaultColumns;
+  }, [positionsVaultColumns]);
+
   if (propsPositionsVault.isLoading) {
     return (
       <div
@@ -101,7 +111,7 @@ export const PositionsVaultManager = React.forwardRef<
                 }))
               : []
           }
-          columns={positionsVaultColumns}
+          columns={updatedPositionsVaultColumns}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
