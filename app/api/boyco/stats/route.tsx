@@ -1,5 +1,6 @@
 import axios from "axios";
 import { NextResponse } from "next/server";
+import { kv } from "@vercel/kv";
 
 const walletAddress = "0x63E8209CAa13bbA1838E3946a50d717071A28CFB";
 const tokenAddresses = [
@@ -15,6 +16,19 @@ const tokenAddresses = [
 
 export async function GET() {
   try {
+    // Try to get cached values first
+    const cachedData = await kv.get("tvl_stats");
+    const cacheTime = await kv.get("tvl_stats_timestamp");
+
+    // Check if cache exists and is less than 5 minutes old
+    if (
+      cachedData &&
+      cacheTime &&
+      Date.now() - Number(cacheTime) < 5 * 60 * 1000
+    ) {
+      return NextResponse.json(cachedData);
+    }
+
     const chainId = "eth";
     const response = await axios.get(
       `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}&chain_id=${chainId}&is_all=true`,
@@ -43,12 +57,24 @@ export async function GET() {
       return acc;
     }, 0);
 
-    return NextResponse.json({
+    const tvlData = {
       major_tvl: majorTvl,
       third_party_tvl: thirdPartyTvl,
       tvl,
-    });
+    };
+
+    // Store the new values in KV
+    await kv.set("tvl_stats", tvlData);
+    await kv.set("tvl_stats_timestamp", Date.now());
+
+    return NextResponse.json(tvlData);
   } catch (error) {
+    // Try to return cached data if available, even if expired
+    const cachedData = await kv.get("tvl_stats");
+    if (cachedData) {
+      return NextResponse.json(cachedData);
+    }
+
     return NextResponse.json(
       { error: "Failed: getting market stats" },
       { status: 500 }
