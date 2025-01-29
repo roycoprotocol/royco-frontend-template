@@ -46,6 +46,7 @@ const boycoAssetIds = [
   "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   "1-0xdAC17F958D2ee523a2206206994597C13D831ec7",
   "1-0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "1-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
 
   // LP Tokens
   "1-0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc",
@@ -78,6 +79,8 @@ const boycoAssetIds = [
   "1-0xf354aaee4038071e213e0307e574c18f6722a57f",
   "1-0xdb99073c0a20d33bf1aed19f0876612b1dcf8438",
   "1-0x325845b0b12b479a0991ea3bac1249ca18254a4d",
+  "1-0x004375dff511095cc5a197a54140a24efef3a416",
+  "1-0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
 ];
 
 const boycoAssets = boycoAssetIds.map((assetId) => {
@@ -89,12 +92,14 @@ const boycoAssets = boycoAssetIds.map((assetId) => {
 });
 
 const minifiedFilterTokenSymbols = [
-  "wBTC",
   "WETH",
-  "USDT",
+  "wBTC",
+  "WBTC",
   "USDC",
+  "USDT",
   "USDe",
-  "STONE",
+  "USDC-WETH",
+  "WBTC-USDC",
 ];
 
 export const AssetsFilter = () => {
@@ -132,9 +137,11 @@ export const AssetsFilter = () => {
     }
 
     if (!showAllTokens) {
-      result = result.filter((token) => {
-        return minifiedFilterTokenSymbols.includes(token.symbol);
-      });
+      result = minifiedFilterTokenSymbols
+        .map((symbol) => {
+          return result.find((token) => token.symbol === symbol);
+        })
+        .filter((token) => !!token);
     }
 
     return result;
