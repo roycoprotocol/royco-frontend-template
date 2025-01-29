@@ -17,22 +17,22 @@ export const RoycoStats = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { data, isLoading, isRefetching } = useEnrichedRoycoStats();
 
-  // const { data: boycoStats } = useQuery({
-  //   queryKey: ["boyco-stats"],
-  //   queryFn: async () => {
-  //     const response = await fetch("/api/boyco/stats");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch boyco stats");
-  //     }
-  //     return response.json();
-  //   },
-  // });
+  const { data: boycoStats } = useQuery({
+    queryKey: ["boyco-stats"],
+    queryFn: async () => {
+      const response = await fetch("/api/boyco/stats");
+      if (!response.ok) {
+        throw new Error("Failed to fetch boyco stats");
+      }
+      return response.json();
+    },
+  });
 
-  const boycoStats = {
-    major_tvl: 100000000.82,
-    third_party_tvl: 21000000.21,
-    tvl: 122000000.03,
-  };
+  // const boycoStats = {
+  //   major_tvl: 100000000.82,
+  //   third_party_tvl: 21000000.21,
+  //   tvl: 122000000.03,
+  // };
 
   const [placeholderDatas, setPlaceholderDatas] = useImmer([
     {
@@ -99,7 +99,7 @@ export const RoycoStats = React.forwardRef<
                 <div className="caption text-secondary">{item.name}</div>
                 <div className="money-3 mt-1 w-full text-primary">
                   <AnimatePresence mode="sync">
-                    {!!data && !!boycoStats ? (
+                    {!!boycoStats ? (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -111,11 +111,12 @@ export const RoycoStats = React.forwardRef<
                           previousValue={0}
                           // @ts-ignore
                           currentValue={
-                            item.key === "tvl"
-                              ? data.total_tvl
-                              : boycoStats[
-                                  item.key as keyof typeof boycoStats
-                                ] || 0
+                            boycoStats[item.key] || 0
+                            // item.key === "tvl"
+                            //   ? data.total_tvl
+                            //   : boycoStats[
+                            //       item.key as keyof typeof boycoStats
+                            //     ] || 0
                           }
                           numberFormatOptions={{
                             style: "currency",
