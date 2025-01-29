@@ -433,62 +433,49 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             ) {
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
             } else {
-              if (breakdowns.length > 0 && currentValue === 0) {
-                return (
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <TokenEstimator defaultTokenId={[breakdowns[0].id]}>
-                      <Button variant="link" className="underline outline-none">
-                        <LightningIcon className="h-5 w-5 fill-black" />
-                        <span className="text-sm font-medium">Estimate</span>
-                      </Button>
-                    </TokenEstimator>
-                  </div>
-                );
-              } else {
-                return (
-                  <YieldBreakdown
-                    onClick={(e) => e.stopPropagation()}
-                    breakdown={props.row.original.yield_breakdown}
-                    base_key={props.row.original.id}
-                    marketType={marketType}
-                  >
-                    <div className="flex flex-row items-center gap-2">
-                      <>
-                        <SpringNumber
-                          previousValue={previousValue}
-                          currentValue={currentValue}
-                          numberFormatOptions={{
-                            style: "percent",
-                            notation: "compact",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }}
-                          className={cn(
-                            props.view === "grid" &&
-                              InfoGrid.Content.Primary.Wrapper,
-                            props.view === "list" && "h-5"
-                          )}
-                          spanClassName={cn(
-                            props.view === "grid" &&
-                              InfoGrid.Content.Primary.Span,
-                            props.view === "list" && "leading-5"
-                          )}
-                        />
+              return (
+                <YieldBreakdown
+                  onClick={(e) => e.stopPropagation()}
+                  breakdown={props.row.original.yield_breakdown}
+                  base_key={props.row.original.id}
+                  marketType={marketType}
+                >
+                  <div className="flex flex-row items-center gap-2">
+                    <>
+                      <SpringNumber
+                        previousValue={previousValue}
+                        currentValue={currentValue}
+                        numberFormatOptions={{
+                          style: "percent",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                        className={cn(
+                          props.view === "grid" &&
+                            InfoGrid.Content.Primary.Wrapper,
+                          props.view === "list" && "h-5"
+                        )}
+                        spanClassName={cn(
+                          props.view === "grid" &&
+                            InfoGrid.Content.Primary.Span,
+                          props.view === "list" && "leading-5"
+                        )}
+                      />
 
-                        <SparklesIcon
-                          className={cn(
-                            props.view === "list" && "h-4 w-4",
-                            props.view === "grid" && "h-5 w-5"
-                          )}
-                          color="#3CC27A"
-                          strokeWidth={2}
-                        />
-                      </>
-                    </div>
-                  </YieldBreakdown>
-                );
-              }
+                      <SparklesIcon
+                        className={cn(
+                          props.view === "list" && "h-4 w-4",
+                          props.view === "grid" && "h-5 w-5"
+                        )}
+                        color="#3CC27A"
+                        strokeWidth={2}
+                      />
+                    </>
+                  </div>
+                </YieldBreakdown>
+              );
             }
           })()}
         </div>
