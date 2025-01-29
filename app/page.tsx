@@ -12,9 +12,6 @@ import {
 } from "./explore/_components";
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
-import { TokenEstimator } from "./_components/ui/token-estimator";
-import { Button } from "@/components/ui/button";
-import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 
 const Page = () => {
   const Content = () => {

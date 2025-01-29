@@ -312,7 +312,7 @@ export const ActualNavbar = React.forwardRef<
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <span className="font-semibold underline underline-offset-2">
                 BOYCO
               </span>{" "}
@@ -326,9 +326,7 @@ export const ActualNavbar = React.forwardRef<
                 <BeraToken className="h-4 w-4" />
               </span>{" "}
               <span>BERA Supply allocated to</span>{" "}
-              <span className="font-semibold">
-                Third-Party/Hybrid Pools.
-              </span>
+              <span className="font-semibold">Third-Party/Hybrid Pools.</span>
               <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
               <span className="font-semibold underline underline-offset-2">
                 Learn more.
