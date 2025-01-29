@@ -23,13 +23,13 @@ const Page = () => {
          */}
         <div
           className={cn(
-            "mt-9 flex w-full shrink-0 flex-col items-center justify-between px-3 pt-3 md:mt-12 md:px-12 lg:flex-row",
+            "mt-9 flex w-full shrink-0 flex-col items-start justify-center px-3 pt-3 md:mt-12 md:px-12 lg:flex-row lg:items-center lg:justify-between",
             "gap-7 md:gap-3 xl:gap-12",
             MAX_SCREEN_WIDTH,
             "px-0 md:px-0"
           )}
         >
-          <div className="flex w-full shrink flex-col items-start">
+          <div className="flex flex-col items-start justify-start">
             {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
               <>
                 <h2 className="heading-2 text-black">Explore Boyco</h2>
@@ -99,6 +99,8 @@ const Page = () => {
             <Pagination />
           </div>
         </div>
+
+        {/* <RoycoRoyalty /> */}
       </div>
     );
   };
