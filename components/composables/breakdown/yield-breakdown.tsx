@@ -93,63 +93,65 @@ const BreakdownRow = React.forwardRef<
       <div
         ref={ref}
         key={`yield-breakdown:${base_key}:${item.category}:${item.id}`}
-        className="flex flex-row items-center justify-between font-light"
+        className="flex flex-row items-center justify-between gap-3 font-light"
         {...props}
       >
         <TokenDisplayer tokens={[item] as any} symbols={true} />
 
-        <div className="flex flex-row items-center gap-2">
-          <div className="flex flex-row items-center">
-            {item.category === "base" && (
-              <Tooltip>
-                <TooltipTrigger className={cn("cursor-pointer")}>
-                  {marketType === MarketType.recipe.value ? (
-                    <ShieldIcon
-                      className="h-5 w-5"
-                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                    />
-                  ) : (
-                    <SparkleIcon
-                      className="h-5 w-5"
-                      style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                    />
+        {item.annual_change_ratio > 0 && (
+          <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center">
+              {item.category === "base" && (
+                <Tooltip>
+                  <TooltipTrigger className={cn("cursor-pointer")}>
+                    {marketType === MarketType.recipe.value ? (
+                      <ShieldIcon
+                        className="h-5 w-5"
+                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                      />
+                    ) : (
+                      <SparkleIcon
+                        className="h-5 w-5"
+                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                      />
+                    )}
+                  </TooltipTrigger>
+                  {createPortal(
+                    <TooltipContent className={cn("bg-white", "max-w-80")}>
+                      {marketType === MarketType.recipe.value
+                        ? "Fixed Incentive Rate"
+                        : "Variable Incentive Rate, based on # of participants"}
+                    </TooltipContent>,
+                    document.body
                   )}
-                </TooltipTrigger>
-                {createPortal(
-                  <TooltipContent className={cn("bg-white", "max-w-80")}>
-                    {marketType === MarketType.recipe.value
-                      ? "Fixed Incentive Rate"
-                      : "Variable Incentive Rate, based on # of participants"}
-                  </TooltipContent>,
-                  document.body
-                )}
-              </Tooltip>
+                </Tooltip>
+              )}
+
+              <span
+                style={{
+                  color:
+                    item.category === "base"
+                      ? tokenColor || DEFAULT_TOKEN_COLOR
+                      : "black",
+                }}
+              >
+                {formatNumber(item.annual_change_ratio, {
+                  type: "percent",
+                })}
+              </span>
+            </div>
+
+            {beraToken && (
+              <TokenEstimator defaultTokenId={[item.id]}>
+                <SquarePenIcon
+                  strokeWidth={2}
+                  className="h-4 w-4 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
+                  color={tokenColor || DEFAULT_TOKEN_COLOR}
+                />
+              </TokenEstimator>
             )}
-
-            <span
-              style={{
-                color:
-                  item.category === "base"
-                    ? tokenColor || DEFAULT_TOKEN_COLOR
-                    : "black",
-              }}
-            >
-              {formatNumber(item.annual_change_ratio, {
-                type: "percent",
-              })}
-            </span>
           </div>
-
-          {(item.category === "base" || beraToken) && (
-            <TokenEstimator defaultTokenId={[item.id]}>
-              <SquarePenIcon
-                strokeWidth={2}
-                className="h-4 w-4 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
-                color={tokenColor || DEFAULT_TOKEN_COLOR}
-              />
-            </TokenEstimator>
-          )}
-        </div>
+        )}
       </div>
     );
   }
