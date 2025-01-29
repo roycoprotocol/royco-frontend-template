@@ -68,7 +68,7 @@ export const Pagination = () => {
          * @position left
          * @description Current page indicator
          */}
-        <Button className="h-full w-fit px-3 ">
+        <Button className="h-full w-fit rounded-xl px-3">
           <span className="text-sm">
             Page {pageIndex + 1} of {totalPages}
           </span>
@@ -92,7 +92,7 @@ export const Pagination = () => {
             <Button
               disabled={!getCanPrevPage()}
               onClick={prevPage}
-              className="px-2"
+              className="rounded-xl px-2"
               // className={cn(
               //   "flex h-8 w-8 flex-col place-content-center items-center rounded-lg border border-divider bg-white transition-all duration-200 ease-in-out",
               //   getCanPrevPage()
@@ -113,7 +113,7 @@ export const Pagination = () => {
           <Button
             disabled={!getCanNextPage()}
             onClick={nextPage}
-            className="pl-4 pr-2"
+            className="rounded-xl pl-4 pr-2"
           >
             <span className="text-sm">View More Markets</span>
             <ChevronRightIcon

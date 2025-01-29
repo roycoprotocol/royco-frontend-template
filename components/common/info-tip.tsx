@@ -29,19 +29,20 @@ export const InfoTip = React.forwardRef<
           )}
         />
       </TooltipTrigger>
-      {createPortal(
-        <TooltipContent
-          className={cn(
-            "bg-white",
-            size === "sm" && "text-sm leading-snug",
-            "max-w-80",
-            className
-          )}
-        >
-          {props.children}
-        </TooltipContent>,
-        document.body
-      )}
+      {typeof window !== "undefined" &&
+        createPortal(
+          <TooltipContent
+            className={cn(
+              "bg-white",
+              size === "sm" && "text-sm leading-snug",
+              "max-w-80",
+              className
+            )}
+          >
+            {props.children}
+          </TooltipContent>,
+          document.body
+        )}
     </Tooltip>
   );
 });

@@ -123,6 +123,9 @@ export function DataTable<TData, TValue>({
                   const marketType = cells.find(
                     (cell) => cell.column.id === "market_type"
                   );
+                  const poolType = cells.find(
+                    (cell) => cell.column.id === "pool_type"
+                  );
                   const lockedQuantityUsd = cells.find(
                     (cell) => cell.column.id === "locked_quantity_usd"
                   );
@@ -207,6 +210,14 @@ export function DataTable<TData, TValue>({
                               columnVisibility.market_type &&
                               flexRender(marketType.column.columnDef.cell, {
                                 ...marketType.getContext(),
+                                placeholderDatas,
+                                view,
+                              })}
+
+                            {!!poolType &&
+                              columnVisibility.pool_type &&
+                              flexRender(poolType.column.columnDef.cell, {
+                                ...poolType.getContext(),
                                 placeholderDatas,
                                 view,
                               })}

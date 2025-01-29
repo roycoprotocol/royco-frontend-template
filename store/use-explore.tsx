@@ -60,6 +60,7 @@ export const exploreColumnNames = {
   locked_quantity_usd: "TVL",
   annual_change_ratio: "Net APY",
   chain: "Chain",
+  pool_type: "Pool Type",
 };
 
 export const exploreColumnTooltips = {
@@ -204,6 +205,7 @@ export const useExplore = create<ExploreState>((set) => ({
     total_incentive_amounts_usd: true,
     annual_change_ratio: true,
     chain_id: true,
+    pool_type: true,
   },
   exploreColumnNames: exploreColumnNames,
   setExploreColumnVisibility: (exploreColumnVisibility) =>
