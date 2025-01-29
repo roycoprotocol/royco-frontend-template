@@ -549,7 +549,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       className: "min-w-44",
     },
     cell: (props: any) => {
-      const poolType = getMarketAssetType(props.row.original.input_token_data);
+      const poolType = getMarketAssetType(props.row.original);
 
       return (
         <div
