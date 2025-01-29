@@ -46,21 +46,21 @@ export async function GET() {
       return acc;
     }, 0);
 
-    let tvl = response.data.reduce((acc: number, token: any) => {
-      return acc + token.amount * token.price;
-    }, 0);
+    // let tvl = response.data.reduce((acc: number, token: any) => {
+    //   return acc + token.amount * token.price;
+    // }, 0);
 
-    let thirdPartyTvl = response.data.reduce((acc: number, token: any) => {
-      if (!tokenAddresses.includes(token.id.toLowerCase())) {
-        return acc + token.amount * token.price;
-      }
-      return acc;
-    }, 0);
+    // let thirdPartyTvl = response.data.reduce((acc: number, token: any) => {
+    //   if (!tokenAddresses.includes(token.id.toLowerCase())) {
+    //     return acc + token.amount * token.price;
+    //   }
+    //   return acc;
+    // }, 0);
 
     const tvlData = {
       major_tvl: majorTvl,
-      third_party_tvl: thirdPartyTvl,
-      tvl,
+      third_party_tvl: 2_198_026_173,
+      tvl: 2_198_026_173 + majorTvl,
     };
 
     // Store the new values in KV
