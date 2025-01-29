@@ -173,6 +173,7 @@ export const MarketsTable = () => {
       props={{
         sorting,
       }}
+      loading={isLoading || isRefetching}
     />
   );
 };
