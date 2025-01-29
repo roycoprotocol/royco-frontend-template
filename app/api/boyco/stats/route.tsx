@@ -34,7 +34,7 @@ export async function GET() {
       `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}&chain_id=${chainId}&is_all=true`,
       {
         headers: {
-          AccessKey: process.env.DEBANK_API_ACCESS_KEY,
+          AccessKey: process.env.DEBANK_API_KEY,
         },
       }
     );
