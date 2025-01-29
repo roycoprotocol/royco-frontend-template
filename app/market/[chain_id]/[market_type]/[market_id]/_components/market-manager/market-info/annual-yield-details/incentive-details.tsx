@@ -308,7 +308,7 @@ export const IncentiveTokenDetails = React.forwardRef<
         </TertiaryLabel>
       )}
 
-      {category === "base" && (
+      {category === "base" && token_data.type !== "point" && (
         <div className="mt-1 flex flex-row items-center gap-1">
           <TertiaryLabel className={cn("text-right", className)}>
             {formatNumber(token_data.fdv, {
