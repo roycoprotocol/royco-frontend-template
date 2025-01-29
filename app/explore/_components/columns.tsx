@@ -47,6 +47,7 @@ import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
 import validator from "validator";
 import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
+import { getMarketAssetType, MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -528,6 +529,58 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 : props.row.original.reward_style !== 2
                   ? "Yes"
                   : "No, but forfeit"}
+            </span>
+          </div>
+
+          {/* {props.row.original.market_type === 0 ? "Recipe" : "Vault"} */}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "pool_type",
+    enableResizing: true,
+    // header: exploreColumnNames.action,
+    enableSorting: true,
+    header: ({ column }: { column: any }) => {
+      return <HeaderWrapper column={column} className="justify-center" />;
+    },
+    meta: {
+      className: "min-w-44",
+    },
+    cell: (props: any) => {
+      const poolType = getMarketAssetType(props.row.original.input_token_data);
+
+      return (
+        <div
+          key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
+          className={cn(
+            "flex h-fit w-fit",
+            props.view === "grid" &&
+              "body-2 w-fit shrink-0 rounded-full border border-divider px-[0.438rem] py-1 text-secondary"
+          )}
+        >
+          <div
+            className={cn(
+              "body-2",
+              props.view === "grid" && "text-secondary",
+              props.view === "list" && "text-black"
+            )}
+          >
+            <span className="leading-5">
+              {(() => {
+                if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
+                  return "Major";
+                } else if (
+                  poolType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY
+                ) {
+                  return "Third-Party";
+                } else if (poolType === MULTIPLIER_ASSET_TYPE.HYBRID) {
+                  return "Hybrid";
+                } else {
+                  return "Unknown";
+                }
+              })()}
             </span>
           </div>
 

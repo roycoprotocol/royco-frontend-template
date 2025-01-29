@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { BeraToken } from "../assets/bera-token";
 
 const NavbarLinks = [
   // {
@@ -304,18 +305,33 @@ export const ActualNavbar = React.forwardRef<
       </div>
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
-        <div className="flex w-full justify-center border-b border-divider bg-white py-2">
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
             href="https://blog.berachain.com/blog/boyco-markets-overview"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <div className="flex items-center gap-1">
-              <ShieldCheckIcon className="h-4 w-4 text-black" />
-
-              <span className="text-sm text-black">
-                Boyco ends on Feb 3rd 12AM UTC.
+            <div className="flex items-center gap-2">
+              <span className="font-semibold underline underline-offset-2">
+                BOYCO
+              </span>{" "}
+              <span className="font-semibold">0.9%</span> of{" "}
+              <span>
+                <BeraToken className="h-4 w-4" />
+              </span>{" "}
+              <span>BERA Supply allocated to Major Pools +</span>{" "}
+              <span className="font-semibold"> 1.1% </span> of{" "}
+              <span>
+                <BeraToken className="h-4 w-4" />
+              </span>{" "}
+              <span>BERA Supply allocated to</span>{" "}
+              <span className="font-semibold">
+                Third-Party/Hybrid Pools.
+              </span>
+              <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
+              <span className="font-semibold underline underline-offset-2">
+                Learn more.
               </span>
             </div>
 
