@@ -109,7 +109,11 @@ export const SupplyAction = React.forwardRef<
       showIncentiveTokenEstimate ? (
         <div className="mt-3">
           <SlideUpWrapper delay={0.2}>
-            <TokenEstimator defaultTokenId={highestIncentiveToken?.id}>
+            <TokenEstimator
+              defaultTokenId={
+                highestIncentiveToken?.id ? [highestIncentiveToken.id] : []
+              }
+            >
               <Button className="flex w-full items-center justify-center gap-2">
                 <LightningIcon className="h-5 w-5 fill-white" />
                 <span className="text-sm font-medium">
