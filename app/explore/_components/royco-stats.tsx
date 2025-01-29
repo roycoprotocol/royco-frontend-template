@@ -17,16 +17,22 @@ export const RoycoStats = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { data, isLoading, isRefetching } = useEnrichedRoycoStats();
 
-  const { data: boycoStats } = useQuery({
-    queryKey: ["boyco-stats"],
-    queryFn: async () => {
-      const response = await fetch("/api/boyco/stats");
-      if (!response.ok) {
-        throw new Error("Failed to fetch boyco stats");
-      }
-      return response.json();
-    },
-  });
+  // const { data: boycoStats } = useQuery({
+  //   queryKey: ["boyco-stats"],
+  //   queryFn: async () => {
+  //     const response = await fetch("/api/boyco/stats");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch boyco stats");
+  //     }
+  //     return response.json();
+  //   },
+  // });
+
+  const boycoStats = {
+    major_tvl: 100000000.82,
+    third_party_tvl: 21000000.21,
+    tvl: 122000000.03,
+  };
 
   const [placeholderDatas, setPlaceholderDatas] = useImmer([
     {
