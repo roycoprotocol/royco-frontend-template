@@ -327,7 +327,7 @@ export const ActualNavbar = React.forwardRef<
               </span>{" "}
               <span>BERA Supply allocated to</span>{" "}
               <span className="font-semibold">
-                Third-Party/Hybrid Pools. Learn more.
+                Third-Party/Hybrid Pools.
               </span>
               <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
               <span className="font-semibold underline underline-offset-2">
