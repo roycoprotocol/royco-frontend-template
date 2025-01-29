@@ -436,7 +436,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
               if (breakdowns.length > 0 && currentValue === 0) {
                 return (
                   <div onClick={(e) => e.stopPropagation()}>
-                    <TokenEstimator defaultTokenId={breakdowns[0].id}>
+                    <TokenEstimator defaultTokenId={[breakdowns[0].id]}>
                       <Button variant="link" className="underline outline-none">
                         <LightningIcon className="h-5 w-5 fill-black" />
                         <span className="text-sm font-medium">Estimate</span>

@@ -11,7 +11,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { TokenSelector } from "./token-selector";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
@@ -42,7 +41,7 @@ export const EstimatorCustomTokenDataSchema = z.object({
 export const TokenEstimator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    defaultTokenId?: string;
+    defaultTokenId?: string[];
   }
 >(({ className, children, defaultTokenId, ...props }, ref) => {
   const [open, setOpen] = useState(false);
@@ -79,23 +78,26 @@ export const TokenEstimator = React.forwardRef<
   };
 
   const { data: defaultTokenQuotes } = useTokenQuotes({
-    token_ids: [defaultTokenId || ""],
+    token_ids: defaultTokenId || [],
   });
 
   useEffect(() => {
     if (
       open &&
       defaultTokenId &&
+      defaultTokenId.length > 0 &&
       defaultTokenQuotes &&
       defaultTokenQuotes.length > 0
     ) {
-      const token = {
-        token_id: defaultTokenId,
-        fdv: defaultTokenQuotes[0].fdv.toString(),
-        total_supply: defaultTokenQuotes[0].total_supply.toString(),
-        price: defaultTokenQuotes[0].price.toString(),
-      };
-      handleTokenSelect(token);
+      for (const index in defaultTokenId) {
+        const token = {
+          token_id: defaultTokenId[index],
+          fdv: defaultTokenQuotes[index].fdv.toString(),
+          total_supply: defaultTokenQuotes[index].total_supply.toString(),
+          price: defaultTokenQuotes[index].price.toString(),
+        };
+        handleTokenSelect(token);
+      }
     }
   }, [defaultTokenQuotes, defaultTokenId, open]);
 

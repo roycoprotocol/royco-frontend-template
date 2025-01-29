@@ -44,6 +44,11 @@ export const MarketInfo = React.forwardRef<
     return parseFloat(currentMarketData?.quantity_ip ?? "0");
   }, [currentMarketData]);
 
+  const breakdowns = currentMarketData.yield_breakdown.filter(
+    (item: any) => item.category === "base" && item.type === "point"
+  );
+  const pointTokenIds = breakdowns.map((item: any) => item.id);
+
   if (
     !isLoading &&
     !!currentMarketData &&
@@ -125,7 +130,7 @@ export const MarketInfo = React.forwardRef<
          * Token Estimate
          */}
         <div className="mt-2">
-          <TokenEstimator>
+          <TokenEstimator defaultTokenId={pointTokenIds}>
             <Button
               variant="link"
               size="sm"

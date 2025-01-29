@@ -141,7 +141,7 @@ const BreakdownRow = React.forwardRef<
           </div>
 
           {(item.category === "base" || beraToken) && (
-            <TokenEstimator defaultTokenId={item.id}>
+            <TokenEstimator defaultTokenId={[item.id]}>
               <SquarePenIcon
                 strokeWidth={2}
                 className="h-4 w-4 cursor-pointer text-secondary transition-all duration-200 ease-in-out hover:opacity-80"
