@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import {
   HoverCard,
@@ -13,7 +13,10 @@ import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import { MarketType } from "@/store";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
-import { DEFAULT_TOKEN_COLOR } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
+import {
+  BERA_TOKEN_ID,
+  DEFAULT_TOKEN_COLOR,
+} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
 import { Vibrant } from "node-vibrant/browser";
 import {
   Tooltip,
@@ -51,6 +54,10 @@ const BreakdownRow = React.forwardRef<
     { className, item, base_key, closeParentModal, marketType, ...props },
     ref
   ) => {
+    const beraToken = useMemo(() => {
+      return item.id === BERA_TOKEN_ID;
+    }, [item.id]);
+
     const [tokenColor, setTokenColor] = useState<string | null>(null);
 
     useEffect(() => {
@@ -133,7 +140,7 @@ const BreakdownRow = React.forwardRef<
             </span>
           </div>
 
-          {item.category === "base" && (
+          {(item.category === "base" || beraToken) && (
             <TokenEstimator defaultTokenId={item.id}>
               <SquarePenIcon
                 strokeWidth={2}
