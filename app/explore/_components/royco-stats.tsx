@@ -99,7 +99,7 @@ export const RoycoStats = React.forwardRef<
                 <div className="caption text-secondary">{item.name}</div>
                 <div className="money-3 mt-1 w-full text-primary">
                   <AnimatePresence mode="sync">
-                    {!!boycoStats ? (
+                    {!!data && !!boycoStats ? (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -110,7 +110,13 @@ export const RoycoStats = React.forwardRef<
                           // @ts-ignore
                           previousValue={0}
                           // @ts-ignore
-                          currentValue={boycoStats[item.key] || 0}
+                          currentValue={
+                            item.key === "tvl"
+                              ? data.total_tvl
+                              : boycoStats[
+                                  item.key as keyof typeof boycoStats
+                                ] || 0
+                          }
                           numberFormatOptions={{
                             style: "currency",
                             currency: "USD",
