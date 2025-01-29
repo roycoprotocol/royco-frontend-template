@@ -19,7 +19,6 @@ import { produce } from "immer";
 
 import { useImmer } from "use-immer";
 import { usePathname } from "next/navigation";
-import { getSupportedMarket } from "royco/constants";
 
 export const MarketsTable = () => {
   const [placeholderDatas, setPlaceholderDatas] = useImmer<Array<any | null>>([
@@ -77,6 +76,18 @@ export const MarketsTable = () => {
       });
     }
   }, [data, isLoading, placeholderDatas]);
+
+  const updatedExploreColumns = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return (columns as any).filter(
+        (column: any) => column.accessorKey !== "market_type"
+      );
+    }
+
+    return (columns as any).filter(
+      (column: any) => column.accessorKey !== "pool_type"
+    );
+  }, [columns]);
 
   if (
     isLoading === true &&
@@ -165,7 +176,7 @@ export const MarketsTable = () => {
        * @TODO Strictly type this
        */
       // @ts-ignore
-      columns={columns}
+      columns={updatedExploreColumns}
       // @ts-ignore
       data={placeholderDatas[1] === null ? data : placeholderDatas[1]}
       // @ts-ignore
