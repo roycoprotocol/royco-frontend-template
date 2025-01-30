@@ -48,10 +48,19 @@ const BreakdownRow = React.forwardRef<
     base_key: string;
     closeParentModal?: () => void;
     marketType?: number;
+    marketCategory?: string;
   }
 >(
   (
-    { className, item, base_key, closeParentModal, marketType, ...props },
+    {
+      className,
+      item,
+      base_key,
+      closeParentModal,
+      marketType,
+      marketCategory,
+      ...props
+    },
     ref
   ) => {
     const beraToken = useMemo(() => {
@@ -104,23 +113,38 @@ const BreakdownRow = React.forwardRef<
               {item.category === "base" && (
                 <Tooltip>
                   <TooltipTrigger className={cn("cursor-pointer")}>
-                    {marketType === MarketType.recipe.value ? (
-                      <ShieldIcon
-                        className="h-5 w-5"
-                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                      />
-                    ) : (
-                      <SparkleIcon
-                        className="h-5 w-5"
-                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                      />
-                    )}
+                    {(() => {
+                      if (
+                        marketType === MarketType.vault.value ||
+                        marketCategory === "boyco"
+                      ) {
+                        return (
+                          <SparkleIcon
+                            className="h-5 w-5"
+                            style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                          />
+                        );
+                      }
+
+                      return (
+                        <ShieldIcon
+                          className="h-5 w-5"
+                          style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                        />
+                      );
+                    })()}
                   </TooltipTrigger>
                   {createPortal(
                     <TooltipContent className={cn("bg-white", "max-w-80")}>
-                      {marketType === MarketType.recipe.value
-                        ? "Fixed Incentive Rate"
-                        : "Variable Incentive Rate, based on # of participants"}
+                      {(() => {
+                        if (marketCategory === "boyco") {
+                          return "Variable Rate, will change based on # of deposits";
+                        }
+                        if (marketType === MarketType.vault.value) {
+                          return "Variable Incentive Rate, based on # of participants";
+                        }
+                        return "Fixed Incentive Rate";
+                      })()}
                     </TooltipContent>,
                     document.body
                   )}
@@ -164,10 +188,19 @@ const BreakdownContent = React.forwardRef<
     base_key: string;
     closeParentModal?: () => void;
     marketType?: number;
+    marketCategory?: string;
   }
 >(
   (
-    { className, breakdown, base_key, closeParentModal, marketType, ...props },
+    {
+      className,
+      breakdown,
+      base_key,
+      closeParentModal,
+      marketType,
+      marketCategory,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -179,6 +212,7 @@ const BreakdownContent = React.forwardRef<
             base_key={base_key}
             closeParentModal={closeParentModal}
             marketType={marketType}
+            marketCategory={marketCategory}
           />
         ))}
       </div>
@@ -224,67 +258,74 @@ export const YieldBreakdown = React.forwardRef<
     breakdown: EnrichedMarketDataType["yield_breakdown"];
     base_key: string;
     marketType?: number;
+    marketCategory?: string;
   }
->(({ className, breakdown, base_key, marketType, ...props }, ref) => {
-  return (
-    <HoverCard openDelay={200} closeDelay={200}>
-      <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
-        {props.children}
-      </HoverCardTrigger>
-      {typeof window !== "undefined" &&
-        breakdown.length > 0 &&
-        createPortal(
-          <HoverCardContent className="w-full min-w-64">
-            <div
-              ref={ref}
-              className={cn(
-                "flex flex-col gap-3 text-base font-normal text-black",
-                className
-              )}
-              {...props}
-            >
-              {breakdown.some((item) => item.category === "base") && (
-                <div>
+>(
+  (
+    { className, breakdown, base_key, marketType, marketCategory, ...props },
+    ref
+  ) => {
+    return (
+      <HoverCard openDelay={200} closeDelay={200}>
+        <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
+          {props.children}
+        </HoverCardTrigger>
+        {typeof window !== "undefined" &&
+          breakdown.length > 0 &&
+          createPortal(
+            <HoverCardContent className="w-full min-w-64">
+              <div
+                ref={ref}
+                className={cn(
+                  "flex flex-col gap-3 text-base font-normal text-black",
+                  className
+                )}
+                {...props}
+              >
+                {breakdown.some((item) => item.category === "base") && (
+                  <div>
+                    <BreakdownItem>
+                      <BreakdownTitle>Negotiable Rate</BreakdownTitle>
+                      <BreakdownContent
+                        className="mt-1"
+                        breakdown={breakdown.filter(
+                          (item) => item.category === "base"
+                        )}
+                        base_key={base_key}
+                        marketType={marketType}
+                        marketCategory={marketCategory}
+                      />
+                    </BreakdownItem>
+                  </div>
+                )}
+
+                {breakdown.some((item) => item.category !== "base") && (
                   <BreakdownItem>
-                    <BreakdownTitle>Negotiable Rate</BreakdownTitle>
+                    <BreakdownTitle>Underlying Rate</BreakdownTitle>
                     <BreakdownContent
                       className="mt-1"
                       breakdown={breakdown.filter(
-                        (item) => item.category === "base"
+                        (item) => item.category !== "base"
                       )}
                       base_key={base_key}
-                      marketType={marketType}
                     />
                   </BreakdownItem>
-                </div>
-              )}
+                )}
 
-              {breakdown.some((item) => item.category !== "base") && (
                 <BreakdownItem>
-                  <BreakdownTitle>Underlying Rate</BreakdownTitle>
-                  <BreakdownContent
-                    className="mt-1"
-                    breakdown={breakdown.filter(
-                      (item) => item.category !== "base"
-                    )}
+                  <NetYield
                     base_key={base_key}
+                    annual_change_ratio={breakdown.reduce(
+                      (acc, item) => acc + item.annual_change_ratio,
+                      0
+                    )}
                   />
                 </BreakdownItem>
-              )}
-
-              <BreakdownItem>
-                <NetYield
-                  base_key={base_key}
-                  annual_change_ratio={breakdown.reduce(
-                    (acc, item) => acc + item.annual_change_ratio,
-                    0
-                  )}
-                />
-              </BreakdownItem>
-            </div>
-          </HoverCardContent>,
-          document.body
-        )}
-    </HoverCard>
-  );
-});
+              </div>
+            </HoverCardContent>,
+            document.body
+          )}
+      </HoverCard>
+    );
+  }
+);

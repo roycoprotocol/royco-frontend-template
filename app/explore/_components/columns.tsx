@@ -439,6 +439,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   breakdown={props.row.original.yield_breakdown}
                   base_key={props.row.original.id}
                   marketType={marketType}
+                  marketCategory={props.row.original.category}
                 >
                   <div className="flex flex-row items-center gap-2">
                     <>
