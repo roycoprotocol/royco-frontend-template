@@ -341,7 +341,7 @@ export const ActualNavbar = React.forwardRef<
         </div>
       )}
 
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
             href="https://berachain.royco.org/"
