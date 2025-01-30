@@ -112,7 +112,7 @@ export const MarketInfo = React.forwardRef<
             <Button
               variant="link"
               size="sm"
-              className="w-fit p-0 text-tertiary underline outline-none"
+              className="w-fit p-0 font-medium text-black underline outline-none"
             >
               APY Calculator
             </Button>
