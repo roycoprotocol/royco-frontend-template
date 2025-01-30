@@ -36,24 +36,24 @@ export const ExternalIncentiveDetails = React.forwardRef<
       >
         {externalIncentives.map((externalIncentive, index) => (
           <SlideUpWrapper key={externalIncentive.id} delay={0.1 + index * 0.1}>
-            <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+            <InfoCard.Row className={cn(INFO_ROW_CLASSES, "")}>
               <InfoCard.Row.Key>
-                <div className="flex items-center">
+                <div className="flex items-start">
                   <TokenDisplayer
-                    className={cn("")}
+                    className={cn("mt-px")}
                     tokens={[externalIncentive as any]}
                     size={4}
                     symbols={false}
                   />
 
-                  <span className="text-sm font-medium text-black">
+                  <span className="break-normal text-sm font-medium text-black">
                     {externalIncentive.label || externalIncentive.symbol}
                   </span>
                 </div>
               </InfoCard.Row.Key>
 
               <InfoCard.Row.Value>
-                <SecondaryLabel className="text-secondary">
+                <SecondaryLabel className="break-normal text-right text-secondary">
                   {externalIncentive.value}
                 </SecondaryLabel>
               </InfoCard.Row.Value>
