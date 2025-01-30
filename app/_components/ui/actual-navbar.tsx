@@ -321,17 +321,42 @@ export const ActualNavbar = React.forwardRef<
               <span>
                 <BeraToken className="h-4 w-4" />
               </span>
-              <span>BERA Supply allocated to Major Pools +</span>
+              <span>BERA Supply rewarded across all Major Pools +</span>
               <span className="font-semibold">1.1%</span>
               <span>of</span>
               <span>
                 <BeraToken className="h-4 w-4" />
               </span>
-              <span>BERA Supply allocated to</span>{" "}
+              <span>BERA Supply rewarded across all</span>
               <span className="font-semibold">Third-Party/Hybrid Pools.</span>
+              <span>Weighted by TVL/time.</span>
               <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
               <span className="font-semibold underline underline-offset-2">
                 Learn more.
+              </span>
+            </div>
+
+            <ChevronRightIcon className="h-4 w-4 text-black" />
+          </a>
+        </div>
+      )}
+
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <a
+            href="https://berachain.royco.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <div className="flex flex-wrap items-center justify-center gap-1">
+              <span>
+                <BeraToken className="h-4 w-4" />
+              </span>
+              <span className="font-semibold">Boyco is Live!</span>
+              <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
+              <span className="font-semibold underline underline-offset-2">
+                View Markets Here.
               </span>
             </div>
 

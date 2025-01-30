@@ -216,24 +216,44 @@ export const IncentiveTokenDetails = React.forwardRef<
               <div className="flex items-center gap-1">
                 <Tooltip>
                   <TooltipTrigger className={cn("cursor-pointer")}>
-                    {currentMarketData.market_type ===
-                    MarketType.recipe.value ? (
-                      <ShieldIcon
-                        className="h-5 w-5"
-                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                      />
-                    ) : (
-                      <SparkleIcon
-                        className="h-5 w-5"
-                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                      />
-                    )}
+                    {(() => {
+                      if (
+                        currentMarketData.market_type ===
+                          MarketType.vault.value ||
+                        currentMarketData?.category === "boyco"
+                      ) {
+                        return (
+                          <SparkleIcon
+                            className="h-5 w-5"
+                            style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                          />
+                        );
+                      }
+
+                      return (
+                        <ShieldIcon
+                          className="h-5 w-5"
+                          style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                        />
+                      );
+                    })()}
                   </TooltipTrigger>
                   {createPortal(
-                    <TooltipContent className={cn("bg-white", "max-w-80")}>
-                      {currentMarketData.market_type === MarketType.recipe.value
-                        ? "Fixed Incentive Rate"
-                        : "Variable Incentive Rate, based on # of participants"}
+                    <TooltipContent
+                      className={cn("bg-white text-sm", "max-w-80")}
+                    >
+                      {(() => {
+                        if (currentMarketData?.category === "boyco") {
+                          return "Variable Rate, will change based on # of deposits";
+                        }
+                        if (
+                          currentMarketData.market_type ===
+                          MarketType.vault.value
+                        ) {
+                          return "Variable Incentive Rate, based on # of participants";
+                        }
+                        return "Fixed Incentive Rate";
+                      })()}
                     </TooltipContent>,
                     document.body
                   )}
