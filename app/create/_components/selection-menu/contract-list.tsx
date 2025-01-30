@@ -115,7 +115,8 @@ export const ContractList = React.forwardRef<
     }
 
     if (
-      process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" &&
+      (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ||
+        process.env.NEXT_PUBLIC_FRONTEND_TAG === "testnet") &&
       marketBuilderForm.watch("chain").id === 1
     ) {
       if (
