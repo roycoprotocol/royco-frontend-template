@@ -105,7 +105,7 @@ export const RoycoStats = React.forwardRef<
                     className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1 xl:min-w-40"
                   >
                     <div className="caption text-secondary">{item.name}</div>
-                    <div className="money-3 mt-1 w-full text-primary">
+                    <div className="money-3 mt-1 w-full text-left text-primary">
                       <AnimatePresence mode="sync">
                         {!!boycoStats ? (
                           <motion.div
