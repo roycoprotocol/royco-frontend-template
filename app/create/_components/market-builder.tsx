@@ -46,7 +46,7 @@ export const getPoolFormDefaults = () => {
     return PoolFormDefaults[Corn.id];
   } else if (frontendTag === "sonic") {
     return PoolFormDefaults[Sonic.id];
-  } else if (frontendTag === "boyco") {
+  } else if (frontendTag === "boyco" || frontendTag === "testnet") {
     return PoolFormDefaults["boyco"];
   }
 

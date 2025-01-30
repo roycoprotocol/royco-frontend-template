@@ -45,6 +45,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/api/push/lp-token") ||
     pathname.startsWith("/api/update/quotes") ||
     pathname.startsWith("/api/sync") ||
+    pathname.startsWith("/api/market") ||
     pathname === "/verify"
   ) {
     // For /verify endpoint, validate redirect parameter
