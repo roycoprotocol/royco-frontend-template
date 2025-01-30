@@ -178,7 +178,11 @@ export const TokenEditor = React.forwardRef<
 
         <Input
           type="text"
-          placeholder="Enter FDV amount"
+          placeholder={
+            tokenData.type === "point"
+              ? "Enter Estimated Value"
+              : "Enter FDV Amount"
+          }
           containerClassName="mt-2"
           className="w-full"
           value={parseTextToFormattedValue(
@@ -196,7 +200,7 @@ export const TokenEditor = React.forwardRef<
 
           <Input
             type="text"
-            placeholder="Enter Price amount"
+            placeholder="Enter Estimated Price"
             containerClassName="mt-2"
             className="w-full"
             value={parseTextToFormattedValue(
