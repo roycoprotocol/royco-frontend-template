@@ -98,58 +98,53 @@ export const RoycoStats = React.forwardRef<
             },
           ].map((item, index) => {
             return (
-              <Tooltip>
-                <TooltipTrigger>
-                  <div
-                    key={`stats:${item.key}`}
-                    className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1 xl:min-w-40"
-                  >
-                    <div className="caption text-secondary">{item.name}</div>
-                    <div className="money-3 mt-1 w-full text-left text-primary">
-                      <AnimatePresence mode="sync">
-                        {!!boycoStats ? (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.6 }}
-                          >
-                            <SpringNumber
-                              // @ts-ignore
-                              previousValue={0}
-                              // @ts-ignore
-                              currentValue={boycoStats[item.key] || 0}
-                              numberFormatOptions={{
-                                style: "currency",
-                                currency: "USD",
-                                notation: "compact",
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }}
-                            />
-                          </motion.div>
-                        ) : (
-                          <div className="relative flex w-full flex-col place-content-center items-center">
-                            <div className="text-transparent">.</div>
-                            <div className="absolute inset-0 flex flex-col place-content-center items-center">
-                              <LoadingSpinner className="h-5 w-5" />
-                            </div>
-                          </div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                {item.key === "third_party_tvl" &&
-                  typeof window !== "undefined" &&
-                  createPortal(
-                    <TooltipContent className="w-fit max-w-80">
+              <div
+                key={`stats:${item.key}`}
+                className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1 xl:min-w-40"
+              >
+                <div className="caption flex items-center gap-1 text-secondary">
+                  <span>{item.name}</span>
+                  {item.key === "third_party_tvl" && (
+                    <InfoTip size="sm">
                       *Includes Boyco Pre-Pre-deposit Vaults, not yet deposited
                       into markets.
-                    </TooltipContent>,
-                    document.body
-                  )}
-              </Tooltip>
+                    </InfoTip>
+                  )}{" "}
+                </div>
+                <div className="money-3 mt-1 w-full text-left text-primary">
+                  <AnimatePresence mode="sync">
+                    {!!boycoStats ? (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        <SpringNumber
+                          // @ts-ignore
+                          previousValue={0}
+                          // @ts-ignore
+                          currentValue={boycoStats[item.key] || 0}
+                          numberFormatOptions={{
+                            style: "currency",
+                            currency: "USD",
+                            notation: "compact",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </motion.div>
+                    ) : (
+                      <div className="relative flex w-full flex-col place-content-center items-center">
+                        <div className="text-transparent">.</div>
+                        <div className="absolute inset-0 flex flex-col place-content-center items-center">
+                          <LoadingSpinner className="h-5 w-5" />
+                        </div>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
             );
           })
         : [
