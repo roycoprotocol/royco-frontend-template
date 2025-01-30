@@ -170,7 +170,7 @@ export const TokenEditor = React.forwardRef<
             size="sm"
             label={
               tokenData.type === "point"
-                ? "Estimated Total Value of Points on Royco"
+                ? "Estimated Value of dApp Incentives"
                 : "Adjust FDV"
             }
           />
