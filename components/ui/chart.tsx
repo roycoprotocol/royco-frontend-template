@@ -242,8 +242,8 @@ const ChartTooltipContent = React.forwardRef<
                           <div className="mr-2 text-tertiary">Type:</div>
                           <div className="font-mono font-medium tabular-nums text-secondary">
                             {item.payload.offer_side === 0
-                              ? "AP Offer"
-                              : "IP Offer"}
+                              ? "User"
+                              : "Incentive Provider"}
                           </div>
                         </div>
                       )}
