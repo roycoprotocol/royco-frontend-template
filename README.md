@@ -33,7 +33,7 @@ pnpm run build
 5. Run the project..
 
 ```bash
-pnpm run start
+npm run start
 ```
 
 ### Environment Variables
