@@ -341,7 +341,6 @@ export const ActualNavbar = React.forwardRef<
               <span className="font-semibold text-[#F0E397]">
                 Ends Feb 2 11:59PM UTC.
               </span>
-              <span></span>
               <span className="font-semibold underline underline-offset-2">
                 Learn more.
               </span>
