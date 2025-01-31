@@ -9,36 +9,12 @@ import { isEqual } from "lodash";
 import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
 import { InfoTip } from "@/components/common";
-import { useQuery } from "@tanstack/react-query";
-import {
-  TooltipTrigger,
-  Tooltip,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { createPortal } from "react-dom";
 
 export const RoycoStats = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { data, isLoading, isRefetching } = useEnrichedRoycoStats();
-
-  const { data: boycoStats } = useQuery({
-    queryKey: ["boyco-stats"],
-    queryFn: async () => {
-      const response = await fetch("/api/boyco/stats");
-      if (!response.ok) {
-        throw new Error("Failed to fetch boyco stats");
-      }
-      return response.json();
-    },
-  });
-
-  // const boycoStats = {
-  //   major_tvl: 100000000.82,
-  //   third_party_tvl: 21000000.21,
-  //   tvl: 122000000.03,
-  // };
 
   const [placeholderDatas, setPlaceholderDatas] = useImmer([
     {
@@ -82,127 +58,62 @@ export const RoycoStats = React.forwardRef<
       )}
       {...props}
     >
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-        ? [
-            {
-              key: "major_tvl",
-              name: "Major Pools TVL",
-            },
-            {
-              key: "third_party_tvl",
-              name: "Third-Party/Hybrid TVL",
-            },
-            {
-              key: "tvl",
-              name: "Total TVL",
-            },
-          ].map((item, index) => {
-            return (
-              <div
-                key={`stats:${item.key}`}
-                className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1 xl:min-w-40"
-              >
-                <div className="caption flex items-center gap-1 text-secondary">
-                  <span>{item.name}</span>
-                  {item.key === "third_party_tvl" && (
-                    <InfoTip size="sm">
-                      *Includes Boyco Pre-Pre-deposit Vaults, not yet deposited
-                      into markets.
-                    </InfoTip>
-                  )}{" "}
-                </div>
-                <div className="money-3 mt-1 w-full text-left text-primary">
-                  <AnimatePresence mode="sync">
-                    {!!boycoStats ? (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                      >
-                        <SpringNumber
-                          // @ts-ignore
-                          previousValue={0}
-                          // @ts-ignore
-                          currentValue={boycoStats[item.key] || 0}
-                          numberFormatOptions={{
-                            style: "currency",
-                            currency: "USD",
-                            notation: "compact",
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }}
-                        />
-                      </motion.div>
-                    ) : (
-                      <div className="relative flex w-full flex-col place-content-center items-center">
-                        <div className="text-transparent">.</div>
-                        <div className="absolute inset-0 flex flex-col place-content-center items-center">
-                          <LoadingSpinner className="h-5 w-5" />
-                        </div>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            );
-          })
-        : [
-            {
-              key: "total_volume",
-              name: "Total Volume",
-            },
-            {
-              key: "total_tvl",
-              name: "Total Value Locked",
-            },
-            // {
-            //   key: "total_incentives",
-            //   name: "Incentives",
-            // },
-          ].map((item, index) => {
-            return (
-              <div
-                key={`stats:${item.key}`}
-                className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1"
-              >
-                <div className="caption text-secondary">{item.name}</div>
-                <div className="money-3 mt-1 w-full text-primary">
-                  <AnimatePresence mode="sync">
-                    {!!data ? (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                      >
-                        <SpringNumber
-                          // @ts-ignore
-                          previousValue={placeholderDatas[0][item.key]}
-                          // @ts-ignore
-                          currentValue={data[item.key] || 0}
-                          numberFormatOptions={{
-                            style: "currency",
-                            currency: "USD",
-                            notation: "compact",
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }}
-                        />
-                      </motion.div>
-                    ) : (
-                      <div className="relative flex w-full flex-col place-content-center items-center">
-                        <div className="text-transparent">.</div>
-                        <div className="absolute inset-0 flex flex-col place-content-center items-center">
-                          <LoadingSpinner className="h-5 w-5" />
-                        </div>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            );
-          })}
+      {[
+        {
+          key: "total_volume",
+          name: "Total Volume",
+        },
+        {
+          key: "total_tvl",
+          name: "Total Value Locked",
+        },
+        // {
+        //   key: "total_incentives",
+        //   name: "Incentives",
+        // },
+      ].map((item, index) => {
+        return (
+          <div
+            key={`stats:${item.key}`}
+            className="flex flex-col items-start rounded-xl border border-divider bg-white p-3 pb-1"
+          >
+            <div className="caption text-secondary">{item.name}</div>
+            <div className="money-3 mt-1 w-full text-primary">
+              <AnimatePresence mode="sync">
+                {!!data ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <SpringNumber
+                      // @ts-ignore
+                      previousValue={placeholderDatas[0][item.key]}
+                      // @ts-ignore
+                      currentValue={data[item.key] || 0}
+                      numberFormatOptions={{
+                        style: "currency",
+                        currency: "USD",
+                        notation: "compact",
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }}
+                    />
+                  </motion.div>
+                ) : (
+                  <div className="relative flex w-full flex-col place-content-center items-center">
+                    <div className="text-transparent">.</div>
+                    <div className="absolute inset-0 flex flex-col place-content-center items-center">
+                      <LoadingSpinner className="h-5 w-5" />
+                    </div>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 });

@@ -12,6 +12,7 @@ import {
 } from "./explore/_components";
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
+import { BoycoStats } from "./explore/_components/boyco-stats";
 
 const Page = () => {
   const Content = () => {
@@ -47,7 +48,11 @@ const Page = () => {
             )}
           </div>
 
-          <RoycoStats className="flex-1" />
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
+            <BoycoStats className="flex-1" />
+          ) : (
+            <RoycoStats className="flex-1" />
+          )}
         </div>
 
         <div
