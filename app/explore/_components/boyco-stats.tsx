@@ -4,7 +4,6 @@ import { LoadingSpinner, SpringNumber } from "@/components/composables";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useMemo } from "react";
-import { InfoTip } from "@/components/common";
 import {
   getAllBeraMarkets,
   getMarketAssetType,
@@ -70,6 +69,7 @@ export const BoycoStats = React.forwardRef<
   });
 
   const boycoStats = useMemo(() => {
+    let undepositedTvl = 0;
     let majorTvl = 0;
     let thirdPartyTvl = 0;
     if (marketTvl) {
@@ -77,13 +77,14 @@ export const BoycoStats = React.forwardRef<
       thirdPartyTvl += marketTvl.third_party_tvl;
     }
     if (vaultTvl) {
-      thirdPartyTvl += vaultTvl.vault_tvl;
+      undepositedTvl += vaultTvl.vault_tvl;
     }
 
     return {
+      undeposite_tvl: undepositedTvl,
       major_tvl: majorTvl,
       third_party_tvl: thirdPartyTvl,
-      tvl: majorTvl + thirdPartyTvl,
+      tvl: majorTvl + thirdPartyTvl + undepositedTvl,
     };
   }, [marketTvl, vaultTvl]);
 
@@ -100,16 +101,20 @@ export const BoycoStats = React.forwardRef<
     >
       {[
         {
+          key: "undeposite_tvl",
+          name: "Undeposited Vaults",
+        },
+        {
           key: "major_tvl",
-          name: "Major Pools TVL",
+          name: "Major",
         },
         {
           key: "third_party_tvl",
-          name: "Third-Party/Hybrid TVL",
+          name: "Third-Party/Hybrid",
         },
         {
           key: "tvl",
-          name: "Total TVL",
+          name: "Total",
         },
       ].map((item, index) => {
         return (
@@ -119,12 +124,6 @@ export const BoycoStats = React.forwardRef<
           >
             <div className="caption flex items-center gap-1 text-secondary">
               <span>{item.name}</span>
-              {item.key === "third_party_tvl" && (
-                <InfoTip size="sm">
-                  *Includes Boyco Pre-Pre-deposit Vaults, not yet deposited into
-                  markets.
-                </InfoTip>
-              )}{" "}
             </div>
             <div className="money-3 mt-1 w-full text-left text-primary">
               <AnimatePresence mode="sync">
