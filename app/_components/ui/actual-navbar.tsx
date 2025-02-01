@@ -199,7 +199,15 @@ export const ActualNavbar = React.forwardRef<
            * @description Logo
            */}
           <div className="w-fit shrink-0 cursor-pointer">
-            <a target="_self" href="/" className="contents">
+            <a
+              target="_self"
+              href={
+                process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                  ? "https://www.royco.org/"
+                  : "/"
+              }
+              className="contents"
+            >
               <img
                 src="/royco-beta.png"
                 alt="Royco Terminal"
@@ -330,7 +338,9 @@ export const ActualNavbar = React.forwardRef<
               <span>BERA Supply rewarded across all</span>
               <span className="font-semibold">Third-Party/Hybrid Pools.</span>
               <span>Weighted by TVL/time.</span>
-              <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
+              <span className="font-semibold text-[#F0E397]">
+                Ends Feb 2 11:59PM UTC.
+              </span>
               <span className="font-semibold underline underline-offset-2">
                 Learn more.
               </span>
@@ -354,7 +364,9 @@ export const ActualNavbar = React.forwardRef<
                 <BeraToken className="h-4 w-4" />
               </span>
               <span className="font-semibold">Boyco is Live!</span>
-              <span className="text-[#F0E397]">Ends Feb 3 12AM UTC.</span>
+              <span className="font-semibold text-[#F0E397]">
+                Ends Feb 2 11:59PM UTC.
+              </span>
               <span className="font-semibold underline underline-offset-2">
                 View Markets Here.
               </span>
