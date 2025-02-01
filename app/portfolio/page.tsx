@@ -14,8 +14,8 @@ const Page = () => {
     return (
       <MarketManagerStoreProvider>
         <WarningAlert className="font-semibold">
-          Alert: Portfolio Balances are currently not loading. We are aware of
-          this issue, and fixing this now.
+          Alert: Portfolio Balances were temporarily not loading. We have fixed
+          this issue.
         </WarningAlert>
 
         <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
