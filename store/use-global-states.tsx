@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { create } from "zustand";
 import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
-import { CustomTokenData } from "royco/types";
+import { CustomTokenDataElementType } from "royco/types";
 import { UserInfo } from "@/components/user/hooks";
 
 export type TypedUserWallet = {
@@ -13,6 +13,11 @@ export type TypedUserWallet = {
 };
 
 export type UserWallet = TypedUserWallet | null | undefined;
+
+export type CustomTokenDataElement = CustomTokenDataElementType & {
+  allocation?: string;
+};
+export type CustomTokenData = Array<CustomTokenDataElement>;
 
 interface GlobalState {
   customTokenData: CustomTokenData;

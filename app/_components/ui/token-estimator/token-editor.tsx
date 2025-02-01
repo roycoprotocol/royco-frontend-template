@@ -20,14 +20,17 @@ import {
   parseFormattedValueToText,
   parseTextToFormattedValue,
 } from "royco/utils";
-import { useGlobalStates } from "@/store/use-global-states";
+import {
+  CustomTokenDataElement,
+  useGlobalStates,
+} from "@/store/use-global-states";
 import { BERA_TOKEN_ID } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
 
 export const TokenEditor = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     index: number;
-    token: CustomTokenDataElementType;
+    token: CustomTokenDataElement;
     customTokenForm: UseFormReturn<
       z.infer<typeof EstimatorCustomTokenDataSchema>
     >;
@@ -45,29 +48,56 @@ export const TokenEditor = React.forwardRef<
   }, [token.token_id]);
 
   const handleFDVChange = (value: string) => {
+    const allocation = parseFloat(token.allocation || "100");
+    const fdv = parseFloat(value || "0");
     const total_supply = parseFloat(token.total_supply || "0");
 
-    const fdv = parseFloat(value || "0");
-    let price = fdv / total_supply;
-    if (isNaN(price)) {
-      price = 0;
+    const new_fdv = fdv;
+    const new_total_supply = total_supply / (allocation / 100);
+    let new_price = new_fdv / new_total_supply;
+    if (isNaN(new_price)) {
+      new_price = 0;
     }
 
-    customTokenForm.setValue(`customTokenData.${index}.fdv`, value);
     customTokenForm.setValue(
       `customTokenData.${index}.price`,
-      price.toString()
+      new_price.toString()
     );
+    customTokenForm.setValue(`customTokenData.${index}.fdv`, value);
   };
 
   const handlePriceChange = (value: string) => {
+    const allocation = parseFloat(token.allocation || "100");
     const total_supply = parseFloat(token.total_supply || "0");
 
     const price = parseFloat(value || "0");
-    let fdv = price * total_supply;
+    const new_total_supply = total_supply / (allocation / 100);
+    const new_fdv = price * new_total_supply;
 
-    customTokenForm.setValue(`customTokenData.${index}.fdv`, fdv.toString());
+    customTokenForm.setValue(
+      `customTokenData.${index}.fdv`,
+      new_fdv.toString()
+    );
     customTokenForm.setValue(`customTokenData.${index}.price`, value);
+  };
+
+  const handleAllocationChange = (value: string) => {
+    const allocation = parseFloat(value || "100");
+    const fdv = parseFloat(token.fdv || "0");
+    const total_supply = parseFloat(token.total_supply || "0");
+
+    const new_fdv = fdv;
+    const new_total_supply = total_supply / (allocation / 100);
+    let new_price = new_fdv / new_total_supply;
+    if (isNaN(new_price)) {
+      new_price = 0;
+    }
+
+    customTokenForm.setValue(
+      `customTokenData.${index}.price`,
+      new_price.toString()
+    );
+    customTokenForm.setValue(`customTokenData.${index}.allocation`, value);
   };
 
   if (!tokenData) {
@@ -162,6 +192,35 @@ export const TokenEditor = React.forwardRef<
       <hr className="my-3" />
 
       {/**
+       * Allocation Input
+       */}
+      {tokenData.type === "point" && (
+        <div className="mb-4">
+          <FormInputLabel
+            size="sm"
+            label={
+              process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
+                ? "% Supply Allocated to Boyco"
+                : "% Supply Allocated to Royco"
+            }
+          />
+
+          <Input
+            type="text"
+            placeholder="Enter Allocation"
+            containerClassName="mt-2"
+            className="w-full"
+            value={parseTextToFormattedValue(
+              customTokenForm.watch(`customTokenData.${index}.allocation`)
+            )}
+            onChange={(e) =>
+              handleAllocationChange(parseFormattedValueToText(e.target.value))
+            }
+          />
+        </div>
+      )}
+
+      {/**
        * FDV Input
        */}
       <div>
@@ -194,6 +253,9 @@ export const TokenEditor = React.forwardRef<
         />
       </div>
 
+      {/**
+       * Price Input
+       */}
       {tokenData.type === "point" && (
         <div className="mt-4">
           <FormInputLabel size="sm" label="Estimated Price per Point" />
