@@ -14,7 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { useGlobalStates } from "@/store/use-global-states";
+import {
+  CustomTokenDataElement,
+  useGlobalStates,
+} from "@/store/use-global-states";
 import { TokenEditor } from "./token-editor";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -22,7 +25,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
-import { CustomTokenDataElementType } from "royco/types";
 import { LoadingSpinner } from "@/components/composables";
 import { useTokenQuotes } from "royco/hooks";
 import { AlertIndicator } from "@/components/common";
@@ -34,6 +36,7 @@ export const EstimatorCustomTokenDataSchema = z.object({
       fdv: z.string(),
       total_supply: z.string(),
       price: z.string(),
+      allocation: z.string(),
     })
   ),
 });
@@ -62,12 +65,13 @@ export const TokenEstimator = React.forwardRef<
       fdv: token.fdv || "0",
       total_supply: token.total_supply || "0",
       price: token.price || "0",
+      allocation: token.allocation || "100",
     }));
 
     form.setValue("customTokenData", tokens);
   }, [customTokenData, open]);
 
-  const handleTokenSelect = (token: CustomTokenDataElementType) => {
+  const handleTokenSelect = (token: CustomTokenDataElement) => {
     const currentTokens = form.getValues("customTokenData");
     const hasToken = currentTokens.some((t) => t.token_id === token.token_id);
 
@@ -95,6 +99,7 @@ export const TokenEstimator = React.forwardRef<
           fdv: defaultTokenQuotes[index].fdv.toString(),
           total_supply: defaultTokenQuotes[index].total_supply.toString(),
           price: defaultTokenQuotes[index].price.toString(),
+          allocation: "100",
         };
         handleTokenSelect(token);
       }
