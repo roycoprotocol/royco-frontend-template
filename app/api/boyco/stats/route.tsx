@@ -45,7 +45,6 @@ export async function GET() {
     const cacheTime = await kv.get("boyco_vault_stats_timestamp");
 
     // Check if cache exists and is less than 5 minutes old
-
     if (
       cachedData &&
       cacheTime &&
@@ -59,7 +58,7 @@ export async function GET() {
         `https://pro-openapi.debank.com/v1/user/chain_balance?id=${vault}&chain_id=eth`,
         {
           headers: {
-            "X-Dune-API-Key": process.env.DUNE_API_KEY,
+            AccessKey: process.env.DEBANK_API_KEY,
           },
         }
       )
