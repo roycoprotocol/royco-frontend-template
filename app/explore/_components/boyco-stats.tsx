@@ -51,13 +51,21 @@ export const BoycoStats = React.forwardRef<
         client: client as any,
         customTokenData: [],
       });
-      return markets.reduce((acc, market) => {
-        const poolType = getMarketAssetType(market);
-        if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
-          acc += market.total_value_locked || 0;
+      return markets.reduce(
+        (acc, market) => {
+          const poolType = getMarketAssetType(market);
+          if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
+            acc.major_tvl += market.total_value_locked || 0;
+          } else {
+            acc.third_party_tvl += market.total_value_locked || 0;
+          }
+          return acc;
+        },
+        {
+          major_tvl: 0,
+          third_party_tvl: 0,
         }
-        return acc;
-      }, 0);
+      );
     },
   });
 
@@ -65,10 +73,11 @@ export const BoycoStats = React.forwardRef<
     let majorTvl = 0;
     let thirdPartyTvl = 0;
     if (marketTvl) {
-      majorTvl = marketTvl;
+      majorTvl += marketTvl.major_tvl;
+      thirdPartyTvl += marketTvl.third_party_tvl;
     }
     if (vaultTvl) {
-      thirdPartyTvl = vaultTvl.vault_tvl;
+      thirdPartyTvl += vaultTvl.vault_tvl;
     }
 
     return {
