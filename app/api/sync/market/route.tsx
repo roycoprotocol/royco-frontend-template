@@ -15,8 +15,10 @@ export async function GET(request: Request) {
     // Calculate batch size for the SupportedMarketMap entries
     const mapEntries = Object.values(SupportedMarketMap);
     const batchSize = 100;
-    const currentMinute = new Date().getUTCMinutes();
-    const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+    const currentMinute = Math.floor(Date.now() / (1000 * 60));
+    const minuteInterval = Math.floor(currentMinute / 4);
+    const batchIndex =
+      minuteInterval % Math.ceil(mapEntries.length / batchSize);
     const batchMarkets = mapEntries.slice(
       batchIndex * batchSize,
       (batchIndex + 1) * batchSize
