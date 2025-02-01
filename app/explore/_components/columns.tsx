@@ -47,7 +47,12 @@ import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
 import validator from "validator";
 import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
-import { getMarketAssetType, MULTIPLIER_ASSET_TYPE } from "royco/boyco";
+import {
+  getMarketAssetType,
+  getMarketMultiplier,
+  MULTIPLIER_ASSET_TYPE,
+} from "royco/boyco";
+import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -538,6 +543,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
     cell: (props: any) => {
       const poolType = getMarketAssetType(props.row.original);
+      const marketMultiplier = getMarketMultiplier(props.row.original);
 
       return (
         <div
@@ -550,7 +556,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         >
           <div
             className={cn(
-              "body-2",
+              "body-2 flex flex-row items-center gap-2",
               props.view === "grid" && "text-secondary",
               props.view === "list" && "text-black"
             )}
@@ -570,6 +576,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                 }
               })()}
             </span>
+            {marketMultiplier && (
+              <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
+                {marketMultiplier}x
+              </SecondaryLabel>
+            )}
           </div>
 
           {/* {props.row.original.market_type === 0 ? "Recipe" : "Vault"} */}
