@@ -20,6 +20,11 @@ import {
 import { useActiveMarket } from "../../../hooks";
 import { TertiaryLabel } from "../../../composables";
 import formatNumber from "@/utils/numbers";
+import {
+  getMarketMultiplier,
+  getMarketAssetType,
+  MULTIPLIER_ASSET_TYPE,
+} from "royco/boyco";
 
 export const MarketDetails = React.forwardRef<
   HTMLDivElement,
@@ -47,6 +52,20 @@ export const MarketDetails = React.forwardRef<
     return `${formatNumber(_fillableAmount)} ${currentMarketData.input_token_data.symbol} (${formatNumber(currentMarketData.quantity_ip_usd ?? 0, { type: "currency" })})`;
   }, [currentMarketData]);
 
+  const marketMultiplier = useMemo(() => {
+    if (!currentMarketData || currentMarketData.category !== "boyco") {
+      return;
+    }
+    return getMarketMultiplier(currentMarketData);
+  }, [currentMarketData]);
+
+  const marketAssetType = useMemo(() => {
+    if (!currentMarketData || currentMarketData.category !== "boyco") {
+      return;
+    }
+    return getMarketAssetType(currentMarketData);
+  }, [currentMarketData]);
+
   return (
     <div
       ref={ref}
@@ -56,26 +75,51 @@ export const MarketDetails = React.forwardRef<
       {/**
        * TVL
        */}
-      <div>
-        <TertiaryLabel className="text-sm">TVL</TertiaryLabel>
-        <PrimaryLabel className="mt-1 text-2xl font-500">
-          <SpringNumber
-            previousValue={
-              previousMarketData && previousMarketData.locked_quantity_usd
-                ? previousMarketData.locked_quantity_usd
-                : 0
-            }
-            currentValue={currentMarketData.locked_quantity_usd ?? 0}
-            numberFormatOptions={{
-              style: "currency",
-              currency: "USD",
-              notation: "compact",
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }}
-          />
-        </PrimaryLabel>
+      <div className="flex flex-row justify-between">
+        <div>
+          <TertiaryLabel className="text-sm">TVL</TertiaryLabel>
+          <PrimaryLabel className="mt-1 text-2xl font-500 ">
+            <SpringNumber
+              previousValue={
+                previousMarketData && previousMarketData.locked_quantity_usd
+                  ? previousMarketData.locked_quantity_usd
+                  : 0
+              }
+              currentValue={currentMarketData.locked_quantity_usd ?? 0}
+              numberFormatOptions={{
+                style: "currency",
+                currency: "USD",
+                notation: "compact",
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }}
+            />
+          </PrimaryLabel>
+        </div>
+
+        {marketAssetType && marketMultiplier && (
+          <div className="flex flex-col items-end">
+            <TertiaryLabel className="text-sm">
+              {(() => {
+                if (marketAssetType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
+                  return "MAJOR";
+                } else if (
+                  marketAssetType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY
+                ) {
+                  return "THIRD-PARTY";
+                } else if (marketAssetType === MULTIPLIER_ASSET_TYPE.HYBRID) {
+                  return "HYBRID";
+                } else {
+                  return "Unknown";
+                }
+              })()}
+            </TertiaryLabel>
+            <SecondaryLabel className="mt-1 h-full rounded-full border border-success px-3 py-1 font-semibold text-success">
+              {marketMultiplier}x
+            </SecondaryLabel>
+          </div>
+        )}
       </div>
 
       <hr className="my-4" />
