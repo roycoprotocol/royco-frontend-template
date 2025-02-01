@@ -7,11 +7,17 @@ import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
 import { PositionsRecipeManager } from "./_components/positions-recipe-manager";
+import { WarningAlert } from "../market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables/warning-alert";
 
 const Page = () => {
   const Content = () => {
     return (
       <MarketManagerStoreProvider>
+        <WarningAlert className="font-semibold">
+          Alert: Portfolio Balances are currently not loading. We are aware of
+          this issue, and fixing this now.
+        </WarningAlert>
+
         <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
           {/**
            * @title Header Bar

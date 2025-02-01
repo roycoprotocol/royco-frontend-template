@@ -18,6 +18,7 @@ import {
 } from "./ui";
 import { Switch } from "../../../components/ui/switch";
 import { useParams, usePathname } from "next/navigation";
+import { PoolTypeFilter } from "./ui/pool-type-filter";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
@@ -181,6 +182,19 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
                   setExploreIsVerified(!exploreIsVerified);
                 }}
               />
+            </div>
+          )}
+
+          {/**
+           * @description Pool Type filter
+           */}
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
+            <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
+              <h5 className="">Pool Type</h5>
+
+              <div className="flex flex-wrap gap-2">
+                <PoolTypeFilter />
+              </div>
             </div>
           )}
 
