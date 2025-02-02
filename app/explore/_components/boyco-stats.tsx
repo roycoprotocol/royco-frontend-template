@@ -107,10 +107,10 @@ export const BoycoStats = React.forwardRef<
           key: "third_party_tvl",
           name: "Third-Party/Hybrid",
         },
-        {
-          key: "tvl",
-          name: "Total",
-        },
+        // {
+        //   key: "tvl",
+        //   name: "Total",
+        // },
       ].map((item, index) => {
         return (
           <div
