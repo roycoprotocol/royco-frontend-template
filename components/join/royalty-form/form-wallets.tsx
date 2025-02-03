@@ -108,19 +108,19 @@ export const FormWallets = React.forwardRef<
       ]);
     }
 
-    if (
-      isConnected &&
-      !!account_address &&
-      royaltyForm
-        .watch("wallets")
-        .some(
-          (wallet) =>
-            wallet.account_address.toLowerCase() ===
-            account_address.toLowerCase()
-        )
-    ) {
-      toast.error("Wallet already added");
-    }
+    // if (
+    //   isConnected &&
+    //   !!account_address &&
+    //   royaltyForm
+    //     .watch("wallets")
+    //     .some(
+    //       (wallet) =>
+    //         wallet.account_address.toLowerCase() ===
+    //         account_address.toLowerCase()
+    //     )
+    // ) {
+    //   toast.error("Wallet already added");
+    // }
   };
 
   const addProof = async () => {
