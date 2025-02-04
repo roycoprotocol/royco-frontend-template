@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useMemo } from "react";
 import { RoycoLogo } from "../assets";
 import "./navbar.css";
 import {
@@ -51,12 +51,12 @@ const NavbarLinks = [
     link: "/portfolio",
     target: "_self",
   },
-  // {
-  //   id: "royalty",
-  //   label: "Royalty",
-  //   link: "/royalty",
-  //   target: "_self",
-  // },
+  {
+    id: "royalty",
+    label: "Royalty",
+    link: "/royalty",
+    target: "_self",
+  },
   {
     id: "more",
     label: "More",
@@ -97,6 +97,13 @@ export const ActualNavbar = React.forwardRef<
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const pathname = usePathname();
 
+  const updatedNavbarLinks = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return NavbarLinks.filter((link) => link.id !== "royalty");
+    }
+    return NavbarLinks;
+  }, [process.env.NEXT_PUBLIC_FRONTEND_TAG]);
+
   return (
     <>
       <div
@@ -129,7 +136,7 @@ export const ActualNavbar = React.forwardRef<
               }}
             >
               <div className="flex flex-col gap-3 overflow-hidden py-5 lg:hidden">
-                {NavbarLinks.map(
+                {updatedNavbarLinks.map(
                   ({ id, label, link, target, items }, navIndex) => {
                     const BASE_KEY = `navbar-link:mobile:${id}`;
                     return link ? (
@@ -227,60 +234,62 @@ export const ActualNavbar = React.forwardRef<
            * @description Links
            */}
           <div className="text-nav-link hidden shrink-0 flex-row items-center space-x-[2.88rem] text-secondary lg:flex">
-            {NavbarLinks.map(({ id, label, link, target, items }, navIndex) => {
-              const BASE_KEY = `navbar-link:${id}`;
-              return link ? (
-                <a
-                  href={link}
-                  target={target}
-                  rel="noopener noreferrer"
-                  key={`navbar-link:${BASE_KEY}`}
-                  {...(pathname === "/" && {
-                    initial: {
-                      x: -40,
-                      opacity: 0,
-                      scale: 0.8,
-                      filter: "blur(4px)",
-                    },
-                    whileinview: {
-                      x: 0,
-                      opacity: 1,
-                      scale: 1,
-                      filter: "blur(0px)",
-                    },
-                    transition: {
-                      delay: navIndex * 0.1,
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    },
-                  })}
-                  className={cn(
-                    "cursor-pointer transition-all duration-200 ease-in-out",
-                    "hover:text-primary"
-                  )}
-                >
-                  {label}
-                </a>
-              ) : (
-                <Tooltip key={`navbar-link:learn:${BASE_KEY}`}>
-                  <TooltipTrigger>{label}</TooltipTrigger>
-                  <TooltipContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
-                    {items?.map((item) => (
-                      <a
-                        key={`navbar-link:learn:${BASE_KEY}-${item.id}`}
-                        href={item.link}
-                        target={item.target}
-                        rel="noopener noreferrer"
-                      >
-                        <DropdownMenuLabel className="rounded px-4 py-2 transition-all hover:bg-focus">
-                          {item.label}
-                        </DropdownMenuLabel>
-                      </a>
-                    ))}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
+            {updatedNavbarLinks.map(
+              ({ id, label, link, target, items }, navIndex) => {
+                const BASE_KEY = `navbar-link:${id}`;
+                return link ? (
+                  <a
+                    href={link}
+                    target={target}
+                    rel="noopener noreferrer"
+                    key={`navbar-link:${BASE_KEY}`}
+                    {...(pathname === "/" && {
+                      initial: {
+                        x: -40,
+                        opacity: 0,
+                        scale: 0.8,
+                        filter: "blur(4px)",
+                      },
+                      whileinview: {
+                        x: 0,
+                        opacity: 1,
+                        scale: 1,
+                        filter: "blur(0px)",
+                      },
+                      transition: {
+                        delay: navIndex * 0.1,
+                        duration: 0.3,
+                        ease: "easeInOut",
+                      },
+                    })}
+                    className={cn(
+                      "cursor-pointer transition-all duration-200 ease-in-out",
+                      "hover:text-primary"
+                    )}
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <Tooltip key={`navbar-link:learn:${BASE_KEY}`}>
+                    <TooltipTrigger>{label}</TooltipTrigger>
+                    <TooltipContent className="mt-3 flex w-48 flex-col rounded-lg border bg-white p-1 shadow-sm">
+                      {items?.map((item) => (
+                        <a
+                          key={`navbar-link:learn:${BASE_KEY}-${item.id}`}
+                          href={item.link}
+                          target={item.target}
+                          rel="noopener noreferrer"
+                        >
+                          <DropdownMenuLabel className="rounded px-4 py-2 transition-all hover:bg-focus">
+                            {item.label}
+                          </DropdownMenuLabel>
+                        </a>
+                      ))}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+            )}
           </div>
 
           {/**
