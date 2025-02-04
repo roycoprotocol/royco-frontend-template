@@ -51,12 +51,12 @@ const NavbarLinks = [
     link: "/portfolio",
     target: "_self",
   },
-  {
-    id: "royalty",
-    label: "Royalty",
-    link: "/royalty",
-    target: "_self",
-  },
+  // {
+  //   id: "royalty",
+  //   label: "Royalty",
+  //   link: "/royalty",
+  //   target: "_self",
+  // },
   {
     id: "more",
     label: "More",
