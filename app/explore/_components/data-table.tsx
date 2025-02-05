@@ -35,6 +35,7 @@ import { InfoGrid, InfoTip } from "@/components/common";
 
 import { FallMotion } from "@/components/animations";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import Link from "next/link";
 
 /**
  * @description DataTable component props
@@ -394,56 +395,57 @@ export function DataTable<TData, TValue>({
                     const market = row.original as any;
 
                     return (
-                      <TableRow
-                        onClick={() => {
-                          window.open(
-                            `/market/${market.chain_id}/${market.market_type}/${market.market_id}`,
-                            "_self",
-                            "noopener,noreferrer"
-                          );
-                        }}
-                        // key={`list:row:${row.index}`}
-                        data-state={row.getIsSelected() && "selected"}
-                        className={cn(
-                          "cursor-pointer px-5 hover:bg-focus",
-                          rowIndex !== 20 - 1 &&
-                            // marketsPerPage
-                            "border-b border-divider"
-                        )}
+                      <Link
+                        key={`list:row:${row.index}`}
+                        target="_self"
+                        rel="noopener noreferrer"
+                        href={`/market/${market.chain_id}/${market.market_type}/${market.market_id}`}
+                        className="contents"
                       >
-                        {row.getVisibleCells().map(
-                          // @ts-ignore
-                          // @TODO strict type this
-                          (cell, index) => (
-                            <TableCell
-                              key={`list:cell:${cell.id}`}
-                              className={cn(
-                                "body-2 min-w-fit truncate text-ellipsis whitespace-nowrap text-primary",
-                                index === 0 && "pl-5",
-                                index !== 0 &&
-                                  index === row.getVisibleCells().length - 1 &&
-                                  "pr-5",
-                                "h-[3rem]",
-                                "py-0"
-                              )}
-                            >
-                              <FallMotion
-                                customKey={`list:content:${market.id}`}
-                                height="3rem"
-                                delay={rowIndex * 0.02}
-                                className="h-full"
-                                contentClassName="flex flex-col items-center justify-center"
+                        <TableRow
+                          data-state={row.getIsSelected() && "selected"}
+                          className={cn(
+                            "cursor-pointer px-5 hover:bg-focus",
+                            rowIndex !== 20 - 1 &&
+                              // marketsPerPage
+                              "border-b border-divider"
+                          )}
+                        >
+                          {row.getVisibleCells().map(
+                            // @ts-ignore
+                            // @TODO strict type this
+                            (cell, index) => (
+                              <TableCell
+                                key={`list:cell:${cell.id}`}
+                                className={cn(
+                                  "body-2 min-w-fit truncate text-ellipsis whitespace-nowrap text-primary",
+                                  index === 0 && "pl-5",
+                                  index !== 0 &&
+                                    index ===
+                                      row.getVisibleCells().length - 1 &&
+                                    "pr-5",
+                                  "h-[3rem]",
+                                  "py-0"
+                                )}
                               >
-                                {flexRender(cell.column.columnDef.cell, {
-                                  ...cell.getContext(),
-                                  placeholderDatas,
-                                  view,
-                                })}
-                              </FallMotion>
-                            </TableCell>
-                          )
-                        )}
-                      </TableRow>
+                                <FallMotion
+                                  customKey={`list:content:${market.id}`}
+                                  height="3rem"
+                                  delay={rowIndex * 0.02}
+                                  className="h-full"
+                                  contentClassName="flex flex-col items-center justify-center"
+                                >
+                                  {flexRender(cell.column.columnDef.cell, {
+                                    ...cell.getContext(),
+                                    placeholderDatas,
+                                    view,
+                                  })}
+                                </FallMotion>
+                              </TableCell>
+                            )
+                          )}
+                        </TableRow>
+                      </Link>
                     );
                   })
                 )}
