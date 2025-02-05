@@ -365,32 +365,6 @@ export const ActualNavbar = React.forwardRef<
           </a>
         </div>
       )}
-
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
-        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
-          <a
-            href="https://berachain.royco.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2"
-          >
-            <div className="flex flex-wrap items-center justify-center gap-1">
-              <span>
-                <BeraToken className="h-4 w-4" />
-              </span>
-              <span className="font-semibold">Boyco is Live!</span>
-              <span className="font-semibold text-[#F0E397]">
-                Ends Feb 2 11:59PM UTC.
-              </span>
-              <span className="font-semibold underline underline-offset-2">
-                View Markets Here.
-              </span>
-            </div>
-
-            <ChevronRightIcon className="h-4 w-4 text-black" />
-          </a>
-        </div>
-      )}
     </>
   );
 });
