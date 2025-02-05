@@ -238,13 +238,15 @@ export const MarketDetails = React.forwardRef<
           </InfoCard.Row>
         )}
 
-        <InfoCard.Row className={INFO_ROW_CLASSES}>
-          <InfoCard.Row.Key>Amount Fillable</InfoCard.Row.Key>
+        {marketMetadata.market_type === MarketType.recipe.id && (
+          <InfoCard.Row className={INFO_ROW_CLASSES}>
+            <InfoCard.Row.Key>Amount Fillable</InfoCard.Row.Key>
 
-          <InfoCard.Row.Value>
-            <span>{formattedFillableAmount}</span>
-          </InfoCard.Row.Value>
-        </InfoCard.Row>
+            <InfoCard.Row.Value>
+              <span>{formattedFillableAmount}</span>
+            </InfoCard.Row.Value>
+          </InfoCard.Row>
+        )}
       </InfoCard>
 
       {/**
