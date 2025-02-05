@@ -13,6 +13,7 @@ import {
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -105,7 +106,7 @@ const Page = () => {
           </div>
         </div>
 
-        {/* <RoycoRoyalty /> */}
+        <RoycoRoyalty />
       </div>
     );
   };
