@@ -106,7 +106,7 @@ const Page = () => {
           </div>
         </div>
 
-        <RoycoRoyalty />
+        {/* <RoycoRoyalty /> */}
       </div>
     );
   };
