@@ -79,7 +79,14 @@ export const fetchLpTokenFromContract = async ({
   const chainClient = createPublicClient({
     chain: getSupportedChain(chainId),
     transport: http(
-      SERVER_RPC_API_KEYS[chainId as keyof typeof SERVER_RPC_API_KEYS]
+      SERVER_RPC_API_KEYS[chainId as keyof typeof SERVER_RPC_API_KEYS],
+      {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }
     ),
   });
 
