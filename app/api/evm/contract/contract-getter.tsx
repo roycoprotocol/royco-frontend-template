@@ -41,7 +41,13 @@ export const getContract = async ({
 
     const client = createPublicClient({
       chain,
-      transport: http(RPC_API_KEYS[chain_id]),
+      transport: http(RPC_API_KEYS[chain_id], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     });
 
     // Fetch from Sourcify
