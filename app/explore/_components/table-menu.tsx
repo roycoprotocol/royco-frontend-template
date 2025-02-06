@@ -38,6 +38,8 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       setExploreView,
       exploreIsVerified,
       setExploreIsVerified,
+      exploreAllMarkets,
+      setExploreAllMarkets,
     } = useExplore();
 
     /**
@@ -51,6 +53,8 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       exploreSearch: searchKey,
       explorePageIndex: pageIndex,
       exploreCustomPoolParams: customPoolParams,
+      exploreAllMarkets: showAllMarkets,
+      setExplorePageIndex: setPageIndex,
     } = useExplore();
 
     useEffect(() => {
@@ -72,9 +76,32 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
 
     const { customTokenData } = useGlobalStates();
 
+    const updatedFilters = useMemo(() => {
+      if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "default") {
+        const filterItem = filters.find((filter) => filter.id === "category");
+
+        if (filterItem && showAllMarkets) {
+          return filters.filter((filter) => filter.id !== "category");
+        }
+
+        if (!filterItem && !showAllMarkets) {
+          return [
+            ...filters,
+            {
+              id: "category",
+              value: "boyco",
+              condition: "NOT",
+            },
+          ];
+        }
+      }
+
+      return filters;
+    }, [filters, showAllMarkets]);
+
     const { isLoading, isError, isRefetching, count } = useEnrichedMarkets({
       sorting,
-      filters,
+      filters: updatedFilters,
       page_index: pageIndex,
       search_key: searchKey,
       is_verified: showVerifiedMarket ? true : exploreIsVerified,
@@ -186,8 +213,26 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           )}
 
           {/**
+           * @description Show all markets
+           */}
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
+            <div className="body-2 mt-4 flex justify-between text-primary">
+              <h5 className="">Show All Markets</h5>
+
+              <Switch
+                checked={exploreAllMarkets}
+                onCheckedChange={() => {
+                  setPageIndex(0);
+                  setExploreAllMarkets(!exploreAllMarkets);
+                }}
+              />
+            </div>
+          )}
+
+          {/**
            * @description Pool Type filter
            */}
+
           {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
             <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
               <h5 className="">Pool Type</h5>
