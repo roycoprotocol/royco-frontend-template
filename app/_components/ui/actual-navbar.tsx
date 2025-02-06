@@ -366,7 +366,7 @@ export const ActualNavbar = React.forwardRef<
         </div>
       )}
 
-      <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+      {/* <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
         <div className="flex flex-wrap items-center justify-center gap-1">
           <span className="font-semibold underline underline-offset-2">
             Royco.org
@@ -374,7 +374,7 @@ export const ActualNavbar = React.forwardRef<
           <span>is currently undergoing upgrade. Service will return at</span>
           <span className="font-semibold text-[#F0E397]">15:00 PST.</span>
         </div>
-      </div>
+      </div> */}
     </>
   );
 });
