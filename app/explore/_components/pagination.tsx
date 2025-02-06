@@ -17,6 +17,7 @@ export const Pagination = () => {
     exploreCustomPoolParams: customPoolParams,
     setExplorePageIndex: setPageIndex,
     exploreIsVerified: isVerified,
+    exploreAllMarkets: showAllMarkets,
   } = useExplore();
 
   const pathname = usePathname();
@@ -27,9 +28,32 @@ export const Pagination = () => {
 
   const { customTokenData } = useGlobalStates();
 
+  const updatedFilters = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "default") {
+      const filterItem = filters.find((filter) => filter.id === "category");
+
+      if (filterItem && showAllMarkets) {
+        return filters.filter((filter) => filter.id !== "category");
+      }
+
+      if (!filterItem && !showAllMarkets) {
+        return [
+          ...filters,
+          {
+            id: "category",
+            value: "boyco",
+            condition: "NOT",
+          },
+        ];
+      }
+    }
+
+    return filters;
+  }, [filters, showAllMarkets]);
+
   const { count, isLoading } = useEnrichedMarkets({
     sorting,
-    filters,
+    filters: updatedFilters,
     page_index: pageIndex,
     search_key: searchKey,
     is_verified: showVerifiedMarket ? true : isVerified,
