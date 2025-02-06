@@ -355,6 +355,8 @@ export const positionsRecipeColumnsBoyco: ColumnDef<PositionsRecipeColumnDataEle
           status = "In Dapp";
         }
 
+        status = "Bridged";
+
         return (
           <Tooltip>
             <TooltipTrigger asChild>
