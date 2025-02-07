@@ -217,7 +217,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
            */}
           {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
             <div className="body-2 mt-4 flex justify-between text-primary">
-              <h5 className="">Show All Markets</h5>
+              <h5 className="">Show Inactive Markets</h5>
 
               <Switch
                 checked={exploreAllMarkets}
