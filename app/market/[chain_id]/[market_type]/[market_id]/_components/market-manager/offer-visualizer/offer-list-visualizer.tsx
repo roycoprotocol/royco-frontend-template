@@ -186,15 +186,17 @@ export const OfferListVisualizer = React.forwardRef<
                   const index = currentMarketData.base_incentive_ids?.findIndex(
                     (id) => id === token.id
                   );
-                  if (!index) {
+
+                  if (index === -1) {
                     return null;
                   }
 
                   const startTimestamp = parseInt(
-                    currentMarketData.base_start_timestamps?.[index] ?? "0"
+                    currentMarketData.base_start_timestamps?.[index ?? -1] ??
+                      "0"
                   );
                   const endTimestamp = parseInt(
-                    currentMarketData.base_end_timestamps?.[index] ?? "0"
+                    currentMarketData.base_end_timestamps?.[index ?? -1] ?? "0"
                   );
                   const currentTimestamp = Math.floor(Date.now() / 1000);
 
