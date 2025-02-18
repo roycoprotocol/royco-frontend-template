@@ -33,6 +33,7 @@ import { useWriteContract } from "wagmi";
 import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { WriteContractErrorType } from "@wagmi/core";
+import { BytecodeStep } from "../market-builder-flow/bytecode-step/bytecode-step";
 
 export type MarketBuilderManagerProps = {
   marketBuilderForm: UseFormReturn<z.infer<typeof MarketBuilderFormSchema>>;
@@ -186,6 +187,13 @@ export const MarketBuilderManager = React.forwardRef<
                 {(activeStep === MarketBuilderSteps.actions.id ||
                   activeStep === MarketBuilderSteps.params.id) && (
                   <ActionsStep
+                    marketBuilderForm={marketBuilderForm}
+                    className=""
+                  />
+                )}
+
+                {activeStep === MarketBuilderSteps.bytecode.id && (
+                  <BytecodeStep
                     marketBuilderForm={marketBuilderForm}
                     className=""
                   />

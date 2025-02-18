@@ -26,6 +26,7 @@ import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 import { BigNumber } from "ethers";
+import { CreateActionsMap } from "../market-builder-flow/info-step/form-selectors";
 
 const getFrontendFee = () => {
   /**
@@ -76,9 +77,31 @@ export const BottomNavigator = React.forwardRef<
     } = useCreateRecipeMarket({
       chainId: marketBuilderForm.watch("chain").id,
       // @ts-ignore
-      enterMarketActions: marketBuilderForm.watch("enter_actions"),
+      enterMarketActions: (() => {
+        try {
+          return marketBuilderForm.watch("create_actions_type") === "recipe"
+            ? marketBuilderForm.watch("enter_actions")
+            : JSON.parse(
+                marketBuilderForm.watch("enter_actions_bytecode") || "{}"
+              );
+        } catch (error) {
+          console.error("Error parsing enter actions:", error);
+          return {};
+        }
+      })(),
       // @ts-ignore
-      exitMarketActions: marketBuilderForm.watch("exit_actions"),
+      exitMarketActions: (() => {
+        try {
+          return marketBuilderForm.watch("create_actions_type") === "recipe"
+            ? marketBuilderForm.watch("exit_actions")
+            : JSON.parse(
+                marketBuilderForm.watch("exit_actions_bytecode") || "{}"
+              );
+        } catch (error) {
+          console.error("Error parsing exit actions:", error);
+          return {};
+        }
+      })(),
       lockupTime: (
         parseInt(marketBuilderForm.watch("lockup_time").duration ?? "0") *
         LockupTimeMap[marketBuilderForm.watch("lockup_time").duration_type]
@@ -108,13 +131,19 @@ export const BottomNavigator = React.forwardRef<
     const handleNextStep = async () => {
       if (activeStep === MarketBuilderSteps.info.id) {
         if (marketBuilderForm.watch("action_type") === "recipe") {
-          setActiveStep(MarketBuilderSteps.actions.id);
+          if (marketBuilderForm.watch("create_actions_type") === "recipe") {
+            setActiveStep(MarketBuilderSteps.actions.id);
+          } else {
+            setActiveStep(MarketBuilderSteps.bytecode.id);
+          }
         } else {
           setActiveStep(MarketBuilderSteps.vault.id);
         }
       } else if (activeStep === MarketBuilderSteps.actions.id) {
         setActiveStep(MarketBuilderSteps.params.id);
       } else if (activeStep === MarketBuilderSteps.params.id) {
+        setActiveStep(MarketBuilderSteps.review.id);
+      } else if (activeStep === MarketBuilderSteps.bytecode.id) {
         setActiveStep(MarketBuilderSteps.review.id);
       } else if (activeStep === MarketBuilderSteps.vault.id) {
         setActiveStep(MarketBuilderSteps.review.id);
@@ -173,9 +202,11 @@ export const BottomNavigator = React.forwardRef<
         return "Next";
       } else if (activeStep === MarketBuilderSteps.actions.id) {
         return "Proceed";
-      } else if (activeStep === MarketBuilderSteps.vault.id) {
-        return "Review";
       } else if (activeStep === MarketBuilderSteps.params.id) {
+        return "Review";
+      } else if (activeStep === MarketBuilderSteps.bytecode.id) {
+        return "Review";
+      } else if (activeStep === MarketBuilderSteps.vault.id) {
         return "Review";
       } else if (activeStep === MarketBuilderSteps.review.id) {
         const RecipeMarketHub =
