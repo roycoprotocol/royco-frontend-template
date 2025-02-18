@@ -169,6 +169,7 @@ export const MarketBuilder = React.forwardRef<
         activeStep === MarketBuilderSteps.params.id && "max-w-screen-lg",
         activeStep === MarketBuilderSteps.actions.id && "max-w-[83.625rem]",
         activeStep === MarketBuilderSteps.actions.id && "h-[800px]",
+        activeStep === MarketBuilderSteps.bytecode.id && "h-[800px]",
         activeStep === MarketBuilderSteps.params.id && "h-[1100px]",
         activeStep === MarketBuilderSteps.transaction.id && "max-w-[83.625rem]"
       )}

@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketBuilderSteps } from "@/store";
-import { MorphMotion } from "@/components/animations";
 import { MotionWrapper } from "../market-builder-flow/animations";
 
 export const TopNavigator = React.forwardRef<
@@ -18,8 +17,7 @@ export const TopNavigator = React.forwardRef<
     marketBuilderForm: UseFormReturn<z.infer<typeof MarketBuilderFormSchema>>;
   }
 >(({ className, marketBuilderForm, ...props }, ref) => {
-  const { activeStep, setActiveStep, setForceClose } =
-    useMarketBuilderManager();
+  const { activeStep, setActiveStep } = useMarketBuilderManager();
   const activeTitle = MarketBuilderSteps[activeStep].title;
 
   const handlePrevStep = () => {
@@ -29,11 +27,17 @@ export const TopNavigator = React.forwardRef<
       setActiveStep(MarketBuilderSteps.info.id);
     } else if (activeStep === MarketBuilderSteps.params.id) {
       setActiveStep(MarketBuilderSteps.actions.id);
+    } else if (activeStep === MarketBuilderSteps.bytecode.id) {
+      setActiveStep(MarketBuilderSteps.info.id);
     } else if (activeStep === MarketBuilderSteps.vault.id) {
       setActiveStep(MarketBuilderSteps.info.id);
     } else if (activeStep === MarketBuilderSteps.review.id) {
       if (marketBuilderForm.watch("action_type") === "recipe") {
-        setActiveStep(MarketBuilderSteps.params.id);
+        if (marketBuilderForm.watch("create_actions_type") === "recipe") {
+          setActiveStep(MarketBuilderSteps.params.id);
+        } else {
+          setActiveStep(MarketBuilderSteps.bytecode.id);
+        }
       } else {
         setActiveStep(MarketBuilderSteps.vault.id);
       }
