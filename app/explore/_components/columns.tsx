@@ -433,9 +433,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         >
           {(() => {
             if (
+              false &&
               props.row.original?.category === "boyco" &&
               fillableAmount === 0
             ) {
+              // @note: disabled this condition as per request from @capnjack
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
             } else {
               return (
