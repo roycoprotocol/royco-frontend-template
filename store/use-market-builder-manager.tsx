@@ -97,6 +97,12 @@ export const MarketBuilderSteps: MarketBuilderSteps = {
     title: "Step 2.2: Action Params",
     index: 4,
   },
+  bytecode: {
+    id: "bytecode",
+    label: "Bytecode",
+    title: "Step 2: Enter Action Bytecode",
+    index: 5,
+  },
   vault: {
     id: "vault",
     label: "Vault",
@@ -107,13 +113,13 @@ export const MarketBuilderSteps: MarketBuilderSteps = {
     id: "review",
     label: "Review",
     title: "Step 3: Review",
-    index: 5,
+    index: 6,
   },
   transaction: {
     id: "transaction",
     label: "Transaction",
     title: "Step 4: Transaction",
-    index: 6,
+    index: 7,
   },
 };
 
@@ -170,6 +176,9 @@ export interface UseMarketBuilderManager {
 
   isContractAbiUpdated: boolean;
   setIsContractAbiUpdated: (contractAbiUpdated: boolean) => void;
+
+  createActionsType: "recipe" | "bytecode";
+  setCreateActionsType: (createActionsType: "recipe" | "bytecode") => void;
 }
 
 export const useMarketBuilderManager = create<UseMarketBuilderManager>(
@@ -214,5 +223,9 @@ export const useMarketBuilderManager = create<UseMarketBuilderManager>(
     isContractAbiUpdated: false,
     setIsContractAbiUpdated: (isContractAbiUpdated: boolean) =>
       set({ isContractAbiUpdated }),
+
+    createActionsType: "recipe",
+    setCreateActionsType: (createActionsType: "recipe" | "bytecode") =>
+      set({ createActionsType }),
   })
 );

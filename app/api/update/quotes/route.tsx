@@ -94,31 +94,77 @@ export const updateLpTokenQuotesFromContract = async () => {
   const chainClients = {
     1: createPublicClient({
       chain: getSupportedChain(1),
-      transport: http(SERVER_RPC_API_KEYS[1]),
+      transport: http(SERVER_RPC_API_KEYS[1], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
     11155111: createPublicClient({
       chain: getSupportedChain(11155111),
-      transport: http(SERVER_RPC_API_KEYS[11155111]),
+      transport: http(SERVER_RPC_API_KEYS[11155111], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
     42161: createPublicClient({
       chain: getSupportedChain(42161),
-      transport: http(SERVER_RPC_API_KEYS[42161]),
+      transport: http(SERVER_RPC_API_KEYS[42161], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
+
     8453: createPublicClient({
       chain: getSupportedChain(8453),
-      transport: http(SERVER_RPC_API_KEYS[8453]),
+      transport: http(SERVER_RPC_API_KEYS[8453], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
+
     146: createPublicClient({
       chain: getSupportedChain(146),
-      transport: http(SERVER_RPC_API_KEYS[146]),
+      transport: http(SERVER_RPC_API_KEYS[146], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
+
     21000000: createPublicClient({
       chain: getSupportedChain(21000000),
-      transport: http(SERVER_RPC_API_KEYS[21000000]),
+      transport: http(SERVER_RPC_API_KEYS[21000000], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
+
     98865: createPublicClient({
       chain: getSupportedChain(98865),
-      transport: http(SERVER_RPC_API_KEYS[98865]),
+      transport: http(SERVER_RPC_API_KEYS[98865], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
     }),
   };
 

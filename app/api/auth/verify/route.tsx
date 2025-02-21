@@ -3,8 +3,8 @@ import { kv } from "@vercel/kv";
 import { SignJWT, jwtVerify } from "jose";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
-// const JWT_EXPIRY = "15m";
-const JWT_EXPIRY = "1h"; // 1 hour
+
+const JWT_EXPIRY = "7d"; // 7 days
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 60 * 60, // 1 hour in seconds
+        maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
         path: "/",
       });
 
@@ -100,8 +100,8 @@ export async function GET(request: Request) {
       );
     }
 
-    // Cache successful verification for 1 hour
-    await kv.set(`turnstile:${turnstileToken}`, true, { ex: 3600 });
+    // Cache successful verification for 7 days
+    await kv.set(`turnstile:${turnstileToken}`, true, { ex: 60 * 60 * 24 * 7 });
 
     // Create new JWT token
     const newToken = await new SignJWT({})
@@ -122,7 +122,7 @@ export async function GET(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60, // 1 hour in seconds
+      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
       path: "/",
     });
 

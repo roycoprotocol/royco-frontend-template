@@ -49,6 +49,8 @@ interface ExploreState {
   ) => void;
   exploreIsVerified: boolean;
   setExploreIsVerified: (exploreIsVerified: boolean) => void;
+  exploreAllMarkets: boolean;
+  setExploreAllMarkets: (exploreAllMarkets: boolean) => void;
 }
 
 export const exploreColumnNames = {
@@ -216,4 +218,7 @@ export const useExplore = create<ExploreState>((set) => ({
   exploreIsVerified: true,
   setExploreIsVerified: (exploreIsVerified: boolean) =>
     set({ exploreIsVerified }),
+  exploreAllMarkets: false,
+  setExploreAllMarkets: (exploreAllMarkets: boolean) =>
+    set({ exploreAllMarkets }),
 }));

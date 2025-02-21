@@ -34,73 +34,75 @@ export async function middleware(request: NextRequest) {
    */
   const pathname = request.nextUrl.pathname;
 
-  // Skip authentication for the verify endpoint and static files
-  if (
-    pathname.startsWith("/api/auth/verify") ||
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/static/") ||
-    pathname.startsWith("/api/push/token") ||
-    pathname.startsWith("/api/evm/contract") ||
-    pathname.startsWith("/api/users/update") ||
-    pathname.startsWith("/api/push/lp-token") ||
-    pathname.startsWith("/api/update/quotes") ||
-    pathname.startsWith("/api/sync") ||
-    pathname.startsWith("/api/market") ||
-    pathname === "/verify"
-  ) {
-    // For /verify endpoint, validate redirect parameter
-    if (pathname === "/verify") {
-      const redirectUrl = request.nextUrl.searchParams.get("redirect");
-      if (redirectUrl) {
-        try {
-          // Parse the URL to validate it
-          const parsedUrl = new URL(redirectUrl, request.url);
-          // Only allow redirects to the same origin
-          if (parsedUrl.origin !== request.nextUrl.origin) {
-            // If invalid redirect, default to homepage
+  if (process.env.NEXT_PUBLIC_CLOUDFLARE_PROTECTED !== "false") {
+    // Skip authentication for the verify endpoint and static files
+    if (
+      pathname.startsWith("/api/auth/verify") ||
+      pathname.startsWith("/_next/") ||
+      pathname.startsWith("/static/") ||
+      pathname.startsWith("/api/push/token") ||
+      pathname.startsWith("/api/evm/contract") ||
+      pathname.startsWith("/api/users/update") ||
+      pathname.startsWith("/api/push/lp-token") ||
+      pathname.startsWith("/api/update/quotes") ||
+      pathname.startsWith("/api/sync") ||
+      pathname.startsWith("/api/market") ||
+      pathname === "/verify"
+    ) {
+      // For /verify endpoint, validate redirect parameter
+      if (pathname === "/verify") {
+        const redirectUrl = request.nextUrl.searchParams.get("redirect");
+        if (redirectUrl) {
+          try {
+            // Parse the URL to validate it
+            const parsedUrl = new URL(redirectUrl, request.url);
+            // Only allow redirects to the same origin
+            if (parsedUrl.origin !== request.nextUrl.origin) {
+              // If invalid redirect, default to homepage
+              const safeUrl = new URL("/", request.url);
+              return NextResponse.redirect(safeUrl);
+            }
+          } catch {
+            // If URL parsing fails, default to homepage
             const safeUrl = new URL("/", request.url);
             return NextResponse.redirect(safeUrl);
           }
-        } catch {
-          // If URL parsing fails, default to homepage
-          const safeUrl = new URL("/", request.url);
-          return NextResponse.redirect(safeUrl);
         }
       }
-    }
-    // skip other auth checks
-  } else {
-    // Get session token from cookie
-    const sessionToken = request.cookies.get("session-token")?.value;
+      // skip other auth checks
+    } else {
+      // Get session token from cookie
+      const sessionToken = request.cookies.get("session-token")?.value;
 
-    // If no session token, redirect to verification page
-    if (!sessionToken) {
-      const verifyUrl = new URL("/verify", request.url);
-      verifyUrl.searchParams.set("redirect", request.url);
-      return NextResponse.redirect(verifyUrl);
-    }
+      // If no session token, redirect to verification page
+      if (!sessionToken) {
+        const verifyUrl = new URL("/verify", request.url);
+        verifyUrl.searchParams.set("redirect", request.url);
+        return NextResponse.redirect(verifyUrl);
+      }
 
-    // Verify session token
-    try {
-      const verifyResponse = await fetch(
-        `${request.nextUrl.origin}/api/auth/verify?session_token=${sessionToken}`
-      );
+      // Verify session token
+      try {
+        const verifyResponse = await fetch(
+          `${request.nextUrl.origin}/api/auth/verify?session_token=${sessionToken}`
+        );
 
-      if (!verifyResponse.ok) {
-        // Clear the invalid cookie and redirect to verify with original URL
+        if (!verifyResponse.ok) {
+          // Clear the invalid cookie and redirect to verify with original URL
+          const verifyUrl = new URL("/verify", request.url);
+          verifyUrl.searchParams.set("redirect", request.url);
+          const response = NextResponse.redirect(verifyUrl);
+          response.cookies.delete("session-token");
+          return response;
+        }
+      } catch (error) {
+        console.error("Error verifying session token:", error);
         const verifyUrl = new URL("/verify", request.url);
         verifyUrl.searchParams.set("redirect", request.url);
         const response = NextResponse.redirect(verifyUrl);
         response.cookies.delete("session-token");
         return response;
       }
-    } catch (error) {
-      console.error("Error verifying session token:", error);
-      const verifyUrl = new URL("/verify", request.url);
-      verifyUrl.searchParams.set("redirect", request.url);
-      const response = NextResponse.redirect(verifyUrl);
-      response.cookies.delete("session-token");
-      return response;
     }
   }
 

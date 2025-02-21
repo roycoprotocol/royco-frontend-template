@@ -3,9 +3,9 @@
 import React from "react";
 
 import { cn } from "@/lib/utils";
-import type { MarketFilter } from "royco/queries";
 import { TokenBadge } from "@/components/common";
 import { useExplore } from "@/store";
+import { MarketFilter } from "royco/queries";
 
 interface FilterWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
   filter: MarketFilter;
@@ -189,4 +189,77 @@ const PoolTypeFilterWrapper = React.forwardRef<
 });
 PoolTypeFilterWrapper.displayName = "PoolTypeFilterWrapper";
 
-export { FilterWrapper, ChainFilterWrapper, PoolTypeFilterWrapper };
+const AppTypeFilterWrapper = React.forwardRef<
+  HTMLDivElement,
+  FilterWrapperProps
+>(({ className, children, filter, token, ...props }, ref) => {
+  const { exploreFilters, setExploreFilters, setExplorePageIndex } =
+    useExplore();
+
+  const doFilterExists = ({
+    id,
+    matches = [],
+  }: MarketFilter): [boolean, number[]] => {
+    let filterIndexArray: number[] = [];
+    for (let i = 0; i < matches.length; i++) {
+      const index = exploreFilters.findIndex(
+        (f) => f.id === id && f.value.toString() === matches[i].toString()
+      );
+      if (index === -1) {
+        filterIndexArray = [];
+        break;
+      }
+      filterIndexArray.push(index);
+    }
+
+    if (matches.length === 0 || filterIndexArray.length === 0) {
+      return [false, []];
+    }
+
+    return [true, filterIndexArray];
+  };
+
+  const setFilter = (filter: MarketFilter) => {
+    const filters: (MarketFilter | null)[] = [...exploreFilters];
+
+    const [filterExists, filterIndexArray] = doFilterExists({
+      id: filter.id,
+      value: filter.value,
+      matches: filter.matches,
+    });
+
+    if (filterExists && filterIndexArray.length > 0) {
+      for (let i = 0; i < filterIndexArray.length; i++) {
+        filters.splice(filterIndexArray[i], 1, null);
+      }
+    } else {
+      if (filter.matches) {
+        for (let i = 0; i < filter.matches.length; i++) {
+          filters.push({
+            id: filter.id,
+            value: filter.matches[i],
+          });
+        }
+      }
+    }
+
+    setExploreFilters(filters.filter((f) => f !== null));
+    setExplorePageIndex(0);
+  };
+
+  return (
+    <TokenBadge
+      onClick={() => setFilter(filter)}
+      className={cn(doFilterExists(filter)[0] === true ? "bg-focus" : "")}
+      token={token}
+    />
+  );
+});
+AppTypeFilterWrapper.displayName = "AppTypeFilterWrapper";
+
+export {
+  FilterWrapper,
+  ChainFilterWrapper,
+  PoolTypeFilterWrapper,
+  AppTypeFilterWrapper,
+};

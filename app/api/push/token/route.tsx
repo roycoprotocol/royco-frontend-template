@@ -40,12 +40,14 @@ export const CHAIN_SLUG = {
     42161: "arbitrum",
     8453: "base",
     146: "sonic",
+    80094: "berachain",
   },
   coingecko: {
     1: "ethereum",
     42161: "arbitrum-one",
     8453: "base",
     146: "sonic",
+    80094: "berachain-ecosystem",
   },
 };
 
@@ -300,7 +302,14 @@ export async function GET(request: NextRequest) {
       // @ts-ignore
       chain: getSupportedChain(chain_id),
       transport: http(
-        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS]
+        SERVER_RPC_API_KEYS[chain_id as keyof typeof SERVER_RPC_API_KEYS],
+        {
+          fetchOptions: {
+            headers: {
+              Origin: "https://app.royco.org",
+            },
+          },
+        }
       ),
     });
 

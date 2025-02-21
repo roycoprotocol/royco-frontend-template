@@ -7,6 +7,7 @@ import { MotionWrapper } from "../animations";
 import { InfoCard, InfoTip, TokenDisplayer } from "@/components/common";
 import {
   ActionTypeMap,
+  CreateActionsMap,
   IncentiveScheduleMap,
 } from "../info-step/form-selectors";
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
@@ -183,54 +184,58 @@ export const ReviewStep = React.forwardRef<
         </div>
       </MotionWrapper>
 
-      {marketBuilderForm.watch("action_type") === "recipe" && (
-        <MotionWrapper delay={0.3}>
-          <h4 className="mt-10 font-gt text-base font-medium text-black">
-            Recipe Details
-          </h4>
+      {marketBuilderForm.watch("action_type") === "recipe" &&
+        marketBuilderForm.watch("create_actions_type") === "recipe" && (
+          <MotionWrapper delay={0.3}>
+            <h4 className="mt-10 font-gt text-base font-medium text-black">
+              Recipe Details
+            </h4>
 
-          <div className="mt-3 flex w-full flex-row items-center justify-center gap-2">
-            <ReviewActionsTypeSelector marketBuilderForm={marketBuilderForm} />
-            <div className="flex h-9 w-9 flex-col items-center justify-center rounded-lg border border-divider bg-z2">
-              <CopyWrapper
-                text={JSON.stringify(dataEncodedActions, null, 2)}
-              ></CopyWrapper>
+            <div className="mt-3 flex w-full flex-row items-center justify-center gap-2">
+              <ReviewActionsTypeSelector
+                marketBuilderForm={marketBuilderForm}
+              />
+              <div className="flex h-9 w-9 flex-col items-center justify-center rounded-lg border border-divider bg-z2">
+                <CopyWrapper
+                  text={JSON.stringify(dataEncodedActions, null, 2)}
+                ></CopyWrapper>
+              </div>
             </div>
-          </div>
 
-          <ActionFlow
-            className="mt-3 rounded-xl border border-divider bg-z2 p-3 text-secondary"
-            actions={marketBuilderForm
-              .watch(reviewActionsType)
-              .map((action, actionIndex) => {
-                return {
-                  id: action.id,
-                  chain_id: marketBuilderForm.watch("chain").id,
-                  contract_address: action.contract_address,
-                  contract_function: toFunctionSelector(
-                    // @ts-ignore
-                    action.contract_function
-                  ),
-                  function_signature: toFunctionSignature(
-                    // @ts-ignore
-                    action.contract_function
-                  ),
-                  calldata: "0x",
-                  contract_name: action.contract_name,
-                  function_name: action.contract_function.name,
-                  explorer_url: getExplorerUrl({
-                    chainId: marketBuilderForm.watch("chain").id,
-                    value: action.contract_address,
-                    type: "address",
-                  }),
-                };
-              })}
-          />
-        </MotionWrapper>
-      )}
+            <ActionFlow
+              className="mt-3 rounded-xl border border-divider bg-z2 p-3 text-secondary"
+              actions={marketBuilderForm
+                .watch(reviewActionsType)
+                .map((action, actionIndex) => {
+                  return {
+                    id: action.id,
+                    chain_id: marketBuilderForm.watch("chain").id,
+                    contract_address: action.contract_address,
+                    contract_function: toFunctionSelector(
+                      // @ts-ignore
+                      action.contract_function
+                    ),
+                    function_signature: toFunctionSignature(
+                      // @ts-ignore
+                      action.contract_function
+                    ),
+                    calldata: "0x",
+                    contract_name: action.contract_name,
+                    function_name: action.contract_function.name,
+                    explorer_url: getExplorerUrl({
+                      chainId: marketBuilderForm.watch("chain").id,
+                      value: action.contract_address,
+                      type: "address",
+                    }),
+                  };
+                })}
+            />
+          </MotionWrapper>
+        )}
 
       {marketBuilderForm.watch("action_type") === "recipe" &&
-        marketBuilderForm.watch("exit_actions").length === 0 && (
+        marketBuilderForm.watch("exit_actions").length === 0 &&
+        marketBuilderForm.watch("exit_actions_bytecode") === null && (
           <MotionWrapper delay={0.4}>
             {/* <h4 className="mt-10 font-gt text-base font-medium text-black">
               Recipe Notes

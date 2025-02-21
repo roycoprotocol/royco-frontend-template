@@ -13,6 +13,7 @@ import {
 import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -31,21 +32,36 @@ const Page = () => {
           )}
         >
           <div className="flex flex-col items-start justify-start">
-            {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
-              <>
-                <h2 className="heading-2 text-black">Explore Boyco</h2>
-                <div className="body-1 mt-2 text-secondary">
-                  Pre-deposit to Berachain to earn incentives.
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="heading-2 text-black">Explore</h2>
-                <div className="body-1 mt-2 text-secondary">
-                  Explore Royco Markets & bid for more incentives today.
-                </div>
-              </>
-            )}
+            {(() => {
+              if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+                return (
+                  <>
+                    <h2 className="heading-2 text-black">Explore Boyco</h2>
+                    <div className="body-1 mt-2 text-secondary">
+                      Pre-deposit to Berachain to earn incentives.
+                    </div>
+                  </>
+                );
+              } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
+                return (
+                  <>
+                    <h2 className="heading-2 text-black">Explore Sonic S1</h2>
+                    <div className="body-1 mt-2 text-secondary">
+                      Explore Sonic S1 Gems & Points Programs
+                    </div>
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <h2 className="heading-2 text-black">Explore</h2>
+                    <div className="body-1 mt-2 text-secondary">
+                      Explore Royco Markets & bid for more incentives today.
+                    </div>
+                  </>
+                );
+              }
+            })()}
           </div>
 
           {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
