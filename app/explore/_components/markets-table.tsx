@@ -10,7 +10,7 @@ import { isEqual } from "lodash";
 import { useEffect } from "react";
 
 import { columns } from "./columns";
-import { useExplore, useGlobalStates } from "@/store";
+import { useExplore, useGlobalStates, useMarketManager } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -40,14 +40,38 @@ export const MarketsTable = () => {
     explorePageIndex: pageIndex,
     exploreCustomPoolParams: customPoolParams,
     exploreIsVerified: isVerified,
+    exploreAllMarkets: showAllMarkets,
   } = useExplore();
 
   const { customTokenData } = useGlobalStates();
 
+  const updatedFilters = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "default") {
+      const filterItem = filters.find((filter) => filter.id === "category");
+
+      if (filterItem && showAllMarkets) {
+        return filters.filter((filter) => filter.id !== "category");
+      }
+
+      if (!filterItem && !showAllMarkets) {
+        return [
+          ...filters,
+          {
+            id: "category",
+            value: "boyco",
+            condition: "NOT",
+          },
+        ];
+      }
+    }
+
+    return filters;
+  }, [filters, showAllMarkets]);
+
   const { data, isLoading, isError, error, isRefetching, count } =
     useEnrichedMarkets({
       sorting,
-      filters,
+      filters: updatedFilters,
       page_index: pageIndex,
       search_key: searchKey,
       is_verified: showVerifiedMarket ? true : isVerified,

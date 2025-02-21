@@ -106,11 +106,11 @@ export const PreviewStep = React.forwardRef<
   } else if (!!propsEnrichedMarket.data) {
     return (
       <div className={cn("grow overflow-y-scroll", className)} {...props}>
-        {showSimulation && (
+        {/* {showSimulation && (
           <div className={cn("mb-5 rounded-2xl border px-3 pb-3 pt-5")}>
             <SimulationViewer marketActionForm={marketActionForm} />
           </div>
-        )}
+        )} */}
 
         <div className={cn("rounded-2xl border px-3 pb-3 pt-5")}>
           <SlideUpWrapper delay={0.3}>

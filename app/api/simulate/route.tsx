@@ -43,7 +43,7 @@ export const simulateTransaction = async ({
         {
           fetchOptions: {
             headers: {
-              Origin: origin,
+              Origin: "https://app.royco.org",
             },
           },
         }

@@ -334,7 +334,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     symbols={false}
                     size={props.view === "list" ? 5 : 6}
                   />
-                  <span className="font-gt text-base font-300">
+                  <span className="whitespace-nowrap font-gt text-base font-300">
                     {`${points[0].symbol} Points`}
                   </span>
                 </div>
@@ -348,7 +348,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                     symbols={false}
                     size={props.view === "list" ? 5 : 6}
                   />
-                  <span className="font-gt text-base font-300">
+                  <span className="whitespace-nowrap font-gt text-base font-300">
                     {breakdowns.length === 1
                       ? breakdowns[0].symbol
                       : `${breakdowns[0].symbol} + ${breakdowns.length - 1}`}
@@ -433,9 +433,11 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
         >
           {(() => {
             if (
+              false &&
               props.row.original?.category === "boyco" &&
               fillableAmount === 0
             ) {
+              // @note: disabled this condition as per request from @capnjack
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
             } else {
               return (

@@ -194,7 +194,7 @@ export const TokenEditor = React.forwardRef<
       {/**
        * Allocation Input
        */}
-      {tokenData.type === "point" && (
+      {/* {tokenData.type === "point" && (
         <div className="mb-4">
           <FormInputLabel
             size="sm"
@@ -218,7 +218,7 @@ export const TokenEditor = React.forwardRef<
             }
           />
         </div>
-      )}
+      )} */}
 
       {/**
        * FDV Input

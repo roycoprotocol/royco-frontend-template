@@ -278,8 +278,11 @@ export const MarketBuilderFormSchema = z.object({
     }
   ),
 
-  enter_actions: ZodActions,
-  exit_actions: ZodActions,
+  enter_actions_bytecode: z.string().nullable().optional(),
+  exit_actions_bytecode: z.string().nullable().optional(),
+
+  enter_actions: ZodActions.optional(),
+  exit_actions: ZodActions.optional(),
 
   expiry: z
     .date({
@@ -319,6 +322,8 @@ export const MarketBuilderFormSchema = z.object({
         message: "Lockup time must be defined",
       }
     ),
+
+  create_actions_type: z.enum(["recipe", "bytecode"]),
 });
 
 export type PoolFormType = UseFormReturn<
@@ -340,6 +345,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [EthereumMainnet.id]: {
     market_name: "",
@@ -354,6 +360,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [ArbitrumOne.id]: {
     market_name: "",
@@ -368,6 +375,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [Base.id]: {
     market_name: "",
@@ -382,6 +390,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [Plume.id]: {
     market_name: "",
@@ -396,6 +405,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [Corn.id]: {
     market_name: "",
@@ -411,6 +421,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   [Sonic.id]: {
     market_name: "",
@@ -425,6 +436,7 @@ export const PoolFormDefaults = {
       duration: "3",
       duration_type: "months",
     },
+    create_actions_type: "recipe",
   },
   ["boyco"]: {
     market_name: "",
@@ -439,5 +451,6 @@ export const PoolFormDefaults = {
       duration: "0",
       duration_type: "minutes",
     },
+    create_actions_type: "recipe",
   },
 };

@@ -177,21 +177,62 @@ export const OfferListVisualizer = React.forwardRef<
     }
     if (currentHighestOffers.ip_offers.length > 0) {
       data.push(
-        ...currentHighestOffers.ip_offers.map((offer) => {
-          return {
-            market_type: currentMarketData.market_type,
-            annual_change_ratio: offer.annual_change_ratio,
-            quantity_value_usd: offer.quantity_value_usd,
-            fill: chartConfig.ip_offer.color,
-            offer_side: offer.offer_side,
-            quantity: offer.quantity,
-            input_token_amount: offer.input_token_data.token_amount,
-            input_token_data: offer.input_token_data,
-            incentive_value_usd: offer.incentive_value_usd,
-            tokens_data: offer.tokens_data,
-            textColor: chartConfig.ip_offer.textColor,
-          };
-        })
+        ...currentHighestOffers.ip_offers
+          .map((offer) => {
+            let tokensData = offer.tokens_data;
+            if (currentMarketData.market_type === RoycoMarketType.vault.value) {
+              tokensData = offer.tokens_data
+                .map((token) => {
+                  const index = currentMarketData.base_incentive_ids?.findIndex(
+                    (id) => id === token.id
+                  );
+
+                  if (index === undefined || index === -1) {
+                    return null;
+                  }
+
+                  const startTimestamp = parseInt(
+                    currentMarketData.base_start_timestamps?.[index] ?? "0"
+                  );
+                  const endTimestamp = parseInt(
+                    currentMarketData.base_end_timestamps?.[index] ?? "0"
+                  );
+                  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+                  const isActive =
+                    startTimestamp &&
+                    endTimestamp &&
+                    currentTimestamp >= startTimestamp &&
+                    currentTimestamp <= endTimestamp;
+
+                  if (!isActive) {
+                    return null;
+                  }
+
+                  return token;
+                })
+                .filter((token) => token !== null);
+            }
+
+            if (tokensData.length === 0) {
+              return null;
+            }
+
+            return {
+              market_type: currentMarketData.market_type,
+              annual_change_ratio: offer.annual_change_ratio,
+              quantity_value_usd: offer.quantity_value_usd,
+              fill: chartConfig.ip_offer.color,
+              offer_side: offer.offer_side,
+              quantity: offer.quantity,
+              input_token_amount: offer.input_token_data.token_amount,
+              input_token_data: offer.input_token_data,
+              incentive_value_usd: offer.incentive_value_usd,
+              tokens_data: tokensData,
+              textColor: chartConfig.ip_offer.textColor,
+            };
+          })
+          .filter((offer) => offer !== null)
       );
     }
 

@@ -36,7 +36,7 @@ import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
-export const BERA_TOKEN_ID = "1-0xbe9abe9abe9abe9abe9abe9abe9abe9abe9abe9a";
+export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
 
 export const TokenEstimatePopover = React.forwardRef<
   HTMLDivElement,

@@ -11,10 +11,13 @@ import { MotionWrapper } from "../animations";
 import { FormChain } from "./form-chain";
 import { UseFormReturn } from "react-hook-form";
 import { FormAsset } from "./form-asset";
-import { FormActionType, FormIncentiveSchedule } from "./form-selectors";
+import {
+  FormActionType,
+  FormCreateActions,
+  FormIncentiveSchedule,
+} from "./form-selectors";
 import { FormLockupTime } from "./form-lockup-time";
 import { AnimatePresence, motion } from "framer-motion";
-import { SectionSubtitle } from "../../../../_components/ui/composables";
 
 export const InfoStep = React.forwardRef<
   HTMLDivElement,
@@ -63,6 +66,15 @@ export const InfoStep = React.forwardRef<
       {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
         <MotionWrapper delay={0.2}>
           <FormActionType
+            className="mt-9"
+            marketBuilderForm={marketBuilderForm}
+          />
+        </MotionWrapper>
+      )}
+
+      {marketBuilderForm.watch("action_type") === "recipe" && (
+        <MotionWrapper delay={0.3}>
+          <FormCreateActions
             className="mt-9"
             marketBuilderForm={marketBuilderForm}
           />

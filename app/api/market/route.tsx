@@ -157,8 +157,7 @@ export async function POST(request: Request) {
         id,
         name,
         description,
-        ...(process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ||
-        process.env.NEXT_PUBLIC_FRONTEND_TAG === "testnet"
+        ...(process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
           ? { category: "boyco" }
           : {}),
       };

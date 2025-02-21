@@ -26,6 +26,7 @@ import {
   VaultIcon,
   WifiIcon,
   ActivityIcon,
+  CodeIcon,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -118,6 +119,35 @@ export const IncentiveScheduleMap: Record<
       "Payment is streamed until users withdraw from the ERC4626 Vault.",
     icon: ActivityIcon,
     type: "vault",
+  },
+};
+
+export const CreateActionsMap: Record<
+  string,
+  {
+    index: number;
+    id: string;
+    label: string;
+    tag: string;
+    description: string;
+    icon: LucideIcon;
+  }
+> = {
+  recipe: {
+    index: 1,
+    id: "recipe",
+    label: "Create Recipe",
+    tag: "",
+    description: "Build your recipe step by step using our visual builder",
+    icon: ScrollTextIcon,
+  },
+  bytecode: {
+    index: 2,
+    id: "bytecode",
+    label: "Add Bytecode",
+    tag: "",
+    description: "Directly input compiled recipe bytecode",
+    icon: CodeIcon,
   },
 };
 
@@ -379,5 +409,61 @@ export const FormIncentiveSchedule = React.forwardRef<
         </FormItem>
       )}
     />
+  );
+});
+
+export const FormCreateActions = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    marketBuilderForm: UseFormReturn<z.infer<typeof MarketBuilderFormSchema>>;
+  }
+>(({ className, marketBuilderForm, ...props }, ref) => {
+  return (
+    <div className={cn("", className)}>
+      <FormField
+        control={marketBuilderForm.control}
+        name="create_actions_type"
+        render={({ field }) => (
+          <FormItem className={cn("", className)}>
+            <FormInputLabel className="mb-2" label="Create Actions" />
+
+            <FormControl>
+              <div className="flex flex-col gap-3">
+                {Object.keys(CreateActionsMap).map((key) => {
+                  const option =
+                    CreateActionsMap[key as keyof typeof CreateActionsMap];
+                  const BASE_KEY = `info:option-card:recipe-type:${option.id}`;
+
+                  return (
+                    <OptionCard
+                      key={BASE_KEY}
+                      option={{
+                        ...option,
+                        isSelected: field.value === option.id,
+                      }}
+                      onClick={() => {
+                        field.onChange(option.id);
+
+                        marketBuilderForm.setValue("enter_actions", []);
+                        marketBuilderForm.setValue("exit_actions", []);
+
+                        marketBuilderForm.setValue(
+                          "enter_actions_bytecode",
+                          null
+                        );
+                        marketBuilderForm.setValue(
+                          "exit_actions_bytecode",
+                          null
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 });

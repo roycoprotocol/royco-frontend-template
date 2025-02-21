@@ -17,17 +17,17 @@ export const BoycoStats = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data: vaultTvl, isLoading: isVaultTvlLoading } = useQuery({
-    queryKey: ["vault-tvl"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/api/boyco/stats");
-        return response.data;
-      } catch (error) {
-        throw new Error("Failed to fetch TVL stats");
-      }
-    },
-  });
+  // const { data: vaultTvl, isLoading: isVaultTvlLoading } = useQuery({
+  //   queryKey: ["vault-tvl"],
+  //   queryFn: async () => {
+  //     try {
+  //       const response = await axios.get("/api/boyco/stats");
+  //       return response.data;
+  //     } catch (error) {
+  //       throw new Error("Failed to fetch TVL stats");
+  //     }
+  //   },
+  // });
 
   const client = createClient(
     process.env.NEXT_PUBLIC_ROYCO_ORIGIN_URL!,
@@ -69,26 +69,21 @@ export const BoycoStats = React.forwardRef<
   });
 
   const boycoStats = useMemo(() => {
-    let undepositedTvl = 0;
     let majorTvl = 0;
     let thirdPartyTvl = 0;
     if (marketTvl) {
       majorTvl += marketTvl.major_tvl;
       thirdPartyTvl += marketTvl.third_party_tvl;
     }
-    if (vaultTvl) {
-      undepositedTvl += vaultTvl.vault_tvl;
-    }
 
     return {
-      undeposite_tvl: undepositedTvl,
       major_tvl: majorTvl,
       third_party_tvl: thirdPartyTvl,
-      tvl: majorTvl + thirdPartyTvl + undepositedTvl,
+      tvl: majorTvl + thirdPartyTvl,
     };
-  }, [marketTvl, vaultTvl]);
+  }, [marketTvl]);
 
-  const isBoycoStatsLoading = isMarketTvlLoading || isVaultTvlLoading;
+  const isBoycoStatsLoading = isMarketTvlLoading;
 
   return (
     <div
@@ -100,10 +95,10 @@ export const BoycoStats = React.forwardRef<
       {...props}
     >
       {[
-        {
-          key: "undeposite_tvl",
-          name: "Undeposited Vaults",
-        },
+        // {
+        //   key: "undeposite_tvl",
+        //   name: "Undeposited Vaults",
+        // },
         {
           key: "major_tvl",
           name: "Major",
@@ -112,10 +107,10 @@ export const BoycoStats = React.forwardRef<
           key: "third_party_tvl",
           name: "Third-Party/Hybrid",
         },
-        {
-          key: "tvl",
-          name: "Total",
-        },
+        // {
+        //   key: "tvl",
+        //   name: "Total",
+        // },
       ].map((item, index) => {
         return (
           <div

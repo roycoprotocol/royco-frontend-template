@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/hover-card";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type PositionsRecipeDataElement = NonNullable<
   NonNullable<
@@ -350,7 +355,20 @@ export const positionsRecipeColumnsBoyco: ColumnDef<PositionsRecipeColumnDataEle
           status = "In Dapp";
         }
 
-        return <div className={cn("text-success")}>{status}</div>;
+        status = "Bridged";
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn("text-success")}>{status}</div>
+            </TooltipTrigger>
+            {status === "Waiting" && (
+              <TooltipContent>
+                <span>Waiting to be bridged to dApp after Mainnet Launch</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
       },
     },
 
