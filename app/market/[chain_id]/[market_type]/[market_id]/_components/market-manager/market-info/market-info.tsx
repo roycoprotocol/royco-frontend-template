@@ -80,15 +80,18 @@ export const MarketInfo = React.forwardRef<
 
         {/**
          * Deposit Cap Hit
+         * @note disabled this condition as per request from @capnjack
          */}
-        {currentMarketData?.category === "boyco" && fillableAmount === 0 && (
-          <div className="mt-5 w-fit rounded-lg bg-primary px-4 py-3">
-            <SecondaryLabel className="flex items-center gap-1 font-500 text-white">
-              <LockIcon className="h-4 w-4" />
-              <span>Deposit Cap Reached</span>
-            </SecondaryLabel>
-          </div>
-        )}
+        {false &&
+          currentMarketData?.category === "boyco" &&
+          fillableAmount === 0 && (
+            <div className="mt-5 w-fit rounded-lg bg-primary px-4 py-3">
+              <SecondaryLabel className="flex items-center gap-1 font-500 text-white">
+                <LockIcon className="h-4 w-4" />
+                <span>Deposit Cap Reached</span>
+              </SecondaryLabel>
+            </div>
+          )}
 
         {/**
          * Market Details
