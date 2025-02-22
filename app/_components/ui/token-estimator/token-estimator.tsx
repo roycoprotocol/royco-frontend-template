@@ -120,7 +120,6 @@ export const TokenEstimator = React.forwardRef<
         ) {
           token = {
             ...token,
-            total_supply: "10000000000",
             allocation: "",
           };
         }
