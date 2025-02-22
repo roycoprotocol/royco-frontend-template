@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -18,7 +18,7 @@ import {
   CustomTokenDataElement,
   useGlobalStates,
 } from "@/store/use-global-states";
-import { TokenEditor } from "./token-editor";
+import { SONIC_CHAIN_ID, TokenEditor } from "./token-editor";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
@@ -28,6 +28,8 @@ import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_co
 import { LoadingSpinner } from "@/components/composables";
 import { useTokenQuotes } from "royco/hooks";
 import { AlertIndicator } from "@/components/common";
+import { EnrichedMarketDataType } from "royco/queries";
+import { SupportedTokenList } from "royco/constants";
 
 export const EstimatorCustomTokenDataSchema = z.object({
   customTokenData: z.array(
@@ -45,8 +47,9 @@ export const TokenEstimator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     defaultTokenId?: string[];
+    market?: EnrichedMarketDataType;
   }
->(({ className, children, defaultTokenId, ...props }, ref) => {
+>(({ className, children, defaultTokenId, market, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -71,6 +74,11 @@ export const TokenEstimator = React.forwardRef<
     form.setValue("customTokenData", tokens);
   }, [customTokenData, open]);
 
+  const marketId = useMemo(
+    () => (market ? (market.id ? market.id : undefined) : undefined),
+    [market]
+  );
+
   const handleTokenSelect = (token: CustomTokenDataElement) => {
     const currentTokens = form.getValues("customTokenData");
     const hasToken = currentTokens.some((t) => t.token_id === token.token_id);
@@ -94,13 +102,28 @@ export const TokenEstimator = React.forwardRef<
       defaultTokenQuotes.length > 0
     ) {
       for (const index in defaultTokenId) {
-        const token = {
+        let token = {
           token_id: defaultTokenId[index],
           fdv: defaultTokenQuotes[index].fdv.toString(),
           total_supply: defaultTokenQuotes[index].total_supply.toString(),
           price: defaultTokenQuotes[index].price.toString(),
           allocation: "100",
         };
+
+        const tokenData = SupportedTokenList.find(
+          (t) => t.id === defaultTokenId[index]
+        );
+        if (
+          tokenData &&
+          tokenData.chain_id === SONIC_CHAIN_ID &&
+          tokenData.type === "point"
+        ) {
+          token = {
+            ...token,
+            allocation: "",
+          };
+        }
+
         handleTokenSelect(token);
       }
     }
@@ -172,6 +195,7 @@ export const TokenEstimator = React.forwardRef<
                         token={token}
                         customTokenForm={form}
                         onRemove={() => handleRemoveToken(index)}
+                        marketId={marketId}
                       />
                     </SlideUpWrapper>
                   ))
