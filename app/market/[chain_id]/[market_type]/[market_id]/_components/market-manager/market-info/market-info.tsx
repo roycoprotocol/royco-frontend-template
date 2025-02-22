@@ -111,7 +111,10 @@ export const MarketInfo = React.forwardRef<
          * Token Estimate
          */}
         <div className="mt-2">
-          <TokenEstimator defaultTokenId={pointTokenIds}>
+          <TokenEstimator
+            defaultTokenId={pointTokenIds}
+            market={currentMarketData}
+          >
             <Button
               variant="link"
               size="sm"

@@ -88,6 +88,7 @@ export const AnnualYieldDetails = React.forwardRef<
           breakdowns.length > 0 ? (
             <TokenEstimator
               defaultTokenId={point_token_data?.id ? [point_token_data.id] : []}
+              market={currentMarketData}
             >
               <Button
                 variant="outline"
