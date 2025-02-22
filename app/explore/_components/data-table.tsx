@@ -121,12 +121,19 @@ export function DataTable<TData, TValue>({
                   const inputTokenId = cells.find(
                     (cell) => cell.column.id === "input_token_id"
                   );
+
                   const marketType = cells.find(
                     (cell) => cell.column.id === "market_type"
                   );
+
                   const poolType = cells.find(
                     (cell) => cell.column.id === "pool_type"
                   );
+
+                  const appType = cells.find(
+                    (cell) => cell.column.id === "app_type"
+                  );
+
                   const lockedQuantityUsd = cells.find(
                     (cell) => cell.column.id === "locked_quantity_usd"
                   );
@@ -219,6 +226,14 @@ export function DataTable<TData, TValue>({
                               columnVisibility.pool_type &&
                               flexRender(poolType.column.columnDef.cell, {
                                 ...poolType.getContext(),
+                                placeholderDatas,
+                                view,
+                              })}
+
+                            {!!appType &&
+                              columnVisibility.app_type &&
+                              flexRender(appType.column.columnDef.cell, {
+                                ...appType.getContext(),
                                 placeholderDatas,
                                 view,
                               })}
