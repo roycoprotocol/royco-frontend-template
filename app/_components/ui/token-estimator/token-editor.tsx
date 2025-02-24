@@ -8,6 +8,7 @@ import { TokenDisplayer } from "@/components/common";
 import {
   PrimaryLabel,
   SecondaryLabel,
+  TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { X as CloseIcon } from "lucide-react";
 import { SupportedTokenList } from "royco/constants";
@@ -149,7 +150,7 @@ export const TokenEditor = React.forwardRef<
       const new_fdv = allocatedGemPriceInUSD;
       const total_supply = parseFloat(token.total_supply || "0");
       let new_price = new_fdv / total_supply;
-      if (isNaN(new_price)) {
+      if (isNaN(new_price) || new_price === Infinity) {
         new_price = 0;
       }
 
@@ -163,6 +164,15 @@ export const TokenEditor = React.forwardRef<
       );
       customTokenForm.setValue(`customTokenData.${index}.allocation`, value);
     };
+
+    const sonicTokenAllocation = useMemo(() => {
+      const allocation = parseFloat(token.allocation || "0");
+
+      return {
+        total: TOTAL_SONIC_AIRDROP,
+        userTotal: TOTAL_SONIC_AIRDROP * (allocation / 100),
+      };
+    }, [customTokenForm.watch(`customTokenData.${index}.allocation`)]);
 
     if (!tokenData) {
       return null;
@@ -219,6 +229,17 @@ export const TokenEditor = React.forwardRef<
               }
             />
           </div>
+
+          <TertiaryLabel className="mt-2">
+            Total Sonic Airdrop (All Season): {sonicTokenAllocation.total} $S
+          </TertiaryLabel>
+
+          <TertiaryLabel className="mt-2 flex gap-1 font-semibold text-secondary">
+            <span className="flex items-center gap-1">
+              <span className="underline">Airdrop to Season 1: </span>
+              <span>{sonicTokenAllocation.userTotal} $S</span>
+            </span>
+          </TertiaryLabel>
         </div>
       );
     }

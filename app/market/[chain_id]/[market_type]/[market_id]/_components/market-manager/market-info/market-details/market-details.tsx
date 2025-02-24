@@ -9,7 +9,12 @@ import { MarketType } from "@/store/market-manager-props";
 import { AnimatePresence, motion } from "framer-motion";
 import { ActionFlow, SpringNumber } from "@/components/composables";
 import validator from "validator";
-import { parseRawAmountToTokenAmount, shortAddress } from "royco/utils";
+import {
+  parseRawAmountToTokenAmount,
+  shortAddress,
+  SONIC_APP_TYPE,
+  sonicMarketMap,
+} from "royco/utils";
 import { getExplorerUrl } from "royco/utils";
 import {
   BASE_MARGIN_TOP,
@@ -70,7 +75,12 @@ export const MarketDetails = React.forwardRef<
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG !== "sonic") {
       return;
     }
-    return "EMERALD";
+
+    if (!currentMarketData) {
+      return;
+    }
+
+    return sonicMarketMap.find((m) => m.id === currentMarketData.id)?.appType;
   }, [currentMarketData]);
 
   return (
@@ -132,12 +142,12 @@ export const MarketDetails = React.forwardRef<
           <div className="flex flex-col items-end">
             <SecondaryLabel className="mt-1 rounded-full border border-success px-3 py-1 text-success">
               {(() => {
-                if (marketAppType === "EMERALD") {
-                  return "EMERALD";
-                } else if (marketAppType === "RUBY") {
-                  return "RUBY";
-                } else if (marketAppType === "SAPPHIRE") {
-                  return "SAPPHIRE";
+                if (marketAppType === SONIC_APP_TYPE.EMERALD) {
+                  return "Emerald";
+                } else if (marketAppType === SONIC_APP_TYPE.SAPPHIRE) {
+                  return "Sapphire";
+                } else if (marketAppType === SONIC_APP_TYPE.RUBY) {
+                  return "Ruby";
                 } else {
                   return "Unknown";
                 }
