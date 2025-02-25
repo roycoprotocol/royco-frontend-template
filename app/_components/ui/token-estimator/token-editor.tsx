@@ -17,7 +17,10 @@ import { UseFormReturn } from "react-hook-form";
 import { EstimatorCustomTokenDataSchema } from "./token-estimator";
 import { z } from "zod";
 import {
+  SONIC_APP_TYPE,
   SONIC_GEM_DISTRIBUTION_MAP,
+  SONIC_ROYCO_GEM_BOOST_ID,
+  SONIC_TOKEN_ID,
   sonicPointsMap,
   TOTAL_SONIC_AIRDROP,
   TOTAL_SONIC_GEM_DISTRIBUTION,
@@ -34,7 +37,6 @@ import {
 } from "royco/utils";
 
 export const SONIC_CHAIN_ID = 146;
-const SONIC_TOKEN_ID = "146-0x0000000000000000000000000000000000000000";
 
 export const TokenEditor = React.forwardRef<
   HTMLDivElement,
@@ -135,7 +137,7 @@ export const TokenEditor = React.forwardRef<
     };
 
     const handleSonicAllocationChange = (value: string) => {
-      if (!sonicTokenQuote) {
+      if (!sonicTokenQuote || sonicTokenQuote.length === 0) {
         return;
       }
 
@@ -143,41 +145,73 @@ export const TokenEditor = React.forwardRef<
 
       for (const i in tokens) {
         const token = tokens[i];
-        const appType = sonicPointsMap.find(
-          (p) => p.id === token.token_id
-        )?.appType;
 
-        if (!appType) {
-          continue;
+        if (token.token_id === SONIC_ROYCO_GEM_BOOST_ID) {
+          const gemPriceInSonic =
+            (TOTAL_SONIC_AIRDROP * (allocation / 100) * (50 / 100)) /
+            TOTAL_SONIC_GEM_DISTRIBUTION;
+
+          const new_price = gemPriceInSonic * sonicTokenQuote[0].price;
+          const new_total_supply = TOTAL_SONIC_GEM_DISTRIBUTION;
+          const new_fdv =
+            gemPriceInSonic *
+            TOTAL_SONIC_GEM_DISTRIBUTION *
+            sonicTokenQuote[0].price;
+
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.price`,
+            new_price.toString()
+          );
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.total_supply`,
+            new_total_supply.toString()
+          );
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.fdv`,
+            new_fdv.toString()
+          );
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.allocation`,
+            value
+          );
+        } else {
+          const appType = sonicPointsMap.find(
+            (p) => p.id === token.token_id
+          )?.appType;
+
+          if (!appType) {
+            continue;
+          }
+
+          const gemPriceInSonic =
+            (TOTAL_SONIC_AIRDROP * (allocation / 100) * (50 / 100)) /
+            TOTAL_SONIC_GEM_DISTRIBUTION;
+          const allocatedGemPriceInSonic =
+            SONIC_GEM_DISTRIBUTION_MAP[appType as SONIC_APP_TYPE] *
+            gemPriceInSonic;
+          const allocatedGemPriceInUSD =
+            allocatedGemPriceInSonic * sonicTokenQuote[0].price;
+
+          const new_fdv = allocatedGemPriceInUSD;
+          const total_supply = parseFloat(token.total_supply || "0");
+          let new_price = new_fdv / total_supply;
+          if (isNaN(new_price) || new_price === Infinity) {
+            new_price = 0;
+          }
+
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.fdv`,
+            new_fdv.toString()
+          );
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.price`,
+            new_price.toString()
+          );
+          customTokenForm.setValue(
+            `customTokenData.${i as any}.allocation`,
+            value
+          );
         }
-
-        const gemPriceInSonic =
-          (TOTAL_SONIC_AIRDROP * (allocation / 100) * (50 / 100)) /
-          TOTAL_SONIC_GEM_DISTRIBUTION;
-        const allocatedGemPriceInSonic =
-          SONIC_GEM_DISTRIBUTION_MAP[appType] * gemPriceInSonic;
-        const allocatedGemPriceInUSD =
-          allocatedGemPriceInSonic * sonicTokenQuote[0].price;
-
-        const new_fdv = allocatedGemPriceInUSD;
-        const total_supply = parseFloat(token.total_supply || "0");
-        let new_price = new_fdv / total_supply;
-        if (isNaN(new_price) || new_price === Infinity) {
-          new_price = 0;
-        }
-
-        customTokenForm.setValue(
-          `customTokenData.${i as any}.fdv`,
-          new_fdv.toString()
-        );
-        customTokenForm.setValue(
-          `customTokenData.${i as any}.price`,
-          new_price.toString()
-        );
-        customTokenForm.setValue(
-          `customTokenData.${i as any}.allocation`,
-          value
-        );
       }
     };
 
