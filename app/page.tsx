@@ -14,6 +14,9 @@ import { ColumnToggler, Sorter } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
+import { Button } from "@/components/ui/button";
+import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator";
+import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 
 const Page = () => {
   const Content = () => {
@@ -99,6 +102,18 @@ const Page = () => {
 
               <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
                 {/* <Sorter /> */}
+
+                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+                  <TokenEstimator className="h-full" marketCategory="sonic">
+                    <Button
+                      size="sm"
+                      className="flex h-full w-full items-center justify-center gap-2 rounded-xl"
+                    >
+                      <LightningIcon className="h-5 w-5 fill-black" />
+                      <span className="text-sm">Estimate Sonic Airdrop</span>
+                    </Button>
+                  </TokenEstimator>
+                )}
 
                 <ColumnToggler />
               </div>

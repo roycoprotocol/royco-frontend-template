@@ -12,10 +12,9 @@ import validator from "validator";
 import {
   parseRawAmountToTokenAmount,
   shortAddress,
-  SONIC_APP_TYPE,
-  sonicMarketMap,
+  getExplorerUrl,
 } from "royco/utils";
-import { getExplorerUrl } from "royco/utils";
+import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
 import {
   BASE_MARGIN_TOP,
   INFO_ROW_CLASSES,
