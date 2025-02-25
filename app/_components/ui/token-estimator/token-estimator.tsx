@@ -28,8 +28,8 @@ import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_co
 import { LoadingSpinner } from "@/components/composables";
 import { useTokenQuotes } from "royco/hooks";
 import { AlertIndicator } from "@/components/common";
-import { EnrichedMarketDataType } from "royco/queries";
 import { SupportedTokenList } from "royco/constants";
+import { sonicPointsMap } from "royco/sonic";
 
 export const EstimatorCustomTokenDataSchema = z.object({
   customTokenData: z.array(
@@ -47,9 +47,9 @@ export const TokenEstimator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     defaultTokenId?: string[];
-    market?: EnrichedMarketDataType;
+    marketCategory?: string;
   }
->(({ className, children, defaultTokenId, market, ...props }, ref) => {
+>(({ className, children, defaultTokenId, marketCategory, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -74,10 +74,13 @@ export const TokenEstimator = React.forwardRef<
     form.setValue("customTokenData", tokens);
   }, [customTokenData, open]);
 
-  const marketId = useMemo(
-    () => (market ? (market.id ? market.id : undefined) : undefined),
-    [market]
-  );
+  const tokenIds = useMemo(() => {
+    if (marketCategory && marketCategory === "sonic") {
+      return sonicPointsMap.map((point) => point.id);
+    }
+
+    return defaultTokenId;
+  }, [form.getValues("customTokenData")]);
 
   const handleTokenSelect = (token: CustomTokenDataElement) => {
     const currentTokens = form.getValues("customTokenData");
@@ -89,29 +92,29 @@ export const TokenEstimator = React.forwardRef<
     }
   };
 
-  const { data: defaultTokenQuotes } = useTokenQuotes({
-    token_ids: defaultTokenId || [],
+  const { data: tokenQuotes } = useTokenQuotes({
+    token_ids: tokenIds || [],
   });
 
   useEffect(() => {
     if (
       open &&
-      defaultTokenId &&
-      defaultTokenId.length > 0 &&
-      defaultTokenQuotes &&
-      defaultTokenQuotes.length > 0
+      tokenIds &&
+      tokenIds.length > 0 &&
+      tokenQuotes &&
+      tokenQuotes.length > 0
     ) {
-      for (const index in defaultTokenId) {
+      for (const index in tokenIds) {
         let token = {
-          token_id: defaultTokenId[index],
-          fdv: defaultTokenQuotes[index].fdv.toString(),
-          total_supply: defaultTokenQuotes[index].total_supply.toString(),
-          price: defaultTokenQuotes[index].price.toString(),
+          token_id: tokenIds[index],
+          fdv: tokenQuotes[index].fdv.toString(),
+          total_supply: tokenQuotes[index].total_supply.toString(),
+          price: tokenQuotes[index].price.toString(),
           allocation: "100",
         };
 
         const tokenData = SupportedTokenList.find(
-          (t) => t.id === defaultTokenId[index]
+          (t) => t.id === tokenIds[index]
         );
         if (
           tokenData &&
@@ -127,7 +130,7 @@ export const TokenEstimator = React.forwardRef<
         handleTokenSelect(token);
       }
     }
-  }, [defaultTokenQuotes, defaultTokenId, open]);
+  }, [tokenQuotes, tokenIds, open]);
 
   const handleRemoveToken = (index: number) => {
     const formTokens = form.getValues("customTokenData");
@@ -187,18 +190,29 @@ export const TokenEstimator = React.forwardRef<
                */}
               <form className="space-y-4">
                 {estimatorCustomTokenData.length > 0 ? (
-                  estimatorCustomTokenData.map((token, index) => (
+                  process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" ? (
                     <SlideUpWrapper className="flex flex-col">
                       <TokenEditor
-                        key={token.token_id}
-                        index={index}
-                        token={token}
+                        index={0}
+                        tokens={estimatorCustomTokenData}
                         customTokenForm={form}
-                        onRemove={() => handleRemoveToken(index)}
-                        marketId={marketId}
+                        onRemove={() => form.setValue("customTokenData", [])}
+                        marketCategory={marketCategory}
                       />
                     </SlideUpWrapper>
-                  ))
+                  ) : (
+                    estimatorCustomTokenData.map((token, index) => (
+                      <SlideUpWrapper className="flex flex-col">
+                        <TokenEditor
+                          key={token.token_id}
+                          index={index}
+                          tokens={[token]}
+                          customTokenForm={form}
+                          onRemove={() => handleRemoveToken(index)}
+                        />
+                      </SlideUpWrapper>
+                    ))
+                  )
                 ) : (
                   <div>
                     <AlertIndicator className="w-full rounded-md border border-dashed">

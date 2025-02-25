@@ -3,7 +3,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/composables";
 import { AppTypeFilterWrapper } from "../composables";
-import { SONIC_APP_TYPE, sonicMarketMap } from "royco/utils";
+import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
 
 export const AppTypeFilter = () => {
   const [mounted, setMounted] = useState(false);

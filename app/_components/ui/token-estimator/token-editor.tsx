@@ -17,19 +17,21 @@ import { UseFormReturn } from "react-hook-form";
 import { EstimatorCustomTokenDataSchema } from "./token-estimator";
 import { z } from "zod";
 import {
-  parseFormattedValueToText,
-  parseTextToFormattedValue,
   SONIC_GEM_DISTRIBUTION_MAP,
-  sonicMarketMap,
+  sonicPointsMap,
   TOTAL_SONIC_AIRDROP,
   TOTAL_SONIC_GEM_DISTRIBUTION,
-} from "royco/utils";
+} from "royco/sonic";
 import {
   CustomTokenDataElement,
   useGlobalStates,
 } from "@/store/use-global-states";
 import { BERA_TOKEN_ID } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-info/annual-yield-details/incentive-details";
 import { useTokenQuotes } from "royco/hooks";
+import {
+  parseFormattedValueToText,
+  parseTextToFormattedValue,
+} from "royco/utils";
 
 export const SONIC_CHAIN_ID = 146;
 const SONIC_TOKEN_ID = "146-0x0000000000000000000000000000000000000000";
@@ -38,43 +40,46 @@ export const TokenEditor = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     index: number;
-    token: CustomTokenDataElement;
+    tokens: CustomTokenDataElement[];
     customTokenForm: UseFormReturn<
       z.infer<typeof EstimatorCustomTokenDataSchema>
     >;
     onRemove?: () => void;
-    marketId?: string;
+    marketCategory?: string;
   }
 >(
   (
-    { className, token, onRemove, customTokenForm, index, marketId, ...props },
+    {
+      className,
+      tokens,
+      onRemove,
+      customTokenForm,
+      index,
+      marketCategory,
+      ...props
+    },
     ref
   ) => {
-    const { customTokenData } = useGlobalStates();
-
-    const previousTokenData = useMemo(() => {
-      return customTokenData.find((t) => t.token_id === token.token_id);
-    }, [token.token_id]);
-
-    const tokenData = useMemo(() => {
-      return SupportedTokenList.find((t) => t.id === token.token_id);
-    }, [token.token_id]);
-
-    const isSonicPointData = useMemo(() => {
-      if (!tokenData) {
-        return false;
-      }
-
-      return (
-        tokenData.chain_id === SONIC_CHAIN_ID && tokenData.type === "point"
-      );
-    }, [tokenData]);
-
     const { data: sonicTokenQuote } = useTokenQuotes({
       token_ids: [SONIC_TOKEN_ID],
     });
 
+    const { customTokenData } = useGlobalStates();
+
+    const previousTokensData = useMemo(() => {
+      return tokens.map((t) => {
+        return customTokenData.find((c) => c.token_id === t.token_id);
+      });
+    }, [tokens]);
+
+    const tokensData = useMemo(() => {
+      return tokens.map((t) => {
+        return SupportedTokenList.find((c) => c.id === t.token_id);
+      });
+    }, [tokens]);
+
     const handleFDVChange = (value: string) => {
+      const token = tokens[0];
       const allocation = parseFloat(token.allocation || "100");
       const fdv = parseFloat(value || "0");
       const total_supply = parseFloat(token.total_supply || "0");
@@ -94,6 +99,7 @@ export const TokenEditor = React.forwardRef<
     };
 
     const handlePriceChange = (value: string) => {
+      const token = tokens[0];
       const allocation = parseFloat(token.allocation || "100");
       const total_supply = parseFloat(token.total_supply || "0");
 
@@ -109,6 +115,7 @@ export const TokenEditor = React.forwardRef<
     };
 
     const handleAllocationChange = (value: string) => {
+      const token = tokens[0];
       const allocation = parseFloat(value || "100");
       const fdv = parseFloat(token.fdv || "0");
       const total_supply = parseFloat(token.total_supply || "0");
@@ -128,44 +135,54 @@ export const TokenEditor = React.forwardRef<
     };
 
     const handleSonicAllocationChange = (value: string) => {
-      const allocation = parseFloat(value || "0");
-
-      const appType = sonicMarketMap.find((m) => m.id === marketId)?.appType;
-      if (!appType) {
-        return;
-      }
-
       if (!sonicTokenQuote) {
         return;
       }
 
-      const gemPriceInSonic =
-        (TOTAL_SONIC_AIRDROP * (allocation / 100) * (50 / 100)) /
-        TOTAL_SONIC_GEM_DISTRIBUTION;
-      const allocatedGemPriceInSonic =
-        SONIC_GEM_DISTRIBUTION_MAP[appType] * gemPriceInSonic;
-      const allocatedGemPriceInUSD =
-        allocatedGemPriceInSonic * sonicTokenQuote[0].price;
+      const allocation = parseFloat(value || "0");
 
-      const new_fdv = allocatedGemPriceInUSD;
-      const total_supply = parseFloat(token.total_supply || "0");
-      let new_price = new_fdv / total_supply;
-      if (isNaN(new_price) || new_price === Infinity) {
-        new_price = 0;
+      for (const i in tokens) {
+        const token = tokens[i];
+        const appType = sonicPointsMap.find(
+          (p) => p.id === token.token_id
+        )?.appType;
+
+        if (!appType) {
+          continue;
+        }
+
+        const gemPriceInSonic =
+          (TOTAL_SONIC_AIRDROP * (allocation / 100) * (50 / 100)) /
+          TOTAL_SONIC_GEM_DISTRIBUTION;
+        const allocatedGemPriceInSonic =
+          SONIC_GEM_DISTRIBUTION_MAP[appType] * gemPriceInSonic;
+        const allocatedGemPriceInUSD =
+          allocatedGemPriceInSonic * sonicTokenQuote[0].price;
+
+        const new_fdv = allocatedGemPriceInUSD;
+        const total_supply = parseFloat(token.total_supply || "0");
+        let new_price = new_fdv / total_supply;
+        if (isNaN(new_price) || new_price === Infinity) {
+          new_price = 0;
+        }
+
+        customTokenForm.setValue(
+          `customTokenData.${i as any}.fdv`,
+          new_fdv.toString()
+        );
+        customTokenForm.setValue(
+          `customTokenData.${i as any}.price`,
+          new_price.toString()
+        );
+        customTokenForm.setValue(
+          `customTokenData.${i as any}.allocation`,
+          value
+        );
       }
-
-      customTokenForm.setValue(
-        `customTokenData.${index}.fdv`,
-        new_fdv.toString()
-      );
-      customTokenForm.setValue(
-        `customTokenData.${index}.price`,
-        new_price.toString()
-      );
-      customTokenForm.setValue(`customTokenData.${index}.allocation`, value);
     };
 
     const sonicTokenAllocation = useMemo(() => {
+      const token = tokens[0];
       const allocation = parseFloat(token.allocation || "0");
 
       return {
@@ -174,11 +191,11 @@ export const TokenEditor = React.forwardRef<
       };
     }, [customTokenForm.watch(`customTokenData.${index}.allocation`)]);
 
-    if (!tokenData) {
+    if (!tokensData || tokensData.length === 0) {
       return null;
     }
 
-    if (isSonicPointData) {
+    if (marketCategory === "sonic") {
       return (
         <div
           ref={ref}
@@ -255,7 +272,7 @@ export const TokenEditor = React.forwardRef<
          */}
         <div className="flex items-center justify-between">
           <TokenDisplayer
-            tokens={[tokenData] as any}
+            tokens={tokensData as any}
             size={4}
             symbols={true}
             symbolClassName="font-medium"
@@ -274,18 +291,18 @@ export const TokenEditor = React.forwardRef<
         {/**
          * Token Stats
          */}
-        {tokenData.id !== BERA_TOKEN_ID && (
+        {tokensData?.[0]?.id !== BERA_TOKEN_ID && (
           <div className="mt-3 grid grid-cols-2 gap-2">
             <div>
               <SecondaryLabel className="break-normal font-light">
-                {tokenData.type === "point"
+                {tokensData?.[0]?.type === "point"
                   ? "# Points on Royco"
                   : "Total Supply"}
               </SecondaryLabel>
               <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
                 <SpringNumber
                   previousValue={parseFloat(
-                    previousTokenData?.total_supply || "0"
+                    previousTokensData?.[0]?.total_supply || "0"
                   )}
                   currentValue={parseFloat(
                     customTokenForm.watch(
@@ -305,13 +322,15 @@ export const TokenEditor = React.forwardRef<
 
             <div>
               <SecondaryLabel className="break-normal font-light">
-                {tokenData.type === "point"
+                {tokensData?.[0]?.type === "point"
                   ? "Estimated Price per Point"
                   : "Price"}
               </SecondaryLabel>
               <PrimaryLabel className="hide-scrollbar mt-1 overflow-x-auto text-2xl">
                 <SpringNumber
-                  previousValue={parseFloat(previousTokenData?.price || "0")}
+                  previousValue={parseFloat(
+                    previousTokensData?.[0]?.price || "0"
+                  )}
                   currentValue={parseFloat(
                     customTokenForm.watch(`customTokenData.${index}.price`) ||
                       "0"
@@ -369,7 +388,7 @@ export const TokenEditor = React.forwardRef<
             <FormInputLabel
               size="sm"
               label={
-                tokenData.type === "point"
+                tokensData?.[0]?.type === "point"
                   ? "Estimated Value of dApp Incentives"
                   : "Adjust FDV"
               }
@@ -379,7 +398,7 @@ export const TokenEditor = React.forwardRef<
           <Input
             type="text"
             placeholder={
-              tokenData.type === "point"
+              tokensData?.[0]?.type === "point"
                 ? "Enter Estimated Value"
                 : "Enter FDV Amount"
             }
@@ -397,7 +416,7 @@ export const TokenEditor = React.forwardRef<
         {/**
          * Price Input
          */}
-        {tokenData.type === "point" && (
+        {tokensData?.[0]?.type === "point" && (
           <div className="mt-4">
             <FormInputLabel size="sm" label="Estimated Price per Point" />
 

@@ -203,7 +203,11 @@ export const IncentiveTokenDetails = React.forwardRef<
         {showEstimate ? (
           <TokenEstimator
             defaultTokenId={[token_data.id]}
-            market={currentMarketData}
+            marketCategory={
+              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                ? "sonic"
+                : undefined
+            }
           >
             <Button
               variant="link"

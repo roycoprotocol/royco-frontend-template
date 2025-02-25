@@ -37,7 +37,7 @@ import {
   MULTIPLIER_ASSET_TYPE,
 } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { SONIC_APP_TYPE, sonicMarketMap } from "royco/utils";
+import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
