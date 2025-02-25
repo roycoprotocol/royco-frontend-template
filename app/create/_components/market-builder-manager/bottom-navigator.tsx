@@ -108,7 +108,11 @@ export const BottomNavigator = React.forwardRef<
           .multiplier
       ).toString(),
       inputToken: marketBuilderForm.watch("asset")?.contract_address,
-      frontendFee: getFrontendFee(),
+      // FRONTEND FEE
+      frontendFee:
+        marketBuilderForm.watch("chain").id === 146
+          ? "5000000000000000"
+          : "40000000000000000",
       rewardStyle:
         marketBuilderForm.watch("incentive_schedule") === "upfront"
           ? REWARD_STYLE.Upfront
@@ -122,7 +126,11 @@ export const BottomNavigator = React.forwardRef<
       writeContractOptions: writeContractOptionsVault,
     } = useCreateVaultMarket({
       chainId: marketBuilderForm.watch("chain").id,
-      frontendFee: getFrontendFee(),
+      // FRONTEND FEE
+      frontendFee:
+        marketBuilderForm.watch("chain").id === 146
+          ? "5000000000000000"
+          : "40000000000000000",
       vaultAddress: marketBuilderForm.watch("vault_address"),
       vaultName: marketBuilderForm.watch("market_name"),
       vaultOwner: address,
