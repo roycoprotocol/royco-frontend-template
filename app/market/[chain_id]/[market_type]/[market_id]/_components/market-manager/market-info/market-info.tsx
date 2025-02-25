@@ -111,7 +111,14 @@ export const MarketInfo = React.forwardRef<
          * Token Estimate
          */}
         <div className="mt-2">
-          <TokenEstimator defaultTokenId={pointTokenIds}>
+          <TokenEstimator
+            defaultTokenId={pointTokenIds}
+            marketCategory={
+              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                ? "sonic"
+                : undefined
+            }
+          >
             <Button
               variant="link"
               size="sm"

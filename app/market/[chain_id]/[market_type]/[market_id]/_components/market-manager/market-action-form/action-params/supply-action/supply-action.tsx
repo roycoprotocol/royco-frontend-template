@@ -113,6 +113,11 @@ export const SupplyAction = React.forwardRef<
               defaultTokenId={
                 highestIncentiveToken?.id ? [highestIncentiveToken.id] : []
               }
+              marketCategory={
+                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                  ? "sonic"
+                  : undefined
+              }
             >
               <Button className="flex w-full items-center justify-center gap-2">
                 <LightningIcon className="h-5 w-5 fill-white" />

@@ -9,8 +9,12 @@ import { MarketType } from "@/store/market-manager-props";
 import { AnimatePresence, motion } from "framer-motion";
 import { ActionFlow, SpringNumber } from "@/components/composables";
 import validator from "validator";
-import { parseRawAmountToTokenAmount, shortAddress } from "royco/utils";
-import { getExplorerUrl } from "royco/utils";
+import {
+  parseRawAmountToTokenAmount,
+  shortAddress,
+  getExplorerUrl,
+} from "royco/utils";
+import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
 import {
   BASE_MARGIN_TOP,
   INFO_ROW_CLASSES,
@@ -66,6 +70,18 @@ export const MarketDetails = React.forwardRef<
     return getMarketAssetType(currentMarketData);
   }, [currentMarketData]);
 
+  const marketAppType = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG !== "sonic") {
+      return;
+    }
+
+    if (!currentMarketData) {
+      return;
+    }
+
+    return sonicMarketMap.find((m) => m.id === currentMarketData.id)?.appType;
+  }, [currentMarketData]);
+
   return (
     <div
       ref={ref}
@@ -117,6 +133,24 @@ export const MarketDetails = React.forwardRef<
             </TertiaryLabel>
             <SecondaryLabel className="mt-1 h-full rounded-full border border-success px-3 py-1 font-semibold text-success">
               {marketMultiplier}x
+            </SecondaryLabel>
+          </div>
+        )}
+
+        {marketAppType && (
+          <div className="flex flex-col items-end">
+            <SecondaryLabel className="mt-1 rounded-full border border-success px-3 py-1 text-success">
+              {(() => {
+                if (marketAppType === SONIC_APP_TYPE.EMERALD) {
+                  return "Emerald";
+                } else if (marketAppType === SONIC_APP_TYPE.SAPPHIRE) {
+                  return "Sapphire";
+                } else if (marketAppType === SONIC_APP_TYPE.RUBY) {
+                  return "Ruby";
+                } else {
+                  return "Unknown";
+                }
+              })()}
             </SecondaryLabel>
           </div>
         )}
@@ -177,6 +211,17 @@ export const MarketDetails = React.forwardRef<
             </CopyWrapper>
           </InfoCard.Row.Value>
         </InfoCard.Row>
+
+        {/**
+         * Sonic Incentive Payout
+         */}
+        {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+          <InfoCard.Row className={INFO_ROW_CLASSES}>
+            <InfoCard.Row.Key>Incentive Payout</InfoCard.Row.Key>
+
+            <InfoCard.Row.Value>After Sonic S1</InfoCard.Row.Value>
+          </InfoCard.Row>
+        )}
 
         {/**
          * ERC4626 Vault

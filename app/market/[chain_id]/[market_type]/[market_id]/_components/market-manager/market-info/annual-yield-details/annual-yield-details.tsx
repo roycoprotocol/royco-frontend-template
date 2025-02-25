@@ -13,6 +13,7 @@ import { IncentiveDetails } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { InfoTip } from "@/components/common";
+import { sonicMarketMap } from "royco/sonic";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
@@ -47,6 +48,20 @@ export const AnnualYieldDetails = React.forwardRef<
     return;
   }, []);
 
+  const sonicInfo = useMemo(() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
+      const sonicMarket = sonicMarketMap.find(
+        (market) => market.id === currentMarketData.id
+      );
+
+      if (sonicMarket) {
+        return sonicMarket.info;
+      }
+    }
+
+    return;
+  }, [currentMarketData]);
+
   return (
     <div
       ref={ref}
@@ -73,6 +88,11 @@ export const AnnualYieldDetails = React.forwardRef<
           breakdowns.length > 0 ? (
             <TokenEstimator
               defaultTokenId={point_token_data?.id ? [point_token_data.id] : []}
+              marketCategory={
+                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                  ? "sonic"
+                  : undefined
+              }
             >
               <Button
                 variant="outline"
@@ -169,6 +189,26 @@ export const AnnualYieldDetails = React.forwardRef<
               <span className="underline">
                 <a
                   href="https://blog.berachain.com/blog/boyco-markets-overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn more.
+                </a>
+              </span>
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
+      {sonicInfo && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span>{sonicInfo.description}</span>{" "}
+              <span className="underline">
+                <a
+                  href={sonicInfo.url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

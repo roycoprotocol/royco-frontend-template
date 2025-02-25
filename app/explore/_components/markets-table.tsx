@@ -9,7 +9,7 @@ import { isEqual } from "lodash";
 
 import { useEffect } from "react";
 
-import { columns } from "./columns";
+import { columns, boycoColumns, sonicColumns } from "./columns";
 import { useExplore, useGlobalStates, useMarketManager } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 
@@ -101,16 +101,16 @@ export const MarketsTable = () => {
     }
   }, [data, isLoading, placeholderDatas]);
 
-  const updatedExploreColumns = useMemo(() => {
+  const exploreColumns = useMemo(() => {
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-      return (columns as any).filter(
-        (column: any) => column.accessorKey !== "market_type"
-      );
+      return boycoColumns;
     }
 
-    return (columns as any).filter(
-      (column: any) => column.accessorKey !== "pool_type"
-    );
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
+      return sonicColumns;
+    }
+
+    return columns;
   }, [columns]);
 
   if (
@@ -200,7 +200,7 @@ export const MarketsTable = () => {
        * @TODO Strictly type this
        */
       // @ts-ignore
-      columns={updatedExploreColumns}
+      columns={exploreColumns}
       // @ts-ignore
       data={placeholderDatas[1] === null ? data : placeholderDatas[1]}
       // @ts-ignore

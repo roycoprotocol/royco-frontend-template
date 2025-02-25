@@ -3,29 +3,18 @@ import {
   SpringNumber,
   IncentiveBreakdown,
   YieldBreakdown,
-  TokenEditor,
 } from "@/components/composables";
 import { EnrichedMarketDataType } from "royco/queries";
-import {
-  AipBreakdown,
-  AssetBreakdown,
-  InfoGrid,
-  InfoTip,
-  TokenDisplayer,
-} from "@/components/common";
+import { InfoGrid, TokenDisplayer } from "@/components/common";
 
-import {
-  exploreColumnNames,
-  exploreColumnTooltips,
-  useExplore,
-} from "@/store/use-explore";
+import { exploreColumnNames, useExplore } from "@/store/use-explore";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
-import React, { Fragment } from "react";
+import React from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -33,26 +22,22 @@ import {
   BadgeCheckIcon,
   SparklesIcon,
 } from "lucide-react";
-import { PoolEditor } from "./ui";
-import { ColumnDef, ColumnDefBase } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDownUpIcon } from "lucide-react";
-import { capitalize } from "lodash";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { MarketType } from "@/store";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
-import { Button } from "@/components/ui/button";
 import validator from "validator";
-import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import {
   getMarketAssetType,
   getMarketMultiplier,
   MULTIPLIER_ASSET_TYPE,
 } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -532,6 +517,12 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
       );
     },
   },
+];
+
+export const boycoColumns = [
+  ...(columns as any).filter(
+    (column: any) => column.accessorKey !== "market_type"
+  ),
   {
     accessorKey: "pool_type",
     enableResizing: true,
@@ -586,6 +577,53 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
           </div>
 
           {/* {props.row.original.market_type === 0 ? "Recipe" : "Vault"} */}
+        </div>
+      );
+    },
+  },
+];
+
+export const sonicColumns = [
+  ...(columns as any).filter(
+    (column: any) => column.accessorKey !== "market_type"
+  ),
+  {
+    accessorKey: "app_type",
+    enableResizing: true,
+    // header: exploreColumnNames.action,
+    enableSorting: true,
+    header: ({ column }: { column: any }) => {
+      return <HeaderWrapper column={column} className="justify-center" />;
+    },
+    meta: {
+      className: "min-w-44",
+    },
+    cell: (props: any) => {
+      const marketId = props.row.original.id;
+      const appType = sonicMarketMap.find((m) => m.id === marketId)?.appType;
+
+      return (
+        <div
+          key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
+          className={cn("flex h-fit w-fit")}
+        >
+          <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
+            <div className={cn("body-2 flex flex-row items-center gap-2")}>
+              <span className="leading-5">
+                {(() => {
+                  if (appType === SONIC_APP_TYPE.EMERALD) {
+                    return "Emerald";
+                  } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+                    return "Sapphire";
+                  } else if (appType === SONIC_APP_TYPE.RUBY) {
+                    return "Ruby";
+                  } else {
+                    return "Unknown";
+                  }
+                })()}
+              </span>
+            </div>
+          </SecondaryLabel>
         </div>
       );
     },

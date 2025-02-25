@@ -63,6 +63,7 @@ export const exploreColumnNames = {
   annual_change_ratio: "Net APY",
   chain: "Chain",
   pool_type: "Pool Type",
+  app_type: "App Type",
 };
 
 export const exploreColumnTooltips = {
@@ -208,6 +209,7 @@ export const useExplore = create<ExploreState>((set) => ({
     annual_change_ratio: true,
     chain_id: true,
     pool_type: true,
+    app_type: true,
   },
   exploreColumnNames: exploreColumnNames,
   setExploreColumnVisibility: (exploreColumnVisibility) =>
