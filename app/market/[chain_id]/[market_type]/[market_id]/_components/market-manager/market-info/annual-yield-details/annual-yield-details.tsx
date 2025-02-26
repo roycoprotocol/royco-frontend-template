@@ -220,6 +220,19 @@ export const AnnualYieldDetails = React.forwardRef<
         </div>
       )}
 
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              Royco depositors will also receive a Gem Bonus. 16,800 Gems will
+              be distributed equally to Sonic apps using Royco, and pro-rata to
+              depositors.
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
       {/* <hr className="-mx-4 my-3" /> */}
 
       {/**
