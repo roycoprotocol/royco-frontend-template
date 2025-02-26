@@ -34,6 +34,7 @@ import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
+import { SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
 export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
@@ -110,11 +111,17 @@ export const IncentiveToken = React.forwardRef<
             symbols={false}
           />
           <div className="text-sm font-medium">
-            {token_data
-              .map((token: any) => {
-                return token.symbol;
-              })
-              .join(", ")}
+            {(() => {
+              if (
+                token_data.find(
+                  (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
+                )
+              ) {
+                return "Royco Gem Bonus";
+              }
+
+              return token_data.map((token: any) => token.symbol).join(", ");
+            })()}
           </div>
         </div>
       ) : (
