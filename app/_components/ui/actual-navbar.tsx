@@ -31,6 +31,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BeraToken } from "../assets/bera-token";
+import { PlumeLogo } from "../assets/plume/plume";
 
 const NavbarLinks = [
   // {
@@ -366,15 +367,21 @@ export const ActualNavbar = React.forwardRef<
         </div>
       )}
 
-      {/* <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
-        <div className="flex flex-wrap items-center justify-center gap-1">
-          <span className="font-semibold underline underline-offset-2">
-            Royco.org
-          </span>
-          <span>is currently undergoing upgrade. Service will return at</span>
-          <span className="font-semibold text-[#F0E397]">15:00 PST.</span>
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <div className="flex flex-wrap items-center justify-center gap-1">
+            <PlumeLogo className="h-4 w-4" />
+            <span className="font-semibold">Plume X Royco:</span>
+            <span>
+              Access incentives from Plume and our ecosystem dapps by helping
+              seed liquidity and bootstrap TVL.
+            </span>
+            {/* <span className="font-semibold underline underline-offset-2">
+              Learn more.
+            </span> */}
+          </div>
         </div>
-      </div> */}
+      )}
     </>
   );
 });
