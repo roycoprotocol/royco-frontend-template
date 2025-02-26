@@ -22,14 +22,8 @@ export const Protector = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const {
-    protectorKey,
-    setProtectorKey,
-    protectorMessage,
-    setProtectorMessage,
-    verified,
-    setVerified,
-  } = useProtector();
+  const { protectorKey, setProtectorKey, verified, setVerified } =
+    useProtector();
 
   const [checking, setChecking] = useState(true);
 
@@ -68,6 +62,18 @@ export const Protector = ({
     setChecking(false);
   }, [setVerified]);
 
+  const passwordLength = (() => {
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      return 27;
+    }
+
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
+      return 8;
+    }
+
+    return 7;
+  })();
+
   if (verified) {
     return <Fragment>{children}</Fragment>;
   }
@@ -85,65 +91,35 @@ export const Protector = ({
           className="flex h-screen w-full flex-col place-content-center items-center"
         >
           <div className="heading-3">
-            {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-              ? "🐻 BOYCO ⛓️"
-              : "Royco Protocol"}
+            {(() => {
+              if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+                return "🐻 BOYCO ⛓️";
+              }
+
+              if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
+                return "Plume";
+              }
+
+              return "Royco Protocol";
+            })()}
           </div>
 
           <div className="body-2 mt-5 font-gt">
             <InputOTP
               className=""
               value={protectorKey}
-              maxLength={
-                process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? 27 : 7
-              }
+              maxLength={passwordLength}
               pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
               onChange={(e: string) => {
                 setProtectorKey(e.toUpperCase());
               }}
               inputMode="text"
             >
-              {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                  <InputOTPSlot index={6} />
-                  <InputOTPSlot index={7} />
-                  <InputOTPSlot index={8} />
-                  <InputOTPSlot index={9} />
-                  <InputOTPSlot index={10} />
-                  <InputOTPSlot index={11} />
-                  <InputOTPSlot index={12} />
-                  <InputOTPSlot index={13} />
-                  <InputOTPSlot index={14} />
-                  <InputOTPSlot index={15} />
-                  <InputOTPSlot index={16} />
-                  <InputOTPSlot index={17} />
-                  <InputOTPSlot index={18} />
-                  <InputOTPSlot index={19} />
-                  <InputOTPSlot index={20} />
-                  <InputOTPSlot index={21} />
-                  <InputOTPSlot index={22} />
-                  <InputOTPSlot index={23} />
-                  <InputOTPSlot index={24} />
-                  <InputOTPSlot index={25} />
-                  <InputOTPSlot index={26} />
-                </InputOTPGroup>
-              ) : (
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                  <InputOTPSlot index={6} />
-                </InputOTPGroup>
-              )}
+              <InputOTPGroup>
+                {Array.from({ length: passwordLength }).map((_, index) => (
+                  <InputOTPSlot key={index} index={index} />
+                ))}
+              </InputOTPGroup>
             </InputOTP>
           </div>
 
