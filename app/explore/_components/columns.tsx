@@ -38,6 +38,9 @@ import {
 } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { Button } from "@/components/ui/button";
+import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -375,7 +378,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
 
     meta: {
-      className: "min-w-32",
+      className: "min-w-36",
     },
     cell: (props: any) => {
       const rowIndex = props.row.index;
@@ -424,6 +427,31 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             ) {
               // @note: disabled this condition as per request from @capnjack
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
+            } else if (
+              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" &&
+              breakdowns &&
+              breakdowns.length > 0
+            ) {
+              return (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  className="shrink-0"
+                >
+                  <TokenEstimator marketCategory="sonic">
+                    <Button
+                      variant="link"
+                      className="flex w-full items-center gap-1 py-0 outline-none"
+                    >
+                      <span className="text-sm font-medium underline">
+                        Estimate S1 Airdrop
+                      </span>
+                    </Button>
+                  </TokenEstimator>
+                </div>
+              );
             } else {
               return (
                 <YieldBreakdown
