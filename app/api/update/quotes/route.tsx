@@ -3,6 +3,8 @@ import { Address } from "abitype";
 import {
   getSupportedChain,
   isSolidityAddressValid,
+  parseRawAmount,
+  parseRawAmountToTokenAmount,
   refineSolidityAddress,
   shortAddress,
 } from "royco/utils";
@@ -610,6 +612,101 @@ export const updateTokenQuotesFromCoinmarketCap = async () => {
     throw new Error(
       `Supabase Error: ${tokensUpdatedError?.message || tokensIndexUpdatedError?.message}`
     );
+  }
+};
+
+export const updateTokenQuotesFromEnso = async () => {
+  const supabaseClient = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.SUPABASE_SERVICE_ROLE_KEY as string
+  );
+
+  const { data: tokensToUpdate, error: tokensToUpdateError } =
+    await supabaseClient
+      .from("token_index")
+      .select("token_id, search_id, decimals")
+      .eq("source", "enso")
+      .neq("search_id", "")
+      .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .order("last_updated", { ascending: true })
+      .limit(100);
+
+  if (tokensToUpdateError) {
+    throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
+  }
+
+  if (!tokensToUpdate || tokensToUpdate.length === 0) return;
+
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(
+      parseInt(tokensToUpdate[0].token_id.split("-")[0])
+    ),
+    transport: http(SERVER_RPC_API_KEYS[80094], {
+      fetchOptions: {
+        headers: {
+          Origin: "https://app.royco.org",
+        },
+      },
+    }),
+  });
+
+  const contracts = tokensToUpdate.map((token) => {
+    const [chain_id, contract_address] = token.token_id.split("-");
+    return {
+      address: contract_address as Address,
+      abi: erc20Abi,
+      functionName: "totalSupply",
+    };
+  });
+
+  const results = await chainClient.multicall({ contracts });
+
+  for (let i = 0; i < tokensToUpdate.length; i++) {
+    const token = tokensToUpdate[i];
+    const [chain_id, contract_address] = token.token_id.split("-");
+
+    try {
+      const req = await fetch(
+        `https://api.enso.finance/api/v1/prices/${chain_id}/${contract_address}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.ENSO_API_KEY}`,
+          },
+        }
+      );
+
+      const res = (await req.json()) as {
+        price: number;
+      };
+
+      const last_updated = new Date().toISOString();
+      const total_supply =
+        results[i].status === "success"
+          ? parseRawAmountToTokenAmount(
+              results[i].result as string,
+              token.decimals
+            )
+          : 0;
+      const fdv = total_supply * res.price;
+
+      const quote = {
+        id: generateId({
+          source: "enso",
+          search_id: token.search_id,
+        }),
+        source: "enso",
+        search_id: token.search_id,
+        price: res.price,
+        fdv,
+        total_supply,
+        last_updated,
+      };
+
+      await supabaseClient.from("raw_token_quotes").upsert([quote]);
+    } catch (error) {
+      console.error(`Error updating token quotes from Enso: ${error}`);
+      continue;
+    }
   }
 };
 
