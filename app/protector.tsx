@@ -68,7 +68,7 @@ export const Protector = ({
     }
 
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
-      return 8;
+      return 10;
     }
 
     return 7;
