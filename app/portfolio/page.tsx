@@ -60,8 +60,8 @@ const Page = () => {
 
   if (
     frontendTag === "internal" ||
-    frontendTag === "testnet"
-    // || frontendTag === "boyco"
+    frontendTag === "testnet" ||
+    frontendTag === "plume"
   ) {
     return <Protector children={<Content />} />;
   } else {
