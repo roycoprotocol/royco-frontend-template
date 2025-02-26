@@ -629,7 +629,7 @@ export const updateTokenQuotesFromEnso = async () => {
       .neq("search_id", "")
       .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
       .order("last_updated", { ascending: true })
-      .limit(100);
+      .limit(10);
 
   if (tokensToUpdateError) {
     throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
@@ -716,6 +716,7 @@ export async function GET(request: NextRequest) {
       updateTokenQuotesFromCoingecko(),
       updateTokenQuotesFromCoinmarketCap(),
       updateLpTokenQuotesFromContract(),
+      updateTokenQuotesFromEnso(),
     ]);
 
     // Check for any errors
