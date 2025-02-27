@@ -80,11 +80,15 @@ const Page = () => {
             })()}
           </div>
 
-          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
-            <BoycoStats className="flex-1" />
-          ) : (
-            <RoycoStats className="flex-1" />
-          )}
+          {(() => {
+            if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+              return <BoycoStats className="flex-1" />;
+            } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
+              return null;
+            } else {
+              return <RoycoStats className="flex-1" />;
+            }
+          })()}
         </div>
 
         <div
