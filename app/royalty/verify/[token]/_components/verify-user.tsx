@@ -66,9 +66,9 @@ export const VerifyUser = React.forwardRef<
               height="158"
               rx="9999999"
               stroke="inherit"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-dasharray="13 13"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray="13 13"
             />
           </svg>
         </div>

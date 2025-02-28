@@ -1,0 +1,222 @@
+"use client";
+
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { useActiveMarket } from "../../../../hooks";
+import { useEnrichedPositionsBoyco } from "royco/hooks";
+import { useAccount } from "wagmi";
+import { LoadingSpinner } from "@/components/composables";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import formatNumber from "@/utils/numbers";
+import { Button } from "@/components/ui/button";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
+import { getSupportedToken } from "royco/constants";
+import { BERA_TOKEN_ID } from "royco/boyco";
+import { getBoycoReceiptTokenWithdrawalTransactionOptions } from "royco/hooks";
+import { useMarketManager } from "@/store/use-market-manager";
+
+export const BoycoWithdrawSectionRow = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn("flex grow flex-col", className)}
+      {...props}
+    ></div>
+  );
+});
+
+export const BoycoWithdrawSectionRowContainer = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "flex w-full flex-row justify-between gap-3 rounded-2xl border border-divider bg-z2 p-3 font-light transition-all duration-200 ease-in-out hover:bg-focus",
+        className
+      )}
+      {...props}
+    />
+  );
+});
+
+export const BoycoWithdrawSection = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const page_size = 100;
+  const [page, setPage] = useState(0);
+  const { currentMarketData } = useActiveMarket();
+  const { address } = useAccount();
+
+  const { transactions, setTransactions } = useMarketManager();
+
+  const propsPositionsBoyco = useEnrichedPositionsBoyco({
+    account_address: address?.toLowerCase() ?? "",
+    market_id: currentMarketData?.market_id ?? undefined,
+    // account_address: "0x6a0e42510bc58e5e65edb219f4f9ca7cca2ed918",
+    // market_id:
+    //   "0x6262ac035c2284f5b5249a690a6fd81c35f1ecef501da089f25741a4492cf5f3",
+    page_index: page,
+    page_size,
+  });
+
+  if (propsPositionsBoyco.isLoading) {
+    return (
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center p-5",
+          className
+        )}
+      >
+        <LoadingSpinner className="h-5 w-5" />
+      </div>
+    );
+  }
+
+  if (!address) {
+    return (
+      <AlertIndicator className="w-full rounded-md">
+        Wallet not connected
+      </AlertIndicator>
+    );
+  }
+
+  if (
+    !propsPositionsBoyco.data?.data ||
+    propsPositionsBoyco.data?.data?.length === 0
+  ) {
+    return (
+      <AlertIndicator className="w-full rounded-md">
+        No withdrawable positions found
+      </AlertIndicator>
+    );
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={cn("flex h-fit flex-1 grow flex-col gap-2", className)}
+      {...props}
+    >
+      <div className="text-sm font-normal text-secondary">Receipt Token</div>
+
+      {propsPositionsBoyco.data?.data?.map((position) => {
+        const isUnlocked =
+          position.unlock_timestamp &&
+          Number(position.unlock_timestamp) < new Date().getTime() / 1000;
+
+        const isWithdrawn = position.is_withdrawn;
+
+        const isDisabled = isWithdrawn || !isUnlocked;
+
+        return (
+          <BoycoWithdrawSectionRowContainer
+            key={`boyco-withdraw-position-${position.id}`}
+          >
+            <div className="flex grow flex-col overflow-hidden truncate text-ellipsis">
+              <div className="flex flex-wrap text-wrap">
+                {position.receipt_token_data.symbol}
+              </div>
+              <div className="grow overflow-hidden truncate text-ellipsis text-xs font-normal text-tertiary">
+                {formatNumber(position.receipt_token_data.token_amount, {
+                  type: "number",
+                })}{" "}
+                {position.receipt_token_data.symbol.length > 10
+                  ? `${position.receipt_token_data.symbol.slice(0, 10)}...`
+                  : position.receipt_token_data.symbol}{" "}
+                {`(${formatNumber(
+                  position.receipt_token_data.token_amount_usd,
+                  {
+                    type: "currency",
+                  }
+                )})`}
+              </div>
+            </div>
+            <div className="flex flex-1 grow flex-col items-center justify-center">
+              <Button
+                disabled={isDisabled}
+                size="sm"
+                className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
+                onClick={() => {
+                  const contractOptions =
+                    getBoycoReceiptTokenWithdrawalTransactionOptions({
+                      position,
+                    });
+
+                  setTransactions([contractOptions]);
+                }}
+              >
+                {isUnlocked
+                  ? isWithdrawn
+                    ? "Withdrawn"
+                    : "Withdraw"
+                  : "Locked"}
+              </Button>
+            </div>
+          </BoycoWithdrawSectionRowContainer>
+        );
+      })}
+
+      <div className="my-2 h-px w-full rounded-full bg-divider" />
+
+      <div className="text-sm font-normal text-secondary">
+        Underlying Incentives
+      </div>
+
+      <BoycoWithdrawSectionRowContainer>
+        <TokenDisplayer
+          tokens={[getSupportedToken(BERA_TOKEN_ID)]}
+          symbols={true}
+        />
+
+        <Button
+          disabled={true}
+          className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
+          size="sm"
+        >
+          Locked
+        </Button>
+      </BoycoWithdrawSectionRowContainer>
+
+      <div className="my-2 h-px w-full rounded-full bg-divider" />
+
+      <div className="text-sm font-normal text-secondary">
+        External Incentives
+      </div>
+
+      <BoycoWithdrawSectionRowContainer>
+        <div className="flex grow flex-row items-center justify-start">
+          <div className="h-6 w-6 rounded-full border border-divider bg-secondary drop-shadow-sm" />
+          <div className="-ml-2 h-6 w-6 rounded-full border border-divider bg-tertiary drop-shadow-md" />
+          <div className="-ml-2 h-6 w-6 rounded-full border border-divider bg-white drop-shadow-lg" />
+        </div>
+
+        <Button
+          disabled={true}
+          className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
+          size="sm"
+        >
+          Locked
+        </Button>
+      </BoycoWithdrawSectionRowContainer>
+
+      {/* <BoycoWithdrawSectionRowContainer>
+        <div className="flex grow flex-col items-start justify-center">
+          Bodiak Points
+        </div>
+
+        <Button
+          className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
+          size="sm"
+        >
+          Claim
+        </Button>
+      </BoycoWithdrawSectionRowContainer> */}
+    </div>
+  );
+});

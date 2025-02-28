@@ -14,9 +14,9 @@ export const LoadingBorder = () => {
         height="158"
         rx="79"
         stroke="#3CC27A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-dasharray="16 16"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="16 16"
       />
     </svg>
   );
