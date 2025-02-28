@@ -7,10 +7,7 @@ import { isEqual } from "lodash";
 import { useEnrichedPositionsRecipe } from "royco/hooks";
 import { useImmer } from "use-immer";
 import { PositionsRecipeTable } from "./positions-recipe-table";
-import {
-  positionsRecipeColumns,
-  positionsRecipeColumnsBoyco,
-} from "./positions-recipe-columns";
+import { positionsRecipeColumns } from "./positions-recipe-columns";
 import { LoadingSpinner } from "@/components/composables";
 import { useAccount } from "wagmi";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -102,11 +99,7 @@ export const PositionsRecipeManager = React.forwardRef<
                 }))
               : []
           }
-          columns={
-            currentMarketData?.category === "boyco"
-              ? positionsRecipeColumnsBoyco
-              : positionsRecipeColumns
-          }
+          columns={positionsRecipeColumns}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

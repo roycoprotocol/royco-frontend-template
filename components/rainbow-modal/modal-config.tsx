@@ -12,6 +12,7 @@ import {
   Corn,
   Plume,
   Sonic,
+  BerachainMainnet,
 } from "royco/constants";
 
 export const metadata = {
@@ -34,6 +35,7 @@ export const config = getDefaultConfig({
     Plume,
     EthereumSepolia,
     Sonic,
+    BerachainMainnet,
   ],
   ssr: true,
   multiInjectedProviderDiscovery: true,
@@ -71,6 +73,11 @@ export const config = getDefaultConfig({
     [Sonic.id]: fallback([
       unstable_connector(injected),
       http(process.env.NEXT_PUBLIC_RPC_API_KEY_146!),
+      http(),
+    ]),
+    [BerachainMainnet.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_80094!),
       http(),
     ]),
   },
