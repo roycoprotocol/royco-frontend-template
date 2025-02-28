@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/hover-card";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
+import Link from "next/link";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@/components/ui/tooltip";
 
 export type PositionsBoycoDataElement = NonNullable<
   NonNullable<
@@ -117,7 +120,7 @@ export const actionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] =
                   window.open(explorerUrl, "_blank", "noopener,noreferrer");
                 }}
               >
-                View Process Transaction on {getSupportedChain(80094)?.name}
+                View Bridge Transaction on {getSupportedChain(80094)?.name}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -131,7 +134,8 @@ export const actionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] =
                   window.open(explorerUrl, "_blank", "noopener,noreferrer");
                 }}
               >
-                View Execute Transaction on {getSupportedChain(80094)?.name}
+                View Deposit to dApp Transaction on{" "}
+                {getSupportedChain(80094)?.name}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -253,6 +257,44 @@ export const baseBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] = [
               )}
           </HoverCard>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "claim_incentives",
+    enableResizing: true,
+    enableSorting: false,
+    header: "",
+    meta: "text-left",
+    cell: ({ row }) => {
+      const unlock_timestamp = parseInt(row.original.unlock_timestamp ?? "0");
+      const is_unlocked =
+        unlock_timestamp <= Math.floor(Date.now() / 1000) + 3600;
+
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href="#"
+              onClick={(event) => {
+                if (!is_unlocked) {
+                  event.preventDefault();
+                }
+              }}
+              className={cn(
+                "underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70",
+                is_unlocked
+                  ? ""
+                  : "cursor-pointer text-tertiary decoration-tertiary"
+              )}
+            >
+              Claim Incentives
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>Coming Soon</span>
+          </TooltipContent>
+        </Tooltip>
       );
     },
   },
