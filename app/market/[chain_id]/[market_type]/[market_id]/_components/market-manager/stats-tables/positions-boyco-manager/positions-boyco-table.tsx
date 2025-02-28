@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -18,16 +19,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  PositionsVaultColumnDataElement,
-  positionsVaultColumns,
-} from "./positions-vault-columns";
-import { motion } from "framer-motion";
+  PositionsBoycoColumnDataElement,
+  positionsBoycoColumns,
+  PositionsBoycoDataElement,
+} from "./positions-boyco-columns";
 
-export const PositionsVaultTable = React.forwardRef<
+import { motion, AnimatePresence } from "framer-motion";
+import { FallMotion } from "@/components/animations";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+export const PositionsBoycoTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    data: PositionsVaultColumnDataElement[];
-    columns: typeof positionsVaultColumns;
+    data: PositionsBoycoColumnDataElement[];
+    columns: typeof positionsBoycoColumns;
   }
 >(({ className, data, columns, ...props }, ref) => {
   const table = useReactTable({
@@ -81,13 +86,18 @@ export const PositionsVaultTable = React.forwardRef<
               })}
             </TableRow>
           ))}
+
+          <tr
+            suppressHydrationWarning
+            className="absolute bottom-0 left-0 h-[1px] w-full bg-divider"
+          />
         </TableHeader>
 
-        <TableBody className={cn("bg-white")}>
+        <TableBody className={cn("overflow-y-scroll bg-white")}>
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No positions found.
               </TableCell>
             </TableRow>
           ) : (
@@ -107,7 +117,7 @@ export const PositionsVaultTable = React.forwardRef<
                     <TableCell
                       key={`row:cell:${cell.id}`}
                       className={cn(
-                        "min-w-fit whitespace-nowrap px-3 py-0 text-sm font-normal text-black",
+                        "min-w-fit whitespace-nowrap px-3 py-0 text-sm font-light text-black",
                         "h-[4rem]",
                         index === 0 && "pl-5",
                         index !== 0 &&
@@ -115,18 +125,6 @@ export const PositionsVaultTable = React.forwardRef<
                           "pr-5"
                       )}
                     >
-                      {/* <FallMotion
-                        customKey={`list:content:${row.original.id}`}
-                        height="4rem"
-                        delay={rowIndex * 0.02}
-                        className="h-full"
-                        contentClassName="flex flex-col items-center justify-center"
-                      >
-                        {flexRender(cell.column.columnDef.cell, {
-                          ...cell.getContext(),
-                        })}
-                      </FallMotion> */}
-
                       {flexRender(cell.column.columnDef.cell, {
                         ...cell.getContext(),
                       })}

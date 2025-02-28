@@ -37,7 +37,7 @@ export const TablePagination = React.forwardRef<
     setPage: (page: number) => void;
   }
 >(({ className, page, page_size, count, setPage, ...props }, ref) => {
-  const total_pages = Math.ceil(count / page_size);
+  const total_pages = Math.ceil(count / page_size) || 1;
 
   const canPrevPage = page > 0;
   const canNextPage = page < total_pages - 1;

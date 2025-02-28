@@ -2,13 +2,11 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -18,16 +16,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  PositionsVaultColumnDataElement,
-  positionsVaultColumns,
-} from "./positions-vault-columns";
+  PositionsBoycoColumnDataElement,
+  positionsBoycoColumns,
+} from "./positions-boyco-columns";
 import { motion } from "framer-motion";
 
-export const PositionsVaultTable = React.forwardRef<
+export const PositionsBoycoTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    data: PositionsVaultColumnDataElement[];
-    columns: typeof positionsVaultColumns;
+    data: PositionsBoycoColumnDataElement[];
+    columns: typeof positionsBoycoColumns;
   }
 >(({ className, data, columns, ...props }, ref) => {
   const table = useReactTable({

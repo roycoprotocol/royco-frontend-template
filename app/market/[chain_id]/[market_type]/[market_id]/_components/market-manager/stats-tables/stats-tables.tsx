@@ -10,6 +10,7 @@ import { PositionsRecipeManager } from "./positions-recipe-manager";
 import { PositionsVaultManager } from "./positions-vault-manager";
 import { ListPlusIcon } from "lucide-react";
 import { OffersManager } from "./offers-manager";
+import { PositionsBoycoManager } from "./positions-boyco-manager";
 
 export const StatsTables = React.forwardRef<
   HTMLDivElement,
@@ -18,7 +19,7 @@ export const StatsTables = React.forwardRef<
   const { statsView, setStatsView, userType } = useMarketManager();
   const { address, isConnected } = useAccount();
 
-  const { marketMetadata } = useActiveMarket();
+  const { marketMetadata, currentMarketData } = useActiveMarket();
 
   return (
     <div ref={ref} className={cn("flex w-full flex-col", className)}>
@@ -75,7 +76,11 @@ export const StatsTables = React.forwardRef<
         statsView === MarketStatsView.positions.id ? (
           marketMetadata &&
           marketMetadata.market_type === MarketType.recipe.id ? (
-            <PositionsRecipeManager />
+            currentMarketData?.category === "boyco" ? (
+              <PositionsBoycoManager />
+            ) : (
+              <PositionsRecipeManager />
+            )
           ) : (
             <PositionsVaultManager />
           )
