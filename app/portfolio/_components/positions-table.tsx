@@ -11,6 +11,7 @@ import { SlideUpWrapper } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import { PositionsRecipeManager } from "./positions-recipe-manager";
 import { PositionsVaultManager } from "./positions-vault-manager";
+import { PositionsBoycoManager } from "./positions-boyco-manager";
 // import { Profile } from "./account-profile";
 
 export const PositionsTable = React.forwardRef<
@@ -94,6 +95,16 @@ export const PositionsTable = React.forwardRef<
             </div>
 
             <PositionsRecipeManager />
+          </div>
+
+          <div>
+            <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
+              <div className={cn("flex min-w-52 flex-col")}>
+                <PrimaryLabel>Your Positions: Boyco</PrimaryLabel>
+              </div>
+            </div>
+
+            <PositionsBoycoManager />
           </div>
         </div>
       </div>

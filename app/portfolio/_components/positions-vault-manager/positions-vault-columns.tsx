@@ -1,46 +1,11 @@
-import { SpringNumber } from "@/components/composables";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  useEnrichedPositionsRecipe,
-  useEnrichedPositionsVault,
-} from "royco/hooks";
+import { ColumnDef } from "@tanstack/react-table";
+import { useEnrichedPositionsVault } from "royco/hooks";
 
 import { cn } from "@/lib/utils";
 import React from "react";
-
-import { EnrichedPositionsRecipeDataType } from "royco/queries";
-
-import { MarketType } from "@/store";
 import { getSupportedChain, shortAddress } from "royco/utils";
 import Link from "next/link";
-import { createPortal } from "react-dom";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  IncentiveBreakdown,
-  TokenEditor,
-  YieldBreakdown,
-} from "@/components/composables";
-import { differenceInMonths, formatDuration } from "date-fns";
-import { addMonths } from "date-fns";
-import { differenceInDays } from "date-fns";
 import { RoycoMarketType } from "royco/market";
-import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { secondsToDuration } from "@/app/create/_components/market-builder-form/market-builder-form-schema";
 import formatNumber from "@/utils/numbers";
 import validator from "validator";
 

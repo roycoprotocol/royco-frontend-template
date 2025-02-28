@@ -629,7 +629,7 @@ export const updateTokenQuotesFromEnso = async () => {
       .neq("search_id", "")
       .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
       .order("last_updated", { ascending: true })
-      .limit(10);
+      .limit(100);
 
   if (tokensToUpdateError) {
     throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
@@ -702,7 +702,22 @@ export const updateTokenQuotesFromEnso = async () => {
         last_updated,
       };
 
-      await supabaseClient.from("raw_token_quotes").upsert([quote]);
+      const { error: upsertError } = await supabaseClient
+        .from("raw_token_quotes")
+        .upsert([quote]);
+
+      if (upsertError) {
+        throw new Error(`Supabase Error: ${upsertError.message}`);
+      }
+
+      // update the token_index table's last_updated column
+      await supabaseClient
+        .from("token_index")
+        .update({
+          last_updated,
+        })
+        .eq("search_id", token.search_id)
+        .eq("source", "enso");
     } catch (error) {
       console.error(`Error updating token quotes from Enso: ${error}`);
       continue;
