@@ -38,9 +38,7 @@ const Page = () => {
               </div>
             </div>
 
-            {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
-              <PortfolioStats />
-            )}
+            {/* <PortfolioStats /> */}
           </div>
 
           <div
