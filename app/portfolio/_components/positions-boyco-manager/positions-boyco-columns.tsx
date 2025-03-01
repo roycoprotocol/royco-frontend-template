@@ -16,6 +16,9 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { createPortal } from "react-dom";
+import { TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export type PositionsBoycoDataElement = NonNullable<
   NonNullable<
@@ -121,27 +124,27 @@ export const positionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[]
       accessorKey: "time_to_incentive",
       enableResizing: false,
       enableSorting: false,
-      header: "Time to Incentive",
+      header: "Unlock",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
         const unlock_timestamp = Number(row.original.unlock_timestamp);
-        const current_timestamp = Math.floor(Date.now() / 1000);
-        const time_to_unlock_in_seconds = unlock_timestamp - current_timestamp;
 
-        const label = formatDuration(
-          Object.entries(secondsToDuration(time_to_unlock_in_seconds))
-            .filter(([_, value]) => value > 0)
-            .slice(0, 1)
-            .reduce((acc, [unit, value]) => ({ ...acc, [unit]: value }), {})
+        const formattedDate = new Date(unlock_timestamp * 1000).toLocaleString(
+          "en-US",
+          {
+            timeZone: "America/Chicago",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZoneName: "short",
+          }
         );
 
         return (
           <div className={cn("w-full text-center")}>
-            {time_to_unlock_in_seconds <= 0
-              ? "Now"
-              : (Number(row.original.unlock_timestamp) ?? 0) > 0
-                ? label
-                : "None"}
+            {unlock_timestamp <= 0 ? "None" : formattedDate}
           </div>
         );
       },
@@ -157,30 +160,133 @@ export const positionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[]
           <div
             className={cn("flex w-full flex-col items-center justify-center")}
           >
-            <div className="flex flex-row items-center font-normal">
-              {formatNumber(row.original.token_1_datas[0].token_amount, {
-                type: "number",
-              })}
-              <TokenDisplayer
-                imageClassName="hidden"
-                className=""
-                symbolClassName="font-normal"
-                size={4}
-                tokens={[row.original.token_1_datas[0]]}
-                symbols={true}
-              />
-            </div>
+            <HoverCard openDelay={200} closeDelay={200}>
+              <HoverCardTrigger
+                className={cn("flex cursor-pointer items-end gap-1")}
+              >
+                <span>
+                  {formatNumber(row.original.token_1_datas[0].token_amount)}
+                </span>
+
+                <TokenDisplayer
+                  imageClassName="hidden"
+                  className=""
+                  symbolClassName="font-normal"
+                  size={4}
+                  tokens={[row.original.token_1_datas[0]]}
+                  symbols={true}
+                />
+              </HoverCardTrigger>
+              {typeof window !== "undefined" &&
+                row.original.token_1_datas[0].token_amount > 0 &&
+                createPortal(
+                  <HoverCardContent
+                    className="min-w-40 p-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {row.original.token_1_datas.map((item) => (
+                      <div
+                        key={`incentive-breakdown:${row.original.id}:${item.id}`}
+                        className="flex flex-row items-center justify-between font-light"
+                      >
+                        <TokenDisplayer
+                          size={4}
+                          tokens={[item] as any}
+                          symbols={true}
+                        />
+
+                        {item.token_amount && (
+                          <div className="ml-2 flex flex-row items-center gap-2 text-sm">
+                            {formatNumber(item.token_amount)}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </HoverCardContent>,
+                  document.body
+                )}
+            </HoverCard>
           </div>
         );
       },
     },
-
     {
       accessorKey: "withdraw",
       enableResizing: false,
       enableSorting: false,
       header: "",
-      meta: "min-w-60 text-center",
+      meta: "text-center",
+      cell: ({ row }) => {
+        const unlock_timestamp = parseInt(row.original.unlock_timestamp ?? "0");
+        const is_unlocked =
+          unlock_timestamp <= Math.floor(Date.now() / 1000) + 3600;
+
+        return (
+          <div className="flex w-full flex-col items-center justify-center">
+            <Link
+              href={`/market/1/0/${row.original.market_id}`}
+              onClick={(event) => {
+                if (!is_unlocked) {
+                  event.preventDefault();
+                }
+              }}
+              className={cn(
+                "underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70",
+                is_unlocked
+                  ? ""
+                  : "cursor-pointer text-tertiary decoration-tertiary"
+              )}
+            >
+              Withdraw
+            </Link>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "claim_incentives",
+      enableResizing: true,
+      enableSorting: false,
+      header: "",
+      meta: "text-center",
+      cell: ({ row }) => {
+        const unlock_timestamp = parseInt(row.original.unlock_timestamp ?? "0");
+        const is_unlocked =
+          unlock_timestamp <= Math.floor(Date.now() / 1000) + 3600;
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="#"
+                onClick={(event) => {
+                  if (!is_unlocked) {
+                    event.preventDefault();
+                  }
+                }}
+                className={cn(
+                  "underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70",
+                  is_unlocked
+                    ? ""
+                    : "cursor-pointer text-tertiary decoration-tertiary"
+                )}
+              >
+                Claim Incentives
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>Coming Soon</span>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: "market_page",
+      enableResizing: false,
+      enableSorting: false,
+      header: "",
+      meta: "text-center",
       cell: ({ row }) => {
         return (
           <div className="flex w-full flex-col items-center justify-center">
@@ -188,9 +294,7 @@ export const positionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[]
               href={`/market/1/0/${row.original.market_id}`}
               className="underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70"
             >
-              {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-                ? "Market Page"
-                : "Withdraw from Market Page"}
+              Market Page
             </Link>
           </div>
         );
