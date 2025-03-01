@@ -38,7 +38,7 @@ const Page = () => {
               </div>
             </div>
 
-            <PortfolioStats />
+            {/* <PortfolioStats /> */}
           </div>
 
           <div
