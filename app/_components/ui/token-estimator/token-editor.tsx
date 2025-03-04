@@ -35,6 +35,7 @@ import {
   parseFormattedValueToText,
   parseTextToFormattedValue,
 } from "royco/utils";
+import formatNumber from "@/utils/numbers";
 
 export const SONIC_CHAIN_ID = 146;
 
@@ -249,6 +250,7 @@ export const TokenEditor = React.forwardRef<
               variant="ghost"
               size="sm"
               className="rounded p-2"
+              type="button"
               onClick={onRemove}
             >
               <CloseIcon className="h-4 w-4" />
@@ -282,13 +284,14 @@ export const TokenEditor = React.forwardRef<
           </div>
 
           <TertiaryLabel className="mt-2">
-            Total Sonic Airdrop (All Season): {sonicTokenAllocation.total} $S
+            Total Sonic Airdrop (All Season):{" "}
+            {formatNumber(sonicTokenAllocation.total)} $S
           </TertiaryLabel>
 
           <TertiaryLabel className="mt-2 flex gap-1 font-semibold text-secondary">
             <span className="flex items-center gap-1">
               <span className="underline">Airdrop to Season 1: </span>
-              <span>{sonicTokenAllocation.userTotal} $S</span>
+              <span>{formatNumber(sonicTokenAllocation.userTotal)} $S</span>
             </span>
           </TertiaryLabel>
         </div>
@@ -316,6 +319,7 @@ export const TokenEditor = React.forwardRef<
             variant="ghost"
             size="sm"
             className="rounded p-2"
+            type="button"
             onClick={onRemove}
           >
             <CloseIcon className="h-4 w-4" />

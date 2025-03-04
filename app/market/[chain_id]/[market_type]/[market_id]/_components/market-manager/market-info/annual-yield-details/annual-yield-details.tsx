@@ -160,20 +160,6 @@ export const AnnualYieldDetails = React.forwardRef<
       </div>
 
       {/**
-       * Forfeitable Info
-       */}
-      {currentMarketData.reward_style ===
-        MarketRewardStyle.forfeitable.value && (
-        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
-          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
-          <SecondaryLabel className="break-normal text-xs">
-            Withdrawing before the end of the forfeitable period will forfeit
-            all incentives earned to date.
-          </SecondaryLabel>
-        </div>
-      )}
-
-      {/**
        * Boyco Market Info
        */}
       {currentMarketData?.category === "boyco" && (
@@ -225,9 +211,31 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
-              Royco depositors will also receive a Gem Bonus. 16,800 Gems will
-              be distributed equally to Sonic apps using Royco, and pro-rata to
-              depositors.
+              <span className="font-semibold">Royco Gem Bonus:</span>
+              <span>
+                An additional 16,800 Gems will be distributed equally to Sonic
+                apps using Royco, and then pro-rata to depositors.
+              </span>
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
+      {/**
+       * Forfeitable Info
+       */}
+      {currentMarketData.reward_style ===
+        MarketRewardStyle.forfeitable.value && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span className="font-semibold">Forfeitable:</span>{" "}
+              <span>
+                depositors may exit at anytime, however withdrawing before the
+                end of the forfeitable period will forfeit all incentives earned
+                to date.
+              </span>
             </span>
           </SecondaryLabel>
         </div>

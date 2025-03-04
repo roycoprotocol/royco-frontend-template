@@ -635,23 +635,44 @@ export const sonicColumns = [
           key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
           className={cn("flex h-fit w-fit")}
         >
-          <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
-            <div className={cn("body-2 flex flex-row items-center gap-2")}>
-              <span className="leading-5">
-                {(() => {
-                  if (appType === SONIC_APP_TYPE.EMERALD) {
-                    return "Emerald";
-                  } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
-                    return "Sapphire";
-                  } else if (appType === SONIC_APP_TYPE.RUBY) {
-                    return "Ruby";
-                  } else {
-                    return "Unknown";
-                  }
-                })()}
-              </span>
-            </div>
-          </SecondaryLabel>
+          <Tooltip>
+            <TooltipTrigger>
+              <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
+                <div className={cn("body-2 flex flex-row items-center gap-2")}>
+                  <span className="leading-5">
+                    {(() => {
+                      if (appType === SONIC_APP_TYPE.EMERALD) {
+                        return "Emerald";
+                      } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+                        return "Sapphire";
+                      } else if (appType === SONIC_APP_TYPE.RUBY) {
+                        return "Ruby";
+                      } else {
+                        return "Unknown";
+                      }
+                    })()}
+                  </span>
+                </div>
+              </SecondaryLabel>
+            </TooltipTrigger>
+            {typeof window !== "undefined" &&
+              createPortal(
+                <TooltipContent>
+                  <span className="leading-5">
+                    {(() => {
+                      if (appType === SONIC_APP_TYPE.EMERALD) {
+                        return "13,125 Gems allocated to App";
+                      } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+                        return "8,750 Gems allocated to App";
+                      } else if (appType === SONIC_APP_TYPE.RUBY) {
+                        return "4,375 Gems allocated to App";
+                      }
+                    })()}
+                  </span>
+                </TooltipContent>,
+                document.body
+              )}
+          </Tooltip>
         </div>
       );
     },
