@@ -48,9 +48,9 @@ const Page = () => {
               } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
                 return (
                   <>
-                    <h2 className="heading-2 text-black">Explore Sonic S1</h2>
+                    <h2 className="heading-2 text-black">Explore Sonic</h2>
                     <div className="body-1 mt-2 text-secondary">
-                      Explore Sonic S1 Gems & Points Programs
+                      Explore Sonic Gems & Points Programs
                     </div>
                   </>
                 );

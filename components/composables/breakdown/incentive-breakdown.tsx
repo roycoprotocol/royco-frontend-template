@@ -91,7 +91,9 @@ export const IncentiveBreakdown = React.forwardRef<
       {breakdown.some((item) => item.category === "base") && (
         <div>
           <BreakdownItem>
+            <BreakdownTitle>Negotiable Incentives</BreakdownTitle>
             <BreakdownContent
+              className="mt-1"
               breakdown={breakdown.filter((item) => item.category === "base")}
               base_key={base_key}
             />

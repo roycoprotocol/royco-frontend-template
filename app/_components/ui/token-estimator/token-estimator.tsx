@@ -174,77 +174,80 @@ export const TokenEstimator = React.forwardRef<
           </SheetHeader>
 
           <Form {...form}>
-            <div className="my-6 flex-1 grow overflow-y-auto">
-              {/**
-               * Token selector
-               */}
-              {/* <SlideUpWrapper className="flex flex-col overflow-x-auto">
+            <form className="flex flex-1 grow flex-col overflow-y-auto">
+              <div className="my-6 flex-1">
+                {/**
+                 * Token selector
+                 */}
+                {/* <SlideUpWrapper className="flex flex-col overflow-x-auto">
                 <TokenSelector
                   customTokenForm={form}
                   onTokenSelect={(token) => handleTokenSelect(token)}
                 />
               </SlideUpWrapper> */}
 
-              {/**
-               * Custom token editor
-               */}
-              <form className="space-y-4">
-                {estimatorCustomTokenData.length > 0 ? (
-                  process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" ? (
-                    <SlideUpWrapper className="flex flex-col">
-                      <TokenEditor
-                        index={0}
-                        tokens={estimatorCustomTokenData}
-                        customTokenForm={form}
-                        onRemove={() => form.setValue("customTokenData", [])}
-                        marketCategory={marketCategory}
-                      />
-                    </SlideUpWrapper>
-                  ) : (
-                    estimatorCustomTokenData.map((token, index) => (
+                {/**
+                 * Custom token editor
+                 */}
+                <div className="space-y-4">
+                  {estimatorCustomTokenData.length > 0 ? (
+                    marketCategory === "sonic" ? (
                       <SlideUpWrapper className="flex flex-col">
                         <TokenEditor
-                          key={token.token_id}
-                          index={index}
-                          tokens={[token]}
+                          index={0}
+                          tokens={estimatorCustomTokenData}
                           customTokenForm={form}
-                          onRemove={() => handleRemoveToken(index)}
+                          onRemove={() => form.setValue("customTokenData", [])}
+                          marketCategory={marketCategory}
                         />
                       </SlideUpWrapper>
-                    ))
-                  )
-                ) : (
-                  <div>
-                    <AlertIndicator className="w-full rounded-md border border-dashed">
-                      No tokens selected
-                    </AlertIndicator>
-                  </div>
-                )}
-              </form>
-            </div>
+                    ) : (
+                      estimatorCustomTokenData.map((token, index) => (
+                        <SlideUpWrapper className="flex flex-col">
+                          <TokenEditor
+                            key={token.token_id}
+                            index={index}
+                            tokens={[token]}
+                            customTokenForm={form}
+                            onRemove={() => handleRemoveToken(index)}
+                          />
+                        </SlideUpWrapper>
+                      ))
+                    )
+                  ) : (
+                    <div>
+                      <AlertIndicator className="w-full rounded-md border border-dashed">
+                        No tokens selected
+                      </AlertIndicator>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <SheetClose asChild>
-              <Button
-                className="flex w-full items-center justify-center gap-2"
-                disabled={loading}
-                onClick={() => {
-                  setCustomTokenData(form.getValues().customTokenData);
-                  setLoading(true);
+              <SheetClose asChild>
+                <Button
+                  type="submit"
+                  className="flex w-full items-center justify-center gap-2"
+                  disabled={loading}
+                  onClick={() => {
+                    setCustomTokenData(form.getValues().customTokenData);
+                    setLoading(true);
 
-                  setTimeout(() => {
-                    setLoading(false);
-                    setOpen(false);
-                  }, 1000);
-                }}
-              >
-                {loading ? (
-                  <LoadingSpinner className="h-5 w-5" />
-                ) : (
-                  <LightningIcon className="h-5 w-5" />
-                )}
-                <span className="text-sm font-medium">Estimate APY</span>
-              </Button>
-            </SheetClose>
+                    setTimeout(() => {
+                      setLoading(false);
+                      setOpen(false);
+                    }, 1000);
+                  }}
+                >
+                  {loading ? (
+                    <LoadingSpinner className="h-5 w-5" />
+                  ) : (
+                    <LightningIcon className="h-5 w-5" />
+                  )}
+                  <span className="text-sm font-medium">Estimate APY</span>
+                </Button>
+              </SheetClose>
+            </form>
           </Form>
         </div>
       </SheetContent>

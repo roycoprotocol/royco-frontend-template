@@ -382,6 +382,23 @@ export const ActualNavbar = React.forwardRef<
           </div>
         </div>
       )}
+
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <div className="flex flex-wrap items-center justify-center gap-1">
+            <span className="font-semibold underline underline-offset-2">
+              SONIC GEMS Program
+            </span>
+            <span>
+              Sonic is partnering with Royco to help distribute ~200,000,000 $S
+            </span>
+            <img src="/sonic-token.png" alt="Sonic Logo" className="h-4 w-4" />
+            {/* <span className="font-semibold underline underline-offset-2">
+              Learn more.
+            </span> */}
+          </div>
+        </div>
+      )}
     </>
   );
 });

@@ -63,7 +63,7 @@ export const exploreColumnNames = {
   annual_change_ratio: "Net APY",
   chain: "Chain",
   pool_type: "Pool Type",
-  app_type: "App Type",
+  app_type: "Gem Allocation",
 };
 
 export const exploreColumnTooltips = {
