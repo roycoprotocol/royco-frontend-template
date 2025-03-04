@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
+import { SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
 
 const BreakdownTitle = React.forwardRef<
   HTMLDivElement,
@@ -36,7 +37,14 @@ const BreakdownRow = React.forwardRef<
       className="flex flex-row items-center justify-between gap-8 font-light"
       {...props}
     >
-      <TokenDisplayer tokens={[item] as any} symbols={true} />
+      {item.id === SONIC_ROYCO_GEM_BOOST_ID ? (
+        <div className="flex flex-row items-center">
+          <TokenDisplayer tokens={[item] as any} symbols={false} />
+          <div>Royco Gem Bonus</div>
+        </div>
+      ) : (
+        <TokenDisplayer tokens={[item] as any} symbols={true} />
+      )}
 
       {item.token_amount && (
         <div className="flex flex-row items-center gap-2">
