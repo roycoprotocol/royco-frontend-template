@@ -234,7 +234,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                       if (
                         currentMarketData.market_type ===
                           MarketType.vault.value ||
-                        currentMarketData?.category === "boyco"
+                        currentMarketData?.category === "boyco" ||
+                        currentMarketData?.chain_id === SONIC_CHAIN_ID
                       ) {
                         return (
                           <SparkleIcon
@@ -262,7 +263,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                         }
                         if (
                           currentMarketData.market_type ===
-                          MarketType.vault.value
+                            MarketType.vault.value ||
+                          currentMarketData?.chain_id === SONIC_CHAIN_ID
                         ) {
                           return "Variable Incentive Rate, based on # of participants";
                         }

@@ -192,6 +192,7 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
+              <span className="font-semibold">App Gems:</span>{" "}
               <span>{sonicInfo.description}</span>{" "}
               {sonicInfo.url && (
                 <span className="underline">
@@ -214,7 +215,7 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
-              <span className="font-semibold">Royco Gem Bonus:</span>
+              <span className="font-semibold">Royco Gem Bonus:</span>{" "}
               <span>
                 An additional 16,800 Gems will be distributed equally to Sonic
                 apps using Royco, and then pro-rata to depositors.
@@ -235,7 +236,7 @@ export const AnnualYieldDetails = React.forwardRef<
             <span>
               <span className="font-semibold">Forfeitable:</span>{" "}
               <span>
-                depositors may exit at anytime, however withdrawing before the
+                Depositors may exit at anytime, however withdrawing before the
                 end of the forfeitable period will forfeit all incentives earned
                 to date.
               </span>
