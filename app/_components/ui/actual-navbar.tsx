@@ -328,6 +328,35 @@ export const ActualNavbar = React.forwardRef<
         </MaxWidthWrapper>
       </div>
 
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <a
+            href="https://sonic.royco.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
+              <span className="font-semibold underline underline-offset-2">
+                SONIC GEMS Program
+              </span>
+              <span>
+                Sonic is partnering with Royco to help distribute ~200,000,000
+                $S
+              </span>
+              <img
+                src="/sonic-token.png"
+                alt="Sonic Logo"
+                className="h-4 w-4"
+              />
+              <span className="font-semibold underline underline-offset-2">
+                View Market.
+              </span>
+            </div>
+          </a>
+        </div>
+      )}
+
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
