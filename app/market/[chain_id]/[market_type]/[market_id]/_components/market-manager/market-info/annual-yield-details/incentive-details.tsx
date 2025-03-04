@@ -180,7 +180,14 @@ export const IncentiveTokenDetails = React.forwardRef<
   }, [token_data.image]);
 
   const showEstimate = useMemo(() => {
-    if (token_data.type === "point" && token_data.annual_change_ratio === 0) {
+    if (
+      (token_data.type === "point" ||
+        (token_data.tokens &&
+          token_data.tokens.find(
+            (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
+          ))) &&
+      token_data.annual_change_ratio === 0
+    ) {
       return true;
     }
     return false;
