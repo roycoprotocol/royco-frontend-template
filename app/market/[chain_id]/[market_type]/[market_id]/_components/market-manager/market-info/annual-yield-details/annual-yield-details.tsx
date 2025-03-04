@@ -193,15 +193,17 @@ export const AnnualYieldDetails = React.forwardRef<
           <SecondaryLabel className="break-normal text-xs">
             <span>
               <span>{sonicInfo.description}</span>{" "}
-              <span className="underline">
-                <a
-                  href={sonicInfo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more.
-                </a>
-              </span>
+              {sonicInfo.url && (
+                <span className="underline">
+                  <a
+                    href={sonicInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Learn more.
+                  </a>
+                </span>
+              )}
             </span>
           </SecondaryLabel>
         </div>
