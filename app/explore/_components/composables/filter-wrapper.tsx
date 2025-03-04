@@ -250,7 +250,11 @@ const AppTypeFilterWrapper = React.forwardRef<
   return (
     <TokenBadge
       onClick={() => setFilter(filter)}
-      className={cn(doFilterExists(filter)[0] === true ? "bg-focus" : "")}
+      className={cn(
+        doFilterExists(filter)[0] === true
+          ? "bg-focus"
+          : "border border-success text-success hover:border-green-800 hover:text-green-800"
+      )}
       token={token}
     />
   );

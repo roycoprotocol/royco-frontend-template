@@ -174,8 +174,8 @@ export const TokenEstimator = React.forwardRef<
           </SheetHeader>
 
           <Form {...form}>
-            <form className="flex h-full flex-1 flex-col">
-              <div className="my-6 flex-1 grow overflow-y-auto">
+            <form className="flex flex-1 grow flex-col overflow-y-auto">
+              <div className="my-6 flex-1">
                 {/**
                  * Token selector
                  */}
@@ -191,7 +191,7 @@ export const TokenEstimator = React.forwardRef<
                  */}
                 <div className="space-y-4">
                   {estimatorCustomTokenData.length > 0 ? (
-                    process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" ? (
+                    marketCategory === "sonic" ? (
                       <SlideUpWrapper className="flex flex-col">
                         <TokenEditor
                           index={0}

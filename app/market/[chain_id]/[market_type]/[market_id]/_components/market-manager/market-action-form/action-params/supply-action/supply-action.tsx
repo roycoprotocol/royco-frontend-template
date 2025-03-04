@@ -31,6 +31,7 @@ import { OfferTypeSelector } from "./components/offer-type-selector";
 import LightningIcon from "../../../../icons/lightning";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import formatNumber from "@/utils/numbers";
+import { SONIC_CHAIN_ID } from "royco/sonic";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -114,7 +115,8 @@ export const SupplyAction = React.forwardRef<
                 highestIncentiveToken?.id ? [highestIncentiveToken.id] : []
               }
               marketCategory={
-                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                currentMarketData &&
+                currentMarketData.chain_id === SONIC_CHAIN_ID
                   ? "sonic"
                   : undefined
               }

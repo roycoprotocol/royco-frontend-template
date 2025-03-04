@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
-import { SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
+import { SONIC_CHAIN_ID, SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
 export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
@@ -211,7 +211,7 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenEstimator
             defaultTokenId={[token_data.id]}
             marketCategory={
-              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+              currentMarketData && currentMarketData.chain_id === SONIC_CHAIN_ID
                 ? "sonic"
                 : undefined
             }

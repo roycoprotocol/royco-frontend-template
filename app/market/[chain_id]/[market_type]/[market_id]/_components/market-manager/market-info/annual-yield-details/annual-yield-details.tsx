@@ -13,7 +13,7 @@ import { IncentiveDetails } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { InfoTip } from "@/components/common";
-import { sonicMarketMap } from "royco/sonic";
+import { SONIC_CHAIN_ID, sonicMarketMap } from "royco/sonic";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
@@ -89,7 +89,8 @@ export const AnnualYieldDetails = React.forwardRef<
             <TokenEstimator
               defaultTokenId={point_token_data?.id ? [point_token_data.id] : []}
               marketCategory={
-                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                currentMarketData &&
+                currentMarketData.chain_id === SONIC_CHAIN_ID
                   ? "sonic"
                   : undefined
               }
