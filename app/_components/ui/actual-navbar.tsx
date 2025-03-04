@@ -336,7 +336,7 @@ export const ActualNavbar = React.forwardRef<
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <div className="flex flex-wrap items-center justify-center gap-1">
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
               <span className="font-semibold underline underline-offset-2">
                 BOYCO
               </span>
@@ -369,10 +369,10 @@ export const ActualNavbar = React.forwardRef<
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
-          <div className="flex flex-wrap items-center justify-center gap-1">
+          <div className="flex flex-wrap items-center justify-center gap-1 text-center">
             <PlumeLogo className="h-4 w-4" />
             <span className="font-semibold">Plume X Royco:</span>
-            <span>
+            <span className="text-center">
               Access incentives from Plume and our ecosystem dapps by helping
               seed liquidity and bootstrap TVL.
             </span>
@@ -391,7 +391,7 @@ export const ActualNavbar = React.forwardRef<
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <div className="flex flex-wrap items-center justify-center gap-1">
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
               <span className="font-semibold underline underline-offset-2">
                 SONIC GEMS Program
               </span>
