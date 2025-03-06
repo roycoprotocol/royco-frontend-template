@@ -14,13 +14,15 @@ export const useClaimDetails = () => {
       },
     ],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/boyco/claim?id=${params.id}&chain_id=${params.chain_id}`
-      );
+      const response = await fetch(`/api/boyco/claim?id=${params.id}`);
       return response.json() as Promise<{
-        active_at: number;
+        market_ids: string[];
       }>;
     },
     enabled: !!params.id && !!params.chain_id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: false,
   });
 };

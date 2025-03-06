@@ -15,42 +15,27 @@ export const fetchCache = "force-no-store";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const chain_id = parseInt(searchParams.get("chain_id") as string);
   const id = searchParams.get("id");
 
   if (!id)
     return NextResponse.json({ error: "Missing merkle id" }, { status: 400 });
 
   try {
-    const client = createPublicClient({
-      chain: chain_id === 80069 ? BerachainTestnet : BerachainMainnet,
-      transport: http(
-        chain_id === 80069
-          ? (process.env.RPC_API_KEY_80069_1 as string)
-          : (process.env.RPC_API_KEY_80094_1 as string)
-      ),
-    });
+    const response = await axios.get(
+      `${process.env.BERA_AIRDROP_API_URL_80094}/v1/merkle-tree/${id.toLowerCase()}/markets`
+    );
 
-    const reward_response = await client.readContract({
-      address:
-        BERA_AIRDROP_ADDRESS[
-          chain_id as unknown as keyof typeof BERA_AIRDROP_ADDRESS
-        ],
-      abi: BERA_AIRDROP_ABI,
-      functionName: "rewards",
-      args: [id as `0x${string}`],
-    });
+    const market_ids = response.data.markets;
 
-    const active_at = parseInt(BigNumber.from(reward_response?.[2]).toString());
     return NextResponse.json({
-      active_at,
+      market_ids,
     });
   } catch (err) {
     console.log("err", err);
 
     return NextResponse.json(
       {
-        active_at: 0,
+        market_ids: [],
       },
       { status: 500 }
     );
