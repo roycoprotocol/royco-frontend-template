@@ -367,8 +367,8 @@ export const ActualNavbar = React.forwardRef<
                 BOYCO
               </span>
               <span>
-                Select Dolomite & D2 depositors can withdraw their Boyco Assets
-                & Incentives starting March 6 7:30AM CST.
+                Depositors into the Dolomite & D2 30 Day Markets can withdraw
+                Boyco Assets & Incentives starting March 6.
               </span>
               <span className="font-semibold underline underline-offset-2">
                 View Portfolio to Withdraw
