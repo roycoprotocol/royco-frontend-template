@@ -99,9 +99,6 @@ export const ActualNavbar = React.forwardRef<
   const pathname = usePathname();
 
   const updatedNavbarLinks = useMemo(() => {
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-      return NavbarLinks.filter((link) => link.id !== "royalty");
-    }
     return NavbarLinks;
   }, [process.env.NEXT_PUBLIC_FRONTEND_TAG]);
 
@@ -360,7 +357,7 @@ export const ActualNavbar = React.forwardRef<
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
-            href="https://blog.berachain.com/blog/boyco-markets-overview"
+            href="https://berachain.royco.org/portfolio"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
@@ -369,29 +366,14 @@ export const ActualNavbar = React.forwardRef<
               <span className="font-semibold underline underline-offset-2">
                 BOYCO
               </span>
-              <span className="font-semibold">0.9%</span>
-              <span>of</span>
               <span>
-                <BeraToken className="h-4 w-4" />
-              </span>
-              <span>BERA Supply rewarded across all Major Pools +</span>
-              <span className="font-semibold">1.1%</span>
-              <span>of</span>
-              <span>
-                <BeraToken className="h-4 w-4" />
-              </span>
-              <span>BERA Supply rewarded across all</span>
-              <span className="font-semibold">Third-Party/Hybrid Pools.</span>
-              <span>Weighted by TVL/time.</span>
-              <span className="font-semibold text-[#F0E397]">
-                Ends Feb 2 11:59PM UTC.
+                Select Dolomite & D2 depositors can withdraw their Boyco Assets
+                & Incentives starting March 6 7:30AM CST.
               </span>
               <span className="font-semibold underline underline-offset-2">
-                Learn more.
+                View Portfolio to Withdraw
               </span>
             </div>
-
-            <ChevronRightIcon className="h-4 w-4 text-black" />
           </a>
         </div>
       )}
