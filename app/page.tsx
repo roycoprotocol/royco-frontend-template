@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator";
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { PlumeBlackLogo } from "./_components/assets/plume/plume-black";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -153,7 +154,7 @@ const Page = () => {
           </div>
         </div>
 
-        {/* <RoycoRoyalty /> */}
+        <RoycoRoyalty />
       </div>
     );
   };

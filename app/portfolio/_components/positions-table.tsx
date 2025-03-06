@@ -72,6 +72,16 @@ export const PositionsTable = React.forwardRef<
           <div>
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
               <div className={cn("flex min-w-52 flex-col")}>
+                <PrimaryLabel>Your Positions: Boyco</PrimaryLabel>
+              </div>
+            </div>
+
+            <PositionsBoycoManager />
+          </div>
+
+          <div>
+            <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
+              <div className={cn("flex min-w-52 flex-col")}>
                 <PrimaryLabel>
                   {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
                     ? "Your Positions: 4626 Vaults"
@@ -95,16 +105,6 @@ export const PositionsTable = React.forwardRef<
             </div>
 
             <PositionsRecipeManager />
-          </div>
-
-          <div>
-            <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
-              <div className={cn("flex min-w-52 flex-col")}>
-                <PrimaryLabel>Your Positions: Boyco</PrimaryLabel>
-              </div>
-            </div>
-
-            <PositionsBoycoManager />
           </div>
         </div>
       </div>

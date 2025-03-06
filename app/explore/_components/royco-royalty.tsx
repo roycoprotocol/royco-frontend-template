@@ -12,6 +12,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  PrimaryLabel,
+  SecondaryLabel,
+  TertiaryLabel,
+} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { cn } from "@/lib/utils";
 
 interface RateItem {
   name: string;
@@ -21,75 +27,57 @@ interface RateItem {
 }
 
 export function RoycoRoyalty() {
-  const [email, setEmail] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-
-  const rates: RateItem[] = [
-    { name: "Morpho", type: "USDC", rate: "47%", label: "High Yield" },
-    { name: "Aave Lend", type: "USDC", rate: "52%", label: "New Market" },
-    { name: "USDC", type: "USDC", rate: "142%", label: "New Market" },
-  ];
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
-      <Card className="w-[400px] max-w-[95vw]">
+    <div className="fixed bottom-4 left-4 z-50 rounded-xl">
+      <Card className={cn("w-[400px] max-w-[95vw] rounded-lg")}>
         {isOpen ? (
           <>
             <CardHeader className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-4"
+                className="absolute right-4 top-4 flex items-center justify-center"
                 onClick={() => setIsOpen(false)}
               >
                 <X className="h-4 w-4" />
               </Button>
-              <CardTitle className="text-center">
-                Join the Royco Royalty.
-              </CardTitle>
-              <CardDescription className="text-center">
-                Capture the latest stats relevant to your wallet by getting
-                notified when markets meet your criteria.
-              </CardDescription>
+
+              <div className="pt-5">
+                <CardTitle className="mb-2 flex justify-center">
+                  <PrimaryLabel>Join the Royco Royalty.</PrimaryLabel>
+                </CardTitle>
+
+                <CardDescription className="flex justify-center">
+                  <TertiaryLabel className="max-w-60 text-center text-primary">
+                    Join 7,000+ users and get priority alpha, access, and
+                    benefits on Royco.
+                  </TertiaryLabel>
+                </CardDescription>
+              </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
-              {/* Rates List */}
-              <div className="space-y-3">
-                {rates.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-muted flex items-center justify-between rounded-lg p-3"
-                  >
-                    <div>
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-muted-foreground text-sm">
-                        {item.type}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{item.label}</Badge>
-                      <span className="font-medium">{item.rate} APR</span>
-                    </div>
-                  </div>
-                ))}
+            <CardContent>
+              <hr className="mb-5" />
+
+              <div>
+                <img src="/royalty/pop-up.png" alt="Royco Royalty" />
               </div>
 
-              {/* Learn More */}
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Learn More</span>
-                <ArrowRight className="h-4 w-4" />
-              </div>
+              <div className="mt-6">
+                <a
+                  href="/royalty"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-lg bg-primary p-4"
+                >
+                  <SecondaryLabel className="font-medium text-white">
+                    Learn More
+                  </SecondaryLabel>
 
-              {/* Email Input and Submit */}
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="ashley@myfoxx.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <Button>Continue</Button>
+                  <ArrowRight className="h-4 w-4 text-white" strokeWidth={3} />
+                </a>
               </div>
             </CardContent>
           </>
@@ -99,7 +87,10 @@ export function RoycoRoyalty() {
             onClick={() => setIsOpen(true)}
           >
             <div className="flex items-center justify-between">
-              <CardTitle>Join the Royco Royalty</CardTitle>
+              <PrimaryLabel className="text-base">
+                Join the Royco Royalty.
+              </PrimaryLabel>
+
               <ChevronUp className="h-4 w-4 rotate-180" />
             </div>
           </CardHeader>
