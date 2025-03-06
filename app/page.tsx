@@ -95,7 +95,7 @@ const Page = () => {
         <div
           className={cn(
             "hide-scrollbar flex w-full flex-row items-start space-x-0 p-3 pb-12 md:p-12 lg:space-x-3",
-            "mt-7 md:mt-0",
+            "mb-14 mt-7 md:mt-0",
             MAX_SCREEN_WIDTH,
             "px-0 md:px-0"
           )}
