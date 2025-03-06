@@ -14,6 +14,7 @@ import { getSupportedToken } from "royco/constants";
 import { BERA_TOKEN_ID } from "royco/boyco";
 import { getBoycoReceiptTokenWithdrawalTransactionOptions } from "royco/hooks";
 import { useMarketManager } from "@/store/use-market-manager";
+import { InfoIcon } from "lucide-react";
 
 export const BoycoWithdrawSectionRow = React.forwardRef<
   HTMLDivElement,
@@ -177,6 +178,31 @@ export const BoycoWithdrawSection = React.forwardRef<
           </BoycoWithdrawSectionRowContainer>
         );
       })}
+
+      <div className="flex w-full flex-row items-center justify-center gap-2 rounded-xl border border-divider bg-z2 p-3 transition-all duration-200 ease-in-out hover:bg-focus">
+        <InfoIcon
+          strokeWidth={1.5}
+          className="h-5 w-5 shrink-0 fill-tertiary stroke-z2"
+        />
+        <div className="flex-1 text-sm font-light leading-tight text-secondary">
+          You can redeem your receipt tokens for underlying tokens from Dapp's
+          page.{" "}
+          {currentMarketData.boyco?.native_incentive_link && (
+            <>
+              Click{" "}
+              <a
+                href={currentMarketData.boyco?.native_incentive_link ?? ""}
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" text-black underline decoration-secondary decoration-dotted decoration-2 underline-offset-2 duration-200 ease-in-out hover:opacity-80"
+              >
+                here
+              </a>{" "}
+              to go to Dapp's page.
+            </>
+          )}
+        </div>
+      </div>
 
       {propsPositionsBoyco.data?.data?.length > 0 && (
         <>
