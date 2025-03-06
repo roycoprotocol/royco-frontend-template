@@ -213,18 +213,23 @@ export const baseBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] = [
     header: "Receipt Token",
     meta: "text-left",
     cell: ({ row }) => {
-      const input_token_value = row.original.is_withdrawn
-        ? 0
-        : row.original.incentive_token_datas.reduce(
-            (acc, curr) => acc + curr.token_amount_usd,
-            0
-          );
+      // const input_token_value = row.original.is_withdrawn
+      //   ? 0
+      //   : row.original.incentive_token_datas.reduce(
+      //       (acc, curr) => acc + curr.token_amount_usd,
+      //       0
+      //     );
+
+      const input_token_value = row.original.incentive_token_datas.reduce(
+        (acc, curr) => acc + curr.token_amount_usd,
+        0
+      );
 
       return (
         <div className={cn("flex w-fit flex-col items-start")}>
           <div>{formatNumber(input_token_value, { type: "currency" })}</div>
 
-          <div className="flex flex-col items-center font-light text-tertiary">
+          <div className="flex flex-col items-start font-light text-tertiary">
             {row.original.incentive_token_datas.map((item) => {
               return (
                 <div
