@@ -30,7 +30,7 @@ export function RoycoRoyalty() {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 rounded-xl">
+    <div className="fixed bottom-4 right-4 z-50 rounded-xl">
       <Card className={cn("w-[400px] max-w-[95vw] rounded-lg")}>
         {isOpen ? (
           <>
