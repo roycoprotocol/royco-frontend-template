@@ -163,6 +163,7 @@ export const TransactionModal = React.forwardRef<
             MarketTransactionType.fill_ip_offers.id,
             MarketTransactionType.create_ap_offer.id,
             MarketTransactionType.create_ip_offer.id,
+            "claim_bera_airdrop",
           ].includes(transactionId as TypedRoycoTransactionType)
         ) {
           setIsBoycoWithdrawalModalOpen(true);

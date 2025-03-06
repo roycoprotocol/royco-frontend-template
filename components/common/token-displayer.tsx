@@ -270,7 +270,10 @@ const TokenDisplayer = React.forwardRef<
                        */}
                       {/* <span className="">{token.symbol.toUpperCase()}</span> */}
                       {/* <div>{token.symbol}</div> */}
-                      {[token.symbol, token.type === "point" && "Points"]
+                      {[
+                        token.symbol,
+                        // token.type === "point" && "Points"
+                      ]
                         .filter(Boolean)
                         .join(" ")}
                     </TooltipContent>,
@@ -323,7 +326,10 @@ const TokenDisplayer = React.forwardRef<
             <Fragment>
               {name === true
                 ? tokens[0].name
-                : [tokens[0].symbol, tokens[0].type === "point" && "Points"]
+                : [
+                    tokens[0].symbol,
+                    // tokens[0].type === "point" && "Points"
+                  ]
                     .filter(Boolean)
                     .join(" ")}
               {tokens.length > 1 && ` +${tokens.length - 1} more`}

@@ -4,6 +4,8 @@ import { fallback, http } from "wagmi";
 import { unstable_connector } from "wagmi";
 import { injected } from "wagmi/connectors";
 
+import { berachainTestnet } from "viem/chains";
+
 import {
   EthereumSepolia,
   EthereumMainnet,
@@ -13,6 +15,7 @@ import {
   Plume,
   Sonic,
   BerachainMainnet,
+  BerachainTestnet,
 } from "royco/constants";
 
 export const metadata = {
@@ -36,6 +39,7 @@ export const config = getDefaultConfig({
     EthereumSepolia,
     Sonic,
     BerachainMainnet,
+    BerachainTestnet,
   ],
   ssr: true,
   multiInjectedProviderDiscovery: true,
@@ -78,6 +82,11 @@ export const config = getDefaultConfig({
     [BerachainMainnet.id]: fallback([
       unstable_connector(injected),
       http(process.env.NEXT_PUBLIC_RPC_API_KEY_80094!),
+      http(),
+    ]),
+    [BerachainTestnet.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_80095!),
       http(),
     ]),
   },
