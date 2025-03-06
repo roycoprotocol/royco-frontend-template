@@ -13,13 +13,13 @@ const Page = () => {
       <div className="flex w-full flex-col items-center px-3 py-24">
         <Header />
 
-        {/* <div className="mt-10 flex h-fit w-full max-w-2xl flex-col">
+        <div className="mt-10 flex h-fit w-full max-w-2xl flex-col">
           <Banner />
 
           <ClaimStatus className="mt-10" />
 
           <ClaimCard className="mt-3" />
-        </div> */}
+        </div>
       </div>
 
       <TransactionModal />
