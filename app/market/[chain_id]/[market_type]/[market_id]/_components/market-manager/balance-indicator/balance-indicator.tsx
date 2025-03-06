@@ -197,7 +197,11 @@ export const BalanceIndicator = React.forwardRef<
        * Total Balance
        */}
       <div>
-        <TertiaryLabel className="text-sm">Your Balance</TertiaryLabel>
+        <TertiaryLabel className="text-sm">
+          {currentMarketData?.category === "boyco"
+            ? "Balance Supplied"
+            : "Your Balance"}
+        </TertiaryLabel>
         <PrimaryLabel className="mt-1 text-2xl font-medium">
           <SpringNumber
             previousValue={totalBalance[0]}
