@@ -26,6 +26,7 @@ import {
 import ShieldIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/shield";
 import SparkleIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/sparkle";
 import formatNumber from "@/utils/numbers";
+import { SONIC_CHAIN_ID } from "royco/sonic";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -116,7 +117,8 @@ const BreakdownRow = React.forwardRef<
                     {(() => {
                       if (
                         marketType === MarketType.vault.value ||
-                        marketCategory === "boyco"
+                        marketCategory === "boyco" ||
+                        item.chain_id === SONIC_CHAIN_ID
                       ) {
                         return (
                           <SparkleIcon
@@ -140,7 +142,10 @@ const BreakdownRow = React.forwardRef<
                         if (marketCategory === "boyco") {
                           return "Variable Rate, will change based on # of deposits";
                         }
-                        if (marketType === MarketType.vault.value) {
+                        if (
+                          marketType === MarketType.vault.value ||
+                          item.chain_id === SONIC_CHAIN_ID
+                        ) {
                           return "Variable Incentive Rate, based on # of participants";
                         }
                         return "Fixed Incentive Rate";

@@ -11,6 +11,7 @@ import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
 import { ExternalIncentiveDetails } from "./external-incentive-details.tsx/external-incentive-detail";
 import { LockIcon } from "lucide-react";
+import { SONIC_CHAIN_ID } from "royco/sonic";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -114,7 +115,7 @@ export const MarketInfo = React.forwardRef<
           <TokenEstimator
             defaultTokenId={pointTokenIds}
             marketCategory={
-              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+              currentMarketData && currentMarketData.chain_id === SONIC_CHAIN_ID
                 ? "sonic"
                 : undefined
             }

@@ -2,14 +2,11 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -21,12 +18,8 @@ import {
 import {
   PositionsRecipeColumnDataElement,
   positionsRecipeColumns,
-  PositionsRecipeDataElement,
 } from "./positions-recipe-columns";
-
-import { motion, AnimatePresence } from "framer-motion";
-import { FallMotion } from "@/components/animations";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
 
 export const PositionsRecipeTable = React.forwardRef<
   HTMLDivElement,

@@ -6,6 +6,7 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";
 import { PortfolioStats } from "./_components/portfolio-stats";
+import { RoycoRoyalty } from "../explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -38,7 +39,7 @@ const Page = () => {
               </div>
             </div>
 
-            <PortfolioStats />
+            {/* <PortfolioStats /> */}
           </div>
 
           <div
@@ -50,6 +51,8 @@ const Page = () => {
             )}
           >
             <PositionsTable />
+
+            <RoycoRoyalty />
           </div>
         </div>
       </MarketManagerStoreProvider>
@@ -60,8 +63,8 @@ const Page = () => {
 
   if (
     frontendTag === "internal" ||
-    frontendTag === "testnet"
-    // || frontendTag === "boyco"
+    frontendTag === "testnet" ||
+    frontendTag === "plume"
   ) {
     return <Protector children={<Content />} />;
   } else {

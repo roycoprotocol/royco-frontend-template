@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useJoin } from "@/store";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import { useAccount } from "wagmi";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { useUsername } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
-import { useUserInfo } from "@/components/user/hooks";
+import { getUserInfoQueryFunction, useUserInfo } from "@/components/user/hooks";
 import { useGlobalStates } from "@/store";
 import { SignInButton } from "../sign-in-button/sign-in-button";
 import { UseFormReturn } from "react-hook-form";
@@ -24,6 +24,7 @@ import { z } from "zod";
 import { useLocalStorage } from "usehooks-ts";
 import { OtpForm } from "../otp-form";
 import { SuccessScreen } from "../success-screen";
+import { useQuery } from "@tanstack/react-query";
 
 export const RoyaltyForm = React.forwardRef<
   HTMLDivElement,
@@ -47,6 +48,26 @@ export const RoyaltyForm = React.forwardRef<
   });
 
   const { connectWalletModal } = useConnectWallet();
+
+  useEffect(() => {
+    if (
+      !isUserInfoLoading &&
+      (isUserInfoPaused ||
+        (isConnected &&
+          !propsUseUsername.isLoading &&
+          !propsUseUsername.data &&
+          !userInfo))
+    ) {
+      setOpenRoyaltyForm(true);
+    }
+  }, [
+    isUserInfoLoading,
+    isUserInfoPaused,
+    isConnected,
+    propsUseUsername.isLoading,
+    propsUseUsername.data,
+    userInfo,
+  ]);
 
   return (
     <Dialog

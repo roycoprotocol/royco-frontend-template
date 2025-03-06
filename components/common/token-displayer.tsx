@@ -33,7 +33,7 @@ type TokenDisplayerProps = {
     symbol: string;
     image: string;
     name?: string;
-    type?: "token" | "point";
+    type?: "token" | "point" | "lp";
   }>;
   symbols: boolean;
   hover?: boolean;

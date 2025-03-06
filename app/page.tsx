@@ -10,13 +10,14 @@ import {
   SearchBar,
   TableMenu,
 } from "./explore/_components";
-import { ColumnToggler, Sorter } from "./explore/_components/ui";
+import { ColumnToggler } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
-import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 import { Button } from "@/components/ui/button";
 import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator";
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
+import { PlumeBlackLogo } from "./_components/assets/plume/plume-black";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -48,9 +49,22 @@ const Page = () => {
               } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
                 return (
                   <>
-                    <h2 className="heading-2 text-black">Explore Sonic S1</h2>
+                    <h2 className="heading-2 text-black">Explore Sonic</h2>
                     <div className="body-1 mt-2 text-secondary">
-                      Explore Sonic S1 Gems & Points Programs
+                      Explore Sonic Gems & Points Programs
+                    </div>
+                  </>
+                );
+              } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
+                return (
+                  <>
+                    <h2 className="heading-2 flex flex-row items-center gap-3 text-black">
+                      <div>Explore Plume</div>
+                      <PlumeBlackLogo className="h-8 w-8" />
+                    </h2>
+                    <div className="body-1 mt-2 text-secondary">
+                      Earn $PLUME and other incentives in addition to the base
+                      APY.
                     </div>
                   </>
                 );
@@ -67,11 +81,15 @@ const Page = () => {
             })()}
           </div>
 
-          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? (
-            <BoycoStats className="flex-1" />
-          ) : (
-            <RoycoStats className="flex-1" />
-          )}
+          {(() => {
+            if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+              return <BoycoStats className="flex-1" />;
+            } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
+              return null;
+            } else {
+              return <RoycoStats className="flex-1" />;
+            }
+          })()}
         </div>
 
         <div
@@ -136,7 +154,7 @@ const Page = () => {
           </div>
         </div>
 
-        {/* <RoycoRoyalty /> */}
+        <RoycoRoyalty />
       </div>
     );
   };
@@ -145,8 +163,8 @@ const Page = () => {
 
   if (
     frontendTag === "internal" ||
-    frontendTag === "testnet"
-    // || frontendTag === "boyco"
+    frontendTag === "testnet" ||
+    frontendTag === "plume"
   ) {
     return <Protector children={<Content />} />;
   } else {

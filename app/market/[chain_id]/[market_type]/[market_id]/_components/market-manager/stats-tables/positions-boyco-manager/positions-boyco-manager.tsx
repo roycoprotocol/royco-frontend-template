@@ -4,10 +4,10 @@ import React, { Fragment, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { produce } from "immer";
 import { isEqual } from "lodash";
-import { useEnrichedPositionsRecipe } from "royco/hooks";
+import { useEnrichedPositionsBoyco } from "royco/hooks";
 import { useImmer } from "use-immer";
-import { PositionsRecipeTable } from "./positions-recipe-table";
-import { positionsRecipeColumns } from "./positions-recipe-columns";
+import { PositionsBoycoTable } from "./positions-boyco-table";
+import { positionsBoycoColumns } from "./positions-boyco-columns";
 import { LoadingSpinner } from "@/components/composables";
 import { useAccount } from "wagmi";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -15,7 +15,7 @@ import { TablePagination } from "../composables";
 import { MarketUserType, useGlobalStates, useMarketManager } from "@/store";
 import { useActiveMarket } from "../../../hooks";
 
-export const PositionsRecipeManager = React.forwardRef<
+export const PositionsBoycoManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -23,49 +23,41 @@ export const PositionsRecipeManager = React.forwardRef<
   const [page, setPage] = useState(0);
   const { address } = useAccount();
 
-  const { customTokenData } = useGlobalStates();
   const { currentMarketData } = useActiveMarket();
 
   const { userType } = useMarketManager();
 
-  const propsPositionsRecipe = useEnrichedPositionsRecipe({
+  const propsPositionsBoyco = useEnrichedPositionsBoyco({
     account_address: address?.toLowerCase() ?? "",
     market_id: currentMarketData?.market_id ?? undefined,
     page_index: page,
     page_size,
-    filters: [
-      {
-        id: "offer_side",
-        value: 0,
-      },
-    ],
-    custom_token_data: customTokenData,
   });
 
-  const [placeholderPositionsRecipe, setPlaceholderPositionsRecipe] = useImmer<
-    Array<ReturnType<typeof useEnrichedPositionsRecipe>["data"]>
+  const [placeholderPositionsBoyco, setPlaceholderPositionsBoyco] = useImmer<
+    Array<ReturnType<typeof useEnrichedPositionsBoyco>["data"]>
   >([undefined, undefined]);
 
   useEffect(() => {
-    if (!isEqual(propsPositionsRecipe.data, placeholderPositionsRecipe[1])) {
-      setPlaceholderPositionsRecipe((prevDatas) => {
+    if (!isEqual(propsPositionsBoyco.data, placeholderPositionsBoyco[1])) {
+      setPlaceholderPositionsBoyco((prevDatas) => {
         return produce(prevDatas, (draft) => {
           // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsPositionsRecipe.data)) {
-            draft[0] = draft[1] as typeof propsPositionsRecipe.data; // Set previous data to the current data
+          if (!isEqual(draft[1], propsPositionsBoyco.data)) {
+            draft[0] = draft[1] as typeof propsPositionsBoyco.data; // Set previous data to the current data
             draft[1] =
-              propsPositionsRecipe.data as typeof propsPositionsRecipe.data; // Set current data to the new data
+              propsPositionsBoyco.data as typeof propsPositionsBoyco.data; // Set current data to the new data
           }
         });
       });
     }
-  }, [propsPositionsRecipe.data]);
+  }, [propsPositionsBoyco.data]);
 
   if (userType === MarketUserType.ip.id) {
     return <div className="w-full p-5 text-center">Not Applicable</div>;
   }
 
-  if (propsPositionsRecipe.isLoading) {
+  if (propsPositionsBoyco.isLoading) {
     return (
       <div
         className={cn(
@@ -85,21 +77,21 @@ export const PositionsRecipeManager = React.forwardRef<
       className={cn("flex w-full grow flex-col overflow-y-hidden", className)}
     >
       <ScrollArea className={cn("relative w-full grow")}>
-        <PositionsRecipeTable
+        <PositionsBoycoTable
           data={
-            placeholderPositionsRecipe[1]?.data
-              ? placeholderPositionsRecipe[1].data.map((item, index) => ({
+            placeholderPositionsBoyco[1]?.data
+              ? placeholderPositionsBoyco[1].data.map((item, index) => ({
                   ...item,
                   prev:
-                    placeholderPositionsRecipe[0] &&
-                    Array.isArray(placeholderPositionsRecipe[0].data) &&
-                    index < placeholderPositionsRecipe[0].data.length
-                      ? placeholderPositionsRecipe[0].data[index]
+                    placeholderPositionsBoyco[0] &&
+                    Array.isArray(placeholderPositionsBoyco[0].data) &&
+                    index < placeholderPositionsBoyco[0].data.length
+                      ? placeholderPositionsBoyco[0].data[index]
                       : null,
                 }))
               : []
           }
-          columns={positionsRecipeColumns}
+          columns={positionsBoycoColumns}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
@@ -107,7 +99,7 @@ export const PositionsRecipeManager = React.forwardRef<
       <TablePagination
         page={page}
         page_size={page_size}
-        count={propsPositionsRecipe.data?.count || 0}
+        count={propsPositionsBoyco.data?.count || 0}
         setPage={setPage}
         className="border-t border-divider"
       />

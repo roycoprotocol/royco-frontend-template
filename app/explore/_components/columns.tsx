@@ -38,6 +38,9 @@ import {
 } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
+import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { Button } from "@/components/ui/button";
+import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
@@ -375,7 +378,7 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
 
     meta: {
-      className: "min-w-32",
+      className: "min-w-36",
     },
     cell: (props: any) => {
       const rowIndex = props.row.index;
@@ -424,6 +427,31 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
             ) {
               // @note: disabled this condition as per request from @capnjack
               return <div className="text-sm font-medium">Deposit Cap Hit</div>;
+            } else if (
+              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" &&
+              breakdowns &&
+              breakdowns.length > 0
+            ) {
+              return (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  className="shrink-0"
+                >
+                  <TokenEstimator marketCategory="sonic">
+                    <Button
+                      variant="link"
+                      className="flex w-full items-center gap-1 py-0 outline-none"
+                    >
+                      <span className="text-sm font-medium underline">
+                        Estimate S1 Airdrop
+                      </span>
+                    </Button>
+                  </TokenEstimator>
+                </div>
+              );
             } else {
               return (
                 <YieldBreakdown
@@ -607,23 +635,44 @@ export const sonicColumns = [
           key={`${props.view}:market:${props.row.original.id}:${props.row.original.reward_style}:market-type`}
           className={cn("flex h-fit w-fit")}
         >
-          <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
-            <div className={cn("body-2 flex flex-row items-center gap-2")}>
-              <span className="leading-5">
-                {(() => {
-                  if (appType === SONIC_APP_TYPE.EMERALD) {
-                    return "Emerald";
-                  } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
-                    return "Sapphire";
-                  } else if (appType === SONIC_APP_TYPE.RUBY) {
-                    return "Ruby";
-                  } else {
-                    return "Unknown";
-                  }
-                })()}
-              </span>
-            </div>
-          </SecondaryLabel>
+          <Tooltip>
+            <TooltipTrigger>
+              <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
+                <div className={cn("body-2 flex flex-row items-center gap-2")}>
+                  <span className="leading-5">
+                    {(() => {
+                      if (appType === SONIC_APP_TYPE.EMERALD) {
+                        return "Emerald";
+                      } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+                        return "Sapphire";
+                      } else if (appType === SONIC_APP_TYPE.RUBY) {
+                        return "Ruby";
+                      } else {
+                        return "Unknown";
+                      }
+                    })()}
+                  </span>
+                </div>
+              </SecondaryLabel>
+            </TooltipTrigger>
+            {typeof window !== "undefined" &&
+              createPortal(
+                <TooltipContent>
+                  <span className="leading-5">
+                    {(() => {
+                      if (appType === SONIC_APP_TYPE.EMERALD) {
+                        return "13,125 Gems allocated to App";
+                      } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+                        return "8,750 Gems allocated to App";
+                      } else if (appType === SONIC_APP_TYPE.RUBY) {
+                        return "4,375 Gems allocated to App";
+                      }
+                    })()}
+                  </span>
+                </TooltipContent>,
+                document.body
+              )}
+          </Tooltip>
         </div>
       );
     },

@@ -34,6 +34,7 @@ import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
+import { SONIC_CHAIN_ID, SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
 export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
@@ -110,11 +111,17 @@ export const IncentiveToken = React.forwardRef<
             symbols={false}
           />
           <div className="text-sm font-medium">
-            {token_data
-              .map((token: any) => {
-                return token.symbol;
-              })
-              .join(", ")}
+            {(() => {
+              if (
+                token_data.find(
+                  (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
+                )
+              ) {
+                return "Royco Gem Bonus";
+              }
+
+              return token_data.map((token: any) => token.symbol).join(", ");
+            })()}
           </div>
         </div>
       ) : (
@@ -173,7 +180,14 @@ export const IncentiveTokenDetails = React.forwardRef<
   }, [token_data.image]);
 
   const showEstimate = useMemo(() => {
-    if (token_data.type === "point" && token_data.annual_change_ratio === 0) {
+    if (
+      (token_data.type === "point" ||
+        (token_data.tokens &&
+          token_data.tokens.find(
+            (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
+          ))) &&
+      token_data.annual_change_ratio === 0
+    ) {
       return true;
     }
     return false;
@@ -204,7 +218,7 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenEstimator
             defaultTokenId={[token_data.id]}
             marketCategory={
-              process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+              currentMarketData && currentMarketData.chain_id === SONIC_CHAIN_ID
                 ? "sonic"
                 : undefined
             }
@@ -227,7 +241,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                       if (
                         currentMarketData.market_type ===
                           MarketType.vault.value ||
-                        currentMarketData?.category === "boyco"
+                        currentMarketData?.category === "boyco" ||
+                        currentMarketData?.chain_id === SONIC_CHAIN_ID
                       ) {
                         return (
                           <SparkleIcon
@@ -255,7 +270,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                         }
                         if (
                           currentMarketData.market_type ===
-                          MarketType.vault.value
+                            MarketType.vault.value ||
+                          currentMarketData?.chain_id === SONIC_CHAIN_ID
                         ) {
                           return "Variable Incentive Rate, based on # of participants";
                         }

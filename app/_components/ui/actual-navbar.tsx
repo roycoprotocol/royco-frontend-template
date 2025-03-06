@@ -31,6 +31,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BeraToken } from "../assets/bera-token";
+import { PlumeLogo } from "../assets/plume/plume";
 
 const NavbarLinks = [
   // {
@@ -327,6 +328,35 @@ export const ActualNavbar = React.forwardRef<
         </MaxWidthWrapper>
       </div>
 
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <a
+            href="https://sonic.royco.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
+              <span className="font-semibold underline underline-offset-2">
+                SONIC GEMS Program
+              </span>
+              <span>
+                Sonic is partnering with Royco to help distribute ~200,000,000
+                $S
+              </span>
+              <img
+                src="/sonic-token.png"
+                alt="Sonic Logo"
+                className="h-4 w-4"
+              />
+              <span className="font-semibold underline underline-offset-2">
+                View Market.
+              </span>
+            </div>
+          </a>
+        </div>
+      )}
+
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
@@ -335,7 +365,7 @@ export const ActualNavbar = React.forwardRef<
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <div className="flex flex-wrap items-center justify-center gap-1">
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
               <span className="font-semibold underline underline-offset-2">
                 BOYCO
               </span>
@@ -366,15 +396,50 @@ export const ActualNavbar = React.forwardRef<
         </div>
       )}
 
-      {/* <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
-        <div className="flex flex-wrap items-center justify-center gap-1">
-          <span className="font-semibold underline underline-offset-2">
-            Royco.org
-          </span>
-          <span>is currently undergoing upgrade. Service will return at</span>
-          <span className="font-semibold text-[#F0E397]">15:00 PST.</span>
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <div className="flex flex-wrap items-center justify-center gap-1 text-center">
+            <PlumeLogo className="h-4 w-4" />
+            <span className="font-semibold">Plume X Royco:</span>
+            <span className="text-center">
+              Access incentives from Plume and our ecosystem dapps by helping
+              seed liquidity and bootstrap TVL.
+            </span>
+            {/* <span className="font-semibold underline underline-offset-2">
+              Learn more.
+            </span> */}
+          </div>
         </div>
-      </div> */}
+      )}
+
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+        <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
+          <a
+            href="https://paragraph.xyz/@royco/sonic-is-partnering-with-royco-to-help-distribute-200,000,000-dollars-to-boost-its-thriving-defi-ecosystem-1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <div className="flex flex-wrap items-center justify-center gap-1 text-center">
+              <span className="font-semibold underline underline-offset-2">
+                SONIC GEMS Program
+              </span>
+              <span>
+                Sonic is partnering with Royco to help distribute ~200,000,000
+                $S
+              </span>
+              <img
+                src="/sonic-token.png"
+                alt="Sonic Logo"
+                className="h-4 w-4"
+              />
+              <span className="font-semibold underline underline-offset-2">
+                Learn more.
+              </span>
+            </div>
+          </a>
+        </div>
+      )}
     </>
   );
 });

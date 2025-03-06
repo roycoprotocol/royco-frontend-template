@@ -13,7 +13,7 @@ import { IncentiveDetails } from "./incentive-details";
 import { useActiveMarket } from "../../../hooks";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { InfoTip } from "@/components/common";
-import { sonicMarketMap } from "royco/sonic";
+import { SONIC_CHAIN_ID, sonicMarketMap } from "royco/sonic";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
@@ -89,7 +89,8 @@ export const AnnualYieldDetails = React.forwardRef<
             <TokenEstimator
               defaultTokenId={point_token_data?.id ? [point_token_data.id] : []}
               marketCategory={
-                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic"
+                currentMarketData &&
+                currentMarketData.chain_id === SONIC_CHAIN_ID
                   ? "sonic"
                   : undefined
               }
@@ -160,20 +161,6 @@ export const AnnualYieldDetails = React.forwardRef<
       </div>
 
       {/**
-       * Forfeitable Info
-       */}
-      {currentMarketData.reward_style ===
-        MarketRewardStyle.forfeitable.value && (
-        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
-          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
-          <SecondaryLabel className="break-normal text-xs">
-            Withdrawing before the end of the forfeitable period will forfeit
-            all incentives earned to date.
-          </SecondaryLabel>
-        </div>
-      )}
-
-      {/**
        * Boyco Market Info
        */}
       {currentMarketData?.category === "boyco" && (
@@ -205,15 +192,53 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
+              <span className="font-semibold">App Gems:</span>{" "}
               <span>{sonicInfo.description}</span>{" "}
-              <span className="underline">
-                <a
-                  href={sonicInfo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more.
-                </a>
+              {sonicInfo.url && (
+                <span className="underline">
+                  <a
+                    href={sonicInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Learn more.
+                  </a>
+                </span>
+              )}
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
+      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span className="font-semibold">Royco Gem Bonus:</span>{" "}
+              <span>
+                An additional 16,800 Gems will be distributed equally to Sonic
+                apps using Royco, and then pro-rata to depositors.
+              </span>
+            </span>
+          </SecondaryLabel>
+        </div>
+      )}
+
+      {/**
+       * Forfeitable Info
+       */}
+      {currentMarketData.reward_style ===
+        MarketRewardStyle.forfeitable.value && (
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span className="font-semibold">Forfeitable:</span>{" "}
+              <span>
+                Depositors may exit at anytime, however withdrawing before the
+                end of the forfeitable period will forfeit all incentives earned
+                to date.
               </span>
             </span>
           </SecondaryLabel>
