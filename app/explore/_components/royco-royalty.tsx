@@ -30,20 +30,15 @@ export function RoycoRoyalty() {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 rounded-xl bg-white p-1">
-      <Card
-        className={cn(
-          "w-[400px] max-w-[95vw] rounded-lg",
-          isOpen ? "bg-gradient-to-b from-[#f3f3f5] to-white" : "bg-[#f3f3f5]"
-        )}
-      >
+    <div className="fixed bottom-4 left-4 z-50 rounded-xl">
+      <Card className={cn("w-[400px] max-w-[95vw] rounded-lg")}>
         {isOpen ? (
           <>
             <CardHeader className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-4"
+                className="absolute right-4 top-4 flex items-center justify-center"
                 onClick={() => setIsOpen(false)}
               >
                 <X className="h-4 w-4" />
@@ -55,15 +50,17 @@ export function RoycoRoyalty() {
                 </CardTitle>
 
                 <CardDescription className="flex justify-center">
-                  <TertiaryLabel className="text-center text-secondary">
-                    Capture the latest alpha relevant to your wallet by getting
-                    notified when markets meet your criteria.
+                  <TertiaryLabel className="max-w-60 text-center text-primary">
+                    Join 7,000+ users and get priority alpha, access, and
+                    benefits on Royco.
                   </TertiaryLabel>
                 </CardDescription>
               </div>
             </CardHeader>
 
             <CardContent>
+              <hr className="mb-5" />
+
               <div>
                 <img src="/royalty/pop-up.png" alt="Royco Royalty" />
               </div>
@@ -73,12 +70,13 @@ export function RoycoRoyalty() {
                   href="/royalty"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-lg bg-[#f3f3f5] p-4"
+                  className="flex items-center justify-between rounded-lg bg-primary p-4"
                 >
-                  <SecondaryLabel className="font-medium text-primary">
+                  <SecondaryLabel className="font-medium text-white">
                     Learn More
                   </SecondaryLabel>
-                  <ArrowRight className="h-4 w-4" />
+
+                  <ArrowRight className="h-4 w-4 text-white" strokeWidth={3} />
                 </a>
               </div>
             </CardContent>
