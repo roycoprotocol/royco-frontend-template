@@ -46,7 +46,7 @@ export const MarketList = React.forwardRef<
         <div className="text-sm text-secondary">UNLOCKED MARKETS</div>
       </div>
 
-      <div className="flex max-h-56 w-full flex-col overflow-y-scroll ">
+      <div className="flex max-h-56 w-full flex-col overflow-y-scroll">
         {!!enrichedMarkets && enrichedMarkets.length > 0 ? (
           enrichedMarkets?.map((market, index) => (
             <a
@@ -54,7 +54,7 @@ export const MarketList = React.forwardRef<
               key={`market-${market.id}`}
               href={`/market/${market.chain_id}/${market.market_type}/${market.id}`}
               className={cn(
-                "border-px flex h-12 w-full cursor-pointer flex-col border-y border-divider px-4 py-2 duration-200 ease-in-out hover:bg-focus",
+                "border-px flex w-full cursor-pointer flex-col border-y border-divider px-4 py-2 duration-200 ease-in-out hover:bg-focus",
                 {
                   "border-t-0": index === 0,
                   "border-b-0": index === enrichedMarkets.length - 1,
