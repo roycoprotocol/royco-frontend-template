@@ -52,17 +52,15 @@ export const RoyaltyForm = React.forwardRef<
   useEffect(() => {
     if (
       !isUserInfoLoading &&
-      (isUserInfoPaused ||
-        (isConnected &&
-          !propsUseUsername.isLoading &&
-          !propsUseUsername.data &&
-          !userInfo))
+      isConnected &&
+      !propsUseUsername.isLoading &&
+      !propsUseUsername.data &&
+      !userInfo
     ) {
       setOpenRoyaltyForm(true);
     }
   }, [
     isUserInfoLoading,
-    isUserInfoPaused,
     isConnected,
     propsUseUsername.isLoading,
     propsUseUsername.data,
