@@ -35,5 +35,9 @@ export const useAccountAirdrop = () => {
       }>;
     },
     enabled: !!isConnected && !!address && !!params.id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: false,
   });
 };

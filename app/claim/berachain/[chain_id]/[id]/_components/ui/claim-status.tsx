@@ -18,11 +18,6 @@ export const ClaimStatus = React.forwardRef<
     isLoading: isLoadingAccountAirdrop,
     isError: isErrorAccountAirdrop,
   } = useAccountAirdrop();
-  const {
-    data: claimDetails,
-    isLoading: isLoadingClaimDetails,
-    isError: isErrorClaimDetails,
-  } = useClaimDetails();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const TEXTS = [
@@ -37,10 +32,10 @@ export const ClaimStatus = React.forwardRef<
     if (!isConnected) {
       setActiveIndex(0);
     } else {
-      if (isLoadingAccountAirdrop || isLoadingClaimDetails) {
+      if (isLoadingAccountAirdrop) {
         setActiveIndex(1);
       } else {
-        if (!!accountAirdrop && !!claimDetails) {
+        if (!!accountAirdrop) {
           if (accountAirdrop?.is_claimed) {
             setActiveIndex(2);
           } else {
@@ -51,13 +46,7 @@ export const ClaimStatus = React.forwardRef<
         }
       }
     }
-  }, [
-    isConnected,
-    accountAirdrop,
-    claimDetails,
-    isLoadingAccountAirdrop,
-    isLoadingClaimDetails,
-  ]);
+  }, [isConnected, accountAirdrop, isLoadingAccountAirdrop]);
 
   return (
     <div
