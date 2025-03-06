@@ -51,8 +51,6 @@ const Page = () => {
             )}
           >
             <PositionsTable />
-
-            <RoycoRoyalty />
           </div>
         </div>
       </MarketManagerStoreProvider>
