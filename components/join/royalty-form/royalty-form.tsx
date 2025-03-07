@@ -49,24 +49,6 @@ export const RoyaltyForm = React.forwardRef<
 
   const { connectWalletModal } = useConnectWallet();
 
-  useEffect(() => {
-    if (
-      !isUserInfoLoading &&
-      isConnected &&
-      !propsUseUsername.isLoading &&
-      !propsUseUsername.data &&
-      !userInfo
-    ) {
-      setOpenRoyaltyForm(true);
-    }
-  }, [
-    isUserInfoLoading,
-    isConnected,
-    propsUseUsername.isLoading,
-    propsUseUsername.data,
-    userInfo,
-  ]);
-
   return (
     <Dialog
       open={openRoyaltyForm}
