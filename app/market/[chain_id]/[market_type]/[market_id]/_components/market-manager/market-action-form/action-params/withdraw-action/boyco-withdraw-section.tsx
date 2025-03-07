@@ -262,7 +262,7 @@ export const BoycoWithdrawSection = React.forwardRef<
               size="sm"
             >
               {isUnlocked && !!currentMarketData.boyco?.native_incentive_link
-                ? "Claim"
+                ? "View"
                 : "Locked"}
             </Button>
           </BoycoWithdrawSectionRowContainer>
