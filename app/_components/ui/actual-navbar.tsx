@@ -84,7 +84,7 @@ const NavbarLinks = [
       {
         id: "telegram",
         label: "Telegram",
-        link: "https://t.me/roycopub",
+        link: "https://t.co/oUDKnVZUp3",
         target: "_blank",
       },
     ],
