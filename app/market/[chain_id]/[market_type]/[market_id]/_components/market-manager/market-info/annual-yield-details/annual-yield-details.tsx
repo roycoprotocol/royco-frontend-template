@@ -169,11 +169,10 @@ export const AnnualYieldDetails = React.forwardRef<
           <SecondaryLabel className="break-normal text-xs">
             <span>
               <span>
-                After Berachain Mainnet launch, assets will be bridged
-                trustlessly to the dApp. Asset may only be withdrawn after the
-                lockup period.{" "}
+                TVL as at market launch on the 12th of February. BERA price as
+                current market price.{" "}
               </span>
-              <span className="underline">
+              {/* <span className="underline">
                 <a
                   href="https://blog.berachain.com/blog/boyco-markets-overview"
                   target="_blank"
@@ -181,7 +180,7 @@ export const AnnualYieldDetails = React.forwardRef<
                 >
                   Learn more.
                 </a>
-              </span>
+              </span> */}
             </span>
           </SecondaryLabel>
         </div>
