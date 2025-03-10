@@ -33,8 +33,9 @@ const updateExternalIncentives = async ({
     (market) => market.external_incentives !== undefined
   );
   const batchSize = 10;
-  const currentMinute = new Date().getUTCMinutes();
-  const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+  const currentMinute = Math.floor(Date.now() / (1000 * 60));
+  const minuteInterval = Math.floor(currentMinute);
+  const batchIndex = minuteInterval % Math.ceil(mapEntries.length / batchSize);
   const batchMarkets = mapEntries.slice(
     batchIndex * batchSize,
     (batchIndex + 1) * batchSize
@@ -117,8 +118,9 @@ const updateNativeYields = async ({
     (market) => market.native_yield !== undefined
   );
   const batchSize = 10;
-  const currentMinute = new Date().getUTCMinutes();
-  const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+  const currentMinute = Math.floor(Date.now() / (1000 * 60));
+  const minuteInterval = Math.floor(currentMinute);
+  const batchIndex = minuteInterval % Math.ceil(mapEntries.length / batchSize);
   const batchMarkets = mapEntries.slice(
     batchIndex * batchSize,
     (batchIndex + 1) * batchSize
@@ -208,8 +210,9 @@ const updateUnderlyingYields = async ({
     (market) => market.underlying_yield !== undefined
   );
   const batchSize = 10;
-  const currentMinute = new Date().getUTCMinutes();
-  const batchIndex = currentMinute % Math.ceil(mapEntries.length / batchSize);
+  const currentMinute = Math.floor(Date.now() / (1000 * 60));
+  const minuteInterval = Math.floor(currentMinute);
+  const batchIndex = minuteInterval % Math.ceil(mapEntries.length / batchSize);
   const batchMarkets = mapEntries.slice(
     batchIndex * batchSize,
     (batchIndex + 1) * batchSize
@@ -280,7 +283,7 @@ export async function GET(request: Request) {
 
     await Promise.all([
       updateNativeYields({ supabaseClient, origin }),
-      // updateUnderlyingYields({ supabaseClient, origin }),
+      updateUnderlyingYields({ supabaseClient, origin }),
       updateExternalIncentives({ supabaseClient, origin }),
     ]);
 
