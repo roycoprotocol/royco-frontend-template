@@ -280,7 +280,7 @@ export async function GET(request: Request) {
 
     await Promise.all([
       updateNativeYields({ supabaseClient, origin }),
-      updateUnderlyingYields({ supabaseClient, origin }),
+      // updateUnderlyingYields({ supabaseClient, origin }),
       updateExternalIncentives({ supabaseClient, origin }),
     ]);
 
