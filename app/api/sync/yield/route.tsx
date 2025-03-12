@@ -268,6 +268,8 @@ const updateUnderlyingYields = async ({
     (result): result is NonNullable<typeof result> => result !== null
   );
 
+  console.log(validResults);
+
   if (validResults.length > 0) {
     await supabaseClient.from("raw_underlying_yields").upsert(validResults);
   }
