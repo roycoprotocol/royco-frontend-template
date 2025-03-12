@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       .from("raw_underlying_vaults")
       .select("*")
       .lt("retries", 10)
-      .lt("last_updated", new Date(Date.now() - 60 * 60 * 1000).toISOString()) // 1 hour
+      .lte("last_updated", new Date(Date.now() - 60 * 60 * 1000).toISOString()) // 1 hour
       .order("last_updated", { ascending: true })
       .limit(10);
 
