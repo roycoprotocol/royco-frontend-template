@@ -739,7 +739,7 @@ const updateTokenQuotesFromPendle = async () => {
       .neq("search_id", "")
       .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
       .order("last_updated", { ascending: true })
-      .limit(100);
+      .limit(10);
 
   if (tokensToUpdateError) {
     throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
@@ -747,65 +747,92 @@ const updateTokenQuotesFromPendle = async () => {
 
   if (!tokensToUpdate || tokensToUpdate.length === 0) return;
 
-  const responses = (
-    await Promise.all(
-      tokensToUpdate.map(async (token) => {
-        try {
-          const [chain_id, contract_address] = token.token_id.split("-");
-          const req = await fetch(
-            `https://api-v2.pendle.finance/core/v2/${chain_id}/markets/${contract_address}/data`
-          );
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(
+      parseInt(tokensToUpdate[0].token_id.split("-")[0])
+    ),
+    transport: http(SERVER_RPC_API_KEYS[80094], {
+      fetchOptions: {
+        headers: {
+          Origin: "https://app.royco.org",
+        },
+      },
+    }),
+  });
 
-          const res = await req.json();
+  const contracts = tokensToUpdate.map((token) => {
+    const [chain_id, contract_address] = token.token_id.split("-");
+    return {
+      address: contract_address as Address,
+      abi: erc20Abi,
+      functionName: "totalSupply",
+    };
+  });
 
-          return {
-            id: generateId({
-              source: "pendle",
-              search_id: token.search_id,
-            }),
-            source: "pendle",
-            search_id: token.search_id,
-            price: res.assetPriceUsd,
-            fdv: res.assetPriceUsd * res.totalLp,
-            total_supply: res.totalLp,
-            last_updated: new Date().toISOString(),
-          };
-        } catch (error) {
-          console.error(
-            `Error fetching data for token ${token.token_id}:`,
-            error
-          );
-          return null;
-        }
-      })
-    )
-  ).filter((response) => response !== null);
+  const results = await chainClient.multicall({ contracts });
 
-  if (responses.length === 0) return;
+  for (let i = 0; i < tokensToUpdate.length; i++) {
+    const token = tokensToUpdate[i];
+    const [chain_id, contract_address] = token.token_id.split("-");
 
-  const [
-    { data: tokensUpdated, error: tokensUpdatedError },
-    { data: tokensIndexUpdated, error: tokensIndexUpdatedError },
-  ] = await Promise.all([
-    supabaseClient.from("raw_token_quotes").upsert(responses),
+    try {
+      const total_supply =
+        results[i].status === "success"
+          ? parseRawAmountToTokenAmount(
+              results[i].result as string,
+              token.decimals
+            )
+          : 0;
 
-    // update the token_index table's last_updated column
-    supabaseClient
-      .from("token_index")
-      .update({
+      const req = await fetch(
+        `https://api-v2.pendle.finance/core/v1/${chain_id}/assets/prices?addresses=${contract_address}`
+      );
+
+      const res = await req.json();
+
+      const quote = {
+        id: generateId({
+          source: "pendle",
+          search_id: token.search_id,
+        }),
+        source: "pendle",
+        search_id: token.search_id,
+        price: res.prices[contract_address],
+        fdv: total_supply * res.prices[contract_address],
+        total_supply,
         last_updated: new Date().toISOString(),
-      })
-      .in(
-        "search_id",
-        responses.map((quote: any) => quote.search_id)
-      )
-      .eq("source", "pendle"),
-  ]);
+      };
 
-  if (tokensUpdatedError || tokensIndexUpdatedError) {
-    throw new Error(
-      `Supabase Error: ${tokensUpdatedError?.message || tokensIndexUpdatedError?.message}`
-    );
+      const { error: upsertError } = await supabaseClient
+        .from("raw_token_quotes")
+        .upsert([quote]);
+
+      if (upsertError) {
+        throw new Error(`Supabase Error: ${upsertError.message}`);
+      }
+    } catch (error) {
+      console.error(`Error updating token quotes from Pendle: ${error}`);
+      continue;
+    }
+  }
+
+  const [{ data: tokensIndexUpdated, error: tokensIndexUpdatedError }] =
+    await Promise.all([
+      // update the token_index table's last_updated column
+      supabaseClient
+        .from("token_index")
+        .update({
+          last_updated: new Date().toISOString(),
+        })
+        .in(
+          "search_id",
+          tokensToUpdate.map((quote: any) => quote.search_id)
+        )
+        .eq("source", "pendle"),
+    ]);
+
+  if (tokensIndexUpdatedError) {
+    throw new Error(`Supabase Error: ${tokensIndexUpdatedError?.message}`);
   }
 };
 
