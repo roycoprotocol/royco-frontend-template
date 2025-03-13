@@ -45,5 +45,3 @@ Start by copying the example file and modify all the access urls and keys in ord
 - Want to review the core protocol? Check out the [Github](https://github.com/roycoprotocol/royco).
 - Curious how it works? Check out our [docs](https://docs.royco.org/).
 - Need help or want to chat? Join the Royco [Telegram](https://t.me/roycogroup).
-
-### Legal Disclaimer
