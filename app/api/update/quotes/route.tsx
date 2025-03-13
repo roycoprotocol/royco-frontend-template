@@ -751,7 +751,7 @@ const updateTokenQuotesFromPendle = async () => {
     chain: getSupportedChain(
       parseInt(tokensToUpdate[0].token_id.split("-")[0])
     ),
-    transport: http(SERVER_RPC_API_KEYS[80094], {
+    transport: http(SERVER_RPC_API_KEYS[146], {
       fetchOptions: {
         headers: {
           Origin: "https://app.royco.org",
