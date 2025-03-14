@@ -725,6 +725,117 @@ export const updateTokenQuotesFromEnso = async () => {
   }
 };
 
+const updateTokenQuotesFromPendle = async () => {
+  const supabaseClient = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.SUPABASE_SERVICE_ROLE_KEY as string
+  );
+
+  const { data: tokensToUpdate, error: tokensToUpdateError } =
+    await supabaseClient
+      .from("token_index")
+      .select("token_id, search_id, decimals")
+      .eq("source", "pendle")
+      .neq("search_id", "")
+      .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .order("last_updated", { ascending: true })
+      .limit(10);
+
+  if (tokensToUpdateError) {
+    throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
+  }
+
+  if (!tokensToUpdate || tokensToUpdate.length === 0) return;
+
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(
+      parseInt(tokensToUpdate[0].token_id.split("-")[0])
+    ),
+    transport: http(SERVER_RPC_API_KEYS[146], {
+      fetchOptions: {
+        headers: {
+          Origin: "https://app.royco.org",
+        },
+      },
+    }),
+  });
+
+  const contracts = tokensToUpdate.map((token) => {
+    const [chain_id, contract_address] = token.token_id.split("-");
+    return {
+      address: contract_address as Address,
+      abi: erc20Abi,
+      functionName: "totalSupply",
+    };
+  });
+
+  const results = await chainClient.multicall({ contracts });
+
+  for (let i = 0; i < tokensToUpdate.length; i++) {
+    const token = tokensToUpdate[i];
+    const [chain_id, contract_address] = token.token_id.split("-");
+
+    try {
+      const total_supply =
+        results[i].status === "success"
+          ? parseRawAmountToTokenAmount(
+              results[i].result as string,
+              token.decimals
+            )
+          : 0;
+
+      const req = await fetch(
+        `https://api-v2.pendle.finance/core/v1/${chain_id}/assets/prices?addresses=${contract_address}`
+      );
+
+      const res = await req.json();
+
+      const quote = {
+        id: generateId({
+          source: "pendle",
+          search_id: token.search_id,
+        }),
+        source: "pendle",
+        search_id: token.search_id,
+        price: res.prices[contract_address],
+        fdv: total_supply * res.prices[contract_address],
+        total_supply,
+        last_updated: new Date().toISOString(),
+      };
+
+      const { error: upsertError } = await supabaseClient
+        .from("raw_token_quotes")
+        .upsert([quote]);
+
+      if (upsertError) {
+        throw new Error(`Supabase Error: ${upsertError.message}`);
+      }
+    } catch (error) {
+      console.error(`Error updating token quotes from Pendle: ${error}`);
+      continue;
+    }
+  }
+
+  const [{ data: tokensIndexUpdated, error: tokensIndexUpdatedError }] =
+    await Promise.all([
+      // update the token_index table's last_updated column
+      supabaseClient
+        .from("token_index")
+        .update({
+          last_updated: new Date().toISOString(),
+        })
+        .in(
+          "search_id",
+          tokensToUpdate.map((quote: any) => quote.search_id)
+        )
+        .eq("source", "pendle"),
+    ]);
+
+  if (tokensIndexUpdatedError) {
+    throw new Error(`Supabase Error: ${tokensIndexUpdatedError?.message}`);
+  }
+};
+
 export async function GET(request: NextRequest) {
   try {
     const results = await Promise.allSettled([
@@ -732,6 +843,7 @@ export async function GET(request: NextRequest) {
       updateTokenQuotesFromCoinmarketCap(),
       updateLpTokenQuotesFromContract(),
       updateTokenQuotesFromEnso(),
+      updateTokenQuotesFromPendle(),
     ]);
 
     // Check for any errors
