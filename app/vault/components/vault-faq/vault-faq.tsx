@@ -16,7 +16,7 @@ export const VaultFAQ = React.forwardRef<
     >
       <SecondaryLabel>Vault FAQ</SecondaryLabel>
 
-      <SecondaryLabel className="mt-2">
+      <SecondaryLabel className="mt-2 break-normal">
         Vaults gets rebalanced once every week. The goal of the Vault keeps
         assets safe and secure, without something or another. It may take a week
         to process a withdrawal. It may take a week to start earning.
