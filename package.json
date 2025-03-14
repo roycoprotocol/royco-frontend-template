@@ -91,6 +91,7 @@
     "immer": "^10.1.1",
     "input-otp": "^1.2.4",
     "jose": "^5.9.6",
+    "jotai": "^2.12.2",
     "jsonwebtoken": "^9.0.2",
     "jsrsasign": "^11.1.0",
     "jsrsasign-util": "^1.0.5",

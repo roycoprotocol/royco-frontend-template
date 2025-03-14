@@ -325,7 +325,7 @@ export const ActualNavbar = React.forwardRef<
         </MaxWidthWrapper>
       </div>
 
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
+      {/* {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
             href="https://sonic.royco.org/"
@@ -352,7 +352,7 @@ export const ActualNavbar = React.forwardRef<
             </div>
           </a>
         </div>
-      )}
+      )} */}
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">

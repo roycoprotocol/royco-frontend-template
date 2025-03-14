@@ -68,6 +68,8 @@ const config = {
         error: "#EB3C27",
         placeholder: "rgba(96, 96, 85, 0.5)",
 
+        background: "#fbfbf8",
+
         _primary: "#011A16",
       },
       keyframes: {
