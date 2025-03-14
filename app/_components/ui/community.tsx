@@ -47,7 +47,7 @@ export const Community = React.forwardRef<
                 )}
               />
             ),
-            link: "https://t.me/roycopub",
+            link: "https://t.co/oUDKnVZUp3",
           },
           {
             id: "blog",

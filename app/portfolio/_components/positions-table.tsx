@@ -69,15 +69,17 @@ export const PositionsTable = React.forwardRef<
               : "flex-col"
           )}
         >
-          <div>
-            <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
-              <div className={cn("flex min-w-52 flex-col")}>
-                <PrimaryLabel>Your Positions: Boyco</PrimaryLabel>
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "sonic" && (
+            <div>
+              <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">
+                <div className={cn("flex min-w-52 flex-col")}>
+                  <PrimaryLabel>Your Positions: Boyco</PrimaryLabel>
+                </div>
               </div>
-            </div>
 
-            <PositionsBoycoManager />
-          </div>
+              <PositionsBoycoManager />
+            </div>
+          )}
 
           <div>
             <div className="mb-3 flex flex-col-reverse justify-between gap-3 md:flex-row">

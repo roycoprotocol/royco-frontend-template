@@ -40,6 +40,7 @@ import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id
 import { secondsToDuration } from "@/app/create/_components/market-builder-form/market-builder-form-schema";
 import formatNumber from "@/utils/numbers";
 import validator from "validator";
+import { TokenDisplayer } from "@/components/common";
 
 export type PositionsRecipeDataElement = NonNullable<
   NonNullable<
@@ -168,22 +169,22 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
         );
       },
     },
-    {
-      accessorKey: "annual_change_ratio",
-      enableResizing: false,
-      enableSorting: false,
-      header: "APR",
-      meta: "min-w-48 text-center",
-      cell: ({ row }) => {
-        return (
-          <div className={cn("w-full text-center")}>
-            {formatNumber(row.original.annual_change_ratio, {
-              type: "percent",
-            })}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "annual_change_ratio",
+    //   enableResizing: false,
+    //   enableSorting: false,
+    //   header: "APR",
+    //   meta: "min-w-48 text-center",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className={cn("w-full text-center")}>
+    //         {formatNumber(row.original.annual_change_ratio, {
+    //           type: "percent",
+    //         })}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "time_to_incentive",
       enableResizing: false,
@@ -229,33 +230,83 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
         );
       },
     },
+    // {
+    //   accessorKey: "unclaimed_incentives",
+    //   enableResizing: false,
+    //   enableSorting: false,
+    //   header: "Accumulated Incentives",
+    //   meta: "min-w-48 text-center",
+    //   cell: ({ row }) => {
+    //     let unclaimed_incentives_usd = 0;
+
+    //     if (row.original.is_forfeited === false) {
+    //       for (let i = 0; i < row.original.tokens_data.length; i++) {
+    //         if (row.original.is_claimed?.[i] === false) {
+    //           unclaimed_incentives_usd +=
+    //             row.original.tokens_data[i].token_amount_usd;
+    //         }
+    //       }
+    //     }
+
+    //     if (row.original.offer_side === 1) {
+    //       return <div className={cn("w-full text-center")}>Not Applicable</div>;
+    //     } else {
+    //       return (
+    //         <div className={cn("w-full text-center")}>
+    //           {formatNumber(unclaimed_incentives_usd, { type: "currency" })}
+    //         </div>
+    //       );
+    //     }
+    //   },
+    // },
     {
-      accessorKey: "unclaimed_incentives",
+      accessorKey: "received_incentives",
       enableResizing: false,
       enableSorting: false,
-      header: "Accumulated Incentives",
+      header: "Received Incentives",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
-        let unclaimed_incentives_usd = 0;
-
-        if (row.original.is_forfeited === false) {
-          for (let i = 0; i < row.original.tokens_data.length; i++) {
-            if (row.original.is_claimed?.[i] === false) {
-              unclaimed_incentives_usd +=
-                row.original.tokens_data[i].token_amount_usd;
-            }
-          }
-        }
-
-        if (row.original.offer_side === 1) {
-          return <div className={cn("w-full text-center")}>Not Applicable</div>;
-        } else {
-          return (
-            <div className={cn("w-full text-center")}>
-              {formatNumber(unclaimed_incentives_usd, { type: "currency" })}
+        return (
+          <div
+            className={cn("flex w-full flex-col items-center justify-center")}
+          >
+            <div>
+              {row.original.tokens_data.some(
+                (token) => token.type !== "point"
+              ) && (
+                <div className="flex flex-row items-center gap-1">
+                  {formatNumber(
+                    row.original.tokens_data.reduce(
+                      (acc, token) => acc + token.token_amount_usd,
+                      0
+                    ),
+                    {
+                      type: "currency",
+                    }
+                  )}
+                </div>
+              )}
             </div>
-          );
-        }
+
+            <div className="flex flex-row items-center font-normal">
+              {row.original.tokens_data.map((token) => {
+                return (
+                  <div key={token.id} className="flex flex-row items-center">
+                    {formatNumber(token.token_amount, { type: "number" })}
+
+                    <TokenDisplayer
+                      imageClassName="hidden"
+                      symbolClassName="font-normal"
+                      size={4}
+                      tokens={[token]}
+                      symbols={true}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
       },
     },
     {

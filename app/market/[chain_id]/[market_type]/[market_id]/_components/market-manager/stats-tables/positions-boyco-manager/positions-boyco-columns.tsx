@@ -152,9 +152,17 @@ export const baseBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] = [
     header: "Market Value",
     meta: "text-left",
     cell: ({ row }) => {
-      const input_token_value = row.original.is_withdrawn
-        ? 0
-        : row.original.receipt_token_data.token_amount_usd;
+      // const input_token_value = row.original.is_withdrawn
+      //   ? 0
+      //   : row.original.incentive_token_datas.reduce(
+      //       (acc, curr) => acc + curr.token_amount_usd,
+      //       0
+      //     );
+
+      const input_token_value = row.original.incentive_token_datas.reduce(
+        (acc, curr) => acc + curr.token_amount_usd,
+        0
+      );
 
       const market_value = input_token_value;
 
@@ -168,29 +176,29 @@ export const baseBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] = [
     },
   },
   {
-    accessorKey: "receipt_token",
-    enableResizing: true,
+    accessorKey: "supplied_assets",
+    enableResizing: false,
     enableSorting: false,
-    header: "Receipt Token Balance",
+    header: "Supplied Assets",
     meta: "text-left",
     cell: ({ row }) => {
-      const input_token_value = row.original.is_withdrawn
-        ? 0
-        : row.original.receipt_token_data.token_amount_usd;
-
       return (
-        <div className={cn("flex w-fit flex-col items-start")}>
-          <div>{formatNumber(input_token_value, { type: "currency" })}</div>
+        <div className={cn("flex w-full flex-col items-start")}>
+          <div>
+            {formatNumber(row.original.token_0_data.token_amount_usd, {
+              type: "currency",
+            })}
+          </div>
 
-          <div className="flex flex-row items-center text-tertiary">
-            {formatNumber(row.original.receipt_token_data.token_amount, {
+          <div className="flex flex-row items-center font-light text-tertiary">
+            {formatNumber(row.original.token_0_data.token_amount, {
               type: "number",
             })}
             <TokenDisplayer
-              symbolClassName="text-tertiary"
               imageClassName="hidden"
+              className="text-tertiary"
               size={4}
-              tokens={[row.original.receipt_token_data] as any}
+              tokens={[row.original.token_0_data]}
               symbols={true}
             />
           </div>
@@ -199,105 +207,153 @@ export const baseBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] = [
     },
   },
   {
-    accessorKey: "accumulated_incentives",
+    accessorKey: "receipt_token",
     enableResizing: true,
     enableSorting: false,
-    header: "Accumulated Incentives",
+    header: "Receipt Token",
     meta: "text-left",
     cell: ({ row }) => {
-      let unclaimed_first_incentive = 0;
+      // const input_token_value = row.original.is_withdrawn
+      //   ? 0
+      //   : row.original.incentive_token_datas.reduce(
+      //       (acc, curr) => acc + curr.token_amount_usd,
+      //       0
+      //     );
 
-      if (row.original.token_1_datas.length > 0) {
-        unclaimed_first_incentive = row.original.token_1_datas[0].token_amount;
-      }
+      const input_token_value = row.original.incentive_token_datas.reduce(
+        (acc, curr) => acc + curr.token_amount_usd,
+        0
+      );
 
       return (
-        <div className={cn("flex w-fit flex-row items-center gap-2")}>
-          <HoverCard openDelay={200} closeDelay={200}>
-            <HoverCardTrigger
-              className={cn("flex cursor-pointer items-end gap-1")}
-            >
-              <span>
-                {formatNumber(row.original.token_1_datas[0].token_amount)}
-              </span>
+        <div className={cn("flex w-fit flex-col items-start")}>
+          <div>{formatNumber(input_token_value, { type: "currency" })}</div>
 
-              <TokenDisplayer
-                size={4}
-                tokens={[row.original.token_1_datas[0]]}
-                symbols={true}
-              />
-            </HoverCardTrigger>
-            {typeof window !== "undefined" &&
-              row.original.token_1_datas[0].token_amount > 0 &&
-              createPortal(
-                <HoverCardContent
-                  className="min-w-40 p-2"
-                  onClick={(e) => e.stopPropagation()}
+          <div className="flex flex-col items-start font-light text-tertiary">
+            {row.original.incentive_token_datas.map((item) => {
+              return (
+                <div
+                  key={`incentive-breakdown:${row.original.id}:${item.id}`}
+                  className="flex flex-row items-center"
                 >
-                  {row.original.token_1_datas.map((item) => (
-                    <div
-                      key={`incentive-breakdown:${row.original.id}:${item.id}`}
-                      className="flex flex-row items-center justify-between font-light"
-                    >
-                      <TokenDisplayer
-                        size={4}
-                        tokens={[item] as any}
-                        symbols={true}
-                      />
-
-                      {item.token_amount && (
-                        <div className="ml-2 flex flex-row items-center gap-2 text-sm">
-                          {formatNumber(item.token_amount)}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </HoverCardContent>,
-                document.body
-              )}
-          </HoverCard>
+                  {formatNumber(item.token_amount, {
+                    type: "number",
+                  })}
+                  <TokenDisplayer
+                    symbolClassName="text-tertiary"
+                    imageClassName="hidden"
+                    size={4}
+                    tokens={[item] as any}
+                    symbols={true}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       );
     },
   },
-  {
-    accessorKey: "claim_incentives",
-    enableResizing: true,
-    enableSorting: false,
-    header: "",
-    meta: "text-left",
-    cell: ({ row }) => {
-      const unlock_timestamp = parseInt(row.original.unlock_timestamp ?? "0");
-      const is_unlocked =
-        unlock_timestamp <= Math.floor(Date.now() / 1000) + 3600;
+  // {
+  //   accessorKey: "accumulated_incentives",
+  //   enableResizing: true,
+  //   enableSorting: false,
+  //   header: "Accumulated Incentives",
+  //   meta: "text-left",
+  //   cell: ({ row }) => {
+  //     let unclaimed_first_incentive = 0;
 
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="#"
-              onClick={(event) => {
-                if (!is_unlocked) {
-                  event.preventDefault();
-                }
-              }}
-              className={cn(
-                "underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70",
-                is_unlocked
-                  ? ""
-                  : "cursor-pointer text-tertiary decoration-tertiary"
-              )}
-            >
-              Claim Incentives
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent>
-            <span>Coming Soon</span>
-          </TooltipContent>
-        </Tooltip>
-      );
-    },
-  },
+  //     if (row.original.token_1_datas.length > 0) {
+  //       unclaimed_first_incentive = row.original.token_1_datas[0].token_amount;
+  //     }
+
+  //     return (
+  //       <div className={cn("flex w-fit flex-row items-center gap-2")}>
+  //         <HoverCard openDelay={200} closeDelay={200}>
+  //           <HoverCardTrigger
+  //             className={cn("flex cursor-pointer items-end gap-1")}
+  //           >
+  //             <span>
+  //               {formatNumber(row.original.token_1_datas[0].token_amount)}
+  //             </span>
+
+  //             <TokenDisplayer
+  //               size={4}
+  //               tokens={[row.original.token_1_datas[0]]}
+  //               symbols={true}
+  //             />
+  //           </HoverCardTrigger>
+  //           {typeof window !== "undefined" &&
+  //             row.original.token_1_datas[0].token_amount > 0 &&
+  //             createPortal(
+  //               <HoverCardContent
+  //                 className="min-w-40 p-2"
+  //                 onClick={(e) => e.stopPropagation()}
+  //               >
+  //                 {row.original.token_1_datas.map((item) => (
+  //                   <div
+  //                     key={`incentive-breakdown:${row.original.id}:${item.id}`}
+  //                     className="flex flex-row items-center justify-between font-light"
+  //                   >
+  //                     <TokenDisplayer
+  //                       size={4}
+  //                       tokens={[item] as any}
+  //                       symbols={true}
+  //                     />
+
+  //                     {item.token_amount && (
+  //                       <div className="ml-2 flex flex-row items-center gap-2 text-sm">
+  //                         {formatNumber(item.token_amount)}
+  //                       </div>
+  //                     )}
+  //                   </div>
+  //                 ))}
+  //               </HoverCardContent>,
+  //               document.body
+  //             )}
+  //         </HoverCard>
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: "claim_incentives",
+  //   enableResizing: true,
+  //   enableSorting: false,
+  //   header: "",
+  //   meta: "text-left",
+  //   cell: ({ row }) => {
+  //     const unlock_timestamp = parseInt(row.original.unlock_timestamp ?? "0");
+  //     const is_unlocked =
+  //       unlock_timestamp <= Math.floor(Date.now() / 1000) + 3600;
+
+  //     return (
+  //       <Tooltip>
+  //         <TooltipTrigger asChild>
+  //           <Link
+  //             href="#"
+  //             onClick={(event) => {
+  //               if (!is_unlocked) {
+  //                 event.preventDefault();
+  //               }
+  //             }}
+  //             className={cn(
+  //               "underline decoration-secondary decoration-dashed decoration-1 underline-offset-4 transition-opacity duration-300 ease-in-out hover:opacity-70",
+  //               is_unlocked
+  //                 ? ""
+  //                 : "cursor-pointer text-tertiary decoration-tertiary"
+  //             )}
+  //           >
+  //             Claim Incentives
+  //           </Link>
+  //         </TooltipTrigger>
+  //         <TooltipContent>
+  //           <span>Coming Soon</span>
+  //         </TooltipContent>
+  //       </Tooltip>
+  //     );
+  //   },
+  // },
 ];
 
 export const positionsBoycoColumns: ColumnDef<PositionsBoycoColumnDataElement>[] =

@@ -84,7 +84,7 @@ const NavbarLinks = [
       {
         id: "telegram",
         label: "Telegram",
-        link: "https://t.me/roycopub",
+        link: "https://t.co/oUDKnVZUp3",
         target: "_blank",
       },
     ],
@@ -325,7 +325,7 @@ export const ActualNavbar = React.forwardRef<
         </MaxWidthWrapper>
       </div>
 
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
+      {/* {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
             href="https://sonic.royco.org/"
@@ -352,7 +352,7 @@ export const ActualNavbar = React.forwardRef<
             </div>
           </a>
         </div>
-      )}
+      )} */}
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
@@ -367,8 +367,8 @@ export const ActualNavbar = React.forwardRef<
                 BOYCO
               </span>
               <span>
-                Select Dolomite & D2 depositors can withdraw their Boyco Assets
-                & Incentives starting March 6 7:30AM CST.
+                Depositors into the Dolomite & D2 30 Day Markets can withdraw
+                Boyco Assets & Incentives starting March 6.
               </span>
               <span className="font-semibold underline underline-offset-2">
                 View Portfolio to Withdraw

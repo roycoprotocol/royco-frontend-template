@@ -154,24 +154,24 @@ export const TransactionModal = React.forwardRef<
       setTransactions([]);
       setIsTransactionTimeout(false);
     } else {
-      if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-        const transactionId = currentTransaction?.id;
-        if (
-          transactionId &&
-          [
-            MarketTransactionType.fill_ap_offers.id,
-            MarketTransactionType.fill_ip_offers.id,
-            MarketTransactionType.create_ap_offer.id,
-            MarketTransactionType.create_ip_offer.id,
-          ].includes(transactionId as TypedRoycoTransactionType)
-        ) {
-          setIsBoycoWithdrawalModalOpen(true);
-        } else {
-          setIsConfirmationModalOpen(true);
-        }
-      } else {
-        setIsConfirmationModalOpen(true);
-      }
+      // if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
+      //   const transactionId = currentTransaction?.id;
+      //   if (
+      //     transactionId &&
+      //     [
+      //       MarketTransactionType.fill_ap_offers.id,
+      //       MarketTransactionType.fill_ip_offers.id,
+      //       MarketTransactionType.create_ap_offer.id,
+      //       MarketTransactionType.create_ip_offer.id,
+      //     ].includes(transactionId as TypedRoycoTransactionType)
+      //   ) {
+      //     setIsBoycoWithdrawalModalOpen(true);
+      //   } else {
+      //     setIsConfirmationModalOpen(true);
+      //   }
+      // } else {
+      setIsConfirmationModalOpen(true);
+      // }
     }
   };
 
@@ -242,6 +242,7 @@ export const TransactionModal = React.forwardRef<
           MarketTransactionType.fill_ip_offers.id,
           MarketTransactionType.create_ap_offer.id,
           MarketTransactionType.create_ip_offer.id,
+          "claim_bera_airdrop",
         ].includes(transactionId as TypedRoycoTransactionType)
       ) {
         triggerConfetti();

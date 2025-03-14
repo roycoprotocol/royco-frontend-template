@@ -105,8 +105,8 @@ export const PositionsBoycoTable = React.forwardRef<
                     <TableCell
                       key={`row:cell:${cell.id}`}
                       className={cn(
-                        "min-w-fit whitespace-nowrap px-3 py-0 text-sm font-normal text-black",
-                        "h-[4rem]",
+                        "min-w-fit whitespace-nowrap px-3 py-3 text-sm font-normal text-black",
+                        "h-fit",
                         index === 0 && "pl-5",
                         index !== 0 &&
                           index === row.getVisibleCells().length - 1 &&
