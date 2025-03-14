@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ChevronLeftIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -9,18 +9,30 @@ import { TotalValueLocked } from "./total-value-locked/total-value-locked";
 import { VaultDetails } from "./vault-details/vault-details";
 import { VaultAllocation } from "./vault-allocation/vault-allocation";
 import { VaultFAQ } from "./vault-faq/vault-faq";
+import { useBoringVaultV1 } from "boring-vault-ui";
 import { VaultActionForm } from "./vault-action-form/vault-action-form";
+import { BalanceIndicator } from "./balance-indicator/balance-indicator";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { isBoringV1ContextReady, fetchTotalAssets } = useBoringVaultV1();
+
+  console.log("Is the Boring Context Ready: ", isBoringV1ContextReady);
+
+  useEffect(() => {
+    fetchTotalAssets().then((assets) => {
+      console.log("The Vaults TVL: ", assets);
+    });
+  }, [fetchTotalAssets]);
+
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>
       {/**
        * Back Button
        */}
-      <div>
+      <div className="flex justify-start">
         <SecondaryLabel
           onClick={() => window.open("/", "_self", "noopener noreferrer")}
           className={cn(
@@ -39,12 +51,12 @@ export const VaultManager = React.forwardRef<
        */}
       <TotalValueLocked className="mt-7" />
 
-      <div className="flex gap-7">
-        <div className="w-2/3">
+      <div className="mt-7 flex flex-col gap-3 lg:flex-row">
+        <div className="w-full lg:w-2/3">
           {/**
            * Vault Details
            */}
-          <VaultDetails className="mt-7" />
+          <VaultDetails />
 
           {/**
            * Vault Allocation
@@ -57,8 +69,14 @@ export const VaultManager = React.forwardRef<
           <VaultFAQ className="mt-7" />
         </div>
 
-        <div className="w-1/3">
-          <VaultActionForm />
+        <div className="w-full lg:w-1/3">
+          <div className="w-full rounded-xl bg-white shadow-sm">
+            <BalanceIndicator />
+
+            <hr />
+
+            <VaultActionForm />
+          </div>
         </div>
       </div>
     </div>
