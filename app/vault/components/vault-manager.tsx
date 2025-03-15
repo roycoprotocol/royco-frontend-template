@@ -2,6 +2,8 @@
 
 import React, { useEffect } from "react";
 import { ChevronLeftIcon } from "lucide-react";
+import { useAtomValue } from "jotai";
+import { useAccount } from "wagmi";
 
 import { cn } from "@/lib/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
@@ -17,9 +19,16 @@ export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { isBoringV1ContextReady, fetchTotalAssets } = useBoringVaultV1();
+  const { address } = useAccount();
+  const { isBoringV1ContextReady, fetchTotalAssets, fetchUserShares } =
+    useBoringVaultV1();
 
-  console.log("Is the Boring Context Ready: ", isBoringV1ContextReady);
+  useEffect(() => {
+    if (!address) return;
+    fetchUserShares(address).then((value) => {
+      console.log("Share value: ", value);
+    });
+  }, [isBoringV1ContextReady, address]);
 
   useEffect(() => {
     fetchTotalAssets().then((assets) => {

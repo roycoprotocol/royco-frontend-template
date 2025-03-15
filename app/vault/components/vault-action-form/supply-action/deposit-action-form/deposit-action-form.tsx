@@ -1,19 +1,27 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+
 import { InputAmountSelector } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { depositFormSchema } from "../supply-action";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {
+    depositForm: UseFormReturn<z.infer<typeof depositFormSchema>>;
+  }
+>(({ className, depositForm, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
+      <SecondaryLabel>Input Amount</SecondaryLabel>
+
       <InputAmountSelector
         containerClassName="mt-2"
-        currentValue=""
+        currentValue={depositForm.watch("amount")}
         setCurrentValue={(value) => {
-          console.log(value);
+          depositForm.setValue("amount", value);
         }}
         Prefix={() => {
           return (

@@ -11,6 +11,15 @@ import {
 } from "@wagmi/core/chains";
 import { useMemo } from "react";
 
+export const chains = {
+  [mainnet.id]: mainnet,
+  [base.id]: base,
+  [arbitrum.id]: arbitrum,
+  [sepolia.id]: sepolia,
+  [baseSepolia.id]: baseSepolia,
+  [arbitrumSepolia.id]: arbitrumSepolia,
+};
+
 export function getEthersProviderFromChainId(chainId: number) {
   const chains: Record<number, Chain> = {
     [mainnet.id]: mainnet,

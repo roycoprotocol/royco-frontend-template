@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import React from "react";
 import { BoringVaultV1Provider } from "boring-vault-ui";
 import { useEthersProvider } from "../hook/useEthersProvider";
+import { useParams } from "next/navigation";
 
 //   "contractAddresses": {
 //     "AccountantWithRateProviders": "0x915565acADb68EDA6DE37A2423Ef7cCa93f6F789",
@@ -15,42 +15,58 @@ import { useEthersProvider } from "../hook/useEthersProvider";
 //     "TellerWithMultiAssetSupport": "0xf8C21F673C3DFb11DaEfffdeb9E1E1258351DB2b",
 //   }
 
+const VAULT_CONTRACT = "0x3D1aD04e82E595b7295751C35203f542dC986a43";
+const TELLER_CONTRACT = "0xf8C21F673C3DFb11DaEfffdeb9E1E1258351DB2b";
+const ACCOUNTANT_CONTRACT = "0x915565acADb68EDA6DE37A2423Ef7cCa93f6F789";
+const LENS_CONTRACT = "0x90983EBF38E981AE38f7Da9e71804380e316A396";
+
+export const VAULT_DEPOSIT_TOKENS = [
+  {
+    // USDC (Arbitrum)
+    address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    decimals: 6,
+  },
+  {
+    // USDT (Arbitrum)
+    address: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+    decimals: 6,
+  },
+];
+
+export const VAULT_WITHDRAW_TOKENS = [
+  {
+    // USDC (Arbitrum)
+    address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    decimals: 6,
+  },
+  {
+    // USDT (Arbitrum)
+    address: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+    decimals: 6,
+  },
+];
+
 export const BoringVaultProvider = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ children, className, ...props }, ref) => {
+  const { chain_id } = useParams();
+
   const ethersProvider = useEthersProvider({
-    chainId: 1,
+    chainId: Number(chain_id),
   });
 
   return (
     <BoringVaultV1Provider
-      chain="mainnet"
-      vaultContract="0x3D1aD04e82E595b7295751C35203f542dC986a43"
-      tellerContract="0xf8C21F673C3DFb11DaEfffdeb9E1E1258351DB2b"
-      accountantContract="0x915565acADb68EDA6DE37A2423Ef7cCa93f6F789"
-      lensContract="0x90983EBF38E981AE38f7Da9e71804380e316A396"
+      chain="arbitrum"
+      vaultContract={VAULT_CONTRACT}
+      tellerContract={TELLER_CONTRACT}
+      accountantContract={ACCOUNTANT_CONTRACT}
+      lensContract={LENS_CONTRACT}
       ethersProvider={ethersProvider as any}
-      withdrawTokens={[
-        {
-          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          decimals: 18,
-        },
-      ]}
-      depositTokens={[
-        {
-          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-          decimals: 18,
-        },
-        {
-          address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          decimals: 6,
-        },
-      ]}
-      baseAsset={{
-        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        decimals: 18,
-      }}
+      withdrawTokens={VAULT_WITHDRAW_TOKENS}
+      depositTokens={VAULT_DEPOSIT_TOKENS}
+      baseAsset={VAULT_DEPOSIT_TOKENS[0]}
       vaultDecimals={18}
     >
       {children}
