@@ -1,7 +1,7 @@
-import { ProtectorProvider } from "../_container/protector-provider";
-import { MaxWidthProvider } from "../_container/max-width-provider";
-import { VaultManager } from "./components/vault-manager";
-import { BoringVaultProvider } from "./providers/boring-vault-provider";
+import { MaxWidthProvider } from "@/app/_container/max-width-provider";
+import { ProtectorProvider } from "@/app/_container/protector-provider";
+import { VaultManager } from "@/app/vault/components/vault-manager";
+import { BoringVaultProvider } from "@/app/vault/providers/boring-vault-provider";
 
 const Page = () => {
   return (
