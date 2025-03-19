@@ -1,60 +1,41 @@
-import { providers } from "ethers";
-import { RPC_API_KEYS } from "@/components/constants";
-import { Chain } from "viem";
-import {
-  baseSepolia,
-  base,
-  arbitrumSepolia,
-  mainnet,
-  sepolia,
-  arbitrum,
-} from "@wagmi/core/chains";
 import { useMemo } from "react";
+import { providers } from "ethers";
+import { toast } from "react-hot-toast";
 
-export const chains = {
-  [mainnet.id]: mainnet,
-  [base.id]: base,
-  [arbitrum.id]: arbitrum,
-  [sepolia.id]: sepolia,
-  [baseSepolia.id]: baseSepolia,
-  [arbitrumSepolia.id]: arbitrumSepolia,
-};
+import { chains } from "../constants/chains";
 
 export function getEthersProviderFromChainId(chainId: number) {
-  const chains: Record<number, Chain> = {
-    [mainnet.id]: mainnet,
-    [base.id]: base,
-    [arbitrum.id]: arbitrum,
-    [sepolia.id]: sepolia,
-    [baseSepolia.id]: baseSepolia,
-    [arbitrumSepolia.id]: arbitrumSepolia,
-  };
+  const chain = chains[chainId as keyof typeof chains];
 
-  const chain = chains[chainId];
   if (!chain) {
-    throw new Error(`Error: chain ${chainId} not supported`);
+    return {
+      error: "Error: chain not supported",
+    };
   }
 
-  const rpcUrl = RPC_API_KEYS[chainId];
-  if (!rpcUrl) {
-    throw new Error(`Error: no rpc url found for chain ${chainId}`);
+  if (!chain.rpcUrl) {
+    return {
+      error: "Error: no rpc url found for chain.",
+    };
   }
 
-  const network = {
-    chainId: chain.id,
+  return new providers.StaticJsonRpcProvider(chain.rpcUrl, {
+    chainId: chain.chainId,
     name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
-  };
-
-  return new providers.StaticJsonRpcProvider(rpcUrl, network);
+    ensAddress: chain.ensAddress,
+  });
 }
 
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
-  return useMemo(() => {
+  const provider = useMemo(() => {
     if (!chainId) {
-      return undefined;
+      return {
+        error: "Error: no chain id provided",
+      };
     }
 
     return getEthersProviderFromChainId(chainId);
   }, [chainId]);
+
+  return provider;
 }

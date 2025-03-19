@@ -3,7 +3,7 @@
 import React from "react";
 import { useAtomValue } from "jotai";
 
-import { protectorAtom } from "@/store/vault/protector";
+import { protectorAtom } from "@/store/vault/atom/protector";
 import { Protector } from "../protector";
 
 export const ProtectorProvider = React.forwardRef<
