@@ -1,40 +1,25 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { ChevronLeftIcon } from "lucide-react";
 import { useAtomValue } from "jotai";
-import { useAccount } from "wagmi";
-
 import { cn } from "@/lib/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { TotalValueLocked } from "./total-value-locked/total-value-locked";
 import { VaultDetails } from "./vault-details/vault-details";
 import { VaultAllocation } from "./vault-allocation/vault-allocation";
 import { VaultFAQ } from "./vault-faq/vault-faq";
-import { useBoringVaultV1 } from "boring-vault-ui";
 import { VaultActionForm } from "./vault-action-form/vault-action-form";
 import { BalanceIndicator } from "./balance-indicator/balance-indicator";
+import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { address } = useAccount();
-  const { isBoringV1ContextReady, fetchTotalAssets, fetchUserShares } =
-    useBoringVaultV1();
+  const boringVault = useAtomValue(boringVaultAtom);
 
-  useEffect(() => {
-    if (!address) return;
-    fetchUserShares(address).then((value) => {
-      console.log("Share value: ", value);
-    });
-  }, [isBoringV1ContextReady, address]);
-
-  useEffect(() => {
-    fetchTotalAssets().then((assets) => {
-      console.log("The Vaults TVL: ", assets);
-    });
-  }, [fetchTotalAssets]);
+  console.log({ boringVault });
 
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>

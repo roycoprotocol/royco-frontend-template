@@ -1,12 +1,18 @@
+"use client";
+
+import { useParams } from "next/navigation";
+
 import { MaxWidthProvider } from "@/app/_container/max-width-provider";
 import { ProtectorProvider } from "@/app/_container/protector-provider";
 import { VaultManager } from "@/app/vault/components/vault-manager";
-import { BoringVaultProvider } from "@/app/vault/providers/boring-vault-provider";
+import { BoringVaultProvider } from "@/app/vault/providers/boring-vault/boring-vault-provider";
 
 const Page = () => {
+  const { vault_type } = useParams();
+
   return (
     <ProtectorProvider>
-      <div className="hide-scrollbar relative h-screen bg-background">
+      <div className="hide-scrollbar relative min-h-screen bg-background">
         {/**
          * Background
          */}
@@ -16,9 +22,11 @@ const Page = () => {
          * Vault Manager
          */}
         <MaxWidthProvider className="relative z-10">
-          <BoringVaultProvider>
-            <VaultManager />
-          </BoringVaultProvider>
+          {vault_type === "boring_vault" && (
+            <BoringVaultProvider>
+              <VaultManager />
+            </BoringVaultProvider>
+          )}
         </MaxWidthProvider>
       </div>
     </ProtectorProvider>

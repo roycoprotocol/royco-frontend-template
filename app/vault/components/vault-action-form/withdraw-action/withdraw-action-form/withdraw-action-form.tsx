@@ -1,16 +1,26 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { z } from "zod";
+import { UseFormReturn } from "react-hook-form";
+
 import { cn } from "@/lib/utils";
 import {
   SecondaryLabel,
   TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { InputAmountSelector } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables";
-import { Button } from "@/components/ui/button";
+import { withdrawFormSchema } from "../withdraw-action";
+import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 
+import { useAtomValue } from "jotai";
+import { VAULT_DECIMALS } from "@/app/vault/providers/boring-vault/boring-vault-provider";
 export const WithdrawActionForm = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {
+    withdrawForm: UseFormReturn<z.infer<typeof withdrawFormSchema>>;
+  }
+>(({ className, withdrawForm, ...props }, ref) => {
+  const boringVault = useAtomValue(boringVaultAtom);
+
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       <SecondaryLabel>Principle</SecondaryLabel>
@@ -18,15 +28,20 @@ export const WithdrawActionForm = React.forwardRef<
       <div className="mt-2 flex gap-2">
         <InputAmountSelector
           containerClassName="h-10"
-          currentValue=""
+          currentValue={withdrawForm.watch("amount")}
           setCurrentValue={(value) => {
-            console.log(value);
+            withdrawForm.setValue("amount", value);
           }}
           Prefix={() => {
             return (
               <div
                 onClick={() => {
-                  console.log("MAX");
+                  withdrawForm.setValue(
+                    "amount",
+                    (
+                      boringVault?.user?.total_shares_in_base_asset || 0
+                    ).toString()
+                  );
                 }}
                 className={cn(
                   "flex cursor-pointer items-center justify-center",
@@ -42,8 +57,6 @@ export const WithdrawActionForm = React.forwardRef<
             return <SecondaryLabel className="text-black">USDC</SecondaryLabel>;
           }}
         />
-
-        <Button className="h-full w-fit px-4">Claim</Button>
       </div>
 
       <TertiaryLabel className="mt-2">Balance: 0 USDC</TertiaryLabel>

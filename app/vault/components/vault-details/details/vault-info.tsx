@@ -7,7 +7,7 @@ import {
   SecondaryLabel,
   TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { CustomBadge } from "../../common/custom-badge";
+import { CustomBadge } from "../../../common/custom-badge";
 
 export const VaultInfo = React.forwardRef<
   HTMLDivElement,
