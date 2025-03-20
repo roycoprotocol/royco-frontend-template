@@ -39,7 +39,7 @@ import {
   TokenMap11155111,
   TokenMap42161,
   TokenMap8453,
-  TokenMap98865,
+  TokenMap98866,
   TokenMap21000000,
 } from "royco/constants";
 import { isSolidityStringValid } from "royco/utils";
@@ -396,7 +396,7 @@ export const PoolFormDefaults = {
     market_name: "",
     market_description: "",
     chain: SupportedChainMap[Plume.id],
-    asset: TokenMap98865["98866-0x54fd4da2fa19cf0f63d8f93a6ea5bed3f9c042c6"],
+    asset: TokenMap98866["98866-0x54fd4da2fa19cf0f63d8f93a6ea5bed3f9c042c6"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",
