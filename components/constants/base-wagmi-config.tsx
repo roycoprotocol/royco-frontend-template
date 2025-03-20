@@ -6,11 +6,20 @@ import {
   mainnet,
   sepolia,
   arbitrum,
+  plumeMainnet,
 } from "@wagmi/core/chains";
 import { RPC_API_KEYS } from "@/components/constants";
 
 export const config = createConfig({
-  chains: [baseSepolia, base, arbitrumSepolia, mainnet, sepolia, arbitrum],
+  chains: [
+    baseSepolia,
+    base,
+    arbitrumSepolia,
+    mainnet,
+    sepolia,
+    arbitrum,
+    plumeMainnet,
+  ],
   transports: {
     [sepolia.id]: http(RPC_API_KEYS[sepolia.id]),
     [mainnet.id]: http(RPC_API_KEYS[mainnet.id]),
@@ -18,5 +27,6 @@ export const config = createConfig({
     [arbitrum.id]: http(RPC_API_KEYS[arbitrum.id]),
     [baseSepolia.id]: http(RPC_API_KEYS[baseSepolia.id]),
     [base.id]: http(RPC_API_KEYS[base.id]),
+    [plumeMainnet.id]: http(RPC_API_KEYS[plumeMainnet.id]),
   },
 });
