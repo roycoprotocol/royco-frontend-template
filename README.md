@@ -18,7 +18,7 @@ Royco Launch Kit is the easiest way to create your own front end for the Royco P
 pnpm install
 ```
 
-3. Start the development server.
+3. Start the development server
 
 ```bash
 pnpm run dev
