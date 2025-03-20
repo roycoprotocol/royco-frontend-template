@@ -21,7 +21,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-anon-key": "tsx scripts/generate-anon-key/index.tsx"
+    "generate-anon-key": "tsx scripts/generate-anon-key/index.tsx",
+    "generate-packages-csv": "tsx scripts/generate-packages-csv.ts"
   },
   "dependencies": {
     "@blockaid/client": "^0.21.0",
@@ -76,12 +77,13 @@
     "@weiroll/weiroll.js": "^0.3.0",
     "abitype": "^1.0.5",
     "alchemy-sdk": "^3.3.1",
-    "axios": "^1.7.9",
+    "axios": "^1.8.3",
     "boring-avatars": "^1.10.2",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "csv-writer": "^1.6.0",
     "date-fns": "^3.6.0",
     "detect-browser": "^5.3.0",
     "dotenv": "^16.4.5",

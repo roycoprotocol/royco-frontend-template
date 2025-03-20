@@ -396,7 +396,7 @@ export const PoolFormDefaults = {
     market_name: "",
     market_description: "",
     chain: SupportedChainMap[Plume.id],
-    asset: TokenMap98865["98865-0x28e0f0eed8d6a6a96033feee8b2d7f32eb5ccc48"],
+    asset: TokenMap98865["98866-0x54fd4da2fa19cf0f63d8f93a6ea5bed3f9c042c6"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",

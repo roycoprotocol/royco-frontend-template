@@ -30,6 +30,7 @@ const SERVER_RPC_API_KEYS = {
   80000: process.env.SERVER_RPC_80000_1,
   21000000: process.env.SERVER_RPC_21000000_1,
   98865: process.env.SERVER_RPC_98865_1,
+  98866: process.env.SERVER_RPC_98866_1,
 };
 
 // Add getReserves ABI
@@ -161,6 +162,17 @@ export const updateLpTokenQuotesFromContract = async () => {
     98865: createPublicClient({
       chain: getSupportedChain(98865),
       transport: http(SERVER_RPC_API_KEYS[98865], {
+        fetchOptions: {
+          headers: {
+            Origin: "https://app.royco.org",
+          },
+        },
+      }),
+    }),
+
+    98866: createPublicClient({
+      chain: getSupportedChain(98866),
+      transport: http(SERVER_RPC_API_KEYS[98866], {
         fetchOptions: {
           headers: {
             Origin: "https://app.royco.org",
