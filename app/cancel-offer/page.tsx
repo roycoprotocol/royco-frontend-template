@@ -1,3 +1,5 @@
+"use client";
+
 import { MarketManagerStoreProvider } from "@/store";
 import { CancelOfferButton } from "./cancel-offer-button";
 import { TransactionModal } from "@/components/composables";
