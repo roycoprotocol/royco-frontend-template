@@ -80,7 +80,7 @@ export const PreviewStep = React.forwardRef<
     if (currentMarketData && currentMarketData.chain_id) {
       return ![
         SupportedChainMap[21_000_000].id,
-        SupportedChainMap[98_865].id,
+        SupportedChainMap[98_866].id,
       ].includes(currentMarketData.chain_id);
     }
     return true;
