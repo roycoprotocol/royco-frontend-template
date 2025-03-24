@@ -13,7 +13,6 @@ import {
 import { useVaultBalances } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { useActiveMarket } from "../../../../../../hooks";
-import { BigNumber } from "ethers";
 
 export const FundingVaultSelector = React.forwardRef<
   HTMLDivElement,
@@ -88,7 +87,7 @@ export const FundingVaultSelector = React.forwardRef<
           return false;
         }
 
-        return BigNumber.from(userVaultBalance.raw_amount).gt(0);
+        return BigInt(userVaultBalance.raw_amount) > BigInt(0);
       });
     }, [validVaultMarketData, userVaultMarketBalanceData, currentMarketData]);
 

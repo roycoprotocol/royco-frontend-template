@@ -1,10 +1,9 @@
 import { useMemo } from "react";
-import { providers } from "ethers";
-import { toast } from "react-hot-toast";
+import { JsonRpcProvider } from "ethers";
 
 import { chains } from "../constants/chains";
 
-export function getEthersProviderFromChainId(chainId: number) {
+export function getEthersProviderFromChainId(chainId: number, origin?: string) {
   const chain = chains[chainId as keyof typeof chains];
 
   if (!chain) {
@@ -19,14 +18,29 @@ export function getEthersProviderFromChainId(chainId: number) {
     };
   }
 
-  return new providers.StaticJsonRpcProvider(chain.rpcUrl, {
-    chainId: chain.chainId,
-    name: chain.name,
-    ensAddress: chain.ensAddress,
-  });
+  const rpcUrl = chain.rpcUrl.startsWith("/")
+    ? `${origin}${chain.rpcUrl}`
+    : chain.rpcUrl;
+
+  return new JsonRpcProvider(
+    rpcUrl,
+    {
+      chainId: chain.chainId,
+      name: chain.name,
+      ensAddress: chain.ensAddress,
+    },
+    {
+      staticNetwork: true,
+    }
+  );
 }
 
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
+  const origin = useMemo(
+    () => (typeof window !== "undefined" ? window.location.origin : ""),
+    []
+  );
+
   const provider = useMemo(() => {
     if (!chainId) {
       return {
@@ -34,8 +48,8 @@ export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
       };
     }
 
-    return getEthersProviderFromChainId(chainId);
-  }, [chainId]);
+    return getEthersProviderFromChainId(chainId, origin);
+  }, [chainId, origin]);
 
   return provider;
 }

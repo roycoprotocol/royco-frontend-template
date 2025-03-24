@@ -1,15 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
-import { http } from "@wagmi/core";
-import { Address } from "abitype";
-import { getSupportedChain } from "royco/utils";
-import { ContractMap } from "royco/contracts";
-import { encodeFunctionData, createPublicClient, Chain } from "viem";
-
-import { BigNumber } from "ethers";
-import { NULL_ADDRESS } from "royco/constants";
-import { erc20Abi } from "viem";
-import { Database } from "royco/types";
-
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";

@@ -1,14 +1,14 @@
 "use client";
 
 import { MarketManagerStoreProvider } from "@/store";
-import { CancelOfferButton } from "./cancel-offer-button";
+import { HardcodedButton } from "./hardcoded-button";
 import { TransactionModal } from "@/components/composables";
 
-export default function CancelOffer() {
+export default function Page() {
   return (
     <MarketManagerStoreProvider>
       <div className="flex h-screen flex-col items-center justify-center">
-        <CancelOfferButton />
+        <HardcodedButton />
 
         <TransactionModal />
       </div>

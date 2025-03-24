@@ -15,7 +15,6 @@ import { useActiveMarket } from "../../hooks";
 import { SecondaryLabel, TertiaryLabel } from "../../composables";
 import { Circle } from "lucide-react";
 import { RoycoMarketType } from "royco/market";
-import { BigNumber } from "ethers";
 import { DEFAULT_TOKEN_COLOR } from "../market-info/annual-yield-details/incentive-details";
 import formatNumber from "@/utils/numbers";
 
@@ -99,7 +98,7 @@ export const OfferListVisualizer = React.forwardRef<
       }
 
       return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
       });
     }
   }, [currentMarketData, currentHighestOffers, marketMetadata]);

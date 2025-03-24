@@ -66,7 +66,7 @@ export const config = getDefaultConfig({
     ]),
     [Plume.id]: fallback([
       unstable_connector(injected),
-      http(process.env.NEXT_PUBLIC_RPC_API_KEY_98865!),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_98866!),
       http(),
     ]),
     [EthereumSepolia.id]: fallback([

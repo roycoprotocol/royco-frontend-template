@@ -24,7 +24,6 @@ import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { TertiaryLabel } from "../../../../composables";
 import { RoycoMarketType } from "royco/market";
-import { BigNumber } from "ethers";
 import { TokenDisplayer } from "@/components/common";
 import { VaultActionForms } from "./vault-action-forms";
 import { OfferTypeSelector } from "./components/offer-type-selector";
@@ -72,7 +71,7 @@ export const SupplyAction = React.forwardRef<
       }
 
       return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+        return BigInt(token_data.raw_amount ?? "0") > 0;
       });
     }
   }, [currentMarketData, currentHighestOffers, marketMetadata]);
@@ -323,7 +322,8 @@ export const SupplyAction = React.forwardRef<
             })()}
 
             {offerType === MarketOfferType.market.id &&
-              userType === MarketUserType.ap.id && (
+              userType === MarketUserType.ap.id &&
+              (currentMarketData?.annual_change_ratio || 0) !== 0 && (
                 <TertiaryLabel className="mt-2 space-x-1 italic">
                   <span>Total APY:</span>
 

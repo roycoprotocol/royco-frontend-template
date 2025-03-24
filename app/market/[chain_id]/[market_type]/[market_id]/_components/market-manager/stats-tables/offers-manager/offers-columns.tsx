@@ -59,7 +59,6 @@ import {
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ContractMap } from "royco/contracts";
 import { getExplorerUrl } from "royco/utils";
-import { BigNumber } from "ethers";
 import { getRecipeForfeitTransactionOptions } from "royco/hooks";
 import { useActiveMarket } from "../../../hooks";
 import { TokenDisplayer } from "@/components/common";
@@ -91,7 +90,7 @@ export const offersColumns: ColumnDef<OffersColumnDataElement>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {!row.original.is_cancelled &&
-              !BigNumber.from(row.original.quantity_remaining).isZero() && (
+              BigInt(row.original.quantity_remaining ?? "0") !== BigInt(0) && (
                 <DropdownMenuItem
                   onClick={() => {
                     let txOptions: TransactionOptionsType | null = null;
@@ -155,13 +154,12 @@ export const offersColumns: ColumnDef<OffersColumnDataElement>[] = [
 
       if (row.original.is_cancelled) {
         status = "Cancelled";
-      } else if (BigNumber.from(row.original.quantity_remaining).isZero()) {
+      } else if (BigInt(row.original.quantity_remaining ?? "0") === BigInt(0)) {
         status = "Filled";
       } else if (
-        !BigNumber.from(row.original.expiry).eq(0) &&
-        BigNumber.from(row.original.expiry).lt(
-          BigNumber.from(Math.floor(Date.now() / 1000))
-        )
+        BigInt(row.original.expiry ?? "0") !== BigInt(0) &&
+        BigInt(row.original.expiry ?? "0") <
+          BigInt(Math.floor(Date.now() / 1000))
       ) {
         status = "Expired";
       } else if (row.original.is_valid === false) {

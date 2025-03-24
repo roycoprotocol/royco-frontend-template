@@ -9,7 +9,6 @@ import {
 } from "@/components/common";
 import { format } from "date-fns";
 import { RoycoMarketType } from "royco/market";
-import { BigNumber } from "ethers";
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,
@@ -97,30 +96,26 @@ export const IncentiveToken = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     token_data: any;
     symbolClassName?: string;
+    category?: string;
   }
->(({ className, token_data, symbolClassName, ...props }, ref) => {
+>(({ className, token_data, category, symbolClassName, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("", className)} {...props}>
-      {token_data.length && token_data.length > 0 ? (
+      {category === "underlying_native" ? (
         <div className="flex items-center">
           <TokenDisplayer
             className={cn("")}
             imageClassName="grayscale"
-            tokens={token_data}
+            tokens={[token_data]}
             size={4}
             symbols={false}
           />
           <div className="text-sm font-medium">
             {(() => {
-              if (
-                token_data.find(
-                  (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
-                )
-              ) {
+              if (token_data.id === SONIC_ROYCO_GEM_BOOST_ID) {
                 return "Royco Gem Bonus";
               }
-
-              return token_data.map((token: any) => token.symbol).join(", ");
+              return token_data.symbol;
             })()}
           </div>
         </div>
@@ -396,7 +391,7 @@ export const IncentiveDetails = React.forwardRef<
       }
 
       return currentMarketData.incentive_tokens_data.filter((token_data) => {
-        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
       });
     }
   }, [currentMarketData, currentHighestOffers, marketMetadata]);
@@ -515,29 +510,36 @@ export const IncentiveDetails = React.forwardRef<
                 BASE_MARGIN_TOP.MD
               )}
             >
-              <SlideUpWrapper delay={0.1}>
-                <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-                  <InfoCard.Row.Key>
-                    <IncentiveToken
-                      className="mb-1"
-                      symbolClassName="text-secondary font-normal"
-                      token_data={currentNativeIncentives.tokens}
-                    />
+              {currentNativeIncentives.tokens.map(
+                (token_data, token_data_index) => {
+                  return (
+                    <SlideUpWrapper delay={0.1 + token_data_index * 0.1}>
+                      <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                        <InfoCard.Row.Key>
+                          <IncentiveToken
+                            className="mb-1"
+                            category={"underlying_native"}
+                            symbolClassName="text-secondary font-normal"
+                            token_data={token_data}
+                          />
 
-                    <TertiaryLabel className="ml-5">
-                      Underlying Rate
-                    </TertiaryLabel>
-                  </InfoCard.Row.Key>
+                          <TertiaryLabel className="ml-5">
+                            Underlying Rate
+                          </TertiaryLabel>
+                        </InfoCard.Row.Key>
 
-                  <InfoCard.Row.Value>
-                    <IncentiveTokenDetails
-                      token_data={currentNativeIncentives}
-                      category={"underlying_native"}
-                      labelClassName="text-secondary"
-                    />
-                  </InfoCard.Row.Value>
-                </InfoCard.Row>
-              </SlideUpWrapper>
+                        <InfoCard.Row.Value>
+                          <IncentiveTokenDetails
+                            token_data={token_data}
+                            category={"underlying_native"}
+                            labelClassName="text-secondary"
+                          />
+                        </InfoCard.Row.Value>
+                      </InfoCard.Row>
+                    </SlideUpWrapper>
+                  );
+                }
+              )}
             </InfoCard>
           )}
       </div>

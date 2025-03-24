@@ -6,7 +6,14 @@ import { cookieStorage, createStorage, http } from "wagmi";
  * @todo
  * Replace viem/chains with royco/constants
  */
-import { sepolia, mainnet, arbitrum, base, corn } from "viem/chains";
+import {
+  sepolia,
+  mainnet,
+  arbitrum,
+  base,
+  corn,
+  plumeMainnet,
+} from "viem/chains";
 
 // Get projectId at https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -23,7 +30,7 @@ export const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [mainnet, arbitrum, base, corn, sepolia] as const;
+const chains = [mainnet, arbitrum, base, corn, sepolia, plumeMainnet] as const;
 
 export const config = defaultWagmiConfig({
   chains,

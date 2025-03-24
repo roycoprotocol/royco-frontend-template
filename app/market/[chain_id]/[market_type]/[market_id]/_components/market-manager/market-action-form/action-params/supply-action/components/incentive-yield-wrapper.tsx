@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { InputYieldSelector } from "../../composables/input-yield-selector";
 import { DEFAULT_TOKEN_COLOR } from "../../../../market-info/annual-yield-details/incentive-details";
 import ShieldIcon from "../../../../../icons/shield";
-import { BigNumber } from "ethers";
 import { RoycoMarketType } from "royco/market";
 import { useActiveMarket } from "../../../../../hooks/use-active-market";
 import { Vibrant } from "node-vibrant/browser";
@@ -54,7 +53,7 @@ export const IncentiveYieldWrapper = React.forwardRef<
       }
 
       return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
       });
     }
   }, [currentMarketData, currentHighestOffers, marketMetadata]);

@@ -26,7 +26,7 @@ export const ChainsFilter = () => {
           if (frontendTag !== "dev" && frontendTag !== "testnet") {
             if (chain?.testnet === true) {
               shouldHide = true;
-            } else if (chain.id === 98865) {
+            } else if (chain.id === 98866) {
               shouldHide = true;
             }
           }

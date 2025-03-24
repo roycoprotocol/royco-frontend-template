@@ -25,15 +25,14 @@ import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
 import { REWARD_STYLE } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
-import { BigNumber } from "ethers";
 import { CreateActionsMap } from "../market-builder-flow/info-step/form-selectors";
 
 const getFrontendFee = () => {
   /**
    * Default frontend fee is 4% of the total amount of incentives
    */
-  const multiplier = BigNumber.from(10).pow(16);
-  let frontendFee = BigNumber.from(4).mul(multiplier).toString();
+  const multiplier = BigInt(10) ** BigInt(16);
+  let frontendFee = (BigInt(4) * multiplier).toString();
 
   const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
 
