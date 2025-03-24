@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { FallMotion } from "@/components/animations";
 import { TypedRoycoMarketVaultIncentiveAction } from "royco/market";
-import { BigNumber } from "ethers";
 import { useActiveMarket } from "../../../../hooks";
 
 export const ActionTypeSelector = React.forwardRef<
@@ -31,12 +30,12 @@ export const ActionTypeSelector = React.forwardRef<
   ) {
     let availableIncentivesThatCanBeRefunded =
       currentMarketData.base_incentive_ids.filter((incentive_id, index) => {
-        const currentTimestamp = BigNumber.from(Math.floor(Date.now() / 1000));
-        const startTimestamp = BigNumber.from(
+        const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
+        const startTimestamp = BigInt(
           currentMarketData.base_start_timestamps![index] ?? "0"
         );
 
-        if (currentTimestamp.lt(startTimestamp)) {
+        if (currentTimestamp < startTimestamp) {
           return true;
         } else {
           return false;

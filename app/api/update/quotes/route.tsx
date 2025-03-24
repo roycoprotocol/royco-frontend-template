@@ -13,8 +13,7 @@ import { createPublicClient, erc20Abi } from "viem";
 import { Octokit } from "@octokit/rest";
 import { type NextRequest } from "next/server";
 import { Database } from "royco/types";
-import { BigNumber } from "ethers";
-import { ethers } from "ethers";
+import { parseUnits, formatUnits } from "ethers/utils";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -382,36 +381,29 @@ export const updateLpTokenQuotesFromContract = async () => {
       decimalsMap.get(token1SearchId) ?? quote.token1_decimals;
 
     // Calculate total value in USD using BigNumber with proper decimals
-    const token0Balance = BigNumber.from(quote.token0_balance);
-    const token1Balance = BigNumber.from(quote.token1_balance);
-    const token0PriceScaled = ethers.utils.parseUnits(
-      token0Price.toString(),
-      18
-    );
-    const token1PriceScaled = ethers.utils.parseUnits(
-      token1Price.toString(),
-      18
-    );
+    const token0Balance = BigInt(quote.token0_balance);
+    const token1Balance = BigInt(quote.token1_balance);
+    const token0PriceScaled = parseUnits(token0Price.toString(), 18);
+    const token1PriceScaled = parseUnits(token1Price.toString(), 18);
 
     // Adjust for token decimals using the ones from token_quotes_latest
-    const token0Value = token0Balance
-      .mul(token0PriceScaled)
-      .div(BigNumber.from(10).pow(token0Decimals));
-    const token1Value = token1Balance
-      .mul(token1PriceScaled)
-      .div(BigNumber.from(10).pow(token1Decimals));
+    const token0Value =
+      (token0Balance * token0PriceScaled) /
+      BigInt(10) ** BigInt(token0Decimals);
+    const token1Value =
+      (token1Balance * token1PriceScaled) /
+      BigInt(10) ** BigInt(token1Decimals);
 
-    const totalValueUSDScaled = token0Value.add(token1Value);
-    const totalValueUSD = parseFloat(
-      ethers.utils.formatUnits(totalValueUSDScaled, 18)
-    );
+    const totalValueUSDScaled = token0Value + token1Value;
+    const totalValueUSD = parseFloat(formatUnits(totalValueUSDScaled, 18));
 
     // Calculate price per LP token using LP token decimals
-    const totalSupply = BigNumber.from(quote.total_supply);
-    const pricePerToken = totalSupply.isZero()
-      ? 0
-      : totalValueUSD /
-        parseFloat(ethers.utils.formatUnits(totalSupply, quote.lp_decimals));
+    const totalSupply = BigInt(quote.total_supply);
+    const pricePerToken =
+      totalSupply === BigInt(0)
+        ? 0
+        : totalValueUSD /
+          parseFloat(formatUnits(totalSupply, quote.lp_decimals));
 
     return {
       id: quote.id,
@@ -419,9 +411,7 @@ export const updateLpTokenQuotesFromContract = async () => {
       search_id: quote.search_id,
       price: isNaN(pricePerToken) ? 0 : pricePerToken,
       fdv: isNaN(totalValueUSD) ? 0 : totalValueUSD,
-      total_supply: parseFloat(
-        ethers.utils.formatUnits(totalSupply, quote.lp_decimals)
-      ),
+      total_supply: parseFloat(formatUnits(totalSupply, quote.lp_decimals)),
       last_updated,
     };
   });

@@ -63,10 +63,10 @@ export const RoycoStats = React.forwardRef<
           key: "total_volume",
           name: "Total Volume",
         },
-        {
-          key: "total_tvl",
-          name: "Total Value Locked",
-        },
+        // {
+        //   key: "total_tvl",
+        //   name: "Total Value Locked",
+        // },
         // {
         //   key: "total_incentives",
         //   name: "Incentives",

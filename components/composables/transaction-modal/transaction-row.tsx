@@ -3,7 +3,6 @@ import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
 import React, { Fragment } from "react";
 import { LoadingSpinner } from "../loading-spinner";
 import { TransactionOptionsType } from "@/sdk/types";
-import { BigNumber } from "ethers";
 import { BadgeLink, ContentBadge, TokenDisplayer } from "@/components/common";
 import { getExplorerUrl } from "royco/utils";
 import formatNumber from "@/utils/numbers";

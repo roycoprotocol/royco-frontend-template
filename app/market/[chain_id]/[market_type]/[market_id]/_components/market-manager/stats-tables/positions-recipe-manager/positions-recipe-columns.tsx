@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { getExplorerUrl } from "royco/utils";
-import { BigNumber } from "ethers";
 import { useActiveMarket } from "../../../hooks";
 import { TokenDisplayer } from "@/components/common";
 import {
@@ -65,9 +64,8 @@ export const actionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[]
             (isClaimed: boolean) => isClaimed === false
           ) &&
           row.original.is_withdrawn === false &&
-          BigNumber.from(row.original.unlock_timestamp).gt(
-            BigNumber.from(Math.floor(Date.now() / 1000))
-          )
+          BigInt(row.original.unlock_timestamp ?? "0") >
+            BigInt(Math.floor(Date.now() / 1000))
         ) {
           can_be_forfeited = true;
         }

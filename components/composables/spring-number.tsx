@@ -2,8 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Fragment, useState } from "react";
-import { useSpring, animated } from "react-spring";
-import { BigNumber } from "ethers"; // Import BigNumber from ethers.js (or use BigNumber.js)
+import { useSpring, animated } from "react-spring"; // Import BigNumber from ethers.js (or use BigNumber.js)
 import { Waypoint } from "react-waypoint";
 
 export const SpringNumber = ({
@@ -16,8 +15,8 @@ export const SpringNumber = ({
   noSpan = false,
   overrideColor,
 }: {
-  previousValue: BigNumber | number; // Accept BigNumber or number
-  currentValue: BigNumber | number; // Accept BigNumber or number
+  previousValue: bigint | number; // Accept BigNumber or number
+  currentValue: bigint | number; // Accept BigNumber or number
   numberFormatOptions: Intl.NumberFormatOptions;
   className?: string;
   spanClassName?: string;
@@ -29,8 +28,8 @@ export const SpringNumber = ({
   const [color, setColor] = useState("text-black");
   const [isBlinking, setIsBlinking] = useState(false);
 
-  const formatNumber = (value: BigNumber | number) => {
-    if (BigNumber.isBigNumber(value)) {
+  const formatNumber = (value: bigint | number) => {
+    if (typeof value === "bigint") {
       // For BigNumber, convert to a string, then format as number
       const formatted = new Intl.NumberFormat(
         "en-US",
@@ -51,14 +50,15 @@ export const SpringNumber = ({
    * @description Spring animation initialization
    */
   const springAnimation = useSpring({
-    from: BigNumber.isBigNumber(previousValue)
-      ? parseFloat(previousValue.toString()) // Convert BigNumber to a float for spring animation
-      : previousValue || 0,
+    from:
+      typeof previousValue === "bigint"
+        ? parseFloat(previousValue.toString()) // Convert BigNumber to a float for spring animation
+        : previousValue || 0,
     number: inView
-      ? BigNumber.isBigNumber(currentValue)
+      ? typeof currentValue === "bigint"
         ? parseFloat(currentValue.toString())
         : currentValue
-      : BigNumber.isBigNumber(previousValue)
+      : typeof previousValue === "bigint"
         ? parseFloat(previousValue.toString())
         : previousValue || 0,
     config: {
@@ -69,12 +69,12 @@ export const SpringNumber = ({
     },
     onStart: () => {
       if (
-        BigNumber.isBigNumber(currentValue) &&
-        BigNumber.isBigNumber(previousValue)
+        typeof currentValue === "bigint" &&
+        typeof previousValue === "bigint"
       ) {
-        if (currentValue.gt(previousValue)) {
+        if (currentValue > previousValue) {
           setColor(overrideColor || "text-success");
-        } else if (currentValue.lt(previousValue)) {
+        } else if (currentValue < previousValue) {
           setColor(overrideColor || "text-error");
         }
       } else if (

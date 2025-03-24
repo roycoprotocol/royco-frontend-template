@@ -11,7 +11,6 @@ import {
   parseTokenAmountToRawAmount,
 } from "royco/utils";
 import { MarketVaultIncentiveAction, useMarketManager } from "@/store";
-import { BigNumber } from "ethers";
 import { MarketActionFormSchema } from "../../..";
 import { useActiveMarket } from "../../../../../hooks";
 import {
@@ -47,21 +46,21 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                 not_token_ids:
                   (currentMarketData?.base_incentive_ids ?? []).filter(
                     (base_incentive_id, index) => {
-                      const base_start_timestamp = BigNumber.from(
+                      const base_start_timestamp = BigInt(
                         currentMarketData?.base_start_timestamps?.[index] ?? "0"
                       );
 
-                      const base_end_timestamp = BigNumber.from(
+                      const base_end_timestamp = BigInt(
                         currentMarketData?.base_end_timestamps?.[index] ?? "0"
                       );
 
-                      const current_timestamp = BigNumber.from(
+                      const current_timestamp = BigInt(
                         Math.floor(new Date().getTime() / 1000).toString()
                       );
 
                       return (
-                        !base_start_timestamp.eq(0) &&
-                        current_timestamp.lt(base_end_timestamp)
+                        base_start_timestamp !== BigInt(0) &&
+                        current_timestamp < base_end_timestamp
                       );
                     }
                   ) ?? [],
@@ -71,23 +70,23 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                   token_ids: (
                     currentMarketData?.base_incentive_ids ?? []
                   ).filter((base_incentive_id, index) => {
-                    const base_incentive_amount = BigNumber.from(
+                    const base_incentive_amount = BigInt(
                       currentMarketData?.base_incentive_amounts?.[index] ?? "0"
                     );
 
-                    const base_start_timestamp = BigNumber.from(
+                    const base_start_timestamp = BigInt(
                       currentMarketData?.base_start_timestamps?.[index] ?? "0"
                     );
 
-                    const base_end_timestamp = BigNumber.from(
+                    const base_end_timestamp = BigInt(
                       currentMarketData?.base_end_timestamps?.[index] ?? "0"
                     );
 
-                    const current_timestamp = BigNumber.from(
+                    const current_timestamp = BigInt(
                       Math.floor(new Date().getTime() / 1000).toString()
                     );
 
-                    return current_timestamp.lt(base_end_timestamp);
+                    return current_timestamp < base_end_timestamp;
                   }),
                 }
               : vaultIncentiveActionType ===
@@ -96,13 +95,13 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
                     token_ids: (
                       currentMarketData?.base_incentive_ids ?? []
                     ).filter((base_incentive_id, index) => {
-                      const current_timestamp = BigNumber.from(
+                      const current_timestamp = BigInt(
                         Math.floor(new Date().getTime() / 1000).toString()
                       );
-                      const start_timestamp = BigNumber.from(
+                      const start_timestamp = BigInt(
                         currentMarketData?.base_start_timestamps?.[index] ?? "0"
                       );
-                      return current_timestamp.lt(start_timestamp);
+                      return current_timestamp < start_timestamp;
                     }),
                   }
                 : {})}

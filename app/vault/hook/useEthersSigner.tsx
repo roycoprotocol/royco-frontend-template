@@ -1,27 +1,18 @@
-import { providers } from "ethers";
-import { useMemo } from "react";
+import { BrowserProvider } from "ethers";
+import { useEffect, useState } from "react";
 import type { Account, Chain, Client, Transport } from "viem";
 import { type Config, useConnectorClient } from "wagmi";
 
-export function clientToSigner(client: Client<Transport, Chain, Account>) {
+async function clientToSigner(client: Client<Transport, Chain, Account>) {
   const { account, chain, transport } = client;
 
-  const provider = new providers.Web3Provider(transport as any, {
+  const provider = new BrowserProvider(transport as any, {
     chainId: chain.id,
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   });
 
-  const signer = provider.getSigner(account.address);
-
-  // Use the ethers v5 _signTypedData method
-  // @ts-ignore
-  if (!signer.signTypedData) {
-    // @ts-ignore
-    signer.signTypedData = async function (domain, types, value) {
-      return this._signTypedData(domain, types, value);
-    };
-  }
+  const signer = await provider.getSigner(account.address);
 
   return signer;
 }
@@ -31,8 +22,17 @@ export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
     chainId,
   });
 
-  const signer = useMemo(() => {
-    return client ? clientToSigner(client) : undefined;
+  const [signer, setSigner] = useState<any>(undefined);
+
+  useEffect(() => {
+    (async () => {
+      if (client) {
+        const signer = await clientToSigner(client);
+        setSigner(signer);
+      } else {
+        setSigner(undefined);
+      }
+    })();
   }, [client]);
 
   return signer;

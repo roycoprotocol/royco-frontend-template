@@ -5,7 +5,6 @@ import { getSupportedChain } from "royco/utils";
 import { ContractMap } from "royco/contracts";
 import { encodeFunctionData, createPublicClient, Chain } from "viem";
 
-import { BigNumber } from "ethers";
 import { NULL_ADDRESS } from "royco/constants";
 import { erc20Abi } from "viem";
 
@@ -137,9 +136,9 @@ async function getInvalidApOffers(
               : (offer.funding_vault as Address), // Use funding vault if provided, else token contract directly
         });
 
-        const balance = BigNumber.from(balanceData["data"]);
+        const balance = BigInt(balanceData["data"] as string);
 
-        if (balance.lt(BigNumber.from(offer.quantity_remaining))) {
+        if (balance < BigInt(offer.quantity_remaining)) {
           invalidApOffers.push(offer.id);
           continue;
         }
@@ -166,9 +165,9 @@ async function getInvalidApOffers(
               : (offer.funding_vault as Address), // Use funding vault if provided, else token contract directly
         });
 
-        const allowance = BigNumber.from(approvalData["data"]);
+        const allowance = BigInt(approvalData["data"] as string);
 
-        if (allowance.lt(BigNumber.from(offer.quantity_remaining))) {
+        if (allowance < BigInt(offer.quantity_remaining)) {
           invalidApOffers.push(offer.id);
         } else if (
           offer.market_type === 1 &&

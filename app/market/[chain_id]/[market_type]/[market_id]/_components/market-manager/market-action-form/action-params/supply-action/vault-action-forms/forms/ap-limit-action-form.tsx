@@ -11,7 +11,6 @@ import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper"
 import { useActiveMarket } from "../../../../../../hooks";
 import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrapper";
 import { RoycoMarketType } from "royco/market";
-import { BigNumber } from "ethers";
 import { APR_LOCKUP_CONSTANT } from "../../recipe-action-forms/forms/ap-limit-action-form";
 import { InfoIcon } from "lucide-react";
 import { SecondaryLabel } from "../../../../../../composables";
@@ -39,7 +38,7 @@ export const APLimitActionForm = React.forwardRef<
       }
 
       return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigNumber.from(token_data.raw_amount ?? "0").gt(0);
+        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
       });
     }
   }, [currentMarketData, currentHighestOffers]);

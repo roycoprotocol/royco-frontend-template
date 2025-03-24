@@ -20,7 +20,6 @@ import { useAccount } from "wagmi";
 import { RoycoMarketOfferType } from "royco/market";
 import { parseRawAmount, parseTokenAmountToRawAmount } from "royco/utils";
 import { NULL_ADDRESS } from "royco/constants";
-import { BigNumber } from "ethers";
 
 export const useMarketFormDetails = (
   marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>
@@ -131,20 +130,18 @@ export const useMarketFormDetails = (
           // Distribution is incentive token per year
           const distribution = parseFloat(incentiveData.distribution ?? "0");
 
-          const distributionInWei = BigNumber.from(
-            parseTokenAmountToRawAmount(
-              distribution.toString(),
-              incentiveData.decimals
-            )
-          )
-            .mul(BigNumber.from(10).pow(18)) // Scale up to 18 decimals
-            .mul(BigNumber.from(10).pow(incentiveData.decimals)) // Multiply by incentive token decimals
-            .div(
-              BigNumber.from(10).pow(
-                currentMarketData?.input_token_data.decimals ?? 0
+          const distributionInWei =
+            (BigInt(
+              parseTokenAmountToRawAmount(
+                distribution.toString(),
+                incentiveData.decimals
               )
-            ) // Divide by input token decimals
-            .div(365 * 24 * 60 * 60); // Divide by seconds in a year
+            ) *
+              BigInt(10) ** BigInt(18) * // Scale up to 18 decimals
+              BigInt(10) ** BigInt(incentiveData.decimals)) / // Multiply by incentive token decimals
+            BigInt(10) **
+              BigInt(currentMarketData?.input_token_data.decimals ?? 0) / // Divide by input token decimals
+            BigInt(365 * 24 * 60 * 60); // Divide by seconds in a year
 
           const rateInWei = distributionInWei.toString();
 

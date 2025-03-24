@@ -1,14 +1,6 @@
 import axios from "axios";
 import { NextResponse } from "next/server";
 
-import { Database } from "royco/types";
-import { createClient } from "@supabase/supabase-js";
-import { Address, createPublicClient, erc20Abi, http } from "viem";
-import { berachain, berachainTestnet } from "viem/chains";
-import { BERA_AIRDROP_ABI, BERA_AIRDROP_ADDRESS } from "./constants";
-import { BigNumber } from "ethers";
-import { BerachainMainnet, BerachainTestnet } from "royco/constants";
-
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
