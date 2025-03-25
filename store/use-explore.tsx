@@ -8,6 +8,7 @@ import {
   Corn,
   EthereumMainnet,
   EthereumSepolia,
+  Hyperevm,
   Plume,
   Sonic,
 } from "royco/constants";
@@ -164,6 +165,11 @@ export const getExploreFilters = () => {
     filters.push({
       id: "chain_id",
       value: Sonic.id,
+    });
+  } else if (frontendTag === "hyperliquid") {
+    filters.push({
+      id: "chain_id",
+      value: Hyperevm.id,
     });
   }
 
