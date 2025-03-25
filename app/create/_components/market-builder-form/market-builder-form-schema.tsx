@@ -30,6 +30,7 @@ import {
   Plume,
   Sonic,
   TokenMap146,
+  Hyperevm,
 } from "royco/constants";
 
 import {
@@ -40,6 +41,7 @@ import {
   TokenMap42161,
   TokenMap8453,
   TokenMap98866,
+  TokenMap999,
   TokenMap21000000,
 } from "royco/constants";
 import { isSolidityStringValid } from "royco/utils";
@@ -397,6 +399,21 @@ export const PoolFormDefaults = {
     market_description: "",
     chain: SupportedChainMap[Plume.id],
     asset: TokenMap98866["98866-0x54fd4da2fa19cf0f63d8f93a6ea5bed3f9c042c6"],
+    enter_actions: [],
+    exit_actions: [],
+    action_type: "recipe",
+    incentive_schedule: "upfront",
+    lockup_time: {
+      duration: "3",
+      duration_type: "months",
+    },
+    create_actions_type: "recipe",
+  },
+  [Hyperevm.id]: {
+    market_name: "",
+    market_description: "",
+    chain: SupportedChainMap[Hyperevm.id],
+    asset: TokenMap999["999-0x5555555555555555555555555555555555555555"],
     enter_actions: [],
     exit_actions: [],
     action_type: "recipe",
