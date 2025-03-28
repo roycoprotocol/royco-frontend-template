@@ -7,14 +7,8 @@ import { useAtomValue } from "jotai";
 import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 
 interface BoringVaultActions {
-  deposit: (
-    amount: number,
-    token: { address: string; decimals: number }
-  ) => Promise<void>;
-  withdraw: (
-    amount: number,
-    token: { address: string; decimals: number }
-  ) => Promise<void>;
+  deposit: (amount: number) => Promise<void>;
+  withdraw: (amount: number) => Promise<void>;
 }
 
 const BoringVaultActionContext = createContext<BoringVaultActions | null>(null);
@@ -30,10 +24,7 @@ export function BoringVaultActionProvider({
 
   const boringVault = useAtomValue(boringVaultAtom);
 
-  const deposit = async (
-    amount: number,
-    token: { address: string; decimals: number }
-  ) => {
+  const deposit = async (amount: number) => {
     if (!signer) {
       toast.custom(
         <ErrorAlert message="No signer found. Please connect your wallet and try again." />
@@ -42,6 +33,8 @@ export function BoringVaultActionProvider({
     }
 
     try {
+      const token = boringVault?.base_asset as any;
+
       const response = await boringDeposit(signer, amount.toString(), token);
 
       if (response.error) {
@@ -53,10 +46,7 @@ export function BoringVaultActionProvider({
     }
   };
 
-  const withdraw = async (
-    amount: number,
-    token: { address: string; decimals: number }
-  ) => {
+  const withdraw = async (amount: number) => {
     if (!signer) {
       toast.custom(
         <ErrorAlert message="No signer found. Please connect your wallet and try again." />
@@ -72,6 +62,8 @@ export function BoringVaultActionProvider({
     try {
       const discount = "0.001";
       const validDays = "4";
+
+      const token = boringVault?.base_asset as any;
 
       const shares =
         (amount * 10 ** token.decimals) /

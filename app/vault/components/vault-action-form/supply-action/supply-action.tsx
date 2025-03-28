@@ -15,10 +15,6 @@ import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 
 export const depositFormSchema = z.object({
-  token: z.object({
-    address: z.string(),
-    decimals: z.number(),
-  }),
   amount: z.string(),
 });
 
@@ -29,12 +25,9 @@ export const SupplyAction = React.forwardRef<
   const { address } = useAccount();
   const { connectWalletModal } = useConnectWallet();
 
-  const vaultManager = useAtomValue(vaultManagerAtom);
-
   const depositForm = useForm<z.infer<typeof depositFormSchema>>({
     resolver: zodResolver(depositFormSchema),
     defaultValues: {
-      token: vaultManager?.base_asset,
       amount: "",
     },
   });
@@ -43,9 +36,8 @@ export const SupplyAction = React.forwardRef<
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositForm.getValues("amount") || "0");
-    const token = depositForm.getValues("token");
 
-    await deposit(amount, token);
+    await deposit(amount);
   };
 
   return (
