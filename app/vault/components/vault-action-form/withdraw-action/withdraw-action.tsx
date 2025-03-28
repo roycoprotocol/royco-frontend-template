@@ -11,17 +11,12 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  VAULT_DECIMALS,
-  VAULT_DEPOSIT_TOKENS,
-} from "@/app/vault/providers/boring-vault/boring-vault-provider";
 import { ErrorAlert } from "@/components/composables/alerts";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import toast from "react-hot-toast";
-import { useEthersSigner } from "@/app/vault/hook/useEthersSigner";
-import { useBoringVaultV1 } from "boring-vault-ui";
 import { useAtomValue } from "jotai";
-import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
+import { vaultManagerAtom } from "@/store/vault/vault-manager";
 
 export const withdrawFormSchema = z.object({
   token: z.object({
@@ -29,8 +24,6 @@ export const withdrawFormSchema = z.object({
     decimals: z.number(),
   }),
   amount: z.string(),
-  discount: z.string(),
-  validDays: z.string(),
 });
 
 export const WithdrawAction = React.forwardRef<
@@ -69,52 +62,26 @@ export const WithdrawAction = React.forwardRef<
     },
   ];
 
-  const boringVault = useAtomValue(boringVaultAtom);
+  const vaultManager = useAtomValue(vaultManagerAtom);
 
   const { address } = useAccount();
   const { connectWalletModal } = useConnectWallet();
 
-  const { queueBoringWithdraw } = useBoringVaultV1();
-  const signer = useEthersSigner();
+  const { withdraw } = useBoringVaultActions();
 
   const withdrawForm = useForm<z.infer<typeof withdrawFormSchema>>({
     resolver: zodResolver(withdrawFormSchema),
     defaultValues: {
-      token: VAULT_DEPOSIT_TOKENS[0],
+      token: vaultManager?.base_asset,
       amount: "",
-      discount: "0.001",
-      validDays: "4",
     },
   });
 
   const handleWithdraw = async () => {
-    if (!signer) {
-      toast.custom(<ErrorAlert message="Error connecting wallet" />);
-      return;
-    }
-
-    if (!boringVault) {
-      return;
-    }
-
     const amount = parseFloat(withdrawForm.getValues("amount") || "0");
-    const shares =
-      (amount * 10 ** VAULT_DEPOSIT_TOKENS[0].decimals) /
-      (boringVault.share_price * 10 ** VAULT_DECIMALS);
-
     const token = withdrawForm.getValues("token");
-    const discount = parseFloat(withdrawForm.getValues("discount") || "0");
-    const validDays = parseInt(withdrawForm.getValues("validDays") || "0");
 
-    console.log({
-      shares,
-      token,
-      discount,
-      validDays,
-    });
-
-    // @ts-ignore
-    await queueBoringWithdraw(signer, shares, token, discount, validDays);
+    await withdraw(amount, token);
   };
 
   return (

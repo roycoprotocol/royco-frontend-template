@@ -8,12 +8,23 @@ export interface BoringVault {
 
   total_value_locked: number;
   share_price: number;
+  decimals: number;
 
   user?: {
     address: string;
     total_shares: number;
     total_shares_in_base_asset: number;
     unlock_time: number;
+  };
+
+  transactions: {
+    deposit: {
+      initiated: boolean;
+      loading: boolean;
+      success?: boolean;
+      error?: string;
+      tx_hash?: string;
+    };
   };
 }
 

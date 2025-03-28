@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
 
-export const vaultAllocationColumns: ColumnDef<any>[] = [
+export const marketAllocationColumns: ColumnDef<any>[] = [
   {
     accessorKey: "market_allocation",
     enableResizing: true,

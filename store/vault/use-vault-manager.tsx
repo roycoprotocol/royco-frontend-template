@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { TypedRoycoMarketActionType } from "royco/market";
-import { MarketActionType } from "../../market-manager-props";
+import { MarketActionType } from "../market-manager-props";
 
 export interface VaultManagerState {
   actionType: TypedRoycoMarketActionType;

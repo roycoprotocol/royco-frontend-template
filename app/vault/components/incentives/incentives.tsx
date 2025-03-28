@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 
-export const VaultIncentives = React.forwardRef<
+export const Incentives = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {

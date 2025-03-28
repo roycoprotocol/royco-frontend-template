@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { MarketActionType } from "@/store";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import { HorizontalTabs } from "@/components/composables";
-import { useVaultManager } from "@/store/vault/zustand/use-vault-manager";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { SupplyAction } from "./supply-action/supply-action";
 import { WithdrawAction } from "./withdraw-action/withdraw-action";
 

@@ -1,19 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
-import { useBoringVaultV1 } from "boring-vault-ui";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useAtomValue } from "jotai";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { ErrorAlert } from "@/components/composables";
 import { DepositActionForm } from "./deposit-action-form/deposit-action-form";
-
-import { useEthersSigner } from "@/app/vault/hook/useEthersSigner";
-import { VAULT_DEPOSIT_TOKENS } from "@/app/vault/providers/boring-vault/boring-vault-provider";
+import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
+import { vaultManagerAtom } from "@/store/vault/vault-manager";
 
 export const depositFormSchema = z.object({
   token: z.object({
@@ -30,32 +29,23 @@ export const SupplyAction = React.forwardRef<
   const { address } = useAccount();
   const { connectWalletModal } = useConnectWallet();
 
+  const vaultManager = useAtomValue(vaultManagerAtom);
+
   const depositForm = useForm<z.infer<typeof depositFormSchema>>({
     resolver: zodResolver(depositFormSchema),
     defaultValues: {
-      token: VAULT_DEPOSIT_TOKENS[0],
+      token: vaultManager?.base_asset,
       amount: "",
     },
   });
 
-  const { deposit, depositStatus } = useBoringVaultV1();
-  const signer = useEthersSigner();
-
-  useEffect(() => {
-    console.log({ depositStatus });
-  }, [depositStatus]);
+  const { deposit } = useBoringVaultActions();
 
   const handleDeposit = async () => {
-    if (!signer) {
-      toast.custom(<ErrorAlert message="Error connecting wallet" />);
-      return;
-    }
-
     const amount = parseFloat(depositForm.getValues("amount") || "0");
     const token = depositForm.getValues("token");
 
-    // @ts-ignore
-    await deposit(signer, amount, token);
+    await deposit(amount, token);
   };
 
   return (

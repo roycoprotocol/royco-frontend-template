@@ -3,10 +3,10 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-import { VaultAllocationTable } from "./vault-allocation-table";
-import { vaultAllocationColumns } from "./vault-allocation-column";
+import { MarketAllocationTable } from "./market-allocation-table";
+import { marketAllocationColumns } from "./market-allocation-column";
 
-export const VaultAllocation = React.forwardRef<
+export const MarketAllocation = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -16,7 +16,7 @@ export const VaultAllocation = React.forwardRef<
       {...props}
       className={cn("overflow-hidden rounded-xl bg-white shadow-sm", className)}
     >
-      <VaultAllocationTable data={[]} columns={vaultAllocationColumns} />
+      <MarketAllocationTable data={[]} columns={marketAllocationColumns} />
     </div>
   );
 });

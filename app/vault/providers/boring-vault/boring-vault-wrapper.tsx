@@ -1,21 +1,34 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useSetAtom } from "jotai";
+import { vaultContractProviderMap } from "royco/vault";
+import { useParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { useBoringVaultV1 } from "boring-vault-ui";
 import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
-import { VAULT_BASE_TOKEN, VAULT_DECIMALS } from "./boring-vault-provider";
-import { BoringVault, boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 
 export const BoringVaultWrapper = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ children, className, ...props }, ref) => {
+  const { chain_id, vault_id } = useParams();
+
   const setBoringVault = useSetAtom(boringVaultAtom);
+
+  const vault = useMemo(() => {
+    const chainId = chain_id?.toString()?.toLowerCase();
+    const vaultId = vault_id?.toString()?.toLowerCase();
+
+    const _vault = vaultContractProviderMap.find(
+      (v) => v.id === `${chainId}_${vaultId}`
+    );
+    return _vault;
+  }, [vault_id]);
 
   const { address } = useAccount();
 
@@ -25,49 +38,31 @@ export const BoringVaultWrapper = React.forwardRef<
     fetchShareValue,
     fetchUserShares,
     fetchUserUnlockTime,
+    depositStatus,
   } = useBoringVaultV1();
 
   useEffect(() => {
     (async () => {
-      if (!isBoringV1ContextReady) {
+      if (!isBoringV1ContextReady || !vault) {
         return;
       }
 
       try {
-        let boring_vault: BoringVault;
         const base_asset = {
-          address: VAULT_BASE_TOKEN.address,
-          decimals: VAULT_BASE_TOKEN.decimals,
+          address: vault.baseToken.address,
+          decimals: vault.baseToken.decimals,
         };
+        const decimals = vault.decimals;
         const total_value_locked = await fetchTotalAssets();
         const share_price = await fetchShareValue();
 
-        boring_vault = {
+        setBoringVault((boringVault: any) => ({
+          ...boringVault,
           base_asset,
           total_value_locked,
           share_price,
-        };
-
-        if (address) {
-          const user_shares = await fetchUserShares(address);
-          const user_shares_in_base_asset =
-            (user_shares * 10 ** VAULT_DECIMALS * share_price) /
-            10 ** VAULT_BASE_TOKEN.decimals;
-
-          const user_unlock_time = await fetchUserUnlockTime(address);
-
-          boring_vault = {
-            ...boring_vault,
-            user: {
-              address,
-              total_shares: user_shares,
-              total_shares_in_base_asset: user_shares_in_base_asset,
-              unlock_time: user_unlock_time,
-            },
-          };
-        }
-
-        setBoringVault(boring_vault);
+          decimals,
+        }));
       } catch (error) {
         toast.custom(
           <ErrorAlert message="Something went wrong, while fetching vault data." />
@@ -75,7 +70,58 @@ export const BoringVaultWrapper = React.forwardRef<
         console.error("Error:", error);
       }
     })();
-  }, [isBoringV1ContextReady, address]);
+  }, [isBoringV1ContextReady, vault]);
+
+  useEffect(() => {
+    (async () => {
+      if (!isBoringV1ContextReady || !vault) {
+        return;
+      }
+
+      if (!address) {
+        return;
+      }
+
+      try {
+        const user_shares = await fetchUserShares(address);
+        const share_price = await fetchShareValue();
+
+        const user_shares_in_base_asset =
+          (user_shares * 10 ** vault.decimals * share_price) /
+          10 ** vault.baseToken.decimals;
+
+        const user_unlock_time = await fetchUserUnlockTime(address);
+
+        setBoringVault((boringVault: any) => ({
+          ...boringVault,
+          user: {
+            address,
+            total_shares: user_shares,
+            total_shares_in_base_asset: user_shares_in_base_asset,
+            unlock_time: user_unlock_time,
+          },
+        }));
+      } catch (error) {
+        toast.custom(
+          <ErrorAlert message="Something went wrong, while fetching vault data." />
+        );
+        console.error("Error:", error);
+      }
+    })();
+  }, [isBoringV1ContextReady, address, vault]);
+
+  useEffect(() => {
+    if (!isBoringV1ContextReady) {
+      return;
+    }
+
+    setBoringVault((boringVault: any) => ({
+      ...boringVault,
+      transactions: {
+        deposit: depositStatus,
+      },
+    }));
+  }, [isBoringV1ContextReady, depositStatus]);
 
   return (
     <div ref={ref} className={cn(className)} {...props}>
