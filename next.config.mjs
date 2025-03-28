@@ -108,6 +108,10 @@ const nextConfig = {
         destination: process.env.RPC_API_KEY_98866,
       },
       {
+        source: "/api/rpc/999/:path*",
+        destination: process.env.RPC_API_KEY_999,
+      },
+      {
         source: "/api/rpc/146/:path*",
         // destination: process.env.RPC_API_KEY_146,
         destination: getRandomRPC([

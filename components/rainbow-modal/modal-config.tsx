@@ -16,6 +16,7 @@ import {
   Sonic,
   BerachainMainnet,
   BerachainTestnet,
+  Hyperevm,
 } from "royco/constants";
 
 export const metadata = {
@@ -67,6 +68,11 @@ export const config = getDefaultConfig({
     [Plume.id]: fallback([
       unstable_connector(injected),
       http(process.env.NEXT_PUBLIC_RPC_API_KEY_98866!),
+      http(),
+    ]),
+    [Hyperevm.id]: fallback([
+      unstable_connector(injected),
+      http(process.env.NEXT_PUBLIC_RPC_API_KEY_999!),
       http(),
     ]),
     [EthereumSepolia.id]: fallback([
