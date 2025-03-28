@@ -50,7 +50,7 @@ export const VaultManager = React.forwardRef<
           {/**
            * Vault Allocation
            */}
-          <MarketAllocation className="mt-7" />
+          {/* <MarketAllocation className="mt-7" /> */}
 
           {/**
            * Vault FAQ
