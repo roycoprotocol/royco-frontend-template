@@ -17,6 +17,8 @@ import toast from "react-hot-toast";
 import { useAtomValue } from "jotai";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import { switchChain } from "@wagmi/core";
+import { config } from "@/components/rainbow-modal/modal-config";
 
 export const withdrawFormSchema = z.object({
   amount: z.string(),
@@ -60,7 +62,7 @@ export const WithdrawAction = React.forwardRef<
 
   const vaultManager = useAtomValue(vaultManagerAtom);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { connectWalletModal } = useConnectWallet();
 
   const { withdraw } = useBoringVaultActions();
@@ -101,6 +103,30 @@ export const WithdrawAction = React.forwardRef<
                   className="w-full"
                 >
                   Connect Wallet
+                </Button>
+              );
+            }
+
+            if (chainId !== vaultManager?.chain_id) {
+              return (
+                <Button
+                  onClick={async () => {
+                    try {
+                      // @ts-ignore
+                      await switchChain(config, {
+                        chainId: vaultManager?.chain_id,
+                      });
+                    } catch (error) {
+                      toast.custom(
+                        <ErrorAlert message="Error switching chain" />
+                      );
+                      console.log("Failed:", error);
+                    }
+                  }}
+                  size="sm"
+                  className="w-full"
+                >
+                  Switch Chain
                 </Button>
               );
             }

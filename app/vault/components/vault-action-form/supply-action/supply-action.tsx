@@ -5,7 +5,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useAtomValue } from "jotai";
+import { switchChain } from "@wagmi/core";
 
+import { config } from "@/components/rainbow-modal/modal-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
@@ -22,8 +24,11 @@ export const SupplyAction = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+
   const { connectWalletModal } = useConnectWallet();
+
+  const vaultManager = useAtomValue(vaultManagerAtom);
 
   const depositForm = useForm<z.infer<typeof depositFormSchema>>({
     resolver: zodResolver(depositFormSchema),
@@ -63,6 +68,30 @@ export const SupplyAction = React.forwardRef<
                   className="w-full"
                 >
                   Connect Wallet
+                </Button>
+              );
+            }
+
+            if (chainId !== vaultManager?.chain_id) {
+              return (
+                <Button
+                  onClick={async () => {
+                    try {
+                      // @ts-ignore
+                      await switchChain(config, {
+                        chainId: vaultManager?.chain_id,
+                      });
+                    } catch (error) {
+                      toast.custom(
+                        <ErrorAlert message="Error switching chain" />
+                      );
+                      console.log("Failed:", error);
+                    }
+                  }}
+                  size="sm"
+                  className="w-full"
+                >
+                  Switch Chain
                 </Button>
               );
             }

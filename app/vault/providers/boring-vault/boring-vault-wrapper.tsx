@@ -55,6 +55,7 @@ export const BoringVaultWrapper = React.forwardRef<
         const decimals = vault.decimals;
         const total_value_locked = await fetchTotalAssets();
         const share_price = await fetchShareValue();
+        const chain_id = vault.chainId;
 
         setBoringVault((boringVault: any) => ({
           ...boringVault,
@@ -62,6 +63,7 @@ export const BoringVaultWrapper = React.forwardRef<
           total_value_locked,
           share_price,
           decimals,
+          chain_id,
         }));
       } catch (error) {
         toast.custom(
