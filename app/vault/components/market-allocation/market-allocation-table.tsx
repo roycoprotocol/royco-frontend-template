@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export const VaultAllocationTable = React.forwardRef<
+export const MarketAllocationTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     data: any[];

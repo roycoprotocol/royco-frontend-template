@@ -18,7 +18,7 @@ export const BalanceIndicator = React.forwardRef<
        * Total Balance
        */}
       <div>
-        <TertiaryLabel className="text-sm">Net asset value</TertiaryLabel>
+        <TertiaryLabel className="text-sm">Your Value</TertiaryLabel>
 
         <PrimaryLabel className="mt-1 text-2xl font-medium">
           <div className="flex gap-2">

@@ -5,21 +5,21 @@ import { ChevronLeftIcon } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { TotalValueLocked } from "./total-value-locked/total-value-locked";
 import { VaultDetails } from "./vault-details/vault-details";
-import { VaultAllocation } from "./vault-allocation/vault-allocation";
+import { MarketAllocation } from "./market-allocation/market-allocation";
 import { VaultFAQ } from "./vault-faq/vault-faq";
-import { VaultActionForm } from "./vault-action-form/vault-action-form";
+import { VaultActionForm } from "./vault-action-form/action-form";
 import { BalanceIndicator } from "./balance-indicator/balance-indicator";
-import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import { Incentives } from "./incentives/incentives";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const boringVault = useAtomValue(boringVaultAtom);
+  const vaultManager = useAtomValue(vaultManagerAtom);
 
-  console.log({ boringVault });
+  console.log({ vaultManager });
 
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>
@@ -40,11 +40,6 @@ export const VaultManager = React.forwardRef<
         </SecondaryLabel>
       </div>
 
-      {/**
-       * Total Value Locked
-       */}
-      <TotalValueLocked className="mt-7" />
-
       <div className="mt-7 flex flex-col gap-3 lg:flex-row">
         <div className="w-full lg:w-2/3">
           {/**
@@ -53,9 +48,14 @@ export const VaultManager = React.forwardRef<
           <VaultDetails />
 
           {/**
+           * Incentives
+           */}
+          <Incentives className="mt-7" />
+
+          {/**
            * Vault Allocation
            */}
-          <VaultAllocation className="mt-7" />
+          <MarketAllocation className="mt-7" />
 
           {/**
            * Vault FAQ
