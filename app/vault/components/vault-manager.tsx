@@ -50,7 +50,7 @@ export const VaultManager = React.forwardRef<
           {/**
            * Incentives
            */}
-          <Incentives className="mt-7" />
+          {/* <Incentives className="mt-7" /> */}
 
           {/**
            * Vault Allocation
