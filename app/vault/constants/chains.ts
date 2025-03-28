@@ -1,5 +1,5 @@
 import { RPC_API_KEYS } from "@/components/constants";
-import { arbitrum, base, sepolia } from "@wagmi/core/chains";
+import { arbitrum, base, sepolia, sonic } from "@wagmi/core/chains";
 import { mainnet } from "@wagmi/core/chains";
 
 export const chains = {
@@ -37,5 +37,14 @@ export const chains = {
     name: sepolia.name,
     ensAddress: (sepolia.contracts as any)?.ensRegistry?.address,
     rpcUrl: RPC_API_KEYS[11155111],
+  },
+
+  // Sonic
+  146: {
+    chainName: "sonic",
+    chainId: 146,
+    name: sonic.name,
+    ensAddress: (sonic.contracts as any)?.ensRegistry?.address,
+    rpcUrl: RPC_API_KEYS[146],
   },
 };

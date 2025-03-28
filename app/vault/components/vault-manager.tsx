@@ -10,17 +10,12 @@ import { MarketAllocation } from "./market-allocation/market-allocation";
 import { VaultFAQ } from "./vault-faq/vault-faq";
 import { VaultActionForm } from "./vault-action-form/action-form";
 import { BalanceIndicator } from "./balance-indicator/balance-indicator";
-import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { Incentives } from "./incentives/incentives";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const vaultManager = useAtomValue(vaultManagerAtom);
-
-  console.log({ vaultManager });
-
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>
       {/**
