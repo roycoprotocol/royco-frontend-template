@@ -22,7 +22,7 @@ import { switchChain } from "@wagmi/core";
 import toast from "react-hot-toast";
 import { ContractMap } from "royco/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
-import { REWARD_STYLE } from "royco/constants";
+import { Plume, REWARD_STYLE, Sonic } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 import { CreateActionsMap } from "../market-builder-flow/info-step/form-selectors";
@@ -109,9 +109,11 @@ export const BottomNavigator = React.forwardRef<
       inputToken: marketBuilderForm.watch("asset")?.contract_address,
       // FRONTEND FEE
       frontendFee:
-        marketBuilderForm.watch("chain").id === 146
-          ? "5000000000000000"
-          : "40000000000000000",
+        marketBuilderForm.watch("chain").id === Sonic.id
+          ? "5000000000000000" // 0.05%
+          : marketBuilderForm.watch("chain").id === Plume.id
+            ? "0" // 0%
+            : "40000000000000000", // 4%
       rewardStyle:
         marketBuilderForm.watch("incentive_schedule") === "upfront"
           ? REWARD_STYLE.Upfront
@@ -127,9 +129,11 @@ export const BottomNavigator = React.forwardRef<
       chainId: marketBuilderForm.watch("chain").id,
       // FRONTEND FEE
       frontendFee:
-        marketBuilderForm.watch("chain").id === 146
-          ? "5000000000000000"
-          : "40000000000000000",
+        marketBuilderForm.watch("chain").id === Sonic.id
+          ? "5000000000000000" // 0.05%
+          : marketBuilderForm.watch("chain").id === Plume.id
+            ? "0" // 0%
+            : "40000000000000000", // 4%
       vaultAddress: marketBuilderForm.watch("vault_address"),
       vaultName: marketBuilderForm.watch("market_name"),
       vaultOwner: address,

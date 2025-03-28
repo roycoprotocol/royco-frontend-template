@@ -27,6 +27,7 @@ import {
   EthereumSepolia,
   Plume,
   Sonic,
+  Hyperevm,
 } from "royco/constants";
 
 export const getPoolFormDefaults = () => {
@@ -48,6 +49,8 @@ export const getPoolFormDefaults = () => {
     return PoolFormDefaults[Sonic.id];
   } else if (frontendTag === "boyco" || frontendTag === "testnet") {
     return PoolFormDefaults["boyco"];
+  } else if (frontendTag === "hyperliquid") {
+    return PoolFormDefaults[Hyperevm.id];
   }
 
   return PoolFormDefaults[EthereumMainnet.id];

@@ -13,6 +13,7 @@ export const RPC_API_KEYS: {
   84532: process.env.NEXT_PUBLIC_RPC_API_KEY_84532!,
   146: process.env.NEXT_PUBLIC_RPC_API_KEY_146!,
   98866: process.env.NEXT_PUBLIC_RPC_API_KEY_98866!,
+  999: process.env.NEXT_PUBLIC_RPC_API_KEY_999!,
 };
 
 export const OwnershipProofMessage =

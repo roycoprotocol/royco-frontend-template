@@ -29,6 +29,7 @@ const SERVER_RPC_API_KEYS = {
   80000: process.env.SERVER_RPC_80000_1,
   21000000: process.env.SERVER_RPC_21000000_1,
   98866: process.env.SERVER_RPC_98866_1,
+  999: process.env.SERVER_RPC_999_1,
 };
 
 /**
