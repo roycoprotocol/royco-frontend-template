@@ -6,6 +6,7 @@ export interface BoringVault {
     decimals: number;
   };
 
+  chain_id: number;
   total_value_locked: number;
   share_price: number;
   decimals: number;
