@@ -19,10 +19,6 @@ import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 
 export const withdrawFormSchema = z.object({
-  token: z.object({
-    address: z.string(),
-    decimals: z.number(),
-  }),
   amount: z.string(),
 });
 
@@ -72,16 +68,14 @@ export const WithdrawAction = React.forwardRef<
   const withdrawForm = useForm<z.infer<typeof withdrawFormSchema>>({
     resolver: zodResolver(withdrawFormSchema),
     defaultValues: {
-      token: vaultManager?.base_asset,
       amount: "",
     },
   });
 
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawForm.getValues("amount") || "0");
-    const token = withdrawForm.getValues("token");
 
-    await withdraw(amount, token);
+    await withdraw(amount);
   };
 
   return (
