@@ -3,7 +3,7 @@ import { atom } from "jotai";
 import { BoringVault, boringVaultAtom } from "./atom/boring-vault";
 
 export enum VaultType {
-  BoringVault = "boring_vault",
+  BoringVault = "boring",
 }
 
 export const vaultParamsAtom = atom<

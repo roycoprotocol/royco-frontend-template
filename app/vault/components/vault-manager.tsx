@@ -10,12 +10,21 @@ import { MarketAllocation } from "./market-allocation/market-allocation";
 import { VaultFAQ } from "./vault-faq/vault-faq";
 import { VaultActionForm } from "./vault-action-form/action-form";
 import { BalanceIndicator } from "./balance-indicator/balance-indicator";
-import { Incentives } from "./incentives/incentives";
+import { Rewards } from "./rewards/rewards";
+import { SlideUpWrapper } from "@/components/animations";
+import { TransactionModal } from "../common/transaction-modal/transaction-modal";
+import { vaultManagerAtom } from "@/store/vault/vault-manager";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const vault = useAtomValue(vaultManagerAtom);
+
+  if (!vault) {
+    return null;
+  }
+
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>
       {/**
@@ -35,17 +44,21 @@ export const VaultManager = React.forwardRef<
         </SecondaryLabel>
       </div>
 
-      <div className="mt-7 flex flex-col gap-3 lg:flex-row">
+      <div className="mt-7 flex flex-col gap-y-4 lg:flex-row lg:gap-x-3">
         <div className="w-full lg:w-2/3">
           {/**
            * Vault Details
            */}
-          <VaultDetails />
+          <SlideUpWrapper>
+            <VaultDetails />
+          </SlideUpWrapper>
 
           {/**
-           * Incentives
+           * Rewards
            */}
-          {/* <Incentives className="mt-7" /> */}
+          <SlideUpWrapper className="mt-4" delay={0.1}>
+            <Rewards />
+          </SlideUpWrapper>
 
           {/**
            * Vault Allocation
@@ -55,19 +68,25 @@ export const VaultManager = React.forwardRef<
           {/**
            * Vault FAQ
            */}
-          <VaultFAQ className="mt-7" />
+          <SlideUpWrapper className="mt-4" delay={0.3}>
+            <VaultFAQ />
+          </SlideUpWrapper>
         </div>
 
         <div className="w-full lg:w-1/3">
-          <div className="w-full rounded-xl bg-white shadow-sm">
-            <BalanceIndicator />
+          <SlideUpWrapper>
+            <div className="w-full rounded-2xl border border-divider bg-white">
+              <BalanceIndicator />
 
-            <hr />
+              <hr />
 
-            <VaultActionForm />
-          </div>
+              <VaultActionForm />
+            </div>
+          </SlideUpWrapper>
         </div>
       </div>
+
+      <TransactionModal />
     </div>
   );
 });

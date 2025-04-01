@@ -7,8 +7,8 @@ import { useAtomValue } from "jotai";
 import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 
 interface BoringVaultActions {
-  deposit: (amount: number) => Promise<void>;
-  withdraw: (amount: number) => Promise<void>;
+  deposit: (amount: number) => Promise<any>;
+  withdraw: (amount: number) => Promise<any>;
 }
 
 const BoringVaultActionContext = createContext<BoringVaultActions | null>(null);
@@ -20,7 +20,8 @@ export function BoringVaultActionProvider({
 }) {
   const signer = useEthersSigner();
 
-  const { deposit: boringDeposit, queueBoringWithdraw } = useBoringVaultV1();
+  const { deposit: boringDeposit, queueBoringWithdraw: boringWithdraw } =
+    useBoringVaultV1();
 
   const boringVault = useAtomValue(boringVaultAtom);
 
@@ -32,14 +33,21 @@ export function BoringVaultActionProvider({
       return;
     }
 
+    if (!boringVault) {
+      toast.custom(<ErrorAlert message="Vault data not available" />);
+      return;
+    }
+
     try {
-      const token = boringVault?.base_asset as any;
+      const token = boringVault.base_asset as any;
 
       const response = await boringDeposit(signer, amount.toString(), token);
 
       if (response.error) {
-        toast.custom(<ErrorAlert message={response.error} />);
+        toast.custom(<ErrorAlert message="Deposit failed" />);
       }
+
+      return response;
     } catch (error) {
       toast.custom(<ErrorAlert message="Deposit failed" />);
       throw error;
@@ -69,13 +77,19 @@ export function BoringVaultActionProvider({
         (amount * 10 ** token.decimals) /
         (boringVault.share_price * 10 ** boringVault.decimals);
 
-      await queueBoringWithdraw(
+      const response = await boringWithdraw(
         signer,
         shares.toString(),
         token,
         discount,
         validDays
       );
+
+      if (response.error) {
+        toast.custom(<ErrorAlert message="Withdrawal failed" />);
+      }
+
+      return response;
     } catch (error) {
       toast.custom(<ErrorAlert message="Withdrawal failed" />);
       throw error;

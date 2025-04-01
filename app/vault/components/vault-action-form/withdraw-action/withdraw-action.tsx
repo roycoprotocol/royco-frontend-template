@@ -19,6 +19,7 @@ import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
 
 export const withdrawFormSchema = z.object({
   amount: z.string(),
@@ -28,44 +29,11 @@ export const WithdrawAction = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  // TODO: Implement Hook
-  const incentivesTokens = [
-    {
-      id: 1,
-      label: "GHO",
-      value: "100,000 GHO",
-    },
-    {
-      id: 2,
-      label: "GHO",
-      value: "100,000 GHO",
-    },
-    {
-      id: 3,
-      label: "GHO",
-      value: "100,000 GHO",
-    },
-  ];
-
-  const incentivesPoints = [
-    {
-      id: 1,
-      label: "GHO",
-      value: "100,000 GHO",
-    },
-    {
-      id: 2,
-      label: "GHO",
-      value: "200,000 GHO",
-    },
-  ];
-
   const vaultManager = useAtomValue(vaultManagerAtom);
+  const { setTransaction } = useVaultManager();
 
   const { address, chainId } = useAccount();
   const { connectWalletModal } = useConnectWallet();
-
-  const { withdraw } = useBoringVaultActions();
 
   const withdrawForm = useForm<z.infer<typeof withdrawFormSchema>>({
     resolver: zodResolver(withdrawFormSchema),
@@ -77,7 +45,34 @@ export const WithdrawAction = React.forwardRef<
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawForm.getValues("amount") || "0");
 
-    await withdraw(amount);
+    if (!amount) {
+      toast.custom(<ErrorAlert message="Amount is required" />);
+      return;
+    }
+
+    const transaction = {
+      type: "withdraw",
+      description: {
+        title: "What to Expect",
+        description:
+          "Your withdrawal request will be reviewed by the vault by Sat, Jan 18. If denied or canceled, the funds will return to your wallet.",
+      },
+      steps: [
+        {
+          type: "approve",
+          label: "Approve USDC",
+        },
+        {
+          type: "withdraw",
+          label: "Create Withdraw Request",
+        },
+      ],
+      form: {
+        amount: amount,
+      },
+    };
+
+    setTransaction(transaction);
   };
 
   return (
@@ -145,60 +140,12 @@ export const WithdrawAction = React.forwardRef<
                 size="sm"
                 className="w-full"
               >
-                <span>Claim</span>
+                Withdraw
               </Button>
             );
           })()}
         </div>
       </>
-
-      <div className="mt-5">
-        <SecondaryLabel>Incentives - Tokens</SecondaryLabel>
-
-        <div className="mt-3 space-y-2">
-          {incentivesTokens.map((token) => (
-            <div key={token.id} className="flex justify-between gap-2">
-              <SecondaryLabel className="font-medium text-black">
-                {token.label}
-              </SecondaryLabel>
-
-              <div className="flex items-center gap-2">
-                <SecondaryLabel className="text-black">
-                  {token.value}
-                </SecondaryLabel>
-
-                <Button className="h-fit w-fit px-5 py-1 text-sm">Claim</Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <SecondaryLabel>Incentives - Points</SecondaryLabel>
-        <TertiaryLabel className="mt-1 text-sm">
-          Claimable once the points are transferrable.
-        </TertiaryLabel>
-
-        <div className="mt-3 space-y-2">
-          {incentivesPoints.map((point) => (
-            <div key={point.id} className="flex justify-between gap-2">
-              <SecondaryLabel className="font-medium text-black">
-                {point.label}
-              </SecondaryLabel>
-
-              <SecondaryLabel className="text-black">
-                {point.value}
-              </SecondaryLabel>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <SecondaryLabel className="mt-10 break-normal text-center">
-        Note: It may take up to 7 days to withdraw the principal. Incentives may
-        take 7 days to appear.
-      </SecondaryLabel>
     </div>
   );
 });

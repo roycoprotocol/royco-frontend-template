@@ -3,11 +3,14 @@
 import React from "react";
 
 import { cn } from "@/lib/utils";
-import { MarketActionType } from "@/store";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import { HorizontalTabs } from "@/components/composables";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
-import { SupplyAction } from "./supply-action/supply-action";
+import {
+  TypeVaultManagerAction,
+  useVaultManager,
+  VaultManagerActionMap,
+} from "@/store/vault/use-vault-manager";
+import { DepositAction } from "./deposit-action/deposit-action";
 import { WithdrawAction } from "./withdraw-action/withdraw-action";
 
 export const VaultActionForm = React.forwardRef<
@@ -23,9 +26,12 @@ export const VaultActionForm = React.forwardRef<
           <HorizontalTabs
             className={cn("")}
             size="sm"
-            key="market:action-type:container"
-            baseId="market:action-type"
-            tabs={Object.values(MarketActionType)}
+            key="vault:action-type:container"
+            baseId="vault:action-type"
+            tabs={Object.values(VaultManagerActionMap).map((action) => ({
+              id: action.value,
+              label: action.label,
+            }))}
             activeTab={actionType}
             setter={setActionType}
           />
@@ -33,11 +39,11 @@ export const VaultActionForm = React.forwardRef<
       </div>
 
       {(() => {
-        if (actionType === MarketActionType.supply.id) {
-          return <SupplyAction />;
+        if (actionType === TypeVaultManagerAction.Deposit) {
+          return <DepositAction />;
         }
 
-        if (actionType === MarketActionType.withdraw.id) {
+        if (actionType === TypeVaultManagerAction.Withdraw) {
           return <WithdrawAction />;
         }
       })()}

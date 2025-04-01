@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSetAtom } from "jotai";
 import { vaultContractProviderMap } from "royco/vault";
 import { useParams } from "next/navigation";
@@ -9,8 +9,9 @@ import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { useBoringVaultV1 } from "boring-vault-ui";
 import toast from "react-hot-toast";
-import { ErrorAlert } from "@/components/composables";
+import { ErrorAlert, LoadingSpinner } from "@/components/composables";
 import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const BoringVaultWrapper = React.forwardRef<
   HTMLDivElement,
@@ -19,6 +20,8 @@ export const BoringVaultWrapper = React.forwardRef<
   const { chain_id, vault_id } = useParams();
 
   const setBoringVault = useSetAtom(boringVaultAtom);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const vault = useMemo(() => {
     const chainId = chain_id?.toString()?.toLowerCase();
@@ -47,6 +50,8 @@ export const BoringVaultWrapper = React.forwardRef<
         return;
       }
 
+      setIsLoading(true);
+
       try {
         const base_asset = {
           address: vault.baseToken.address,
@@ -70,6 +75,8 @@ export const BoringVaultWrapper = React.forwardRef<
           <ErrorAlert message="Something went wrong, while fetching vault data." />
         );
         console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [isBoringV1ContextReady, vault]);
@@ -124,6 +131,14 @@ export const BoringVaultWrapper = React.forwardRef<
       },
     }));
   }, [isBoringV1ContextReady, depositStatus]);
+
+  if (isLoading) {
+    return (
+      <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
+        <LoadingSpinner />
+      </SlideUpWrapper>
+    );
+  }
 
   return (
     <div ref={ref} className={cn(className)} {...props}>

@@ -29,13 +29,13 @@ const Page = () => {
         {/**
          * Background
          */}
-        <div className="absolute left-0 right-0 top-0 z-0 h-[450px] w-full bg-[#3b5a4a]"></div>
+        <div className="absolute left-0 right-0 top-0 z-0 h-48 w-full bg-[#3b5a4a]"></div>
 
         {/**
          * Vault Manager
          */}
         <MaxWidthProvider className="relative z-10">
-          {vault_type === "boring_vault" && (
+          {vault_type === VaultType.BoringVault && (
             <BoringVaultProvider>
               <VaultManager />
             </BoringVaultProvider>

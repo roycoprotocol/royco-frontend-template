@@ -16,9 +16,9 @@ export const CustomBadge = React.forwardRef<
 >(({ className, label, icon, ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={cn("", className)}>
-      <Badge className="flex items-center gap-2 rounded-full border-none bg-z2 text-primary shadow-none">
+      <Badge className="flex items-center gap-2 rounded-full border border-divider bg-white text-secondary shadow-none">
         {icon && icon}
-        <span className="text-sm font-normal">{label}</span>
+        <span className="text-xs font-normal">{label}</span>
       </Badge>
     </div>
   );

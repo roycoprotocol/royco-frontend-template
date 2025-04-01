@@ -26,6 +26,13 @@ export interface BoringVault {
       error?: string;
       tx_hash?: string;
     };
+    withdraw: {
+      initiated: boolean;
+      loading: boolean;
+      success?: boolean;
+      error?: string;
+      tx_hash?: string;
+    };
   };
 }
 
