@@ -4,6 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import {
+  PrimaryLabel,
   SecondaryLabel,
   TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
@@ -15,6 +16,7 @@ import { useAtomValue } from "jotai";
 import formatNumber from "@/utils/numbers";
 import { WarningAlert } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables/warning-alert";
 import { SlideUpWrapper } from "@/components/animations";
+
 export const WithdrawActionForm = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
@@ -64,7 +66,7 @@ export const WithdrawActionForm = React.forwardRef<
           );
         }}
         Suffix={() => {
-          return <SecondaryLabel className="text-black">USDC</SecondaryLabel>;
+          return <PrimaryLabel className="text-xs">USDC</PrimaryLabel>;
         }}
       />
 
