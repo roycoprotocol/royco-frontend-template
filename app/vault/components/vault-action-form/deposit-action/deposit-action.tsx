@@ -13,14 +13,14 @@ import { Button } from "@/components/ui/button";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { ErrorAlert } from "@/components/composables";
 import { DepositActionForm } from "./deposit-action-form/deposit-action-form";
-import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
 
 export const depositFormSchema = z.object({
   amount: z.string(),
 });
 
-export const SupplyAction = React.forwardRef<
+export const DepositAction = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -29,6 +29,7 @@ export const SupplyAction = React.forwardRef<
   const { connectWalletModal } = useConnectWallet();
 
   const vaultManager = useAtomValue(vaultManagerAtom);
+  const { setTransaction } = useVaultManager();
 
   const depositForm = useForm<z.infer<typeof depositFormSchema>>({
     resolver: zodResolver(depositFormSchema),
@@ -37,12 +38,32 @@ export const SupplyAction = React.forwardRef<
     },
   });
 
-  const { deposit } = useBoringVaultActions();
-
   const handleDeposit = async () => {
     const amount = parseFloat(depositForm.getValues("amount") || "0");
 
-    await deposit(amount);
+    if (!amount) {
+      toast.custom(<ErrorAlert message="Amount is required" />);
+      return;
+    }
+
+    const transaction = {
+      type: "deposit",
+      steps: [
+        {
+          type: "approve",
+          label: "Approve USDC",
+        },
+        {
+          type: "deposit",
+          label: "Deposit USDC",
+        },
+      ],
+      form: {
+        amount: amount,
+      },
+    };
+
+    setTransaction(transaction);
   };
 
   return (
@@ -110,7 +131,7 @@ export const SupplyAction = React.forwardRef<
                 size="sm"
                 className="w-full"
               >
-                <span>Supply Now</span>
+                Deposit
               </Button>
             );
           })()}

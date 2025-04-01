@@ -47,7 +47,9 @@ export const VaultFAQ = React.forwardRef<
               {faq.question}
             </SecondaryLabel>
 
-            <SecondaryLabel className="text-base">{faq.answer}</SecondaryLabel>
+            <SecondaryLabel className="break-normal text-base">
+              {faq.answer}
+            </SecondaryLabel>
           </div>
         ))}
       </div>

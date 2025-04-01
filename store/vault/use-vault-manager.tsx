@@ -1,15 +1,33 @@
 import { create } from "zustand";
 
-import { TypedRoycoMarketActionType } from "royco/market";
-import { MarketActionType } from "../market-manager-props";
+export enum TypeVaultManagerAction {
+  Deposit = "deposit",
+  Withdraw = "withdraw",
+}
+
+export const VaultManagerActionMap = {
+  [TypeVaultManagerAction.Deposit]: {
+    value: TypeVaultManagerAction.Deposit,
+    label: "Deposit",
+  },
+  [TypeVaultManagerAction.Withdraw]: {
+    value: TypeVaultManagerAction.Withdraw,
+    label: "Withdraw",
+  },
+};
 
 export interface VaultManagerState {
-  actionType: TypedRoycoMarketActionType;
-  setActionType: (actionType: TypedRoycoMarketActionType) => void;
+  actionType: TypeVaultManagerAction;
+  setActionType: (actionType: TypeVaultManagerAction) => void;
+
+  transaction: any;
+  setTransaction: (transactions: any) => void;
 }
 
 export const useVaultManager = create<VaultManagerState>((set) => ({
-  actionType: MarketActionType.supply.id,
-  setActionType: (actionType: TypedRoycoMarketActionType) =>
-    set({ actionType }),
+  actionType: TypeVaultManagerAction.Deposit,
+  setActionType: (actionType: TypeVaultManagerAction) => set({ actionType }),
+
+  transaction: null,
+  setTransaction: (transaction: any) => set({ transaction }),
 }));
