@@ -15,6 +15,7 @@ import { type NextRequest } from "next/server";
 import { Database } from "royco/types";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import { request, gql } from "graphql-request";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -848,6 +849,128 @@ const updateTokenQuotesFromPendle = async () => {
   }
 };
 
+const updateTokenQuotesFromBeets = async () => {
+  const supabaseClient = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.SUPABASE_SERVICE_ROLE_KEY as string
+  );
+
+  const { data: tokensToUpdate, error: tokensToUpdateError } =
+    await supabaseClient
+      .from("token_index")
+      .select("token_id, search_id, decimals")
+      .eq("source", "beets")
+      .neq("search_id", "")
+      .lte("last_updated", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .order("last_updated", { ascending: true });
+
+  if (tokensToUpdateError) {
+    throw new Error(`Supabase Error: ${tokensToUpdateError.message}`);
+  }
+
+  if (!tokensToUpdate || tokensToUpdate.length === 0) return;
+
+  const chainClient = createPublicClient({
+    chain: getSupportedChain(
+      parseInt(tokensToUpdate[0].token_id.split("-")[0])
+    ),
+    transport: http(SERVER_RPC_API_KEYS[146], {
+      fetchOptions: {
+        headers: {
+          Origin: "https://app.royco.org",
+        },
+      },
+    }),
+  });
+
+  const contracts = tokensToUpdate.map((token) => {
+    const [chain_id, contract_address] = token.token_id.split("-");
+    return {
+      address: contract_address as Address,
+      abi: erc20Abi,
+      functionName: "totalSupply",
+    };
+  });
+
+  const results = await chainClient.multicall({ contracts });
+
+  const graphqlQuery = gql`
+    query {
+      tokenGetCurrentPrices(chains: [SONIC]) {
+        address
+        price
+      }
+    }
+  `;
+
+  const graphqlResponse = await request<{
+    tokenGetCurrentPrices: {
+      address: string;
+      price: number;
+    }[];
+  }>("https://backend-v3.beets-ftm-node.com/", graphqlQuery);
+
+  for (let i = 0; i < tokensToUpdate.length; i++) {
+    const token = tokensToUpdate[i];
+    const [chain_id, contract_address] = token.token_id.split("-");
+
+    const total_supply =
+      results[i].status === "success"
+        ? parseRawAmountToTokenAmount(
+            results[i].result as string,
+            token.decimals
+          )
+        : 0;
+
+    const quote = {
+      id: generateId({
+        source: "beets",
+        search_id: token.search_id,
+      }),
+      source: "beets",
+      search_id: token.search_id,
+      price:
+        graphqlResponse.tokenGetCurrentPrices.find(
+          (price) => price.address === contract_address
+        )?.price ?? 0,
+      fdv:
+        total_supply *
+        (graphqlResponse.tokenGetCurrentPrices.find(
+          (price) => price.address === contract_address
+        )?.price ?? 0),
+      total_supply,
+      last_updated: new Date().toISOString(),
+    };
+
+    const { error: upsertError } = await supabaseClient
+      .from("raw_token_quotes")
+      .upsert([quote]);
+
+    if (upsertError) {
+      throw new Error(`Supabase Error: ${upsertError.message}`);
+    }
+  }
+
+  const [{ data: tokensIndexUpdated, error: tokensIndexUpdatedError }] =
+    await Promise.all([
+      // update the token_index table's last_updated column
+      supabaseClient
+        .from("token_index")
+        .update({
+          last_updated: new Date().toISOString(),
+        })
+        .in(
+          "search_id",
+          tokensToUpdate.map((quote: any) => quote.search_id)
+        )
+        .eq("source", "pendle"),
+    ]);
+
+  if (tokensIndexUpdatedError) {
+    throw new Error(`Supabase Error: ${tokensIndexUpdatedError?.message}`);
+  }
+};
+
 export async function GET(request: NextRequest) {
   try {
     const results = await Promise.allSettled([
@@ -856,6 +979,7 @@ export async function GET(request: NextRequest) {
       updateLpTokenQuotesFromContract(),
       updateTokenQuotesFromEnso(),
       updateTokenQuotesFromPendle(),
+      updateTokenQuotesFromBeets(),
     ]);
 
     // Check for any errors
