@@ -1199,6 +1199,7 @@ export async function GET(request: NextRequest) {
       updateTokenQuotesFromPendle(),
       updateTokenQuotesFromBeets(),
       updateTokenQuotesFromPlume(),
+      updateTokenQuotesFromNucleus(),
     ]);
 
     // Check for any errors
