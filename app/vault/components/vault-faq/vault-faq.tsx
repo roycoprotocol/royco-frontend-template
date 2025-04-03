@@ -6,6 +6,7 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { SlideUpWrapper } from "@/components/animations";
 
 const vault_faq = [
   {
@@ -38,19 +39,21 @@ export const VaultFAQ = React.forwardRef<
         className
       )}
     >
-      <PrimaryLabel className="mb-4 text-base">FAQ</PrimaryLabel>
+      <PrimaryLabel className="text-base">FAQ</PrimaryLabel>
 
-      <div className="flex flex-col gap-4">
+      <div className="mt-4 flex flex-col gap-4">
         {vault_faq.map((faq, index) => (
-          <div key={index}>
-            <SecondaryLabel className="mb-2 text-base text-primary">
-              {faq.question}
-            </SecondaryLabel>
+          <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
+            <div>
+              <SecondaryLabel className="text-base text-primary">
+                {faq.question}
+              </SecondaryLabel>
 
-            <SecondaryLabel className="break-normal text-base">
-              {faq.answer}
-            </SecondaryLabel>
-          </div>
+              <SecondaryLabel className="mt-2 break-normal text-base">
+                {faq.answer}
+              </SecondaryLabel>
+            </div>
+          </SlideUpWrapper>
         ))}
       </div>
     </div>

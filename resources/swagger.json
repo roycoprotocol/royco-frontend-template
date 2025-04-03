@@ -1,0 +1,3521 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/v1/token/quote/{chainId}/{contractAddress}": {
+      "post": {
+        "description": "Get token quote for a given token based on the chain id and contract address",
+        "operationId": "TokenController_getTokenQuote",
+        "parameters": [
+          {
+            "name": "chainId",
+            "required": true,
+            "in": "path",
+            "description": "Network ID of the blockchain",
+            "schema": {
+              "title": "Chain ID",
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "contractAddress",
+            "required": true,
+            "in": "path",
+            "description": "Deployment address of the contract",
+            "schema": {
+              "title": "Contract Address",
+              "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenQuoteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenQuoteResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "summary": "Get token quote",
+        "tags": [
+          "Token"
+        ]
+      }
+    },
+    "/api/v1/addons/test/{id}": {
+      "get": {
+        "operationId": "AddonsController_getIncentives",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Addons"
+        ]
+      }
+    },
+    "/api/v1/addons/refresh/{id}": {
+      "get": {
+        "operationId": "AddonsController_refreshIncentives",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Addons"
+        ]
+      }
+    },
+    "/api/v1/market/info/{id}": {
+      "post": {
+        "operationId": "MarketController_getMarket",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InfoMarketBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ]
+      }
+    },
+    "/api/v1/market/explore": {
+      "post": {
+        "operationId": "MarketController_getMarkets",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ]
+      }
+    },
+    "/api/v1/vault/info/{id}": {
+      "post": {
+        "description": "Get info for a vault",
+        "operationId": "VaultController_getVaultInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The global unique identifier of the vault: <CHAIN_ID>_<VAULT_ADDRESS>",
+            "schema": {
+              "title": "ID",
+              "example": "146_0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultInfoRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultInfoResponse"
+                },
+                "example": {
+                  "id": "146_0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e",
+                  "chainId": "146",
+                  "vaultAddress": "0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e",
+                  "name": "Roy Sonic USDC",
+                  "description": "Deposit assets to earn highest yields.",
+                  "chainIds": [
+                    1,
+                    146
+                  ],
+                  "capacity": {
+                    "ratio": 0,
+                    "maxUsd": 1000000,
+                    "currentUsd": 0
+                  },
+                  "managers": [],
+                  "depositTokenIds": [
+                    "146-0x29219dd400f2bf60e5a23d13be72b486d4038894"
+                  ],
+                  "incentiveTokenIds": [],
+                  "depositTokens": [
+                    {
+                      "id": "146-0x29219dd400f2bf60e5a23d13be72b486d4038894",
+                      "fdv": 427086890,
+                      "name": "Sonic Bridged USDC.e (Sonic)",
+                      "type": "token",
+                      "image": "https://coin-images.coingecko.com/coins/images/53064/large/logo.png?1735179479",
+                      "owner": null,
+                      "price": 1.001,
+                      "source": "coingecko",
+                      "symbol": "USDC.e",
+                      "chainId": 146,
+                      "issuers": null,
+                      "decimals": 6,
+                      "searchId": "sonic-bridged-usdc-e-sonic",
+                      "lastUpdated": "2025-04-01 21:09:00",
+                      "totalSupply": 427028964.789373,
+                      "contractAddress": "0x29219dd400f2bf60e5a23d13be72b486d4038894"
+                    }
+                  ],
+                  "incentiveTokens": [],
+                  "tvlUsd": "0",
+                  "allocations": [
+                    {
+                      "id": "146_0_0x7d1f2a66eabf9142dd30d1355efcbfd4cfbefd2872d24ca9855641434816a525",
+                      "link": "/market/146/0/0x7d1f2a66eabf9142dd30d1355efcbfd4cfbefd2872d24ca9855641434816a525",
+                      "name": "Deposit USDC into Rings to Mint and Stake scUSD",
+                      "depositToken": {
+                        "id": "146-0x29219dd400f2bf60e5a23d13be72b486d4038894",
+                        "fdv": 427086890,
+                        "name": "Sonic Bridged USDC.e (Sonic)",
+                        "type": "token",
+                        "image": "https://coin-images.coingecko.com/coins/images/53064/large/logo.png?1735179479",
+                        "owner": null,
+                        "price": 1.001,
+                        "source": "coingecko",
+                        "symbol": "USDC.e",
+                        "chainId": 146,
+                        "issuers": null,
+                        "decimals": 6,
+                        "searchId": "sonic-bridged-usdc-e-sonic",
+                        "rawAmount": "149876579293",
+                        "lastUpdated": "2025-04-01 21:09:00",
+                        "tokenAmount": 149876.579293,
+                        "totalSupply": 427028964.789373,
+                        "tokenAmountUsd": 150026.45587229298,
+                        "allocationRatio": 150026.45587229298,
+                        "contractAddress": "0x29219dd400f2bf60e5a23d13be72b486d4038894"
+                      },
+                      "incentiveTokens": [
+                        {
+                          "id": "146-0x5e75334f4270ffe07a80b28fc831bfab2d83706e",
+                          "fdv": 0,
+                          "name": "Rings Points",
+                          "type": "point",
+                          "image": "https://pbs.twimg.com/profile_images/1862403917717352448/vWaDsAEu_400x400.jpg",
+                          "owner": "0x77777cc68b333a2256b436d675e8d257699aa667",
+                          "price": 0,
+                          "source": "external",
+                          "symbol": "RP",
+                          "chainId": 146,
+                          "issuers": [
+                            "0x8909a629ba2e0db0b51e06feb2730d75651bb06e",
+                            "0x009d13e9bec94bf16791098ce4e5c168d27a9f07"
+                          ],
+                          "category": "active",
+                          "decimals": 18,
+                          "searchId": "none",
+                          "rawAmount": "208783294537512425625747456",
+                          "yieldRate": 0,
+                          "scaleRatio": 150026.45587229298,
+                          "lastUpdated": "2025-04-01 21:09:00",
+                          "tokenAmount": 208783294.53751242,
+                          "totalSupply": 0,
+                          "rawYieldRate": 16931.658722703498,
+                          "tokenAmountUsd": 0,
+                          "contractAddress": "0x5e75334f4270ffe07a80b28fc831bfab2d83706e",
+                          "unlockTimestamp": "1743707585"
+                        },
+                        {
+                          "id": "146-0xaa21e59bf97313b3b3850e9f878ffffc733a946a",
+                          "fdv": 0,
+                          "name": "Sonic Points",
+                          "type": "token",
+                          "image": "https://s2.coinmarketcap.com/static/img/coins/64x64/32684.png",
+                          "owner": null,
+                          "price": 0,
+                          "source": "external",
+                          "symbol": "SP",
+                          "chainId": 146,
+                          "issuers": null,
+                          "category": "external",
+                          "decimals": 18,
+                          "searchId": "none",
+                          "yieldText": "12",
+                          "scaleRatio": 150026.45587229298,
+                          "lastUpdated": "2025-04-01 21:09:00",
+                          "totalSupply": 0,
+                          "contractAddress": "0xaa21e59bf97313b3b3850e9f878ffffc733a946a",
+                          "unlockTimestamp": "1743707585"
+                        }
+                      ],
+                      "unlockTimestamp": "1743707585"
+                    },
+                    {
+                      "id": "146_0_0xd355d633abacb9617e31c71fd21c68b224357850522defab3dfb8d6932d5cc11",
+                      "link": "/market/146/0/0xd355d633abacb9617e31c71fd21c68b224357850522defab3dfb8d6932d5cc11",
+                      "name": "Stake S for stS on Beets",
+                      "depositToken": {
+                        "id": "146-0x29219dd400f2bf60e5a23d13be72b486d4038894",
+                        "fdv": 427086890,
+                        "name": "Sonic Bridged USDC.e (Sonic)",
+                        "type": "token",
+                        "image": "https://coin-images.coingecko.com/coins/images/53064/large/logo.png?1735179479",
+                        "owner": null,
+                        "price": 1.001,
+                        "source": "coingecko",
+                        "symbol": "USDC.e",
+                        "chainId": 146,
+                        "issuers": null,
+                        "decimals": 6,
+                        "searchId": "sonic-bridged-usdc-e-sonic",
+                        "rawAmount": "552893398464690419531715",
+                        "lastUpdated": "2025-04-01 21:09:00",
+                        "tokenAmount": 552893.3984646904,
+                        "totalSupply": 427028964.789373,
+                        "tokenAmountUsd": 280612.7509897766,
+                        "allocationRatio": 280612.7509897766,
+                        "contractAddress": "0x29219dd400f2bf60e5a23d13be72b486d4038894"
+                      },
+                      "incentiveTokens": [
+                        {
+                          "id": "146-0x3419966bc74fa8f951108d15b053bed233974d3d",
+                          "fdv": 0,
+                          "name": "Beets Gem Fragments",
+                          "type": "token",
+                          "image": "https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/0x3419966bc74fa8f951108d15b053bed233974d3d.png",
+                          "owner": null,
+                          "price": 0,
+                          "source": "",
+                          "symbol": "BeetsFragmentsS1",
+                          "chainId": 146,
+                          "issuers": null,
+                          "category": "active",
+                          "decimals": 18,
+                          "searchId": "",
+                          "rawAmount": "550142685039492939776",
+                          "yieldRate": 0,
+                          "scaleRatio": 280612.7509897766,
+                          "lastUpdated": "2025-04-01 21:09:00",
+                          "tokenAmount": 550.1426850394929,
+                          "totalSupply": 0,
+                          "rawYieldRate": 0.034075443035548575,
+                          "tokenAmountUsd": 0,
+                          "contractAddress": "0x3419966bc74fa8f951108d15b053bed233974d3d",
+                          "unlockTimestamp": "1744392728"
+                        },
+                        {
+                          "id": "146-0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+                          "fdv": 427683,
+                          "name": "Wrapped Sonic",
+                          "type": "token",
+                          "image": "https://i.ibb.co/MDq6zYhQ/w-S-token-400.png",
+                          "owner": null,
+                          "price": 0.507535,
+                          "source": "coingecko",
+                          "symbol": "WS",
+                          "chainId": 146,
+                          "issuers": null,
+                          "category": "native",
+                          "decimals": 18,
+                          "searchId": "wrapped-sonic",
+                          "yieldRate": 0.043603818047040395,
+                          "scaleRatio": 280612.7509897766,
+                          "lastUpdated": "2025-04-01 21:09:00",
+                          "totalSupply": 842319.9002803117,
+                          "contractAddress": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+                          "unlockTimestamp": "1744392728"
+                        }
+                      ],
+                      "unlockTimestamp": "1744392728"
+                    },
+                    {
+                      "id": "146_0_0x1909c54081dda4ba39d7c18f53f1cdb34cb4f436557a5e82cb057d1355a0cd86",
+                      "link": "/market/146/0/0x1909c54081dda4ba39d7c18f53f1cdb34cb4f436557a5e82cb057d1355a0cd86",
+                      "name": "Supply wS to Stability x Silo Leverage Vault",
+                      "depositToken": {
+                        "id": "146-0x29219dd400f2bf60e5a23d13be72b486d4038894",
+                        "fdv": 427086890,
+                        "name": "Sonic Bridged USDC.e (Sonic)",
+                        "type": "token",
+                        "image": "https://coin-images.coingecko.com/coins/images/53064/large/logo.png?1735179479",
+                        "owner": null,
+                        "price": 1.001,
+                        "source": "coingecko",
+                        "symbol": "USDC.e",
+                        "chainId": 146,
+                        "issuers": null,
+                        "decimals": 6,
+                        "searchId": "sonic-bridged-usdc-e-sonic",
+                        "rawAmount": "283675233787683628816299",
+                        "lastUpdated": "2025-04-01 21:09:00",
+                        "tokenAmount": 283675.23378768365,
+                        "totalSupply": 427028964.789373,
+                        "tokenAmountUsd": 143975.10978043202,
+                        "allocationRatio": 143975.10978043202,
+                        "contractAddress": "0x29219dd400f2bf60e5a23d13be72b486d4038894"
+                      },
+                      "incentiveTokens": [
+                        {
+                          "id": "146-0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+                          "fdv": 427683,
+                          "name": "Wrapped Sonic",
+                          "type": "token",
+                          "image": "https://i.ibb.co/MDq6zYhQ/w-S-token-400.png",
+                          "owner": null,
+                          "price": 0.507535,
+                          "source": "coingecko",
+                          "symbol": "WS",
+                          "chainId": 146,
+                          "issuers": null,
+                          "category": "active",
+                          "decimals": 18,
+                          "searchId": "wrapped-sonic",
+                          "rawAmount": "2822639142166006333440",
+                          "yieldRate": 0.2594171997157072,
+                          "scaleRatio": 143975.10978043202,
+                          "lastUpdated": "2025-04-01 21:09:00",
+                          "tokenAmount": 2822.6391421660064,
+                          "totalSupply": 842319.9002803117,
+                          "rawYieldRate": 0.5111316455332287,
+                          "tokenAmountUsd": 1432.588157019224,
+                          "contractAddress": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+                          "unlockTimestamp": "1742931410"
+                        }
+                      ],
+                      "unlockTimestamp": "1742931410"
+                    }
+                  ],
+                  "isVerified": true,
+                  "lastUpdated": "2025-04-01 21:10:40"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "summary": "Get vault info",
+        "tags": [
+          "Vault"
+        ]
+      }
+    },
+    "/api/v1/position/recipe": {
+      "post": {
+        "description": "Get positions for all recipe markets",
+        "operationId": "PositionController_getRecipePositions",
+        "parameters": [],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipePositionResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "summary": "Get recipe positions",
+        "tags": [
+          "Position"
+        ]
+      }
+    },
+    "/api/v1/position/vault": {
+      "post": {
+        "operationId": "PositionController_getVaultPositions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "tags": [
+          "Position"
+        ]
+      }
+    },
+    "/api/v1/position/boring": {
+      "post": {
+        "operationId": "PositionController_getBoringPositions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "api-key-query": []
+          }
+        ],
+        "tags": [
+          "Position"
+        ]
+      }
+    },
+    "/api/v1/rewards": {
+      "post": {
+        "description": "Get paginated rewards with filters and sorting. Requires accountAddress filter. Supports additional filtering by chainId, vaultAddress, and blockTimestamp. Supports sorting by any of these fields.",
+        "operationId": "RewardsController_getRewards",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Request body for getting rewards. Must include accountAddress filter.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RewardsRequest"
+              },
+              "examples": {
+                "Example Request": {
+                  "value": {
+                    "page": {
+                      "index": 1,
+                      "size": 10
+                    },
+                    "filters": [
+                      {
+                        "id": "accountAddress",
+                        "value": "0x1234567890123456789012345678901234567890"
+                      },
+                      {
+                        "id": "chainId",
+                        "value": "1",
+                        "condition": "neq",
+                        "join": "and"
+                      },
+                      {
+                        "id": "blockTimestamp",
+                        "value": "0",
+                        "condition": "gt",
+                        "join": "or"
+                      }
+                    ],
+                    "sorting": [
+                      {
+                        "id": "blockTimestamp",
+                        "desc": true
+                      }
+                    ],
+                    "customTokenData": [
+                      {
+                        "id": "146-0x5e75334f4270ffe07a80b28fc831bfab2d83706e",
+                        "price": 2
+                      }
+                    ]
+                  }
+                },
+                "Invalid Request (Missing accountAddress)": {
+                  "value": {
+                    "page": {
+                      "index": 1,
+                      "size": 10
+                    },
+                    "filters": [
+                      {
+                        "id": "chainId",
+                        "value": "1",
+                        "condition": "eq"
+                      }
+                    ],
+                    "sorting": []
+                  },
+                  "description": "This request will fail validation because it is missing the required accountAddress filter"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved rewards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RewardsResponse"
+                },
+                "examples": {
+                  "Example Response": {
+                    "summary": "Example response with rewards data",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "1_0x123_0x456_0x789",
+                          "accountAddress": "0x123...",
+                          "tokenAmount": "1000000000000000000",
+                          "rewardSource": "boring",
+                          "withdrawRefId": "1_0x123_0x456_0x789",
+                          "vaultAddress": "0x456...",
+                          "chainId": "1",
+                          "lastUpdated": "2024-03-20T12:00:00Z",
+                          "blockTimestamp": "2024-03-20T12:00:00Z",
+                          "isClaimed": false,
+                          "token": {
+                            "id": "1-0x789",
+                            "chainId": 1,
+                            "contractAddress": "0x789...",
+                            "name": "Example Token",
+                            "symbol": "EXT",
+                            "image": "https://example.com/token.png",
+                            "decimals": 18,
+                            "source": "coingecko",
+                            "searchId": "example-token",
+                            "type": "token",
+                            "price": 1.5,
+                            "fdv": 1000000,
+                            "totalSupply": 1000000,
+                            "lastUpdated": "2024-03-20T12:00:00Z"
+                          },
+                          "reward": {
+                            "id": "0x789",
+                            "tokenAddress": "0x789...",
+                            "rawAmount": "1000000000000000000",
+                            "startEpoch": "1",
+                            "endEpoch": "10",
+                            "transactionHash": "0xabc..."
+                          }
+                        }
+                      ],
+                      "count": 1,
+                      "page": {
+                        "index": 1,
+                        "size": 10,
+                        "total": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Missing accountAddress Filter": {
+                    "summary": "Error when accountAddress filter is missing",
+                    "value": {
+                      "statusCode": 400,
+                      "message": [
+                        "accountAddress filter is required"
+                      ],
+                      "error": "Bad Request"
+                    }
+                  },
+                  "Invalid Ethereum Address": {
+                    "summary": "Error when accountAddress is not a valid Ethereum address",
+                    "value": {
+                      "statusCode": 400,
+                      "message": [
+                        "filters.0.value must be a valid ethereum address"
+                      ],
+                      "error": "Bad Request"
+                    }
+                  },
+                  "Invalid Chain ID": {
+                    "summary": "Error when chainId is not in the supported list",
+                    "value": {
+                      "statusCode": 400,
+                      "message": [
+                        "filters.0.value must be a supported chain id in the list: 1, 11155111, 42161, 8453, 146"
+                      ],
+                      "error": "Bad Request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get rewards",
+        "tags": [
+          "Rewards"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Royco API",
+    "description": "APIs for interacting with the Royco protocol.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "royco",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "Authorization",
+        "description": "Enter your bearer token",
+        "in": "header"
+      },
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Enter your API key"
+      },
+      "api-key-query": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apiKey",
+        "description": "Enter your API key as URL parameter"
+      }
+    },
+    "schemas": {
+      "CustomTokenDataElement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "TokenQuoteBody": {
+        "type": "object",
+        "properties": {
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          }
+        }
+      },
+      "TokenQuote": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated"
+        ]
+      },
+      "TokenQuoteResponse": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated"
+        ]
+      },
+      "InfoMarketBody": {
+        "type": "object",
+        "properties": {
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          }
+        }
+      },
+      "Filter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Filter ID",
+            "description": "Column ID to apply the filter on",
+            "example": "chainId"
+          },
+          "value": {
+            "title": "Filter Value",
+            "description": "Value to filter by",
+            "example": "146",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            ]
+          },
+          "condition": {
+            "type": "string",
+            "title": "Filter Condition",
+            "description": "Condition to apply the filter on -- if not provided, defaults to \"eq\"",
+            "example": "gte",
+            "default": "eq"
+          },
+          "join": {
+            "type": "string",
+            "title": "Filter Join",
+            "description": "Join to union the filters on -- if not provided, defaults to \"and\"",
+            "example": "or",
+            "default": "and"
+          }
+        },
+        "required": [
+          "id",
+          "value"
+        ]
+      },
+      "Sorting": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Sorting ID",
+            "description": "Column ID to sort by",
+            "example": "tvlUsd"
+          },
+          "desc": {
+            "type": "boolean",
+            "title": "Sorting Order",
+            "description": "Sorting order -- if not provided, defaults to \"desc\"",
+            "example": true,
+            "default": false
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "RequestPage": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "title": "Page Index",
+            "description": "Page index",
+            "example": 1
+          },
+          "size": {
+            "type": "number",
+            "title": "Page Size",
+            "description": "Page size",
+            "example": 3
+          }
+        }
+      },
+      "BaseRequestBody": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "title": "Filters Array",
+            "description": "Array of filter objects to apply to the results",
+            "example": [
+              {
+                "id": "chainId",
+                "value": 1
+              },
+              {
+                "id": "tvlUsd",
+                "value": 1000000,
+                "condition": "gte"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            }
+          },
+          "sorting": {
+            "title": "Sorting Object",
+            "description": "Object type to sort results with",
+            "example": {
+              "id": "tvlUsd",
+              "desc": true
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Sorting"
+              }
+            ]
+          },
+          "page": {
+            "title": "Request Page Object",
+            "description": "Object type to request a page of results",
+            "default": {
+              "index": 1,
+              "size": 10
+            },
+            "example": {
+              "index": 1,
+              "size": 3
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RequestPage"
+              }
+            ]
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          }
+        }
+      },
+      "VaultInfoRequestBody": {
+        "type": "object",
+        "properties": {
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          }
+        }
+      },
+      "VaultCapacity": {
+        "type": "object",
+        "properties": {
+          "currentUsd": {
+            "type": "number",
+            "title": "Currently filled capacity in USD",
+            "description": "The maximum amount of USD that can be filled in the vault",
+            "example": 20000000
+          },
+          "ratio": {
+            "type": "number",
+            "title": "Ratio of capacity filled",
+            "description": "The ratio of capacity filled in the vault",
+            "example": 0.5
+          }
+        },
+        "required": [
+          "currentUsd",
+          "currentUsd",
+          "ratio"
+        ]
+      },
+      "VaultManager": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Manager ID",
+            "description": "The ID of the manager",
+            "example": "veda"
+          },
+          "name": {
+            "type": "string",
+            "title": "Manager Name",
+            "description": "The name of the manager",
+            "example": "VEDA"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Manager Symbol",
+            "description": "The symbol of the manager",
+            "example": "VEDA"
+          },
+          "image": {
+            "type": "string",
+            "title": "Manager Image",
+            "description": "The image of the manager",
+            "example": "https://pbs.twimg.com/profile_images/1790405638847135744/mx3dr412_400x400.png"
+          },
+          "link": {
+            "type": "string",
+            "title": "Manager Link",
+            "description": "The link of the manager",
+            "example": "https://veda.tech/"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "symbol"
+        ]
+      },
+      "VaultDepositToken": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated"
+        ]
+      },
+      "VaultIncentiveToken": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "The category of the reward token",
+            "example": "active",
+            "enum": [
+              "active",
+              "native",
+              "external"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "The label of the reward token",
+            "example": "Staked GHO Points"
+          },
+          "rawAmount": {
+            "type": "string",
+            "title": "Raw Amount",
+            "description": "Amount in wei",
+            "example": "10000000000"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "title": "Token Amount",
+            "description": "Normalized raw amount in token decimals",
+            "example": 1000
+          },
+          "tokenAmountUsd": {
+            "type": "number",
+            "title": "Token Amount USD",
+            "description": "Normalized raw amount in USD",
+            "example": 999.99
+          },
+          "yieldRate": {
+            "type": "number",
+            "title": "Yield Rate",
+            "description": "Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.",
+            "example": "0.1"
+          },
+          "yieldText": {
+            "type": "string",
+            "title": "Yield Text",
+            "description": "Yield rate in string format to represent any arbitrary yields",
+            "examples": [
+              "10x AAVE",
+              "25 BTC pro-rata",
+              "3x DAI per share"
+            ]
+          },
+          "scaleRatio": {
+            "type": "number",
+            "title": "Scale Ratio",
+            "description": "The ratio to scale by for the incentive token to get user's rate"
+          },
+          "unlockTimestamp": {
+            "type": "string",
+            "title": "Unlock Timestamp",
+            "description": "The timestamp when the incentive token is unlocked"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "category",
+          "scaleRatio",
+          "unlockTimestamp"
+        ]
+      },
+      "VaultAllocationDepositToken": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "rawAmount": {
+            "type": "string",
+            "title": "Raw Amount",
+            "description": "Amount in wei",
+            "example": "10000000000"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "title": "Token Amount",
+            "description": "Normalized raw amount in token decimals",
+            "example": 1000
+          },
+          "tokenAmountUsd": {
+            "type": "number",
+            "title": "Token Amount USD",
+            "description": "Normalized raw amount in USD",
+            "example": 999.99
+          },
+          "allocationRatio": {
+            "type": "number",
+            "title": "Allocation Ratio",
+            "description": "The ratio of the input token to TVL of the vault",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "rawAmount",
+          "tokenAmount",
+          "tokenAmountUsd",
+          "allocationRatio"
+        ]
+      },
+      "VaultAllocation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Allocation ID",
+            "description": "The ID of the allocation",
+            "example": "1_0_0x9a117f13c7d5d2b4b18e444f72e6e77c010a1fd90cf21135be75669d66ad9428"
+          },
+          "name": {
+            "type": "string",
+            "title": "Allocation Market Name",
+            "description": "The name of the allocated market",
+            "example": "VEDA"
+          },
+          "link": {
+            "type": "string",
+            "title": "Allocation Market Link",
+            "description": "The link of the allocated market",
+            "example": "/market/1/0/0x9a117f13c7d5d2b4b18e444f72e6e77c010a1fd90cf21135be75669d66ad9428"
+          },
+          "inputToken": {
+            "title": "Input Token",
+            "description": "The input token of the allocation",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VaultAllocationDepositToken"
+              }
+            ]
+          },
+          "incentiveTokens": {
+            "title": "Incentive Tokens",
+            "description": "The incentive tokens of the allocation",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unlockTimestamp": {
+            "type": "string",
+            "title": "Unlock Timestamp",
+            "description": "The timestamp when the allocation is unlocked",
+            "example": "1714531200"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "inputToken",
+          "incentiveTokens"
+        ]
+      },
+      "VaultInfoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The global unique identifier of the vault: <CHAIN_ID>_<VAULT_ADDRESS>",
+            "example": "146_0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "vaultAddress": {
+            "type": "string",
+            "title": "Vault Address",
+            "description": "The address of the vault",
+            "example": "0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e"
+          },
+          "name": {
+            "type": "string",
+            "title": "Vault Name",
+            "description": "Roy Sonic USDC",
+            "example": "Roy Sonic USDC"
+          },
+          "description": {
+            "type": "string",
+            "title": "Vault Description",
+            "description": "The description of the vault",
+            "example": "Deposit assets to earn highest yields."
+          },
+          "chainIds": {
+            "title": "Chain IDs",
+            "description": "The chain IDs of the vault",
+            "example": [
+              1,
+              146
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "capacity": {
+            "title": "Capacity",
+            "description": "The capacity of the vault",
+            "example": {
+              "currentUsd": 1000000,
+              "maxUsd": 20000000,
+              "ratio": 0.5
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VaultCapacity"
+              }
+            ]
+          },
+          "maxLockup": {
+            "type": "string",
+            "title": "Max Lockup",
+            "description": "The max lockup of the vault",
+            "example": "2592000"
+          },
+          "managers": {
+            "title": "Managers",
+            "description": "The managers of the vault",
+            "example": [
+              {
+                "id": "veda",
+                "name": "VEDA",
+                "symbol": "VEDA",
+                "image": "https://pbs.twimg.com/profile_images/1790405638847135744/mx3dr412_400x400.png",
+                "link": "https://veda.tech/"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VaultManager"
+            }
+          },
+          "depositTokenIds": {
+            "title": "Deposit Token IDs",
+            "description": "The deposit token IDs of the vault",
+            "example": [
+              "146-0x29219dd400f2bf60e5a23d13be72b486d4038894"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "incentiveTokenIds": {
+            "title": "Incentive Token IDs",
+            "description": "The incentive token IDs of the vault",
+            "example": [
+              "146-0x29219dd400f2bf60e5a23d13be72b486d4038894"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "depositTokens": {
+            "title": "Deposit Tokens",
+            "description": "The deposit tokens of the vault",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VaultDepositToken"
+            }
+          },
+          "incentiveTokens": {
+            "title": "Incentive Tokens",
+            "description": "The incentive tokens of the vault",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VaultIncentiveToken"
+            }
+          },
+          "allocations": {
+            "title": "Allocations",
+            "description": "The allocations of the vault",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VaultAllocation"
+            }
+          },
+          "isVerified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "description": "Whether the vault is verified"
+          },
+          "tvlUsd": {
+            "type": "number",
+            "title": "TVL USD",
+            "description": "The TVL of the vault in USD"
+          },
+          "yieldRate": {
+            "type": "number",
+            "title": "Yield Rate",
+            "description": "Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.",
+            "example": "0.1"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "vaultAddress",
+          "name",
+          "description",
+          "chainIds",
+          "capacity",
+          "maxLockup",
+          "managers",
+          "depositTokenIds",
+          "incentiveTokenIds",
+          "depositTokens",
+          "incentiveTokens",
+          "allocations",
+          "isVerified",
+          "tvlUsd",
+          "yieldRate",
+          "lastUpdated"
+        ]
+      },
+      "ResponsePage": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "title": "Page Index",
+            "description": "Page index",
+            "example": 1
+          },
+          "size": {
+            "type": "number",
+            "title": "Page Size",
+            "description": "Page size",
+            "example": 3
+          },
+          "total": {
+            "type": "number",
+            "title": "Page Total",
+            "description": "Page total",
+            "example": 10
+          }
+        },
+        "required": [
+          "index",
+          "size",
+          "total"
+        ]
+      },
+      "BaseEnrichedTokenData": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "rawAmount": {
+            "type": "string",
+            "title": "Raw Amount",
+            "description": "Amount in wei",
+            "example": "10000000000"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "title": "Token Amount",
+            "description": "Normalized raw amount in token decimals",
+            "example": 1000
+          },
+          "tokenAmountUsd": {
+            "type": "number",
+            "title": "Token Amount USD",
+            "description": "Normalized raw amount in USD",
+            "example": 999.99
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "rawAmount",
+          "tokenAmount",
+          "tokenAmountUsd"
+        ]
+      },
+      "MarketActiveIncentive": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "rawAmount": {
+            "type": "string",
+            "title": "Raw Amount",
+            "description": "Amount in wei",
+            "example": "10000000000"
+          },
+          "tokenAmount": {
+            "type": "number",
+            "title": "Token Amount",
+            "description": "Normalized raw amount in token decimals",
+            "example": 1000
+          },
+          "tokenAmountUsd": {
+            "type": "number",
+            "title": "Token Amount USD",
+            "description": "Normalized raw amount in USD",
+            "example": 999.99
+          },
+          "yieldRate": {
+            "type": "number",
+            "title": "Yield Rate",
+            "description": "Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.",
+            "example": "0.1"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "rawAmount",
+          "tokenAmount",
+          "tokenAmountUsd",
+          "yieldRate"
+        ]
+      },
+      "MarketNativeIncentive": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "label": {
+            "type": "string",
+            "title": "Incentive Label",
+            "description": "The custom label for the incentive token"
+          },
+          "yieldRate": {
+            "type": "number",
+            "title": "Yield Rate",
+            "description": "Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.",
+            "example": "0.1"
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "yieldRate"
+        ]
+      },
+      "MarketExternalIncentive": {
+        "type": "object",
+        "properties": {
+          "rawMetadata": {
+            "type": "object",
+            "title": "Raw Metadata",
+            "description": "Raw metadata"
+          },
+          "id": {
+            "type": "string",
+            "title": "Token ID",
+            "description": "Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>",
+            "example": "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "contractAddress": {
+            "type": "string",
+            "title": "Contract Address",
+            "description": "Deployment address of the contract",
+            "example": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the token",
+            "example": "USDC"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol",
+            "description": "The symbol of the token",
+            "example": "USDC"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "The logo of the token",
+            "example": "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+          },
+          "decimals": {
+            "type": "number",
+            "title": "Decimals",
+            "description": "The number of decimals of the token",
+            "example": 6
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "The source for the price feed of the token",
+            "example": "coinmarketcap",
+            "enum": [
+              "coinmarketcap",
+              "coingecko",
+              "lp",
+              "enso",
+              "pendle",
+              "plume",
+              "external"
+            ]
+          },
+          "searchId": {
+            "type": "string",
+            "title": "Search ID",
+            "description": "The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema",
+            "example": "3408"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "The type of the token",
+            "example": "token",
+            "enum": [
+              "token",
+              "point",
+              "lp"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "description": "The price of the token",
+            "example": 0.99999999
+          },
+          "fdv": {
+            "type": "number",
+            "title": "FDV",
+            "description": "The fully diluted valuation of the token",
+            "example": 59689964490.12
+          },
+          "totalSupply": {
+            "type": "number",
+            "title": "Total Supply",
+            "description": "The total supply of the token",
+            "example": 59689963893.2
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "The owner of the point program token",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "issuers": {
+            "title": "Issuers",
+            "description": "Authorized issuers of the point program token",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subTokens": {
+            "title": "Sub Tokens",
+            "description": "Array of sub tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenQuote"
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format",
+            "example": "2025-03-17 17:52:10"
+          },
+          "label": {
+            "type": "string",
+            "title": "Incentive Label",
+            "description": "The custom label for the incentive token"
+          },
+          "yieldText": {
+            "type": "string",
+            "title": "Yield Text",
+            "description": "Yield rate in string format to represent any arbitrary yields",
+            "examples": [
+              "10x AAVE",
+              "25 BTC pro-rata",
+              "3x DAI per share"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "chainId",
+          "contractAddress",
+          "name",
+          "symbol",
+          "image",
+          "decimals",
+          "source",
+          "searchId",
+          "type",
+          "price",
+          "fdv",
+          "totalSupply",
+          "lastUpdated",
+          "yieldText"
+        ]
+      },
+      "RecipePosition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The global unique identifier of the position: <CHAIN_ID>_<MARKET_TYPE>_<MARKET_ID>_<WEIROLL_WALLET_ADDRESS>"
+          },
+          "rawMarketRefId": {
+            "type": "string",
+            "title": "Raw Market Ref ID",
+            "description": "The raw market reference ID",
+            "example": "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
+          },
+          "chainId": {
+            "type": "number",
+            "title": "Chain ID",
+            "description": "Network ID of the blockchain",
+            "example": 1
+          },
+          "weirollWallet": {
+            "type": "string",
+            "title": "Weiroll Wallet Address",
+            "description": "Address of the weiroll wallet for this position"
+          },
+          "accountAddress": {
+            "type": "string",
+            "title": "Account Address",
+            "description": "Wallet address of the account",
+            "example": "0x77777cc68b333a2256b436d675e8d257699aa667"
+          },
+          "marketId": {
+            "type": "string",
+            "title": "Market ID",
+            "description": "The on-chain identifier of the market: For recipe market, it's market hash -- for vault market, it's wrapped vault address",
+            "example": "0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
+          },
+          "rewardStyle": {
+            "type": "number",
+            "title": "Reward Style",
+            "description": "The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable",
+            "example": 0,
+            "enum": [
+              0,
+              1,
+              2
+            ]
+          },
+          "isForfeited": {
+            "type": "boolean",
+            "title": "Is Forfeited",
+            "description": "Whether the position has been forfeited",
+            "example": false
+          },
+          "isWithdrawn": {
+            "type": "boolean",
+            "title": "Is Withdrawn",
+            "description": "Whether the input token has been withdrawn",
+            "example": false
+          },
+          "isClaimed": {
+            "title": "Is Claimed",
+            "description": "Whether the incentive token has been claimed",
+            "example": [
+              true,
+              false,
+              false
+            ],
+            "type": "array",
+            "items": {
+              "type": "boolean"
+            }
+          },
+          "unlockTimestamp": {
+            "type": "string",
+            "title": "Unlock Timestamp",
+            "description": "Block timestamp when the position will be unlocked"
+          },
+          "blockNumber": {
+            "type": "string",
+            "title": "Block Number",
+            "description": "Block number associated with the entity",
+            "example": "21910786"
+          },
+          "blockTimestamp": {
+            "type": "string",
+            "title": "Block Timestamp",
+            "description": "Block timestamp associated with the entity",
+            "example": "1743357424"
+          },
+          "transactionHash": {
+            "type": "string",
+            "title": "Transaction Hash",
+            "description": "Transaction hash associated with the entity",
+            "example": "0xbd48c4956ca72ebca29e517f556676170f78914b786518854c3c57be933af461"
+          },
+          "logIndex": {
+            "type": "string",
+            "title": "Log Index",
+            "description": "Log index associated with the entity",
+            "example": "12"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the market",
+            "example": "Swap USDC to stkGHO for 1 mo"
+          },
+          "lockupTime": {
+            "type": "string",
+            "title": "Lockup Time",
+            "description": "The lockup time for the market in seconds. Note: vault markets always have a lockup time of \"0\"",
+            "example": "31536000"
+          },
+          "inputToken": {
+            "title": "Input Token Data",
+            "description": "Token data for the market input token",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BaseEnrichedTokenData"
+              }
+            ]
+          },
+          "incentiveTokens": {
+            "title": "Incentive Tokens",
+            "description": "Active incentive tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketActiveIncentive"
+            }
+          },
+          "nativeIncentives": {
+            "title": "Native Incentives",
+            "description": "Native incentive tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketNativeIncentive"
+            }
+          },
+          "externalIncentives": {
+            "title": "External Incentives",
+            "description": "External incentive tokens",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketExternalIncentive"
+            }
+          },
+          "yieldRate": {
+            "type": "number",
+            "title": "Yield Rate",
+            "description": "Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.",
+            "example": "0.1"
+          }
+        },
+        "required": [
+          "id",
+          "rawMarketRefId",
+          "chainId",
+          "weirollWallet",
+          "accountAddress",
+          "marketId",
+          "rewardStyle",
+          "isForfeited",
+          "isWithdrawn",
+          "isClaimed",
+          "unlockTimestamp",
+          "blockNumber",
+          "blockTimestamp",
+          "transactionHash",
+          "logIndex",
+          "name",
+          "lockupTime",
+          "inputToken",
+          "incentiveTokens",
+          "yieldRate"
+        ]
+      },
+      "RecipePositionResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "title": "Response Page Object",
+            "description": "Object type to respond with a page of results",
+            "example": {
+              "index": 1,
+              "size": 3,
+              "total": 10
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResponsePage"
+              }
+            ]
+          },
+          "count": {
+            "type": "number",
+            "title": "Row Count",
+            "description": "Total number of rows in the results",
+            "example": 234
+          },
+          "data": {
+            "title": "Recipe positions",
+            "description": "Recipe positions",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipePosition"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "count",
+          "data"
+        ]
+      },
+      "RewardsRequest": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "title": "Filters",
+            "description": "The filters to apply to the rewards",
+            "example": [],
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sorting": {
+            "title": "Sorting",
+            "description": "The sorting to apply to the rewards",
+            "example": [],
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "desc": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "page": {
+            "type": "object",
+            "title": "Page",
+            "description": "The page number to return",
+            "example": {
+              "index": 1,
+              "size": 10,
+              "total": 100
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "number"
+                },
+                "size": {
+                  "type": "number"
+                },
+                "total": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
+          }
+        }
+      },
+      "Reward": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "ID",
+            "description": "The globally unique identifier of the reward",
+            "example": "1_0x1234...5678"
+          },
+          "accountAddress": {
+            "type": "string",
+            "title": "Account Address",
+            "description": "The address of the account that owns the reward",
+            "example": "0x1234...5678"
+          },
+          "tokenAmount": {
+            "type": "string",
+            "title": "Token Amount",
+            "description": "The amount of tokens in the reward",
+            "example": "1000000000000000000"
+          },
+          "rewardSource": {
+            "type": "string",
+            "title": "Reward Source",
+            "description": "The source of the reward",
+            "example": "vault"
+          },
+          "withdrawRefId": {
+            "type": "string",
+            "title": "Withdraw Reference ID",
+            "description": "The reference ID of the withdrawal",
+            "example": "0x1234...5678"
+          },
+          "vaultAddress": {
+            "type": "string",
+            "title": "Vault Address",
+            "description": "The address of the vault",
+            "example": "0x1234...5678"
+          },
+          "chainId": {
+            "type": "string",
+            "title": "Chain ID",
+            "description": "The chain ID of the network",
+            "example": "1"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Last Updated",
+            "description": "The timestamp of the last update",
+            "example": "2024-03-20T12:00:00Z"
+          },
+          "blockTimestamp": {
+            "type": "string",
+            "title": "Block Timestamp",
+            "description": "The timestamp of the block",
+            "example": "2024-03-20T12:00:00Z"
+          },
+          "isClaimed": {
+            "type": "boolean",
+            "title": "Is Claimed",
+            "description": "Whether the reward has been claimed",
+            "example": false
+          },
+          "token": {
+            "type": "object",
+            "title": "Token",
+            "description": "The token information",
+            "example": {}
+          },
+          "reward": {
+            "type": "object",
+            "title": "Reward",
+            "description": "The reward details",
+            "example": null
+          }
+        },
+        "required": [
+          "id",
+          "accountAddress",
+          "tokenAmount",
+          "rewardSource",
+          "vaultAddress",
+          "chainId",
+          "lastUpdated",
+          "blockTimestamp",
+          "isClaimed",
+          "token"
+        ]
+      },
+      "RewardsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Array of rewards",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reward"
+            }
+          },
+          "count": {
+            "type": "number",
+            "title": "Count",
+            "description": "The total number of rewards",
+            "example": 100
+          },
+          "page": {
+            "type": "object",
+            "title": "Page",
+            "description": "The page number to return",
+            "example": {
+              "index": 1,
+              "size": 10,
+              "total": 100
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "number"
+                },
+                "size": {
+                  "type": "number"
+                },
+                "total": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "data",
+          "count"
+        ]
+      }
+    }
+  }
+}

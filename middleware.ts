@@ -9,6 +9,7 @@ const SupabaseRoutes = [
   "/api/push/lp-token",
   "/api/update/quotes",
 ];
+
 const RateLimits = {
   rpc: {
     limitDuration: 60,
@@ -20,15 +21,7 @@ const RateLimits = {
   },
 };
 
-const logIncomingRequest = (request: NextRequest) => {
-  console.log("Incoming request:", request.nextUrl.pathname);
-};
-
 export async function middleware(request: NextRequest) {
-  if (process.env.NODE_ENV === "development") {
-    // logIncomingRequest(request);
-  }
-
   /**
    * Current path
    */
@@ -127,8 +120,9 @@ export async function middleware(request: NextRequest) {
 
   /**
    * Content-type checking for all API routes
+   * Skip for Royco API routes
    */
-  if (pathname.startsWith("/api/")) {
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/v1/")) {
     if (["POST", "PUT", "PATCH"].includes(request.method)) {
       // Check if content-type is application/json
       const contentType = request.headers.get("content-type");
@@ -146,24 +140,20 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  /**
+   * Rate limiting for specific routes that have been tagged
+   */
   let rateLimitTag: string | null = null;
-
   if (pathname.startsWith("/api/rpc/")) {
     // rateLimitTag = "rpc";
   } else if (pathname.startsWith("/api/simulation/")) {
     rateLimitTag = "simulation";
   }
-
-  /**
-   * Rate limiting for specific routes that have been tagged
-   */
   if (rateLimitTag) {
     const ip =
       request.ip ?? request.headers.get("x-forwarded-for") ?? "unknown";
     const key = `rate-limit:${ip}:${rateLimitTag}`;
-
     const currentRequests = (await kv.get<number>(key)) || 0;
-
     if (
       currentRequests >=
       RateLimits[rateLimitTag as keyof typeof RateLimits].maxRequests
@@ -183,7 +173,6 @@ export async function middleware(request: NextRequest) {
         }
       );
     }
-
     await kv.set(key, currentRequests + 1, {
       ex: RateLimits[rateLimitTag as keyof typeof RateLimits].limitDuration,
     });
@@ -195,13 +184,10 @@ export async function middleware(request: NextRequest) {
   if (SupabaseRoutes.includes(pathname)) {
     // 1. Auth token can be passed in header
     const headerToken = request.headers.get("auth-token")?.trim();
-
     // 2. Auth token can be passed in url params
     const urlToken = request.nextUrl.searchParams.get("auth_token")?.trim();
-
     // It must be one of the two
     const authToken = headerToken || urlToken;
-
     // Check if auth token is valid
     if (!authToken || authToken.trim() !== process.env.API_AUTH_TOKEN?.trim()) {
       return new NextResponse(JSON.stringify({ status: "Unauthorized" }), {
@@ -232,6 +218,19 @@ export async function middleware(request: NextRequest) {
   //     }
   //   }
   // }
+
+  /**
+   * Authorization for Royco API
+   */
+  if (pathname.startsWith("/api/v1/")) {
+    const headers = new Headers(request.headers);
+    headers.set("Authorization", `Bearer ${process.env.ROYCO_API_TOKEN}`);
+    return NextResponse.next({
+      request: {
+        headers,
+      },
+    });
+  }
 
   return NextResponse.next();
 }

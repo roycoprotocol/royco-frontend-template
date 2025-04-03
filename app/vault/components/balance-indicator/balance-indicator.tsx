@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronsUpDown } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
 
 import {
@@ -10,6 +10,9 @@ import {
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { TokenDisplayer } from "@/components/common";
+import { formatDate } from "date-fns";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -41,9 +44,23 @@ export const BalanceIndicator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { data } = useAtomValue(vaultMetadataAtom);
+
   const vault = useAtomValue(vaultManagerAtom);
 
-  const [showPrincipleBreakdown, setShowPrincipleBreakdown] = useState(false);
+  const token = useMemo(() => {
+    return data?.depositTokens[0];
+  }, [data]);
+
+  const principle = useMemo(() => {
+    return {
+      amount: vault?.account.sharesInUSD || 0,
+      tokenAmount: vault?.account.sharesInBaseAsset || 0,
+      unlockTime: vault?.account.unlockTime || 0,
+    };
+  }, [vault]);
+
+  const [showPrincipleBreakdown, setShowPrincipleBreakdown] = useState(true);
   const [showIncentivesBreakdown, setShowIncentivesBreakdown] = useState(false);
 
   return (
@@ -56,9 +73,9 @@ export const BalanceIndicator = React.forwardRef<
           Your Value
         </SecondaryLabel>
 
-        <PrimaryLabel className="mt-2 text-3xl font-medium">
+        <PrimaryLabel className="mt-2 text-[32px] font-medium">
           {formatNumber(
-            232142.12,
+            principle.amount,
             { type: "currency" },
             {
               average: false,
@@ -82,15 +99,19 @@ export const BalanceIndicator = React.forwardRef<
               className="cursor-pointer text-base font-normal"
             >
               <div className="flex items-center gap-1">
-                <span>
-                  {formatNumber(
-                    22000,
-                    { type: "currency" },
-                    {
-                      average: false,
-                    }
-                  )}
-                </span>
+                <div className="flex items-center gap-1">
+                  <span>
+                    {formatNumber(
+                      principle.tokenAmount,
+                      { type: "currency" },
+                      {
+                        average: false,
+                      }
+                    )}
+                  </span>
+
+                  <TokenDisplayer size={4} tokens={[token]} symbols={false} />
+                </div>
 
                 <motion.div
                   animate={{ rotate: showPrincipleBreakdown ? 180 : 0 }}
@@ -107,32 +128,70 @@ export const BalanceIndicator = React.forwardRef<
            */}
           <AnimatePresence>
             {showPrincipleBreakdown && (
-              <DropdownAnimationWrapper className="mt-3 rounded-lg border border-divider p-4">
-                <div>
-                  <SecondaryLabel className="text-xs font-medium">
-                    Available to Withdraw
-                  </SecondaryLabel>
-
-                  <PrimaryLabel className="mt-3 text-base font-normal">
-                    0 USDC
-                  </PrimaryLabel>
-                </div>
-
-                <div className="mt-4">
-                  <SecondaryLabel className="text-xs font-medium">
-                    Locked
-                  </SecondaryLabel>
-
-                  <div className="mt-3 flex items-center justify-between">
-                    <PrimaryLabel className="text-base font-normal">
-                      220000.79 USDC
-                    </PrimaryLabel>
-
-                    <SecondaryLabel className="text-base font-normal">
-                      Until Mar 1, 2025
+              <DropdownAnimationWrapper className="mt-3 flex flex-col gap-4 rounded-lg border border-divider p-4">
+                {principle.unlockTime === 0 && (
+                  <div>
+                    <SecondaryLabel className="text-xs font-medium">
+                      Available to Withdraw
                     </SecondaryLabel>
+
+                    <PrimaryLabel className="mt-3 text-sm font-normal">
+                      <div className="flex items-center gap-1">
+                        <TokenDisplayer
+                          size={4}
+                          tokens={[token]}
+                          symbols={false}
+                        />
+
+                        <span>
+                          {formatNumber(
+                            principle.tokenAmount,
+                            { type: "number" },
+                            {
+                              average: false,
+                            }
+                          )}
+                        </span>
+
+                        <span className="text-sm text-primary">
+                          {token.symbol}
+                        </span>
+                      </div>
+                    </PrimaryLabel>
                   </div>
-                </div>
+                )}
+
+                {principle.unlockTime > 0 && (
+                  <div>
+                    <SecondaryLabel className="text-xs font-medium">
+                      Locked
+                    </SecondaryLabel>
+
+                    <div className="mt-3 flex items-center justify-between">
+                      <PrimaryLabel className="text-sm font-normal">
+                        <div className="flex items-center gap-1">
+                          <span>
+                            {formatNumber(
+                              principle.tokenAmount,
+                              { type: "number" },
+                              {
+                                average: false,
+                              }
+                            )}
+                          </span>
+
+                          <span className="text-sm text-primary">
+                            {token.symbol}
+                          </span>
+                        </div>
+                      </PrimaryLabel>
+
+                      <SecondaryLabel className="text-base font-normal">
+                        {`Until ${formatDate(principle.unlockTime * 1000, "MMM d, yyyy")}`}
+                      </SecondaryLabel>
+                    </div>
+                  </div>
+                )}
               </DropdownAnimationWrapper>
             )}
           </AnimatePresence>
@@ -141,7 +200,7 @@ export const BalanceIndicator = React.forwardRef<
         {/**
          * Incentives
          */}
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <div className="flex items-center justify-between">
             <SecondaryLabel className="text-base">Incentives</SecondaryLabel>
 
@@ -172,9 +231,8 @@ export const BalanceIndicator = React.forwardRef<
             </PrimaryLabel>
           </div>
 
-          {/**
-           * Incentives Breakdown
-           */}
+          
+          // Incentives Breakdown
           <AnimatePresence>
             {showIncentivesBreakdown && (
               <DropdownAnimationWrapper className="mt-3 rounded-lg border border-divider p-4">
@@ -206,7 +264,7 @@ export const BalanceIndicator = React.forwardRef<
               </DropdownAnimationWrapper>
             )}
           </AnimatePresence>
-        </div>
+        </div> */}
       </div>
     </div>
   );

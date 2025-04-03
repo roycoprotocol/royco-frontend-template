@@ -7,12 +7,11 @@ import { switchChain } from "@wagmi/core";
 import { ErrorAlert } from "@/components/composables/alerts/base-alerts";
 import { Button } from "@/components/ui/button";
 import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
-import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables/loading-spinner";
-
+import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
 interface BoringVaultActionButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   onSuccess?: () => void;
@@ -22,38 +21,21 @@ interface BoringVaultActionButtonProps
 export const BoringVaultActionButton = React.forwardRef<
   HTMLButtonElement,
   BoringVaultActionButtonProps
->(({ className, ...props }, ref) => {
+>(({ className, onSuccess, onError, ...props }, ref) => {
   const { address, chainId } = useAccount();
-
   const { connectWalletModal } = useConnectWallet();
 
-  const vault = useAtomValue(vaultManagerAtom);
+  const { data } = useAtomValue(vaultMetadataAtom);
+
   const { transaction, setTransaction } = useVaultManager();
+
   const { deposit, withdraw } = useBoringVaultActions();
-
-  const txType = useMemo(() => {
-    if (transaction?.type === "deposit") {
-      return "deposit";
-    } else if (transaction?.type === "withdraw") {
-      return "withdraw";
-    }
-  }, [transaction]);
-
-  useEffect(() => {
-    let tx;
-    if (txType === "deposit") {
-      tx = vault?.transactions.deposit;
-    }
-    if (txType === "withdraw") {
-      tx = vault?.transactions.withdraw;
-    }
-  }, [txType]);
 
   const handleAction = async () => {
     try {
       const amount = transaction?.form.amount;
 
-      if (txType === "deposit") {
+      if (transaction?.type === "deposit") {
         setTransaction({
           ...transaction,
           txStatus: "loading",
@@ -73,10 +55,12 @@ export const BoringVaultActionButton = React.forwardRef<
           ...transaction,
           txStatus: "success",
         });
+
+        onSuccess?.();
         return;
       }
 
-      if (txType === "withdraw") {
+      if (transaction?.type === "withdraw") {
         setTransaction({
           ...transaction,
           txStatus: "loading",
@@ -96,12 +80,16 @@ export const BoringVaultActionButton = React.forwardRef<
           ...transaction,
           txStatus: "success",
         });
+
+        onSuccess?.();
         return;
       }
 
       toast.custom(<ErrorAlert message="Unknown transaction." />);
     } catch (error) {
-      toast.custom(<ErrorAlert message={`Error: error`} />);
+      onError?.();
+
+      toast.custom(<ErrorAlert message={`Error: Transaction failed.`} />);
       console.log("Failed:", error);
     }
   };
@@ -110,12 +98,15 @@ export const BoringVaultActionButton = React.forwardRef<
     return transaction?.txStatus === "loading";
   }, [transaction]);
 
+  const isTxSuccess = useMemo(() => {
+    return transaction?.txStatus === "success";
+  }, [transaction]);
+
   if (!address) {
     return (
       <Button
         onClick={() => {
           try {
-            // @ts-ignore
             connectWalletModal();
           } catch (error) {
             toast.custom(<ErrorAlert message="Error connecting wallet" />);
@@ -131,14 +122,14 @@ export const BoringVaultActionButton = React.forwardRef<
     );
   }
 
-  if (chainId !== vault?.chain_id) {
+  if (chainId !== data.chainId) {
     return (
       <Button
         onClick={async () => {
           try {
             // @ts-ignore
             await switchChain(config, {
-              chainId: vault?.chain_id,
+              chainId: data.chainId,
             });
           } catch (error) {
             toast.custom(<ErrorAlert message="Error switching chain" />);
@@ -155,7 +146,7 @@ export const BoringVaultActionButton = React.forwardRef<
     );
   }
 
-  if (transaction?.txStatus !== "success") {
+  if (!isTxSuccess) {
     return (
       <Button
         onClick={handleAction}

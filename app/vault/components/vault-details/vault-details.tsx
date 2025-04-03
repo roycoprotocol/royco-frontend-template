@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { SupportedChainMap } from "royco/constants";
 
 import { cn } from "@/lib/utils";
 import {
@@ -10,11 +12,19 @@ import {
 import { CustomBadge } from "../../common/custom-badge";
 import formatNumber from "@/utils/numbers";
 import { Progress } from "@/components/ui/progress";
+import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { TokenDisplayer } from "@/components/common";
 
 export const VaultDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { data } = useAtomValue(vaultMetadataAtom);
+
+  const chain = useMemo(() => {
+    return SupportedChainMap[data.chainId];
+  }, [data.chainId]);
+
   return (
     <div
       ref={ref}
@@ -26,44 +36,89 @@ export const VaultDetails = React.forwardRef<
     >
       <div>
         <PrimaryLabel className="text-[40px] font-medium">
-          VEDA Vault
+          {data.name} Vault
         </PrimaryLabel>
 
-        <div className="mt-3 flex items-center gap-2">
-          <CustomBadge label="VEDA" />
-          <CustomBadge label="ETH L1" />
+        <div className="mt-3 flex items-center gap-1">
+          {data.managers.map((manager) => {
+            return (
+              <CustomBadge
+                key={manager.id}
+                icon={manager.image}
+                label={manager.name}
+              />
+            );
+          })}
+
+          <CustomBadge icon={chain.image} label={chain.name} />
         </div>
       </div>
 
       <div className="mt-6 flex gap-8">
         <div>
-          <SecondaryLabel>Deposit</SecondaryLabel>
+          <SecondaryLabel className="text-xs font-medium">
+            Deposit
+          </SecondaryLabel>
 
           <PrimaryLabel className="mt-2 text-2xl font-normal">
-            USDC
+            <TokenDisplayer
+              size={6}
+              tokens={data.depositTokens}
+              symbols={true}
+              symbolClassName="font-normal text-primary text-2xl leading-7"
+            />
           </PrimaryLabel>
         </div>
 
         <div>
-          <SecondaryLabel>Est. APY</SecondaryLabel>
+          <SecondaryLabel className="text-xs font-medium">
+            Est. APY
+          </SecondaryLabel>
 
           <PrimaryLabel className="mt-2 text-2xl font-normal">
-            {formatNumber(1.2521, {
-              type: "percent",
-            })}
+            <div className="flex items-center gap-1">
+              <span className="leading-7 text-primary">
+                {formatNumber(data.yieldRate, {
+                  type: "percent",
+                })}
+              </span>
+
+              <TokenDisplayer
+                size={6}
+                tokens={data.incentiveTokens}
+                symbols={false}
+              />
+            </div>
           </PrimaryLabel>
         </div>
 
         <div>
-          <SecondaryLabel>Max Lockup</SecondaryLabel>
+          <SecondaryLabel className="text-xs font-medium">
+            Max Lockup
+          </SecondaryLabel>
 
-          <PrimaryLabel className="mt-2 text-2xl font-normal">30d</PrimaryLabel>
+          <PrimaryLabel className="mt-2 text-2xl font-normal">
+            {data.maxLockup !== "0"
+              ? (() => {
+                  const seconds = Number(data.maxLockup);
+                  if (seconds < 3600) {
+                    return `${seconds}sec`;
+                  }
+                  const hours = Math.ceil(seconds / 3600);
+                  if (seconds < 86400) {
+                    return `${hours}hr`;
+                  }
+                  const days = Math.ceil(seconds / 86400);
+                  return `${days}d`;
+                })()
+              : "None"}
+          </PrimaryLabel>
         </div>
       </div>
 
       <div className="mt-6">
         <Progress
-          value={60}
+          value={data.capacity.ratio * 100}
           className="h-2 bg-z2"
           indicatorClassName="bg-warning"
         />
@@ -72,7 +127,7 @@ export const VaultDetails = React.forwardRef<
           <SecondaryLabel className="text-xs font-medium">
             <div className="flex items-center gap-1">
               <span>
-                {formatNumber(2000, {
+                {formatNumber(data.capacity.currentUsd, {
                   type: "currency",
                 })}
               </span>
@@ -83,7 +138,7 @@ export const VaultDetails = React.forwardRef<
           <SecondaryLabel className="text-xs font-medium">
             <div className="flex items-center gap-1">
               <span>
-                {formatNumber(0.98, {
+                {formatNumber(1 - data.capacity.ratio, {
                   type: "percent",
                 })}
               </span>

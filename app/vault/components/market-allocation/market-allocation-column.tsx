@@ -4,50 +4,97 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
+import { TokenDisplayer } from "@/components/common";
+import { formatDate } from "date-fns";
+import { CustomCircleProgress } from "../../common/custom-circle-progress";
 
 export const marketAllocationColumns: ColumnDef<any>[] = [
   {
-    accessorKey: "market_allocation",
+    accessorKey: "name",
     enableResizing: true,
     enableSorting: false,
     header: "Market Allocation",
-    meta: "text-left w-full",
+    meta: { className: "text-left w-full py-3 font-medium", align: "left" },
     cell: ({ row }) => {
-      return <div className={cn("")}>Swap USDC to stkGHO for 1mo</div>;
+      return <div className={cn("")}>{row.original.name}</div>;
     },
   },
   {
-    accessorKey: "allocation_percentage",
+    accessorKey: "allocationRatio",
     enableResizing: true,
     enableSorting: false,
-    header: "Allocation %",
-    meta: "text-left min-w-48",
-    cell: ({ row }) => {
-      return <div className={cn("")}>33.34%</div>;
-    },
-  },
-  {
-    accessorKey: "current_supply",
-    enableResizing: true,
-    enableSorting: false,
-    header: "Current Supply",
-    meta: "text-left min-w-48",
+    header: "Allocation",
+    meta: { className: "text-left min-w-32 py-3", align: "left" },
     cell: ({ row }) => {
       return (
-        <div className={cn("min-w")}>
-          {formatNumber(512215.42, { type: "currency" })}
+        <div className={cn("flex items-center gap-1")}>
+          <span>
+            {formatNumber(row.original.depositToken.allocationRatio, {
+              type: "percent",
+            })}
+          </span>
+
+          <CustomCircleProgress
+            size={16}
+            stroke={1.5}
+            track="#d9d9d9"
+            value={row.original.depositToken.allocationRatio / 50}
+          />
         </div>
       );
     },
   },
   {
-    accessorKey: "incentives",
+    accessorKey: "currentSupply",
+    enableResizing: true,
+    enableSorting: false,
+    header: "Current Supply",
+    meta: { className: "text-left min-w-40 py-3", align: "left" },
+    cell: ({ row }) => {
+      return (
+        <div className={cn("")}>
+          {formatNumber(row.original.depositToken.tokenAmountUsd, {
+            type: "currency",
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "unlockTimestamp",
+    enableResizing: true,
+    enableSorting: false,
+    header: "Funds Available",
+    meta: { className: "text-left min-w-40 py-3", align: "left" },
+    cell: ({ row }) => {
+      return (
+        <div className={cn("")}>
+          {row.original.unlockTimestamp
+            ? formatDate(
+                Number(row.original.unlockTimestamp) * 1000,
+                "MM/dd/yyyy"
+              )
+            : "N/A"}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "incentiveTokens",
     enableResizing: true,
     enableSorting: false,
     header: "Incentives",
-    meta: "text-right min-w-48",
+    meta: { className: "text-right min-w-32 py-3", align: "right" },
     cell: ({ row }) => {
-      return <div className={cn("")}>--</div>;
+      return (
+        <div className={cn("")}>
+          <TokenDisplayer
+            size={4}
+            tokens={row.original.incentiveTokens}
+            symbols={false}
+          />
+        </div>
+      );
     },
   },
 ];

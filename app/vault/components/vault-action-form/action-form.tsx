@@ -21,30 +21,36 @@ export const VaultActionForm = React.forwardRef<
 
   return (
     <div ref={ref} {...props} className={cn("p-5", className)}>
-      <div className={cn("mb-3")}>
-        <SlideUpWrapper className={cn("flex flex-col")}>
-          <HorizontalTabs
-            className={cn("")}
-            size="sm"
-            key="vault:action-type:container"
-            baseId="vault:action-type"
-            tabs={Object.values(VaultManagerActionMap).map((action) => ({
-              id: action.value,
-              label: action.label,
-            }))}
-            activeTab={actionType}
-            setter={setActionType}
-          />
-        </SlideUpWrapper>
-      </div>
+      <SlideUpWrapper delay={0.1} className={cn("flex flex-col")}>
+        <HorizontalTabs
+          className={cn("")}
+          size="sm"
+          key="vault:action-type:container"
+          baseId="vault:action-type"
+          tabs={Object.values(VaultManagerActionMap).map((action) => ({
+            id: action.value,
+            label: action.label,
+          }))}
+          activeTab={actionType}
+          setter={setActionType}
+        />
+      </SlideUpWrapper>
 
       {(() => {
         if (actionType === TypeVaultManagerAction.Deposit) {
-          return <DepositAction />;
+          return (
+            <div className="mt-6">
+              <DepositAction />
+            </div>
+          );
         }
 
         if (actionType === TypeVaultManagerAction.Withdraw) {
-          return <WithdrawAction />;
+          return (
+            <div className="mt-6">
+              <WithdrawAction />
+            </div>
+          );
         }
       })()}
     </div>

@@ -20,6 +20,8 @@ import {
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { ChevronsUpDown } from "lucide-react";
+import { TokenDisplayer } from "@/components/common";
+import formatNumber from "@/utils/numbers";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -99,6 +101,7 @@ export const TransactionModal = React.forwardRef<
 
   const handleClose = () => {
     setIsOpen(false);
+    // @ts-ignore
     setTransaction(null);
 
     setTimeout(() => {
@@ -148,21 +151,49 @@ export const TransactionModal = React.forwardRef<
             }
           }}
         >
+          {/**
+           * Transaction Header
+           */}
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
+
+            <div className="mt-2 flex items-center gap-1">
+              <TokenDisplayer
+                size={4}
+                tokens={[transaction?.form.token]}
+                symbols={false}
+              />
+
+              <span className="text-base font-normal">
+                {formatNumber(transaction?.form.amount, {
+                  type: "number",
+                })}
+              </span>
+
+              <span className="text-base font-normal">
+                {transaction?.form.token.symbol}
+              </span>
+            </div>
           </DialogHeader>
 
-          {!!transaction?.description && (
-            <div className="mt-4">
-              {!!transaction?.description.title && (
-                <SecondaryLabel className="text-xs font-medium">
-                  {transaction?.description.title}
-                </SecondaryLabel>
-              )}
+          {/**
+           * Transaction Description
+           */}
+          {transaction?.description && transaction?.description.length > 0 && (
+            <div className="mt-4 flex flex-col gap-6">
+              {transaction?.description?.map((item: any) => (
+                <div>
+                  {!!item.title && (
+                    <SecondaryLabel className="text-xs font-medium">
+                      {item.title}
+                    </SecondaryLabel>
+                  )}
 
-              <PrimaryLabel className="mt-2 text-sm font-normal">
-                {transaction?.description.description}
-              </PrimaryLabel>
+                  <PrimaryLabel className="mt-2 text-sm font-normal">
+                    {item.description}
+                  </PrimaryLabel>
+                </div>
+              ))}
             </div>
           )}
 
@@ -224,29 +255,38 @@ export const TransactionModal = React.forwardRef<
             </AnimatePresence>
           </div>
 
-          <BoringVaultActionButton
-            onSuccess={() => {
-              triggerConfetti();
-            }}
-            className="mt-3"
-          />
+          {/**
+           * Transaction Action Button
+           */}
+          {!isTxSuccess && (
+            <div className="mt-3">
+              <BoringVaultActionButton
+                onSuccess={() => {
+                  triggerConfetti();
+                }}
+              />
 
-          {!isTxSuccess ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClose}
-              className="justify-center"
-              disabled={isTxLoading}
-            >
-              <div className="text-error">Cancel</div>
-            </Button>
-          ) : (
-            <Button onClick={handleClose} size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClose}
+                className="mt-2 w-full justify-center"
+                disabled={isTxLoading}
+              >
+                <div className="text-error">Cancel</div>
+              </Button>
+            </div>
+          )}
+
+          {isTxSuccess && (
+            <Button onClick={handleClose} size="sm" className="mt-3">
               Close
             </Button>
           )}
 
+          {/**
+           * Transaction Keep Window Open
+           */}
           <SecondaryLabel className="justify-center text-xs font-normal">
             Keep window open until complete.
           </SecondaryLabel>

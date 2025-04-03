@@ -22,7 +22,8 @@
     "start": "next start",
     "lint": "next lint",
     "generate-anon-key": "tsx scripts/generate-anon-key/index.tsx",
-    "generate-packages-csv": "tsx scripts/generate-packages-csv.ts"
+    "generate-packages-csv": "tsx scripts/generate-packages-csv.ts",
+    "generate:api": "swagger-typescript-api generate --axios --modular -p ./resources/swagger.json -o ./app/api/royco"
   },
   "dependencies": {
     "@blockaid/client": "^0.21.0",
@@ -124,6 +125,7 @@
     "resend": "^4.1.1",
     "royco": "^0.10.9",
     "sonner": "^1.7.2",
+    "swagger-typescript-api": "^13.0.28",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "telegram-login-button": "^0.1.0",

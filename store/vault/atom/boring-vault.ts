@@ -1,38 +1,26 @@
 import { atom } from "jotai";
 
 export interface BoringVault {
-  base_asset: {
+  baseAsset: {
     address: string;
     decimals: number;
+    price: number;
+    allowWithdraws: boolean;
+    secondsToMaturity: number;
+    minimumSecondsToDeadline: number;
+    minDiscount: number;
+    maxDiscount: number;
+    minimumShares: number;
   };
-
-  chain_id: number;
-  total_value_locked: number;
-  share_price: number;
+  chainId: number;
+  totalValueLockedInBaseAsset: number;
+  sharePriceInBaseAsset: number;
   decimals: number;
-
-  user?: {
+  account: {
     address: string;
-    total_shares: number;
-    total_shares_in_base_asset: number;
-    unlock_time: number;
-  };
-
-  transactions: {
-    deposit: {
-      initiated: boolean;
-      loading: boolean;
-      success?: boolean;
-      error?: string;
-      tx_hash?: string;
-    };
-    withdraw: {
-      initiated: boolean;
-      loading: boolean;
-      success?: boolean;
-      error?: string;
-      tx_hash?: string;
-    };
+    sharesInBaseAsset: number;
+    sharesInUSD: number;
+    unlockTime: number;
   };
 }
 

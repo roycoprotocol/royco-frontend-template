@@ -1,3 +1,4 @@
+import { VaultDepositToken } from "@/app/api/royco/data-contracts";
 import { create } from "zustand";
 
 export enum TypeVaultManagerAction {
@@ -16,18 +17,37 @@ export const VaultManagerActionMap = {
   },
 };
 
+export type TypeVaultTransaction = {
+  type: "deposit" | "withdraw";
+  description?: {
+    title: string;
+    description: string;
+  }[];
+  steps: {
+    type: string;
+    label: string;
+  }[];
+  form: {
+    token: VaultDepositToken;
+    amount: number;
+  };
+  txStatus?: "loading" | "error" | "success";
+  txHash?: string;
+};
+
 export interface VaultManagerState {
   actionType: TypeVaultManagerAction;
   setActionType: (actionType: TypeVaultManagerAction) => void;
 
-  transaction: any;
-  setTransaction: (transactions: any) => void;
+  transaction: TypeVaultTransaction;
+  setTransaction: (transaction: TypeVaultTransaction) => void;
 }
 
 export const useVaultManager = create<VaultManagerState>((set) => ({
   actionType: TypeVaultManagerAction.Deposit,
   setActionType: (actionType: TypeVaultManagerAction) => set({ actionType }),
 
+  // @ts-ignore
   transaction: null,
-  setTransaction: (transaction: any) => set({ transaction }),
+  setTransaction: (transaction: TypeVaultTransaction) => set({ transaction }),
 }));

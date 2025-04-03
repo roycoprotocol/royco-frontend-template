@@ -39,7 +39,10 @@ export function BoringVaultActionProvider({
     }
 
     try {
-      const token = boringVault.base_asset as any;
+      const token = {
+        address: boringVault.baseAsset.address,
+        decimals: boringVault.baseAsset.decimals,
+      };
 
       const response = await boringDeposit(signer, amount.toString(), token);
 
@@ -71,11 +74,14 @@ export function BoringVaultActionProvider({
       const discount = "0.001";
       const validDays = "4";
 
-      const token = boringVault?.base_asset as any;
+      const token = {
+        address: boringVault.baseAsset.address,
+        decimals: boringVault.baseAsset.decimals,
+      };
 
       const shares =
         (amount * 10 ** token.decimals) /
-        (boringVault.share_price * 10 ** boringVault.decimals);
+        (boringVault.sharePriceInBaseAsset * 10 ** boringVault.decimals);
 
       const response = await boringWithdraw(
         signer,
