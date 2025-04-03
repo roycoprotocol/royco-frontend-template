@@ -54,8 +54,8 @@ export const VaultDetails = React.forwardRef<
         </div>
       </div>
 
-      <div className="mt-6 flex gap-8">
-        <div>
+      <div className="mt-6 flex flex-col gap-8 sm:flex-row">
+        <div className="shrink-0">
           <SecondaryLabel className="text-xs font-medium">
             Deposit
           </SecondaryLabel>
@@ -70,7 +70,7 @@ export const VaultDetails = React.forwardRef<
           </PrimaryLabel>
         </div>
 
-        <div>
+        <div className="shrink-0">
           <SecondaryLabel className="text-xs font-medium">
             Est. APY
           </SecondaryLabel>
@@ -92,7 +92,7 @@ export const VaultDetails = React.forwardRef<
           </PrimaryLabel>
         </div>
 
-        <div>
+        <div className="shrink-0">
           <SecondaryLabel className="text-xs font-medium">
             Max Lockup
           </SecondaryLabel>

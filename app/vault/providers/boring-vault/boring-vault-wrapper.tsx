@@ -22,8 +22,6 @@ export const BoringVaultWrapper = React.forwardRef<
   const { address } = useAccount();
   const { isLoading, isError, data } = useAtomValue(vaultMetadataAtom);
 
-  console.log({ data });
-
   const setBoringVault = useSetAtom(boringVaultAtom);
 
   const {
