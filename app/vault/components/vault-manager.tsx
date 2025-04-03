@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ChevronLeftIcon } from "lucide-react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { cn } from "@/lib/utils";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { VaultDetails } from "./vault-details/vault-details";
@@ -13,15 +13,15 @@ import { BalanceIndicator } from "./balance-indicator/balance-indicator";
 import { Rewards } from "./rewards/rewards";
 import { SlideUpWrapper } from "@/components/animations";
 import { TransactionModal } from "../common/transaction-modal/transaction-modal";
-import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const vault = useAtomValue(vaultManagerAtom);
+  const { data } = useAtomValue(vaultMetadataAtom);
 
-  if (!vault) {
+  if (!data) {
     return null;
   }
 
@@ -61,9 +61,9 @@ export const VaultManager = React.forwardRef<
           </SlideUpWrapper>
 
           {/**
-           * Vault Allocation
+           * Market Allocation
            */}
-          {/* <MarketAllocation className="mt-7" /> */}
+          <MarketAllocation className="mt-7" />
 
           {/**
            * Vault FAQ

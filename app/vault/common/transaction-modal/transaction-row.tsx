@@ -10,72 +10,42 @@ export const TransactionRow = React.forwardRef<
       type: string;
       label: string;
     };
-    txStatus?: string;
+    txStatus?: "loading" | "error" | "success";
   }
 >(({ className, transaction, transactionIndex, txStatus, ...props }, ref) => {
   return (
     <div
       ref={ref}
       className={cn(
-        "flex flex-col rounded-xl border border-divider bg-white p-2",
+        "flex items-center gap-3 rounded-xl border border-divider bg-white p-2",
         className
       )}
       {...props}
     >
-      <div className="flex w-full flex-row">
-        {/**
-         * Transaction Index
-         */}
-        <div className="flex h-6 w-6 shrink-0 flex-col place-content-center items-center rounded-md border border-divider">
-          <div
-            className={cn(
-              "flex h-4",
-              "font-gt text-sm font-light leading-4 text-black"
-            )}
-          >
-            {transactionIndex}
-          </div>
-        </div>
-
-        {/**
-         * Transaction Details
-         */}
-        <div className="flex grow flex-col items-center pl-3 text-left ">
-          {/**
-           * Transaction Title
-           */}
-          <div className="flex h-6 w-full shrink-0 grow flex-col place-content-center items-center">
-            <div className="w-full items-start text-left font-gt text-sm font-light text-black">
-              {transaction.label}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex h-6 w-6 flex-col place-content-center items-center">
-          {txStatus === "success" && (
-            <CheckCircleIcon
-              strokeWidth={2}
-              className="h-6 w-6 p-[0.2rem] text-success"
-            />
-          )}
+      {/**
+       * Index
+       */}
+      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-divider">
+        <div className="font-gt text-sm font-light text-primary">
+          {transactionIndex}
         </div>
       </div>
 
-      {/* {transaction.txHash && (
-        <div className="mt-2 flex w-full flex-row place-content-end items-center">
-          <BadgeLink
-            size="sm"
-            target="_blank"
-            href={getExplorerUrl({
-              chainId: transaction.chainId,
-              value: transaction.txHash,
-              type: "tx",
-            })}
-            text="View on Explorer"
-            className="text-sm"
-          />
+      {/**
+       * Details
+       */}
+      <div className="grow text-left">
+        <div className="font-gt text-sm font-light text-primary">
+          {transaction.label}
         </div>
-      )} */}
+      </div>
+
+      {txStatus === "success" && (
+        <CheckCircleIcon
+          strokeWidth={2}
+          className="h-6 w-6 p-[0.2rem] text-success"
+        />
+      )}
     </div>
   );
 });

@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { useAtomValue } from "jotai";
+
 import { cn } from "@/lib/utils";
 import {
   PrimaryLabel,
@@ -9,26 +11,15 @@ import {
 import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
 
+import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
+import { formatDate } from "date-fns";
+
 export const Rewards = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  // TODO: Implement Hook
-  const rewards = [
-    { type: "percent", value: 0.0507, label: "GHO", expires: "Until Mar 31" },
-    {
-      type: "string",
-      value: "5X Points",
-      label: "VEDA Points",
-      expires: "Until Mar 3",
-    },
-    {
-      type: "string",
-      value: "5X Points",
-      label: "stkGHO",
-      expires: "Base Rate",
-    },
-  ];
+  const { data } = useAtomValue(vaultMetadataAtom);
 
   return (
     <div
@@ -44,29 +35,56 @@ export const Rewards = React.forwardRef<
       {/**
        * Rewards
        */}
-      <div className="mt-4">
-        {rewards.map((reward, index) => (
-          <SlideUpWrapper key={index} delay={index * 0.1}>
-            <div className="flex items-start justify-between py-3">
-              <div>
-                <PrimaryLabel className="text-sm font-medium">
-                  {reward.label}
-                </PrimaryLabel>
-                <SecondaryLabel className="mt-1">
-                  {reward.expires}
-                </SecondaryLabel>
-              </div>
+      <div className="mt-4 space-y-6">
+        {data.incentiveTokens.length === 0 && (
+          <AlertIndicator className="py-10">
+            No rewards available
+          </AlertIndicator>
+        )}
 
-              <PrimaryLabel className="text-sm text-success">
-                {reward.type === "percent"
-                  ? formatNumber(reward.value, {
-                      type: "percent",
-                    })
-                  : reward.value}
-              </PrimaryLabel>
-            </div>
-          </SlideUpWrapper>
-        ))}
+        {data.incentiveTokens.length > 0 &&
+          data.incentiveTokens.map((reward, index) => (
+            <SlideUpWrapper key={index} delay={index * 0.1}>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <TokenDisplayer size={6} tokens={[reward]} symbols={false} />
+
+                  <div>
+                    <PrimaryLabel className="text-sm font-medium">
+                      {reward.name}
+                    </PrimaryLabel>
+                    <SecondaryLabel className="mt-px">
+                      {reward.unlockTimestamp
+                        ? `Until ${formatDate(Number(reward.unlockTimestamp) * 1000, "MMM d")}`
+                        : "N/A"}
+                    </SecondaryLabel>
+                  </div>
+                </div>
+
+                <PrimaryLabel className="text-sm text-success">
+                  {(() => {
+                    if (reward.yieldRate) {
+                      return formatNumber(reward.yieldRate, {
+                        type: "percent",
+                      });
+                    }
+
+                    if (reward.yieldRate === 0 && reward.tokenAmount) {
+                      return `${formatNumber(reward.tokenAmount, {
+                        type: "number",
+                      })} ${reward.symbol}`;
+                    }
+
+                    if (reward.yieldText) {
+                      return reward.yieldText;
+                    }
+
+                    return;
+                  })()}
+                </PrimaryLabel>
+              </div>
+            </SlideUpWrapper>
+          ))}
       </div>
     </div>
   );
