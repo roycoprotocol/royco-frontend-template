@@ -19,9 +19,10 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { ChevronsUpDown } from "lucide-react";
+import { CheckCircleIcon, ChevronsUpDown } from "lucide-react";
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
+import { SlideUpWrapper } from "@/components/animations";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -110,14 +111,6 @@ export const TransactionModal = React.forwardRef<
     }, 100);
   };
 
-  const dialogTitle = useMemo(() => {
-    if (transaction?.type === "deposit") {
-      return "Deposit";
-    } else if (transaction?.type === "withdraw") {
-      return "Withdraw";
-    }
-  }, [transaction]);
-
   const isTxLoading = useMemo(() => {
     return transaction?.txStatus === "loading";
   }, [transaction]);
@@ -125,6 +118,22 @@ export const TransactionModal = React.forwardRef<
   const isTxSuccess = useMemo(() => {
     return transaction?.txStatus === "success";
   }, [transaction]);
+
+  const dialogTitle = useMemo(() => {
+    if (transaction?.type === "deposit") {
+      if (isTxSuccess) {
+        return "Deposit Completed";
+      } else {
+        return "Deposit";
+      }
+    } else if (transaction?.type === "withdraw") {
+      if (isTxSuccess) {
+        return "Withdraw Submitted";
+      } else {
+        return "Withdraw";
+      }
+    }
+  }, [transaction, isTxSuccess]);
 
   return (
     <Dialog
@@ -155,24 +164,50 @@ export const TransactionModal = React.forwardRef<
            * Transaction Header
            */}
           <DialogHeader>
-            <DialogTitle>{dialogTitle}</DialogTitle>
+            <div
+              className={cn(
+                "flex flex-col gap-2",
+                isTxSuccess ? "items-center" : "items-start"
+              )}
+            >
+              {isTxSuccess && (
+                <SlideUpWrapper
+                  layoutId={`transaction-modal-success-icon-${isTxSuccess}`}
+                >
+                  <CheckCircleIcon
+                    strokeWidth={2}
+                    className="h-6 w-6 p-[0.2rem] text-success"
+                  />
+                </SlideUpWrapper>
+              )}
 
-            <div className="mt-2 flex items-center gap-1">
-              <TokenDisplayer
-                size={4}
-                tokens={[transaction?.form.token]}
-                symbols={false}
-              />
+              <SlideUpWrapper
+                layoutId={`transaction-modal-title-${isTxSuccess}`}
+              >
+                <DialogTitle>{dialogTitle}</DialogTitle>
+              </SlideUpWrapper>
 
-              <span className="text-base font-normal">
-                {formatNumber(transaction?.form.amount, {
-                  type: "number",
-                })}
-              </span>
+              <SlideUpWrapper
+                layoutId={`transaction-modal-token-displayer-${isTxSuccess}`}
+              >
+                <div className="flex items-center gap-1">
+                  <TokenDisplayer
+                    size={4}
+                    tokens={[transaction?.form.token]}
+                    symbols={false}
+                  />
 
-              <span className="text-base font-normal">
-                {transaction?.form.token.symbol}
-              </span>
+                  <span className="text-base font-normal">
+                    {formatNumber(transaction?.form.amount, {
+                      type: "number",
+                    })}
+                  </span>
+
+                  <span className="text-base font-normal">
+                    {transaction?.form.token.symbol}
+                  </span>
+                </div>
+              </SlideUpWrapper>
             </div>
           </DialogHeader>
 
@@ -279,7 +314,12 @@ export const TransactionModal = React.forwardRef<
           )}
 
           {isTxSuccess && (
-            <Button onClick={handleClose} size="sm" className="mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClose}
+              className="mt-3 w-full justify-center"
+            >
               Close
             </Button>
           )}
