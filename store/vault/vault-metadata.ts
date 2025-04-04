@@ -33,7 +33,7 @@ export const vaultMetadataAtom = atom<{
   return {
     isLoading: vault.state === "loading",
     data:
-      vault.state === "hasData"
+      vault.state === "hasData" && vault.data
         ? {
             ...vault.data,
             chainId: Number(vault.data?.chainId),

@@ -9,6 +9,7 @@ import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 interface BoringVaultActions {
   deposit: (amount: number) => Promise<any>;
   withdraw: (amount: number) => Promise<any>;
+  cancelWithdraw: () => Promise<any>;
 }
 
 const BoringVaultActionContext = createContext<BoringVaultActions | null>(null);
@@ -20,8 +21,11 @@ export function BoringVaultActionProvider({
 }) {
   const signer = useEthersSigner();
 
-  const { deposit: boringDeposit, queueBoringWithdraw: boringWithdraw } =
-    useBoringVaultV1();
+  const {
+    deposit: boringDeposit,
+    queueBoringWithdraw: boringWithdraw,
+    boringQueueCancel: boringCancelWithdraw,
+  } = useBoringVaultV1();
 
   const boringVault = useAtomValue(boringVaultAtom);
 
@@ -47,7 +51,9 @@ export function BoringVaultActionProvider({
       const response = await boringDeposit(signer, amount.toString(), token);
 
       if (response.error) {
-        toast.custom(<ErrorAlert message="Deposit failed" />);
+        const error =
+          response.error.length > 50 ? "Deposit failed" : response.error;
+        toast.custom(<ErrorAlert message={error} />);
       }
 
       return response;
@@ -71,8 +77,10 @@ export function BoringVaultActionProvider({
     }
 
     try {
-      const discount = "0.001";
-      const validDays = "4";
+      const discount = (boringVault.baseAsset.maxDiscount / 100).toString();
+      const validDays = Math.ceil(
+        1 + boringVault.baseAsset.minimumSecondsToDeadline / 86400
+      ).toString();
 
       const token = {
         address: boringVault.baseAsset.address,
@@ -92,7 +100,9 @@ export function BoringVaultActionProvider({
       );
 
       if (response.error) {
-        toast.custom(<ErrorAlert message="Withdrawal failed" />);
+        const error =
+          response.error.length > 50 ? "Withdrawal failed" : response.error;
+        toast.custom(<ErrorAlert message={error} />);
       }
 
       return response;
@@ -102,8 +112,46 @@ export function BoringVaultActionProvider({
     }
   };
 
+  const cancelWithdraw = async () => {
+    if (!signer) {
+      toast.custom(
+        <ErrorAlert message="No signer found. Please connect your wallet and try again." />
+      );
+      return;
+    }
+
+    if (!boringVault) {
+      toast.custom(<ErrorAlert message="Vault data not available" />);
+      return;
+    }
+
+    try {
+      const token = {
+        address: boringVault.baseAsset.address,
+        decimals: boringVault.baseAsset.decimals,
+      };
+
+      const response = await boringCancelWithdraw(signer, token);
+
+      if (response.error) {
+        const error =
+          response.error.length > 50
+            ? "Cancel withdrawal failed"
+            : response.error;
+        toast.custom(<ErrorAlert message={error} />);
+      }
+
+      return response;
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Cancel withdrawal failed" />);
+      throw error;
+    }
+  };
+
   return (
-    <BoringVaultActionContext.Provider value={{ deposit, withdraw }}>
+    <BoringVaultActionContext.Provider
+      value={{ deposit, withdraw, cancelWithdraw }}
+    >
       {children}
     </BoringVaultActionContext.Provider>
   );

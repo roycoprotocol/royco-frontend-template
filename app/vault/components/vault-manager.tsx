@@ -14,6 +14,7 @@ import { Rewards } from "./rewards/rewards";
 import { SlideUpWrapper } from "@/components/animations";
 import { TransactionModal } from "../common/transaction-modal/transaction-modal";
 import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { Withdrawals } from "./withdrawals/withdrawals";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
@@ -63,12 +64,21 @@ export const VaultManager = React.forwardRef<
           {/**
            * Market Allocation
            */}
-          <MarketAllocation className="mt-7" />
+          <SlideUpWrapper className="mt-4" delay={0.2}>
+            <MarketAllocation className="mt-7" />
+          </SlideUpWrapper>
+
+          {/**
+           * Withdrawals
+           */}
+          <SlideUpWrapper className="mt-4" delay={0.3}>
+            <Withdrawals />
+          </SlideUpWrapper>
 
           {/**
            * Vault FAQ
            */}
-          <SlideUpWrapper className="mt-4" delay={0.3}>
+          <SlideUpWrapper className="mt-4" delay={0.4}>
             <VaultFAQ />
           </SlideUpWrapper>
         </div>

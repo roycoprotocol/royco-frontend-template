@@ -58,7 +58,7 @@ export const TransactionModal = React.forwardRef<
   const [showTransactionBreakdown, setShowTransactionBreakdown] =
     useState(true);
 
-  const { transaction, setTransaction } = useVaultManager();
+  const { transaction, setTransaction, setRefreshManager } = useVaultManager();
 
   useEffect(() => {
     setIsOpen(transaction !== null && transaction !== undefined);
@@ -131,6 +131,12 @@ export const TransactionModal = React.forwardRef<
         return "Withdraw Submitted";
       } else {
         return "Withdraw";
+      }
+    } else if (transaction?.type === "cancelWithdraw") {
+      if (isTxSuccess) {
+        return "Withdrawal Canceled";
+      } else {
+        return "Cancel Withdrawal";
       }
     }
   }, [transaction, isTxSuccess]);
@@ -297,7 +303,10 @@ export const TransactionModal = React.forwardRef<
             <div className="mt-3">
               <BoringVaultActionButton
                 onSuccess={() => {
-                  triggerConfetti();
+                  setRefreshManager(true);
+                  if (transaction?.type === "deposit") {
+                    triggerConfetti();
+                  }
                 }}
               />
 
