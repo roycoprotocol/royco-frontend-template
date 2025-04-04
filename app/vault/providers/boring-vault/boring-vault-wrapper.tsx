@@ -174,9 +174,9 @@ export const BoringVaultWrapper = React.forwardRef<
 
   if (isLoading) {
     return (
-      <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
+      <div className="flex w-full flex-col place-content-center items-center pt-16">
         <LoadingSpinner className="h-5 w-5" />
-      </SlideUpWrapper>
+      </div>
     );
   }
 

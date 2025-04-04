@@ -12,7 +12,7 @@ const vault_faq = [
   {
     question: "How often are rebalances?",
     answer:
-      "Vault gets rebalanced once every week. The goal of Vault keeps assets safe ans secure, without something or another. It may take a week to process a withdrawal. It may tale a wwk too start earning.",
+      "Vault gets rebalanced at least once a week. The goal of Vault keeps assets safe and secure, without something or another. It may take a week to process a withdrawal. It may take a week too start earning.",
   },
   {
     question: "How do you manage the vault?",
