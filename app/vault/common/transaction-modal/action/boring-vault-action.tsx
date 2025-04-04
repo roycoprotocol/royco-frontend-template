@@ -29,7 +29,7 @@ export const BoringVaultActionButton = React.forwardRef<
 
   const { transaction, setTransaction } = useVaultManager();
 
-  const { deposit, withdraw } = useBoringVaultActions();
+  const { deposit, withdraw, cancelWithdraw } = useBoringVaultActions();
 
   const handleAction = async () => {
     try {
@@ -67,6 +67,31 @@ export const BoringVaultActionButton = React.forwardRef<
         });
 
         const response = await withdraw(amount);
+
+        if (response.error) {
+          setTransaction({
+            ...transaction,
+            txStatus: "error",
+          });
+          return;
+        }
+
+        setTransaction({
+          ...transaction,
+          txStatus: "success",
+        });
+
+        onSuccess?.();
+        return;
+      }
+
+      if (transaction?.type === "cancelWithdraw") {
+        setTransaction({
+          ...transaction,
+          txStatus: "loading",
+        });
+
+        const response = await cancelWithdraw();
 
         if (response.error) {
           setTransaction({

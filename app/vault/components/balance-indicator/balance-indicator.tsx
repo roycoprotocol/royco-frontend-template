@@ -53,10 +53,15 @@ export const BalanceIndicator = React.forwardRef<
   }, [data]);
 
   const principle = useMemo(() => {
+    const isLocked =
+      (vault?.account.unlockTime || 0) > 0 &&
+      (vault?.account.unlockTime || 0) * 1000 > Date.now();
+
     return {
       amount: vault?.account.sharesInUSD || 0,
       tokenAmount: vault?.account.sharesInBaseAsset || 0,
       unlockTime: vault?.account.unlockTime || 0,
+      isLocked,
     };
   }, [vault]);
 
@@ -129,7 +134,7 @@ export const BalanceIndicator = React.forwardRef<
           <AnimatePresence>
             {showPrincipleBreakdown && (
               <DropdownAnimationWrapper className="mt-3 flex flex-col gap-4 rounded-lg border border-divider p-4">
-                {principle.unlockTime === 0 && (
+                {!principle.isLocked && (
                   <div>
                     <SecondaryLabel className="text-xs font-medium">
                       Available to Withdraw
@@ -161,7 +166,7 @@ export const BalanceIndicator = React.forwardRef<
                   </div>
                 )}
 
-                {principle.unlockTime > 0 && (
+                {principle.isLocked && (
                   <div>
                     <SecondaryLabel className="text-xs font-medium">
                       Locked

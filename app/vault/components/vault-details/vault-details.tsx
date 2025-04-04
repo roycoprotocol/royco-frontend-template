@@ -40,17 +40,21 @@ export const VaultDetails = React.forwardRef<
         </PrimaryLabel>
 
         <div className="mt-3 flex items-center gap-1">
-          {data.managers.map((manager) => {
-            return (
-              <CustomBadge
-                key={manager.id}
-                icon={manager.image}
-                label={manager.name}
-              />
-            );
-          })}
+          {data.managers &&
+            data.managers.length > 0 &&
+            data.managers.map((manager) => {
+              return (
+                <CustomBadge
+                  key={manager.id}
+                  icon={manager.image}
+                  label={manager.name}
+                />
+              );
+            })}
 
-          <CustomBadge icon={chain.image} label={chain.name} />
+          {data.chainId && (
+            <CustomBadge icon={chain.image} label={chain.name} />
+          )}
         </div>
       </div>
 

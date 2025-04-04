@@ -12,7 +12,13 @@ import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
 import { SlideUpWrapper } from "@/components/animations";
 import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
 import { AlertIndicator } from "@/components/common";
+import { chains } from "../../constants/chains";
+import axios from "axios";
+import { parseRawAmountToTokenAmount } from "royco/utils";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
 
+const DEFAULT_WITHDRAWALS_API_URL =
+  "https://api.sevenseas.capital/boringQueue/";
 const DEFAULT_VAULT_DECIMALS = 18;
 
 export const BoringVaultWrapper = React.forwardRef<
@@ -24,6 +30,8 @@ export const BoringVaultWrapper = React.forwardRef<
 
   const setBoringVault = useSetAtom(boringVaultAtom);
 
+  const { refreshManager, setRefreshManager } = useVaultManager();
+
   const {
     isBoringV1ContextReady,
     fetchTotalAssets,
@@ -32,7 +40,91 @@ export const BoringVaultWrapper = React.forwardRef<
     fetchUserUnlockTime,
     fetchBoringQueueAssetParams,
     depositStatus,
+    boringQueueStatuses,
   } = useBoringVaultV1();
+
+  const getBaseAsset = async (token: any) => {
+    const params = await fetchBoringQueueAssetParams({
+      address: token.contractAddress,
+      decimals: token.decimals,
+    });
+
+    return {
+      ...params,
+      address: token.contractAddress,
+      decimals: token.decimals,
+      price: token.price,
+    };
+  };
+
+  const getAccount = async (
+    vaultAddress: string,
+    address: string,
+    sharePrice: number,
+    token: any,
+    chain: any
+  ) => {
+    const userShares = await fetchUserShares(address);
+    const userSharesInBaseAsset =
+      (userShares * 10 ** DEFAULT_VAULT_DECIMALS * sharePrice) /
+      10 ** token.decimals;
+
+    const userSharesInUSD = userSharesInBaseAsset * token.price;
+
+    const userUnlockTime = await fetchUserUnlockTime(address);
+
+    const response = await axios.get(
+      `${DEFAULT_WITHDRAWALS_API_URL}/${chain.chainName}/${vaultAddress}/${address}`
+    );
+    const data = response.data?.Response;
+
+    const withdrawals = [
+      ...data.open_requests.map((item: any) => ({
+        token,
+        amountInBaseAsset: parseRawAmountToTokenAmount(
+          item.metadata.amountOfAssets,
+          token.decimals
+        ),
+        createdAt: item.metadata.creationTime,
+        status: "initiated",
+      })),
+      ...data.expired_requests.map((item: any) => ({
+        token,
+        amountInBaseAsset: parseRawAmountToTokenAmount(
+          item.metadata.amountOfAssets,
+          token.decimals
+        ),
+        createdAt: item.metadata.creationTime,
+        status: "expired",
+      })),
+      ...data.cancelled_requests.map((item: any) => ({
+        token,
+        amountInBaseAsset: parseRawAmountToTokenAmount(
+          item.Request.metadata.amountOfAssets,
+          token.decimals
+        ),
+        createdAt: item.Request.metadata.creationTime,
+        status: "canceled",
+      })),
+      ...data.fulfilled_requests.map((item: any) => ({
+        token,
+        amountInBaseAsset: parseRawAmountToTokenAmount(
+          item.metadata.amountOfAssets,
+          token.decimals
+        ),
+        createdAt: item.metadata.creationTime,
+        status: "completed",
+      })),
+    ].sort((a: any, b: any) => b.createdAt - a.createdAt);
+
+    return {
+      address,
+      sharesInBaseAsset: userSharesInBaseAsset,
+      sharesInUSD: userSharesInUSD,
+      unlockTime: userUnlockTime,
+      withdrawals,
+    };
+  };
 
   useEffect(() => {
     (async () => {
@@ -40,60 +132,45 @@ export const BoringVaultWrapper = React.forwardRef<
         return;
       }
 
+      const chain = chains[Number(data.chainId) as keyof typeof chains];
+
+      if (!chain) {
+        return;
+      }
+
       try {
         const depositToken = data.depositTokens[0];
 
-        const depositAssetParams = await fetchBoringQueueAssetParams({
-          address: depositToken.contractAddress,
-          decimals: depositToken.decimals,
-        });
+        const baseAsset = await getBaseAsset(depositToken);
 
         const totalValueLockedInBaseAsset = await fetchTotalAssets();
         const sharePriceInBaseAsset = await fetchShareValue();
 
-        const userShares = await fetchUserShares(address);
-        const sharePrice = await fetchShareValue();
+        const account = await getAccount(
+          data.vaultAddress,
+          address,
+          sharePriceInBaseAsset,
+          depositToken,
+          chain
+        );
 
-        const userSharesInBaseAsset =
-          (userShares * 10 ** DEFAULT_VAULT_DECIMALS * sharePrice) /
-          10 ** depositToken.decimals;
-
-        const userSharesInUSD = userSharesInBaseAsset * depositToken.price;
-
-        const userUnlockTime = await fetchUserUnlockTime(address);
-
-        setBoringVault((boringVault: any) => ({
-          ...boringVault,
-          baseAsset: {
-            address: depositToken.contractAddress,
-            decimals: depositToken.decimals,
-            price: depositToken.price,
-            allowWithdraws: depositAssetParams.allowWithdraws,
-            secondsToMaturity: depositAssetParams.secondsToMaturity,
-            minimumSecondsToDeadline:
-              depositAssetParams.minimumSecondsToDeadline,
-            minDiscount: depositAssetParams.minDiscount,
-            maxDiscount: depositAssetParams.maxDiscount,
-            minimumShares: depositAssetParams.minimumShares,
-          },
+        setBoringVault({
+          baseAsset,
           chainId: data.chainId,
           totalValueLockedInBaseAsset,
           sharePriceInBaseAsset,
           decimals: DEFAULT_VAULT_DECIMALS,
-          account: {
-            address,
-            sharesInBaseAsset: userSharesInBaseAsset,
-            sharesInUSD: userSharesInUSD,
-            unlockTime: userUnlockTime,
-          },
-        }));
+          account,
+        });
       } catch (error) {
         toast.custom(
           <ErrorAlert message="Error: while fetching vault data." />
         );
+      } finally {
+        setRefreshManager(false);
       }
     })();
-  }, [isBoringV1ContextReady, address, data, depositStatus]);
+  }, [isBoringV1ContextReady, address, data, refreshManager]);
 
   if (isLoading) {
     return (

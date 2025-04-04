@@ -21,6 +21,12 @@ export interface BoringVault {
     sharesInBaseAsset: number;
     sharesInUSD: number;
     unlockTime: number;
+    withdrawals: {
+      token: any;
+      amountInBaseAsset: number;
+      createdAt: number;
+      status: string;
+    }[];
   };
 }
 
