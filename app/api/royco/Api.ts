@@ -12,14 +12,16 @@
 
 import {
   BaseRequestBody,
+  BoringPositionResponse,
   InfoMarketBody,
   RecipePositionResponse,
-  RewardsRequest,
-  RewardsResponse,
-  TokenQuoteBody,
+  SpecificBoringPositionRequest,
+  SpecificBoringPositionResponse,
+  TokenQuoteRequestBody,
   TokenQuoteResponse,
   VaultInfoRequestBody,
   VaultInfoResponse,
+  VaultPositionResponse,
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
@@ -109,7 +111,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
   tokenControllerGetTokenQuote = (
     chainId: number,
     contractAddress: string,
-    data: TokenQuoteBody,
+    data?: TokenQuoteRequestBody,
     params: RequestParams = {}
   ) =>
     this.request<TokenQuoteResponse, any>({
@@ -197,7 +199,7 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
-   * @description Get positions for all recipe markets
+   * @description Get positions for all recipe markets. Use filters property in body to filter out by market id, chain id, etc. Since response is paginated, use pagination properties in body to get next page based on size property of page. Do note: max page size for response is 500.
    *
    * @tags Position
    * @name PositionControllerGetRecipePositions
@@ -216,52 +218,63 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
-   * No description
+   * @description Get positions for all vaults. Use filters property in body to filter out by vault id, chain id, etc. Since response is paginated, use pagination properties in body to get next page based on size property of page. Do note: max page size for response is 500.
    *
    * @tags Position
    * @name PositionControllerGetVaultPositions
+   * @summary Get vault positions
    * @request POST:/api/v1/position/vault
    * @secure
    */
-  positionControllerGetVaultPositions = (data: BaseRequestBody, params: RequestParams = {}) =>
-    this.request<void, any>({
+  positionControllerGetVaultPositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+    this.request<VaultPositionResponse, any>({
       path: `/api/v1/position/vault`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
-   * No description
+   * @description Get positions for all boring markets. Use filters property in body to filter out by vault id, chain id, etc. Since response is paginated, use pagination properties in body to get next page based on size property of page. Do note: max page size for response is 500.
    *
    * @tags Position
    * @name PositionControllerGetBoringPositions
+   * @summary Get boring positions
    * @request POST:/api/v1/position/boring
    * @secure
    */
-  positionControllerGetBoringPositions = (data: BaseRequestBody, params: RequestParams = {}) =>
-    this.request<void, any>({
+  positionControllerGetBoringPositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+    this.request<BoringPositionResponse, any>({
       path: `/api/v1/position/boring`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
-   * @description Get paginated rewards with filters and sorting. Requires accountAddress filter. Supports additional filtering by chainId, vaultAddress, and blockTimestamp. Supports sorting by any of these fields.
+   * @description Get positions of an account address inside a vault.
    *
-   * @tags Rewards
-   * @name RewardsControllerGetRewards
-   * @summary Get rewards
-   * @request POST:/api/v1/rewards
+   * @tags Position
+   * @name PositionControllerGetSpecificBoringPosition
+   * @summary Get boring position of an account address inside a vault
+   * @request POST:/api/v1/position/boring/{id}/{accountAddress}
+   * @secure
    */
-  rewardsControllerGetRewards = (data: RewardsRequest, params: RequestParams = {}) =>
-    this.request<RewardsResponse, void>({
-      path: `/api/v1/rewards`,
+  positionControllerGetSpecificBoringPosition = (
+    id: string,
+    accountAddress: string,
+    data?: SpecificBoringPositionRequest,
+    params: RequestParams = {}
+  ) =>
+    this.request<SpecificBoringPositionResponse, any>({
+      path: `/api/v1/position/boring/${id}/${accountAddress}`,
       method: "POST",
       body: data,
+      secure: true,
       type: ContentType.Json,
       format: "json",
       ...params,

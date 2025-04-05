@@ -8,14 +8,24 @@ import { useAccount } from "wagmi";
 import { useBoringVaultV1 } from "boring-vault-ui";
 import toast from "react-hot-toast";
 import { ErrorAlert, LoadingSpinner } from "@/components/composables";
-import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import {
+  boringVaultAtom,
+  BoringVaultRewards,
+  BoringVaultToken,
+  BoringVaultWithdrawal,
+} from "@/store/vault/atom/boring-vault";
 import { SlideUpWrapper } from "@/components/animations";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import {
+  asyncVaultMetadataAtom,
+  vaultMetadataAtom,
+} from "@/store/vault/vault-metadata";
 import { AlertIndicator } from "@/components/common";
 import { chains } from "../../constants/chains";
 import axios from "axios";
 import { parseRawAmountToTokenAmount } from "royco/utils";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
+import { api } from "@/app/api/royco";
+import { VaultDepositToken } from "@/app/api/royco/data-contracts";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -28,9 +38,15 @@ export const BoringVaultWrapper = React.forwardRef<
   const { address } = useAccount();
   const { isLoading, isError, data } = useAtomValue(vaultMetadataAtom);
 
+  const refresh = useSetAtom(asyncVaultMetadataAtom);
   const setBoringVault = useSetAtom(boringVaultAtom);
 
-  const { refreshManager, setRefreshManager } = useVaultManager();
+  const {
+    refreshManager,
+    setRefreshManager,
+    refreshMetadata,
+    setRefreshMetadata,
+  } = useVaultManager();
 
   const {
     isBoringV1ContextReady,
@@ -39,11 +55,13 @@ export const BoringVaultWrapper = React.forwardRef<
     fetchUserShares,
     fetchUserUnlockTime,
     fetchBoringQueueAssetParams,
-    depositStatus,
-    boringQueueStatuses,
   } = useBoringVaultV1();
 
-  const getBaseAsset = async (token: any) => {
+  const getBaseAsset = async ({
+    token,
+  }: {
+    token: VaultDepositToken;
+  }): Promise<BoringVaultToken> => {
     const params = await fetchBoringQueueAssetParams({
       address: token.contractAddress,
       decimals: token.decimals,
@@ -57,72 +75,140 @@ export const BoringVaultWrapper = React.forwardRef<
     };
   };
 
-  const getAccount = async (
-    vaultAddress: string,
-    address: string,
-    sharePrice: number,
-    token: any,
-    chain: any
-  ) => {
+  const getAccountWithdrawals = async ({
+    chain,
+    vaultAddress,
+    address,
+    token,
+  }: {
+    chain: any;
+    vaultAddress: string;
+    address: string;
+    token: VaultDepositToken;
+  }): Promise<BoringVaultWithdrawal[] | []> => {
+    try {
+      const response = await axios.get(
+        `${DEFAULT_WITHDRAWALS_API_URL}/${chain.chainName}/${vaultAddress}/${address}`
+      );
+      const data = response.data?.Response;
+
+      const withdrawals = [
+        ...data.open_requests.map((item: any) => ({
+          token,
+          amountInBaseAsset: parseRawAmountToTokenAmount(
+            item.metadata.amountOfAssets,
+            token.decimals
+          ),
+          createdAt: item.metadata.creationTime,
+          status: "initiated",
+        })),
+        ...data.expired_requests.map((item: any) => ({
+          token,
+          amountInBaseAsset: parseRawAmountToTokenAmount(
+            item.metadata.amountOfAssets,
+            token.decimals
+          ),
+          createdAt: item.metadata.creationTime,
+          status: "expired",
+        })),
+        ...data.cancelled_requests.map((item: any) => ({
+          token,
+          amountInBaseAsset: parseRawAmountToTokenAmount(
+            item.Request.metadata.amountOfAssets,
+            token.decimals
+          ),
+          createdAt: item.Request.metadata.creationTime,
+          status: "canceled",
+        })),
+        ...data.fulfilled_requests.map((item: any) => ({
+          token,
+          amountInBaseAsset: parseRawAmountToTokenAmount(
+            item.metadata.amountOfAssets,
+            token.decimals
+          ),
+          createdAt: item.metadata.creationTime,
+          status: "completed",
+        })),
+      ].sort((a: any, b: any) => b.createdAt - a.createdAt);
+
+      return withdrawals;
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Error: User withdrawals not found." />);
+      return [];
+    }
+  };
+
+  const getAccountRewards = async ({
+    chain,
+    vaultAddress,
+    address,
+  }: {
+    chain: any;
+    vaultAddress: string;
+    address: string;
+  }): Promise<BoringVaultRewards> => {
+    try {
+      const response = await api.positionControllerGetSpecificBoringPosition(
+        `${chain.chainId}_${vaultAddress}`,
+        address
+      );
+
+      return response.data;
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Error: User rewards not found." />);
+      return {
+        id: `${chain.chainId}_${vaultAddress}`,
+        chainId: chain.chainId,
+        vaultAddress,
+        accountAddress: address,
+        unclaimedRewardTokens: [],
+        claimedRewardTokens: [],
+      };
+    }
+  };
+
+  const getAccount = async ({
+    chain,
+    vaultAddress,
+    address,
+    sharePrice,
+    token,
+  }: {
+    chain: any;
+    vaultAddress: string;
+    address: string;
+    sharePrice: number;
+    token: VaultDepositToken;
+  }) => {
     const userShares = await fetchUserShares(address);
     const userSharesInBaseAsset =
       (userShares * 10 ** DEFAULT_VAULT_DECIMALS * sharePrice) /
       10 ** token.decimals;
 
-    const userSharesInUSD = userSharesInBaseAsset * token.price;
+    const userSharesInUsd = userSharesInBaseAsset * token.price;
 
     const userUnlockTime = await fetchUserUnlockTime(address);
 
-    const response = await axios.get(
-      `${DEFAULT_WITHDRAWALS_API_URL}/${chain.chainName}/${vaultAddress}/${address}`
-    );
-    const data = response.data?.Response;
+    const withdrawals = await getAccountWithdrawals({
+      chain,
+      vaultAddress,
+      address,
+      token,
+    });
 
-    const withdrawals = [
-      ...data.open_requests.map((item: any) => ({
-        token,
-        amountInBaseAsset: parseRawAmountToTokenAmount(
-          item.metadata.amountOfAssets,
-          token.decimals
-        ),
-        createdAt: item.metadata.creationTime,
-        status: "initiated",
-      })),
-      ...data.expired_requests.map((item: any) => ({
-        token,
-        amountInBaseAsset: parseRawAmountToTokenAmount(
-          item.metadata.amountOfAssets,
-          token.decimals
-        ),
-        createdAt: item.metadata.creationTime,
-        status: "expired",
-      })),
-      ...data.cancelled_requests.map((item: any) => ({
-        token,
-        amountInBaseAsset: parseRawAmountToTokenAmount(
-          item.Request.metadata.amountOfAssets,
-          token.decimals
-        ),
-        createdAt: item.Request.metadata.creationTime,
-        status: "canceled",
-      })),
-      ...data.fulfilled_requests.map((item: any) => ({
-        token,
-        amountInBaseAsset: parseRawAmountToTokenAmount(
-          item.metadata.amountOfAssets,
-          token.decimals
-        ),
-        createdAt: item.metadata.creationTime,
-        status: "completed",
-      })),
-    ].sort((a: any, b: any) => b.createdAt - a.createdAt);
+    const rewards = await getAccountRewards({
+      chain,
+      vaultAddress,
+      address,
+    });
 
     return {
       address,
       sharesInBaseAsset: userSharesInBaseAsset,
-      sharesInUSD: userSharesInUSD,
+      sharesInUsd: userSharesInUsd,
       unlockTime: userUnlockTime,
       withdrawals,
+      rewards,
     };
   };
 
@@ -141,18 +227,18 @@ export const BoringVaultWrapper = React.forwardRef<
       try {
         const depositToken = data.depositTokens[0];
 
-        const baseAsset = await getBaseAsset(depositToken);
+        const baseAsset = await getBaseAsset({ token: depositToken });
 
         const totalValueLockedInBaseAsset = await fetchTotalAssets();
         const sharePriceInBaseAsset = await fetchShareValue();
 
-        const account = await getAccount(
-          data.vaultAddress,
+        const account = await getAccount({
+          chain,
+          vaultAddress: data.vaultAddress,
           address,
-          sharePriceInBaseAsset,
-          depositToken,
-          chain
-        );
+          sharePrice: sharePriceInBaseAsset,
+          token: depositToken,
+        });
 
         setBoringVault({
           baseAsset,
@@ -163,9 +249,7 @@ export const BoringVaultWrapper = React.forwardRef<
           account,
         });
       } catch (error) {
-        toast.custom(
-          <ErrorAlert message="Error: while fetching vault data." />
-        );
+        toast.custom(<ErrorAlert message="Error: Vault data not found." />);
       } finally {
         setRefreshManager(false);
       }

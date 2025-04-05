@@ -18,7 +18,7 @@ export const VaultManagerActionMap = {
 };
 
 export type TypeVaultTransaction = {
-  type: "deposit" | "withdraw" | "cancelWithdraw";
+  type: "deposit" | "withdraw" | "cancelWithdraw" | "claimIncentives";
   description?: {
     title: string;
     description: string;
@@ -28,7 +28,7 @@ export type TypeVaultTransaction = {
     label: string;
   }[];
   form: {
-    token: VaultDepositToken;
+    token: VaultDepositToken | any;
     amount: number;
   };
   txStatus?: "loading" | "error" | "success";
@@ -44,6 +44,9 @@ export interface VaultManagerState {
 
   refreshManager: boolean;
   setRefreshManager: (refreshManager: boolean) => void;
+
+  refreshMetadata: boolean;
+  setRefreshMetadata: (refreshMetadata: boolean) => void;
 }
 
 export const useVaultManager = create<VaultManagerState>((set) => ({
@@ -56,4 +59,7 @@ export const useVaultManager = create<VaultManagerState>((set) => ({
 
   refreshManager: false,
   setRefreshManager: (refreshManager: boolean) => set({ refreshManager }),
+
+  refreshMetadata: false,
+  setRefreshMetadata: (refreshMetadata: boolean) => set({ refreshMetadata }),
 }));

@@ -58,7 +58,8 @@ export const TransactionModal = React.forwardRef<
   const [showTransactionBreakdown, setShowTransactionBreakdown] =
     useState(true);
 
-  const { transaction, setTransaction, setRefreshManager } = useVaultManager();
+  const { transaction, setTransaction, setRefreshManager, setRefreshMetadata } =
+    useVaultManager();
 
   useEffect(() => {
     setIsOpen(transaction !== null && transaction !== undefined);
@@ -137,6 +138,12 @@ export const TransactionModal = React.forwardRef<
         return "Withdrawal Canceled";
       } else {
         return "Cancel Withdrawal";
+      }
+    } else if (transaction?.type === "claimIncentives") {
+      if (isTxSuccess) {
+        return "Incentives Claimed";
+      } else {
+        return "Claim Incentives";
       }
     }
   }, [transaction, isTxSuccess]);
@@ -306,6 +313,7 @@ export const TransactionModal = React.forwardRef<
                   setRefreshManager(true);
                   if (transaction?.type === "deposit") {
                     triggerConfetti();
+                    setRefreshMetadata(true);
                   }
                 }}
               />

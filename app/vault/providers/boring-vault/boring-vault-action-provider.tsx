@@ -5,11 +5,14 @@ import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { useAtomValue } from "jotai";
 import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
+import { ethers } from "ethers";
+import { abi } from "@/app/vault/constants/abi/boring-vault";
 
 interface BoringVaultActions {
   deposit: (amount: number) => Promise<any>;
   withdraw: (amount: number) => Promise<any>;
   cancelWithdraw: () => Promise<any>;
+  claimIncentive: (rewardIds: string[]) => Promise<any>;
 }
 
 const BoringVaultActionContext = createContext<BoringVaultActions | null>(null);
@@ -148,9 +151,44 @@ export function BoringVaultActionProvider({
     }
   };
 
+  const claimIncentive = async (rewardIds: string[]) => {
+    if (!signer) {
+      toast.custom(
+        <ErrorAlert message="No signer found. Please connect your wallet and try again." />
+      );
+      return;
+    }
+
+    if (!boringVault) {
+      toast.custom(<ErrorAlert message="Vault data not available" />);
+      return;
+    }
+
+    try {
+      const response = await claimRewards(
+        signer,
+        boringVault.account.rewards.vaultAddress,
+        rewardIds
+      );
+
+      if (response.error) {
+        const error =
+          response.error.length > 50
+            ? "Claim incentives failed"
+            : response.error;
+        toast.custom(<ErrorAlert message={error} />);
+      }
+
+      return response;
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Claim incentives failed" />);
+      throw error;
+    }
+  };
+
   return (
     <BoringVaultActionContext.Provider
-      value={{ deposit, withdraw, cancelWithdraw }}
+      value={{ deposit, withdraw, cancelWithdraw, claimIncentive }}
     >
       {children}
     </BoringVaultActionContext.Provider>
@@ -169,3 +207,36 @@ export function useBoringVaultActions() {
 
   return context;
 }
+
+export const claimRewards = async (
+  signer: any,
+  vaultAddress: string,
+  rewardIds: string[]
+): Promise<{
+  initiated: boolean;
+  loading: boolean;
+  success?: boolean;
+  error?: string;
+  tx_hash?: string;
+}> => {
+  try {
+    const contract = new ethers.Contract(vaultAddress, abi, signer);
+    const tx = await contract.claimRewards(rewardIds);
+
+    const receipt = await tx.wait();
+
+    return {
+      initiated: false,
+      loading: false,
+      success: true,
+      tx_hash: receipt.transactionHash,
+    };
+  } catch (error: any) {
+    return {
+      initiated: false,
+      loading: false,
+      success: false,
+      error: error.message || "Failed to claim rewards.",
+    };
+  }
+};
