@@ -37,7 +37,7 @@ export interface CustomTokenDataElement {
   totalSupply?: number;
 }
 
-export interface TokenQuoteBody {
+export interface TokenQuoteRequestBody {
   /**
    * Custom Token Data
    * Array of custom token assumptions --  if not provided, the default quote data will be used.
@@ -866,7 +866,7 @@ export interface VaultAllocation {
    * The incentive tokens of the allocation
    * @example "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
    */
-  incentiveTokens: string[];
+  incentiveTokens: VaultIncentiveToken[];
   /**
    * Unlock Timestamp
    * The timestamp when the allocation is unlocked
@@ -1536,6 +1536,12 @@ export interface RecipePosition {
    */
   chainId: number;
   /**
+   * Market ID
+   * The on-chain identifier of the market: For recipe market, it's market hash -- for vault market, it's wrapped vault address
+   * @example "0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
+   */
+  marketId: string;
+  /**
    * Weiroll Wallet Address
    * Address of the weiroll wallet for this position
    */
@@ -1546,12 +1552,6 @@ export interface RecipePosition {
    * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
    */
   accountAddress: string;
-  /**
-   * Market ID
-   * The on-chain identifier of the market: For recipe market, it's market hash -- for vault market, it's wrapped vault address
-   * @example "0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
-   */
-  marketId: string;
   /**
    * Reward Style
    * The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable
@@ -1564,18 +1564,6 @@ export interface RecipePosition {
    * @example false
    */
   isForfeited: boolean;
-  /**
-   * Is Withdrawn
-   * Whether the input token has been withdrawn
-   * @example false
-   */
-  isWithdrawn: boolean;
-  /**
-   * Is Claimed
-   * Whether the incentive token has been claimed
-   * @example [true,false,false]
-   */
-  isClaimed: boolean[];
   /**
    * Unlock Timestamp
    * Block timestamp when the position will be unlocked
@@ -1665,25 +1653,438 @@ export interface RecipePositionResponse {
   data: RecipePosition[];
 }
 
-export interface RewardsRequest {
+export interface VaultPosition {
   /**
-   * Filters
-   * The filters to apply to the rewards
-   * @example []
+   * ID
+   * The global unique identifier of the position: <CHAIN_ID>_<MARKET_TYPE>_<MARKET_ID>_<ACCOUNT_ADDRESS>
    */
-  filters?: string[];
+  id: string;
   /**
-   * Sorting
-   * The sorting to apply to the rewards
-   * @example []
+   * Raw Market Ref ID
+   * The raw market reference ID
+   * @example "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
    */
-  sorting?: string[];
+  rawMarketRefId: string;
   /**
-   * Page
-   * The page number to return
-   * @example {"index":1,"size":10,"total":100}
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
    */
-  page?: object;
+  chainId: number;
+  /**
+   * Market ID
+   * The on-chain identifier of the market: For recipe market, it's market hash -- for vault market, it's wrapped vault address
+   * @example "0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
+   */
+  marketId: string;
+  /**
+   * Account Address
+   * Wallet address of the account
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
+   */
+  accountAddress: string;
+  /**
+   * Vault Shares
+   * Raw amount of vault shares in wei
+   * @example "1000000000000000000"
+   */
+  shares: string[];
+  /**
+   * Name
+   * The name of the market
+   * @example "Swap USDC to stkGHO for 1 mo"
+   */
+  name: string;
+  /**
+   * Lockup Time
+   * The lockup time for the market in seconds. Note: vault markets always have a lockup time of "0"
+   * @example "31536000"
+   */
+  lockupTime: string;
+  /**
+   * Input Token Data
+   * Token data for the market input token
+   */
+  inputToken: BaseEnrichedTokenData;
+  /**
+   * Incentive Tokens
+   * Active incentive tokens
+   */
+  incentiveTokens: MarketActiveIncentive[];
+  /**
+   * Claimed Incentive Tokens
+   * Claimed incentive tokens
+   */
+  claimedIncentiveTokens: BaseEnrichedTokenData[];
+  /**
+   * Native Incentives
+   * Native incentive tokens
+   */
+  nativeIncentives?: MarketNativeIncentive[];
+  /**
+   * External Incentives
+   * External incentive tokens
+   */
+  externalIncentives?: MarketExternalIncentive[];
+  /**
+   * Yield Rate
+   * Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.
+   * @example "0.1"
+   */
+  yieldRate: number;
+}
+
+export interface VaultPositionResponse {
+  /**
+   * Response Page Object
+   * Object type to respond with a page of results
+   * @example {"index":1,"size":3,"total":10}
+   */
+  page: ResponsePage;
+  /**
+   * Row Count
+   * Total number of rows in the results
+   * @example 234
+   */
+  count: number;
+  /**
+   * Vault positions
+   * Vault positions
+   */
+  data: VaultPosition[];
+}
+
+export interface VaultPositionUnclaimedRewardToken {
+  /**
+   * Raw Metadata
+   * Raw metadata
+   */
+  rawMetadata?: object;
+  /**
+   * Token ID
+   * Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>
+   * @example "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  id: string;
+  /**
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
+   */
+  chainId: number;
+  /**
+   * Contract Address
+   * Deployment address of the contract
+   * @example "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  contractAddress: string;
+  /**
+   * Name
+   * The name of the token
+   * @example "USDC"
+   */
+  name: string;
+  /**
+   * Symbol
+   * The symbol of the token
+   * @example "USDC"
+   */
+  symbol: string;
+  /**
+   * Image
+   * The logo of the token
+   * @example "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+   */
+  image: string;
+  /**
+   * Decimals
+   * The number of decimals of the token
+   * @example 6
+   */
+  decimals: number;
+  /**
+   * Source
+   * The source for the price feed of the token
+   * @example "coinmarketcap"
+   */
+  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  /**
+   * Search ID
+   * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
+   * @example "3408"
+   */
+  searchId: string;
+  /**
+   * Type
+   * The type of the token
+   * @example "token"
+   */
+  type: "token" | "point" | "lp";
+  /**
+   * Price
+   * The price of the token
+   * @example 0.99999999
+   */
+  price: number;
+  /**
+   * FDV
+   * The fully diluted valuation of the token
+   * @example 59689964490.12
+   */
+  fdv: number;
+  /**
+   * Total Supply
+   * The total supply of the token
+   * @example 59689963893.2
+   */
+  totalSupply: number;
+  /**
+   * Owner
+   * The owner of the point program token
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
+   */
+  owner?: string;
+  /**
+   * Issuers
+   * Authorized issuers of the point program token
+   */
+  issuers?: string[];
+  /**
+   * Sub Tokens
+   * Array of sub tokens
+   */
+  subTokens?: TokenQuote[];
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+  /**
+   * Last Updated
+   * The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format
+   * @example "2025-03-17 17:52:10"
+   */
+  lastUpdated: string;
+  /**
+   * Raw Amount
+   * Amount in wei
+   * @example "10000000000"
+   */
+  rawAmount: string;
+  /**
+   * Token Amount
+   * Normalized raw amount in token decimals
+   * @example 1000
+   */
+  tokenAmount: number;
+  /**
+   * Token Amount USD
+   * Normalized raw amount in USD
+   * @example 999.99
+   */
+  tokenAmountUsd: number;
+  /**
+   * Reward IDs
+   * The IDs of the reward tokens
+   * @example ["1","2","3"]
+   */
+  rewardIds: string[];
+}
+
+export interface VaultPositionClaimedRewardToken {
+  /**
+   * Raw Metadata
+   * Raw metadata
+   */
+  rawMetadata?: object;
+  /**
+   * Token ID
+   * Unique identifier for the token: <CHAIN_ID>-<CONTRACT_ADDRESS>
+   * @example "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  id: string;
+  /**
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
+   */
+  chainId: number;
+  /**
+   * Contract Address
+   * Deployment address of the contract
+   * @example "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  contractAddress: string;
+  /**
+   * Name
+   * The name of the token
+   * @example "USDC"
+   */
+  name: string;
+  /**
+   * Symbol
+   * The symbol of the token
+   * @example "USDC"
+   */
+  symbol: string;
+  /**
+   * Image
+   * The logo of the token
+   * @example "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+   */
+  image: string;
+  /**
+   * Decimals
+   * The number of decimals of the token
+   * @example 6
+   */
+  decimals: number;
+  /**
+   * Source
+   * The source for the price feed of the token
+   * @example "coinmarketcap"
+   */
+  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  /**
+   * Search ID
+   * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
+   * @example "3408"
+   */
+  searchId: string;
+  /**
+   * Type
+   * The type of the token
+   * @example "token"
+   */
+  type: "token" | "point" | "lp";
+  /**
+   * Price
+   * The price of the token
+   * @example 0.99999999
+   */
+  price: number;
+  /**
+   * FDV
+   * The fully diluted valuation of the token
+   * @example 59689964490.12
+   */
+  fdv: number;
+  /**
+   * Total Supply
+   * The total supply of the token
+   * @example 59689963893.2
+   */
+  totalSupply: number;
+  /**
+   * Owner
+   * The owner of the point program token
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
+   */
+  owner?: string;
+  /**
+   * Issuers
+   * Authorized issuers of the point program token
+   */
+  issuers?: string[];
+  /**
+   * Sub Tokens
+   * Array of sub tokens
+   */
+  subTokens?: TokenQuote[];
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+  /**
+   * Last Updated
+   * The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format
+   * @example "2025-03-17 17:52:10"
+   */
+  lastUpdated: string;
+  /**
+   * Raw Amount
+   * Amount in wei
+   * @example "10000000000"
+   */
+  rawAmount: string;
+  /**
+   * Token Amount
+   * Normalized raw amount in token decimals
+   * @example 1000
+   */
+  tokenAmount: number;
+  /**
+   * Token Amount USD
+   * Normalized raw amount in USD
+   * @example 999.99
+   */
+  tokenAmountUsd: number;
+  /**
+   * Reward IDs
+   * The IDs of the reward tokens
+   * @example ["1","2","3"]
+   */
+  rewardIds: string[];
+}
+
+export interface BoringPosition {
+  /**
+   * ID
+   * The global unique identifier of the position: <CHAIN_ID>_<VAULT_ADDRESS>_<ACCOUNT_ADDRESS>
+   */
+  id: string;
+  /**
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
+   */
+  chainId: number;
+  /**
+   * Vault Address
+   * The address of the vault
+   * @example "0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e"
+   */
+  vaultAddress: string;
+  /**
+   * Account Address
+   * Wallet address of the account
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
+   */
+  accountAddress: string;
+  /**
+   * Unclaimed Reward Tokens
+   * The unclaimed reward tokens for the position
+   */
+  unclaimedRewardTokens: VaultPositionUnclaimedRewardToken[];
+  /**
+   * Claimed Reward Tokens
+   * The claimed reward tokens for the position
+   */
+  claimedRewardTokens: VaultPositionClaimedRewardToken[];
+}
+
+export interface BoringPositionResponse {
+  /**
+   * Response Page Object
+   * Object type to respond with a page of results
+   * @example {"index":1,"size":3,"total":10}
+   */
+  page: ResponsePage;
+  /**
+   * Row Count
+   * Total number of rows in the results
+   * @example 234
+   */
+  count: number;
+  /**
+   * Boring positions
+   * Boring positions
+   */
+  data: BoringPosition[];
+}
+
+export interface SpecificBoringPositionRequest {
   /**
    * Custom Token Data
    * Array of custom token assumptions --  if not provided, the default quote data will be used.
@@ -1691,94 +2092,38 @@ export interface RewardsRequest {
   customTokenData?: CustomTokenDataElement[];
 }
 
-export interface Reward {
+export interface SpecificBoringPositionResponse {
   /**
    * ID
-   * The globally unique identifier of the reward
-   * @example "1_0x1234...5678"
+   * The global unique identifier of the position: <CHAIN_ID>_<VAULT_ADDRESS>_<ACCOUNT_ADDRESS>
    */
   id: string;
   /**
-   * Account Address
-   * The address of the account that owns the reward
-   * @example "0x1234...5678"
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
    */
-  accountAddress: string;
-  /**
-   * Token Amount
-   * The amount of tokens in the reward
-   * @example "1000000000000000000"
-   */
-  tokenAmount: string;
-  /**
-   * Reward Source
-   * The source of the reward
-   * @example "vault"
-   */
-  rewardSource: string;
-  /**
-   * Withdraw Reference ID
-   * The reference ID of the withdrawal
-   * @example "0x1234...5678"
-   */
-  withdrawRefId?: string;
+  chainId: number;
   /**
    * Vault Address
    * The address of the vault
-   * @example "0x1234...5678"
+   * @example "0x45088fb2ffebfdcf4dff7b7201bfa4cd2077c30e"
    */
   vaultAddress: string;
   /**
-   * Chain ID
-   * The chain ID of the network
-   * @example "1"
+   * Account Address
+   * Wallet address of the account
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
    */
-  chainId: string;
+  accountAddress: string;
   /**
-   * Last Updated
-   * The timestamp of the last update
-   * @example "2024-03-20T12:00:00Z"
+   * Unclaimed Reward Tokens
+   * The unclaimed reward tokens for the position
    */
-  lastUpdated: string;
+  unclaimedRewardTokens: VaultPositionUnclaimedRewardToken[];
   /**
-   * Block Timestamp
-   * The timestamp of the block
-   * @example "2024-03-20T12:00:00Z"
+   * Claimed Reward Tokens
+   * The claimed reward tokens for the position
    */
-  blockTimestamp: string;
-  /**
-   * Is Claimed
-   * Whether the reward has been claimed
-   * @example false
-   */
-  isClaimed: boolean;
-  /**
-   * Token
-   * The token information
-   * @example {}
-   */
-  token: object;
-  /**
-   * Reward
-   * The reward details
-   * @example null
-   */
-  reward?: object;
-}
-
-export interface RewardsResponse {
-  /** Array of rewards */
-  data: Reward[];
-  /**
-   * Count
-   * The total number of rewards
-   * @example 100
-   */
-  count: number;
-  /**
-   * Page
-   * The page number to return
-   * @example {"index":1,"size":10,"total":100}
-   */
-  page?: object;
+  claimedRewardTokens: VaultPositionClaimedRewardToken[];
 }

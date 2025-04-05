@@ -11,8 +11,11 @@ import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
-import { TokenDisplayer } from "@/components/common";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
+import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contracts";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -48,6 +51,8 @@ export const BalanceIndicator = React.forwardRef<
 
   const vault = useAtomValue(vaultManagerAtom);
 
+  const { setTransaction } = useVaultManager();
+
   const token = useMemo(() => {
     return data?.depositTokens[0];
   }, [data]);
@@ -58,15 +63,45 @@ export const BalanceIndicator = React.forwardRef<
       (vault?.account.unlockTime || 0) * 1000 > Date.now();
 
     return {
-      amount: vault?.account.sharesInUSD || 0,
+      amount: vault?.account.sharesInUsd || 0,
       tokenAmount: vault?.account.sharesInBaseAsset || 0,
       unlockTime: vault?.account.unlockTime || 0,
       isLocked,
     };
   }, [vault]);
 
+  const incentives = useMemo(() => {
+    const totalIncentives = vault?.account.rewards.unclaimedRewardTokens.reduce(
+      (acc, curr) => acc + curr.tokenAmountUsd,
+      0
+    );
+
+    return {
+      amountInUsd: totalIncentives || 0,
+      data: vault?.account?.rewards?.unclaimedRewardTokens || [],
+    };
+  }, [vault]);
+
   const [showPrincipleBreakdown, setShowPrincipleBreakdown] = useState(true);
   const [showIncentivesBreakdown, setShowIncentivesBreakdown] = useState(false);
+
+  const handleClaim = (incentive: VaultPositionUnclaimedRewardToken) => {
+    const transaction = {
+      type: "claimIncentives" as const,
+      steps: [
+        {
+          type: "claim",
+          label: `Claim ${incentive.symbol}`,
+        },
+      ],
+      form: {
+        token: incentive,
+        amount: incentive.tokenAmount,
+      },
+    };
+
+    setTransaction(transaction);
+  };
 
   return (
     <div ref={ref} className={cn("rounded-2xl p-6", className)} {...props}>
@@ -175,6 +210,12 @@ export const BalanceIndicator = React.forwardRef<
                     <div className="mt-3 flex items-center justify-between">
                       <PrimaryLabel className="text-sm font-normal">
                         <div className="flex items-center gap-1">
+                          <TokenDisplayer
+                            size={4}
+                            tokens={[token]}
+                            symbols={false}
+                          />
+
                           <span>
                             {formatNumber(
                               principle.tokenAmount,
@@ -205,7 +246,7 @@ export const BalanceIndicator = React.forwardRef<
         {/**
          * Incentives
          */}
-        {/* <div className="mt-3">
+        <div className="mt-3">
           <div className="flex items-center justify-between">
             <SecondaryLabel className="text-base">Incentives</SecondaryLabel>
 
@@ -216,15 +257,23 @@ export const BalanceIndicator = React.forwardRef<
               className="cursor-pointer text-base font-normal"
             >
               <div className="flex items-center gap-1">
-                <span>
-                  {formatNumber(
-                    12142.12,
-                    { type: "currency" },
-                    {
-                      average: false,
-                    }
-                  )}
-                </span>
+                <div className="flex items-center gap-1">
+                  <span>
+                    {formatNumber(
+                      incentives.amountInUsd,
+                      { type: "currency" },
+                      {
+                        average: false,
+                      }
+                    )}
+                  </span>
+
+                  <TokenDisplayer
+                    size={4}
+                    tokens={incentives.data}
+                    symbols={false}
+                  />
+                </div>
 
                 <motion.div
                   animate={{ rotate: showIncentivesBreakdown ? 180 : 0 }}
@@ -236,40 +285,63 @@ export const BalanceIndicator = React.forwardRef<
             </PrimaryLabel>
           </div>
 
-          
-          // Incentives Breakdown
+          {/**
+           * Incentives Breakdown
+           */}
           <AnimatePresence>
             {showIncentivesBreakdown && (
-              <DropdownAnimationWrapper className="mt-3 rounded-lg border border-divider p-4">
-                <div>
-                  <SecondaryLabel className="text-xs font-medium">
-                    Available to Withdraw
-                  </SecondaryLabel>
+              <DropdownAnimationWrapper className="fex-col mt-3 flex gap-3 rounded-lg border border-divider p-4">
+                {incentives.data && incentives.data.length === 0 && (
+                  <AlertIndicator className="py-4">
+                    No incentives available
+                  </AlertIndicator>
+                )}
 
-                  <PrimaryLabel className="mt-3 text-base font-normal">
-                    0 USDC
-                  </PrimaryLabel>
-                </div>
+                {incentives.data &&
+                  incentives.data.length > 0 &&
+                  incentives.data.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex w-full items-center justify-between"
+                    >
+                      <PrimaryLabel className="text-sm font-normal">
+                        <div className="flex items-center gap-1">
+                          <TokenDisplayer
+                            size={4}
+                            tokens={[item]}
+                            symbols={false}
+                          />
 
-                <div className="mt-4">
-                  <SecondaryLabel className="text-xs font-medium">
-                    Locked
-                  </SecondaryLabel>
+                          <span>
+                            {formatNumber(
+                              item.tokenAmount,
+                              { type: "number" },
+                              {
+                                average: false,
+                              }
+                            )}
+                          </span>
 
-                  <div className="mt-3 flex items-center justify-between">
-                    <PrimaryLabel className="text-base font-normal">
-                      220000.79 USDC
-                    </PrimaryLabel>
+                          <span className="text-sm text-primary">
+                            {item.symbol}
+                          </span>
+                        </div>
+                      </PrimaryLabel>
 
-                    <SecondaryLabel className="text-base font-normal">
-                      Until Mar 1, 2025
-                    </SecondaryLabel>
-                  </div>
-                </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-sm font-semibold text-success hover:bg-success/10 hover:text-primary"
+                        onClick={() => handleClaim(item)}
+                      >
+                        Claim
+                      </Button>
+                    </div>
+                  ))}
               </DropdownAnimationWrapper>
             )}
           </AnimatePresence>
-        </div> */}
+        </div>
       </div>
     </div>
   );

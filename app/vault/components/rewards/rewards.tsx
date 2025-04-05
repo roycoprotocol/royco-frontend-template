@@ -36,13 +36,14 @@ export const Rewards = React.forwardRef<
        * Rewards
        */}
       <div className="mt-4 space-y-6">
-        {data.incentiveTokens.length === 0 && (
+        {data.incentiveTokens && data.incentiveTokens.length === 0 && (
           <AlertIndicator className="py-10">
             No rewards available
           </AlertIndicator>
         )}
 
-        {data.incentiveTokens.length > 0 &&
+        {data.incentiveTokens &&
+          data.incentiveTokens.length > 0 &&
           data.incentiveTokens.map((reward, index) => (
             <SlideUpWrapper key={index} delay={index * 0.1}>
               <div className="flex items-start justify-between">

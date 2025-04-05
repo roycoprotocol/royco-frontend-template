@@ -65,7 +65,7 @@ export const VaultManager = React.forwardRef<
            * Market Allocation
            */}
           <SlideUpWrapper className="mt-4" delay={0.2}>
-            <MarketAllocation className="mt-7" />
+            <MarketAllocation />
           </SlideUpWrapper>
 
           {/**

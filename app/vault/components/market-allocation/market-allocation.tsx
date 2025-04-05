@@ -19,7 +19,7 @@ export const MarketAllocation = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-        "hide-scrollbar min- overflow-x-auto rounded-2xl border border-divider bg-white pt-3",
+        "hide-scrollbar overflow-x-auto rounded-2xl border border-divider bg-white pt-3",
         className
       )}
     >

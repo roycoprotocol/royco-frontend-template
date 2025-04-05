@@ -12,6 +12,7 @@ import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/composables/loading-spinner";
 import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+
 interface BoringVaultActionButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   onSuccess?: () => void;
@@ -29,7 +30,8 @@ export const BoringVaultActionButton = React.forwardRef<
 
   const { transaction, setTransaction } = useVaultManager();
 
-  const { deposit, withdraw, cancelWithdraw } = useBoringVaultActions();
+  const { deposit, withdraw, cancelWithdraw, claimIncentive } =
+    useBoringVaultActions();
 
   const handleAction = async () => {
     try {
@@ -54,6 +56,7 @@ export const BoringVaultActionButton = React.forwardRef<
         setTransaction({
           ...transaction,
           txStatus: "success",
+          txHash: response.tx_hash,
         });
 
         onSuccess?.();
@@ -79,6 +82,7 @@ export const BoringVaultActionButton = React.forwardRef<
         setTransaction({
           ...transaction,
           txStatus: "success",
+          txHash: response.tx_hash,
         });
 
         onSuccess?.();
@@ -104,6 +108,35 @@ export const BoringVaultActionButton = React.forwardRef<
         setTransaction({
           ...transaction,
           txStatus: "success",
+          txHash: response.tx_hash,
+        });
+
+        onSuccess?.();
+        return;
+      }
+
+      if (transaction?.type === "claimIncentives") {
+        setTransaction({
+          ...transaction,
+          txStatus: "loading",
+        });
+
+        const response = await claimIncentive(
+          transaction?.form.token.rewardIds
+        );
+
+        if (response.error) {
+          setTransaction({
+            ...transaction,
+            txStatus: "error",
+          });
+          return;
+        }
+
+        setTransaction({
+          ...transaction,
+          txStatus: "success",
+          txHash: response.tx_hash,
         });
 
         onSuccess?.();
