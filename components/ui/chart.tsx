@@ -4,7 +4,6 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
-import { BigNumber } from "ethers";
 import { MarketIncentiveType, MarketOfferType, MarketType } from "../../store";
 import { formatUnits } from "viem";
 import formatNumber from "@/utils/numbers";

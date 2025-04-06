@@ -4,9 +4,9 @@ import { SlideUpWrapper } from "@/components/animations";
 import { SecondaryLabel } from "../../../composables";
 import { INFO_ROW_CLASSES } from "../../../composables/base-classes";
 import { InfoCard } from "@/components/common/info-card";
-import { IncentiveToken } from "../annual-yield-details/incentive-details";
 import { useActiveMarket } from "../../../hooks";
 import { TokenDisplayer } from "@/components/common/token-displayer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const ExternalIncentiveDetails = React.forwardRef<
   HTMLDivElement,
@@ -24,19 +24,23 @@ export const ExternalIncentiveDetails = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("overflow-hidden rounded-lg border px-4 py-3", className)}
+      className={cn("overflow-hidden rounded-lg border", className)}
       {...props}
     >
-      <SecondaryLabel>Additional Incentives</SecondaryLabel>
+      <SecondaryLabel className="px-4 py-3">
+        Additional Incentives
+      </SecondaryLabel>
 
-      <hr className="-mx-4 my-3" />
+      <hr />
 
-      <InfoCard
-        className={cn("flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll")}
+      <ScrollArea
+        className={cn(
+          "flex h-fit max-h-32 flex-col overflow-y-scroll px-4 pt-3"
+        )}
       >
         {externalIncentives.map((externalIncentive, index) => (
           <SlideUpWrapper key={externalIncentive.id} delay={0.1 + index * 0.1}>
-            <InfoCard.Row className={cn(INFO_ROW_CLASSES, "")}>
+            <InfoCard.Row className={cn(INFO_ROW_CLASSES, "mb-3")}>
               <InfoCard.Row.Key>
                 <div className="flex items-start">
                   <TokenDisplayer
@@ -60,7 +64,7 @@ export const ExternalIncentiveDetails = React.forwardRef<
             </InfoCard.Row>
           </SlideUpWrapper>
         ))}
-      </InfoCard>
+      </ScrollArea>
     </div>
   );
 });

@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { SecondaryLabel } from "../../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { RoycoMarketUserType } from "royco/market";
-import { BigNumber } from "ethers";
 import { WithdrawTypeSelector } from "./withdraw-type-selector";
 import { VaultWithdrawModal } from "./vault-withdraw-modal";
 
@@ -182,7 +181,7 @@ export const WithdrawSection = React.forwardRef<
             if (!!position) {
               if (withdrawType === MarketWithdrawType.input_token.id) {
                 // Check if the raw input token amount is greater than 0
-                if (BigNumber.from(position.input_token_data.shares).gt(0)) {
+                if (BigInt(position.input_token_data.shares) > BigInt(0)) {
                   return true;
                 } else {
                   return false;
@@ -190,8 +189,8 @@ export const WithdrawSection = React.forwardRef<
               } else {
                 // Check if value of at least one token is greater than 0
                 if (
-                  position.tokens_data.some((token) =>
-                    BigNumber.from(token.raw_amount).gt(0)
+                  position.tokens_data.some(
+                    (token) => BigInt(token.raw_amount) > BigInt(0)
                   )
                 ) {
                   return true;
@@ -295,9 +294,8 @@ export const WithdrawSection = React.forwardRef<
                                           ? // @ts-ignore
                                             position?.is_claimed[tokenIndex] ===
                                             true
-                                          : BigNumber.from(
-                                              token.raw_amount
-                                            ).isZero()
+                                          : BigInt(token.raw_amount) ===
+                                            BigInt(0)
                                       }
                                       onClick={() => {
                                         if (
@@ -357,9 +355,9 @@ export const WithdrawSection = React.forwardRef<
                           <div className="w-24 shrink-0">
                             <Button
                               disabled={
-                                BigNumber.from(
+                                BigInt(
                                   position?.input_token_data?.raw_amount
-                                ).isZero() ||
+                                ) === BigInt(0) ||
                                 currentMarketData?.category === "boyco"
                               }
                               onClick={() => {

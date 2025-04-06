@@ -27,7 +27,6 @@ import { RoycoMarketFundingType } from "royco/market";
 import { useAccountBalance, useVaultBalance } from "royco/hooks";
 import { NULL_ADDRESS } from "royco/constants";
 import { useAccount } from "wagmi";
-import { BigNumber } from "ethers";
 import { WarningAlert } from "../../composables/warning-alert";
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
@@ -141,10 +140,9 @@ export const InputAmountWrapper = React.forwardRef<
       return true;
     }
 
-    return BigNumber.from(parseRawAmount(rawUserBalance)).gte(
-      BigNumber.from(
-        parseRawAmount(marketActionForm.watch("quantity.raw_amount"))
-      )
+    return (
+      BigInt(parseRawAmount(rawUserBalance)) >=
+      BigInt(parseRawAmount(marketActionForm.watch("quantity.raw_amount")))
     );
   }, [
     fundingType,

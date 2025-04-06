@@ -4,8 +4,6 @@ import { Address } from "abitype";
 import { getSupportedChain } from "royco/utils";
 import { createPublicClient, erc4626Abi } from "viem";
 
-import { BigNumber } from "ethers";
-
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export const fetchCache = "force-no-store";
@@ -87,19 +85,13 @@ export async function POST(request: Request) {
           );
 
           // Modified comparison logic using BigNumber for all comparisons
-          const timestampDiff = BigNumber.from(blockTimestamp).sub(
-            BigNumber.from(vault.curr_block_timestamp || "0")
-          );
-          const isTimestampStale = timestampDiff.gt(
-            BigNumber.from(24 * 60 * 60)
-          );
+          const timestampDiff =
+            BigInt(blockTimestamp) - BigInt(vault.curr_block_timestamp || "0");
+
+          const isTimestampStale = timestampDiff > BigInt(24 * 60 * 60);
           const hasValuesChanged =
-            !BigNumber.from(totalAssets).eq(
-              BigNumber.from(vault.curr_total_assets || "0")
-            ) ||
-            !BigNumber.from(totalSupply).eq(
-              BigNumber.from(vault.curr_total_supply || "0")
-            );
+            BigInt(totalAssets) !== BigInt(vault.curr_total_assets || "0") ||
+            BigInt(totalSupply) !== BigInt(vault.curr_total_supply || "0");
 
           // If values haven't changed and timestamp is fresh, just update last_updated
           if (!hasValuesChanged && !isTimestampStale) {

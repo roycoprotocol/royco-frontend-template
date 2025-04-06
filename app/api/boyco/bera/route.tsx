@@ -1,12 +1,10 @@
 import axios from "axios";
 import { NextResponse } from "next/server";
 
-import { Database, TransactionOptionsType } from "royco/types";
-import { createClient } from "@supabase/supabase-js";
-import { Address, createPublicClient, erc20Abi, http } from "viem";
+import { TransactionOptionsType } from "royco/types";
+import { createPublicClient, http } from "viem";
 import { BerachainTestnet, BerachainMainnet } from "royco/constants";
 import { BERA_AIRDROP_ABI, BERA_AIRDROP_ADDRESS } from "./constants";
-import { BigNumber } from "ethers";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -61,9 +59,7 @@ export async function GET(request: Request) {
       args: [id as `0x${string}`, wallet as `0x${string}`],
     });
 
-    const is_claimed = BigNumber.from(is_claimed_response).eq("0")
-      ? false
-      : true;
+    const is_claimed = BigInt(is_claimed_response) === BigInt(0) ? false : true;
 
     const txOptions: TransactionOptionsType = {
       contractId: `${chain_id}-${BERA_AIRDROP_ADDRESS[chain_id as unknown as keyof typeof BERA_AIRDROP_ADDRESS]}`,

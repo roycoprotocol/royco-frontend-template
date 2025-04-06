@@ -4,10 +4,7 @@ const nextConfig = {
    * @description Web3Modal requirement for SSR
    * @see {@link https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration}
    */
-  // webpack: (config) => {
-  //   config.externals.push("pino-pretty", "lokijs", "encoding");
-  //   return config;
-  // },
+
   webpack: (config, context) => {
     if (config.plugins) {
       config.plugins.push(
@@ -18,11 +15,13 @@ const nextConfig = {
     }
     return config;
   },
+
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -30,6 +29,7 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+
   // Enables logging out caching info
   logging: {
     fetches: {
@@ -39,14 +39,20 @@ const nextConfig = {
   },
 
   rewrites: async () => {
-    // Helper function to randomly select an RPC endpoint
+    // Get random RPC
     const getRandomRPC = (keys) => {
-      const endpoints = keys.filter((key) => key); // Filter out any undefined/empty keys
+      // Remove empty RPC keys
+      const endpoints = keys.filter((key) => key);
       if (endpoints.length === 0) return null;
+
       return endpoints[Math.floor(Math.random() * endpoints.length)];
     };
 
-    return [
+    const rewrites = [
+      {
+        source: "/api/v1/:path*",
+        destination: `${process.env.ROYCO_API_URL}/api/v1/:path*`,
+      },
       {
         source: "/ingest/:path*",
         destination: "https://us.i.posthog.com/:path*", // Proxy to Posthog
@@ -131,12 +137,14 @@ const nextConfig = {
         destination: getRandomRPC([process.env.RPC_API_KEY_80069_1]),
       },
     ];
+
+    return rewrites;
   },
-  // CORS for API routes
+
   async headers() {
-    return [
+    const headers = [
       {
-        // matching all API routes
+        // Matching all API routes
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
@@ -152,6 +160,7 @@ const nextConfig = {
           },
         ],
       },
+
       // Prevent iframe embedding
       {
         source: "/:path*",
@@ -162,6 +171,8 @@ const nextConfig = {
         ],
       },
     ];
+
+    return headers;
   },
 };
 
