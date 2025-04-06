@@ -6,13 +6,17 @@ import { useAtomValue } from "jotai";
 import { protectorAtom } from "@/store/protector";
 import { Protector } from "../protector";
 
+interface ProtectorProviderProps extends React.HTMLAttributes<HTMLDivElement> {
+  isProtected?: boolean;
+}
+
 export const ProtectorProvider = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ children, ...props }, ref) => {
+  ProtectorProviderProps
+>(({ children, isProtected, ...props }, ref) => {
   const protect = useAtomValue(protectorAtom);
 
-  if (protect) {
+  if (isProtected || protect) {
     return (
       <Protector>
         <div ref={ref} {...props}>

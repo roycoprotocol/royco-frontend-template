@@ -24,7 +24,7 @@ const Page = () => {
   }, [vault_type, chain_id, vault_id]);
 
   return (
-    <ProtectorProvider>
+    <ProtectorProvider isProtected={true}>
       <div className="hide-scrollbar relative min-h-screen bg-background">
         {/**
          * Background
