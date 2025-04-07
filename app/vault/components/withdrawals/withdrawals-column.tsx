@@ -72,7 +72,7 @@ export const withdrawalsColumns: ColumnDef<any>[] = [
           </PrimaryLabel>
 
           <SecondaryLabel className="mt-px font-normal">
-            {formatDate(row.original.createdAt * 1000, "MMM d")}
+            {formatDate(row.original.createdAt, "MMM d")}
           </SecondaryLabel>
         </div>
       );

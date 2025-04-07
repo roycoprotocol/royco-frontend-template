@@ -38,7 +38,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
             size={16}
             stroke={1.5}
             track="#d9d9d9"
-            value={row.original.depositToken.allocationRatio / 50}
+            value={row.original.depositToken.allocationRatio * 100}
           />
         </div>
       );
