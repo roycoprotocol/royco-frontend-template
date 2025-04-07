@@ -77,9 +77,7 @@ export const ClaimCard = React.forwardRef<
               useGrouping: true,
             }}
             value={
-              data?.amount
-                ? parseFloat(ethers.utils.formatEther(data.amount))
-                : 0
+              data?.amount ? parseFloat(ethers.formatEther(data.amount)) : 0
             }
           />
           <div className="ml-2">BERA</div>
