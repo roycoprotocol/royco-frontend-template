@@ -60,7 +60,7 @@ export const BalanceIndicator = React.forwardRef<
   const principle = useMemo(() => {
     const isLocked =
       (vault?.account.unlockTime || 0) > 0 &&
-      (vault?.account.unlockTime || 0) * 1000 > Date.now();
+      (vault?.account.unlockTime || 0) > Date.now();
 
     return {
       amount: vault?.account.sharesInUsd || 0,
@@ -233,7 +233,7 @@ export const BalanceIndicator = React.forwardRef<
                       </PrimaryLabel>
 
                       <SecondaryLabel className="text-base font-normal">
-                        {`Until ${formatDate(principle.unlockTime * 1000, "MMM d, yyyy")}`}
+                        {`Until ${formatDate(principle.unlockTime, "MMM d, yyyy")}`}
                       </SecondaryLabel>
                     </div>
                   </div>

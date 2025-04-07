@@ -99,7 +99,7 @@ export const BoringVaultWrapper = React.forwardRef<
             item.metadata.amountOfAssets,
             token.decimals
           ),
-          createdAt: item.metadata.creationTime,
+          createdAt: item.metadata.creationTime * 1000,
           status: "initiated",
         })),
         ...data.expired_requests.map((item: any) => ({
@@ -108,7 +108,7 @@ export const BoringVaultWrapper = React.forwardRef<
             item.metadata.amountOfAssets,
             token.decimals
           ),
-          createdAt: item.metadata.creationTime,
+          createdAt: item.metadata.creationTime * 1000,
           status: "expired",
         })),
         ...data.cancelled_requests.map((item: any) => ({
@@ -117,7 +117,7 @@ export const BoringVaultWrapper = React.forwardRef<
             item.Request.metadata.amountOfAssets,
             token.decimals
           ),
-          createdAt: item.Request.metadata.creationTime,
+          createdAt: item.Request.metadata.creationTime * 1000,
           status: "canceled",
         })),
         ...data.fulfilled_requests.map((item: any) => ({
@@ -126,7 +126,7 @@ export const BoringVaultWrapper = React.forwardRef<
             item.metadata.amountOfAssets,
             token.decimals
           ),
-          createdAt: item.metadata.creationTime,
+          createdAt: item.metadata.creationTime * 1000,
           status: "completed",
         })),
       ].sort((a: any, b: any) => b.createdAt - a.createdAt);
@@ -180,14 +180,14 @@ export const BoringVaultWrapper = React.forwardRef<
     sharePrice: number;
     token: VaultDepositToken;
   }) => {
-    const userShares = await fetchUserShares(address);
+    const userShares = (await fetchUserShares(address)) || 0;
     const userSharesInBaseAsset =
       (userShares * 10 ** DEFAULT_VAULT_DECIMALS * sharePrice) /
       10 ** token.decimals;
 
     const userSharesInUsd = userSharesInBaseAsset * token.price;
 
-    const userUnlockTime = await fetchUserUnlockTime(address);
+    const userUnlockTime = (await fetchUserUnlockTime(address)) || 0;
 
     const withdrawals = await getAccountWithdrawals({
       chain,
@@ -206,7 +206,7 @@ export const BoringVaultWrapper = React.forwardRef<
       address,
       sharesInBaseAsset: userSharesInBaseAsset,
       sharesInUsd: userSharesInUsd,
-      unlockTime: userUnlockTime,
+      unlockTime: userUnlockTime * 1000,
       withdrawals,
       rewards,
     };
@@ -229,8 +229,8 @@ export const BoringVaultWrapper = React.forwardRef<
 
         const baseAsset = await getBaseAsset({ token: depositToken });
 
-        const totalValueLockedInBaseAsset = await fetchTotalAssets();
-        const sharePriceInBaseAsset = await fetchShareValue();
+        const totalValueLockedInBaseAsset = (await fetchTotalAssets()) || 0;
+        const sharePriceInBaseAsset = (await fetchShareValue()) || 0;
 
         const account = await getAccount({
           chain,
