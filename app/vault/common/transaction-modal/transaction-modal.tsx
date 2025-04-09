@@ -1,9 +1,18 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-
+import {
+  switchChain,
+  writeContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
+import { CheckCircleIcon, ChevronsUpDown } from "lucide-react";
+import { useAccount } from "wagmi";
+import toast from "react-hot-toast";
+import { useAtomValue } from "jotai";
+import { useEthersSigner } from "@/app/vault/hook/useEthersSigner";
+import { config } from "@/components/rainbow-modal/modal-config";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,16 +22,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { BoringVaultActionButton } from "./action/boring-vault-action";
 import { TransactionRow } from "./transaction-row";
 import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { CheckCircleIcon, ChevronsUpDown } from "lucide-react";
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
+import { ErrorAlert } from "@/components/composables";
+import { LoadingSpinner } from "@/components/composables";
+import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -50,61 +61,51 @@ const DropdownAnimationWrapper = React.forwardRef<
   );
 });
 
+interface TransactionModalProps extends React.HTMLAttributes<HTMLDivElement> {
+  onSuccess?: () => void;
+  onError?: () => void;
+}
+
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  TransactionModalProps
+>(({ className, onSuccess, onError, ...props }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showTransactionBreakdown, setShowTransactionBreakdown] =
     useState(true);
 
-  const { transaction, setTransaction, setRefreshManager, setRefreshMetadata } =
-    useVaultManager();
+  const { transactions, setTransactions } = useVaultManager();
+  const signer = useEthersSigner();
 
   useEffect(() => {
-    setIsOpen(transaction !== null && transaction !== undefined);
+    setIsOpen(transactions !== null && transactions !== undefined);
 
-    if (transaction === null || transaction === undefined) {
+    if (transactions === null || transactions === undefined) {
       setIsOpen(false);
     }
-  }, [transaction]);
+  }, [transactions]);
 
-  const triggerConfetti = () => {
-    const defaults = {
-      startVelocity: 14,
-      spread: 360,
-      ticks: 300,
-      zIndex: 9999,
-      particleCount: 30,
-      scalar: 0.8,
-      gravity: 0.5,
-      drift: 0,
-      decay: 0.96,
-    };
+  const { address, chainId } = useAccount();
+  const { connectWalletModal } = useConnectWallet();
 
-    let animationFrame: number;
-    const shower = () => {
-      const particleCount = 8;
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: Math.random(), y: -0.1 },
-      });
+  const { data } = useAtomValue(vaultMetadataAtom);
 
-      animationFrame = requestAnimationFrame(shower);
+  const transaction = useMemo(() => {
+    if (transactions === null || transactions === undefined) {
+      return null;
+    }
 
-      setTimeout(() => {
-        cancelAnimationFrame(animationFrame);
-      }, 500);
-    };
+    if (transactions.steps && transactions.steps.length === 0) {
+      return null;
+    }
 
-    shower();
-  };
+    return transactions.steps.find((step: any) => step.txStatus !== "success");
+  }, [transactions]);
 
   const handleClose = () => {
     setIsOpen(false);
     // @ts-ignore
-    setTransaction(null);
+    setTransactions(null);
 
     setTimeout(() => {
       document.body.style.pointerEvents = "auto";
@@ -112,41 +113,81 @@ export const TransactionModal = React.forwardRef<
     }, 100);
   };
 
+  const handleAction = async () => {
+    if (!address || !signer) {
+      return;
+    }
+
+    if (!transaction || !transaction.data) {
+      toast.custom(<ErrorAlert message="Transaction data not available" />);
+      return;
+    }
+
+    try {
+      setTransactions({
+        ...transactions,
+        steps: transactions.steps.map((step: any) => {
+          if (step.type === transaction.type) {
+            return {
+              ...step,
+              txStatus: "loading",
+            };
+          }
+          return step;
+        }),
+      });
+
+      // @ts-ignore
+      const txHash = await writeContract(config, transaction.data);
+
+      // @ts-ignore
+      const receipt = await waitForTransactionReceipt(config, {
+        hash: txHash,
+      });
+
+      setTransactions({
+        ...transactions,
+        steps: transactions.steps.map((step: any) => {
+          if (step.type === transaction.type) {
+            return {
+              ...step,
+              txStatus: "success",
+              txHash: receipt.transactionHash,
+            };
+          }
+          return step;
+        }),
+      });
+
+      onSuccess?.();
+    } catch (error: any) {
+      setTransactions({
+        ...transactions,
+        steps: transactions.steps.map((step: any) => {
+          if (step.type === transaction.type) {
+            return {
+              ...step,
+              txStatus: "error",
+            };
+          }
+          return step;
+        }),
+      });
+      toast.custom(<ErrorAlert message={"Transaction failed"} />);
+
+      onError?.();
+    }
+  };
+
   const isTxLoading = useMemo(() => {
-    return transaction?.txStatus === "loading";
-  }, [transaction]);
+    return transactions?.steps.some((step: any) => step.txStatus === "loading");
+  }, [transactions]);
 
   const isTxSuccess = useMemo(() => {
-    return transaction?.txStatus === "success";
-  }, [transaction]);
-
-  const dialogTitle = useMemo(() => {
-    if (transaction?.type === "deposit") {
-      if (isTxSuccess) {
-        return "Deposit Completed";
-      } else {
-        return "Deposit";
-      }
-    } else if (transaction?.type === "withdraw") {
-      if (isTxSuccess) {
-        return "Withdraw Submitted";
-      } else {
-        return "Withdraw";
-      }
-    } else if (transaction?.type === "cancelWithdraw") {
-      if (isTxSuccess) {
-        return "Withdrawal Canceled";
-      } else {
-        return "Cancel Withdrawal";
-      }
-    } else if (transaction?.type === "claimIncentives") {
-      if (isTxSuccess) {
-        return "Incentives Claimed";
-      } else {
-        return "Claim Incentives";
-      }
-    }
-  }, [transaction, isTxSuccess]);
+    return transactions?.steps.every(
+      (step: any) => step.txStatus === "success"
+    );
+  }, [transactions]);
 
   return (
     <Dialog
@@ -197,7 +238,7 @@ export const TransactionModal = React.forwardRef<
               <SlideUpWrapper
                 layoutId={`transaction-modal-title-${isTxSuccess}`}
               >
-                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogTitle>{transactions?.title}</DialogTitle>
               </SlideUpWrapper>
 
               <SlideUpWrapper
@@ -206,18 +247,18 @@ export const TransactionModal = React.forwardRef<
                 <div className="flex items-center gap-1">
                   <TokenDisplayer
                     size={4}
-                    tokens={[transaction?.form.token]}
+                    tokens={[transactions?.token.data]}
                     symbols={false}
                   />
 
                   <span className="text-base font-normal">
-                    {formatNumber(transaction?.form.amount, {
+                    {formatNumber(transactions?.token.amount, {
                       type: "number",
                     })}
                   </span>
 
                   <span className="text-base font-normal">
-                    {transaction?.form.token.symbol}
+                    {transactions?.token.data.symbol}
                   </span>
                 </div>
               </SlideUpWrapper>
@@ -227,96 +268,148 @@ export const TransactionModal = React.forwardRef<
           {/**
            * Transaction Description
            */}
-          {transaction?.description && transaction?.description.length > 0 && (
-            <div className="mt-4 flex flex-col gap-6">
-              {transaction?.description?.map((item: any) => (
-                <div>
-                  {!!item.title && (
-                    <SecondaryLabel className="text-xs font-medium">
-                      {item.title}
-                    </SecondaryLabel>
-                  )}
+          {transactions?.description &&
+            transactions?.description.length > 0 && (
+              <div className="mt-4 flex flex-col gap-6">
+                {transactions?.description?.map((item: any) => (
+                  <div>
+                    {item.label && (
+                      <SecondaryLabel className="text-xs font-medium">
+                        {item.label}
+                      </SecondaryLabel>
+                    )}
 
-                  <PrimaryLabel className="mt-2 text-sm font-normal">
-                    {item.description}
-                  </PrimaryLabel>
-                </div>
-              ))}
-            </div>
-          )}
+                    <PrimaryLabel className="mt-2 text-sm font-normal">
+                      {item.value}
+                    </PrimaryLabel>
+                  </div>
+                ))}
+              </div>
+            )}
 
           {/**
            * Transaction Breakdown
            */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between">
-              <SecondaryLabel className="text-xs font-medium">
-                Transaction Steps
-              </SecondaryLabel>
+          {transactions &&
+            transactions.steps &&
+            transactions.steps.length > 0 && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between">
+                  <SecondaryLabel className="text-xs font-medium">
+                    Transaction Steps
+                  </SecondaryLabel>
 
-              <PrimaryLabel
-                onClick={() => {
-                  setShowTransactionBreakdown(!showTransactionBreakdown);
-                }}
-                className="cursor-pointer text-xs font-medium"
-              >
-                <div className="flex items-center gap-1">
-                  <span>Show {transaction?.steps.length} Steps</span>
-
-                  <motion.div
-                    animate={{ rotate: showTransactionBreakdown ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
+                  <PrimaryLabel
+                    onClick={() => {
+                      setShowTransactionBreakdown(!showTransactionBreakdown);
+                    }}
+                    className="cursor-pointer text-xs font-medium"
                   >
-                    <ChevronsUpDown className="h-4 w-4 text-secondary" />
-                  </motion.div>
+                    <div className="flex items-center gap-1">
+                      <span>Show {transactions?.steps.length} Steps</span>
+
+                      <motion.div
+                        animate={{ rotate: showTransactionBreakdown ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <ChevronsUpDown className="h-4 w-4 text-secondary" />
+                      </motion.div>
+                    </div>
+                  </PrimaryLabel>
                 </div>
-              </PrimaryLabel>
-            </div>
 
-            <AnimatePresence>
-              {showTransactionBreakdown && (
-                <DropdownAnimationWrapper>
-                  <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
-                    <div className={cn("flex flex-col gap-2")}>
-                      {!!transaction &&
-                        !!transaction.steps &&
-                        transaction.steps.map(
-                          (txOptions: any, txIndex: any) => {
-                            if (!!txOptions) {
+                <AnimatePresence>
+                  {showTransactionBreakdown && (
+                    <DropdownAnimationWrapper>
+                      <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
+                        <div className={cn("flex flex-col gap-2")}>
+                          {transactions.steps.map(
+                            (txOptions: any, txIndex: any) => {
                               const key = `transaction:${txOptions.id}`;
-
                               return (
                                 <TransactionRow
                                   key={key}
                                   transactionIndex={txIndex + 1}
                                   transaction={txOptions}
-                                  txStatus={transaction?.txStatus}
                                 />
                               );
                             }
-                          }
-                        )}
-                    </div>
-                  </div>
-                </DropdownAnimationWrapper>
-              )}
-            </AnimatePresence>
-          </div>
+                          )}
+                        </div>
+                      </div>
+                    </DropdownAnimationWrapper>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
           {/**
            * Transaction Action Button
            */}
           {!isTxSuccess && (
             <div className="mt-3">
-              <BoringVaultActionButton
-                onSuccess={() => {
-                  setRefreshManager(true);
-                  if (transaction?.type === "deposit") {
-                    triggerConfetti();
-                    setRefreshMetadata(true);
-                  }
-                }}
-              />
+              {(() => {
+                if (!address) {
+                  return (
+                    <Button
+                      onClick={() => {
+                        try {
+                          connectWalletModal();
+                        } catch (error) {
+                          toast.custom(
+                            <ErrorAlert message="Error connecting wallet" />
+                          );
+                        }
+                      }}
+                      size="sm"
+                      className={cn("w-full", className)}
+                    >
+                      Connect Wallet
+                    </Button>
+                  );
+                }
+
+                if (chainId !== data.chainId) {
+                  return (
+                    <Button
+                      onClick={async () => {
+                        try {
+                          // @ts-ignore
+                          await switchChain(config, {
+                            chainId: data.chainId,
+                          });
+                        } catch (error) {
+                          toast.custom(
+                            <ErrorAlert message="Error switching chain" />
+                          );
+                          console.log("Failed:", error);
+                        }
+                      }}
+                      size="sm"
+                      className={cn("w-full", className)}
+                    >
+                      Switch Chain
+                    </Button>
+                  );
+                }
+
+                if (!isTxSuccess) {
+                  return (
+                    <Button
+                      onClick={handleAction}
+                      size="sm"
+                      className={cn("w-full", className)}
+                      disabled={isTxLoading}
+                    >
+                      {isTxLoading ? (
+                        <LoadingSpinner className="h-5 w-5" />
+                      ) : (
+                        "Confirm Transaction"
+                      )}
+                    </Button>
+                  );
+                }
+              })()}
 
               <Button
                 variant="outline"

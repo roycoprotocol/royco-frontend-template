@@ -9,10 +9,11 @@ export const TransactionRow = React.forwardRef<
     transaction: {
       type: string;
       label: string;
+      txStatus?: "loading" | "error" | "success";
+      txHash?: string;
     };
-    txStatus?: "loading" | "error" | "success";
   }
->(({ className, transaction, transactionIndex, txStatus, ...props }, ref) => {
+>(({ className, transaction, transactionIndex, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -40,7 +41,7 @@ export const TransactionRow = React.forwardRef<
         </div>
       </div>
 
-      {txStatus === "success" && (
+      {transaction.txStatus === "success" && (
         <CheckCircleIcon
           strokeWidth={2}
           className="h-6 w-6 p-[0.2rem] text-success"

@@ -17,7 +17,7 @@ export const VaultActionForm = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { actionType, setActionType } = useVaultManager();
+  const { action, setAction } = useVaultManager();
 
   return (
     <div ref={ref} {...props} className={cn("p-5", className)}>
@@ -31,13 +31,13 @@ export const VaultActionForm = React.forwardRef<
             id: action.value,
             label: action.label,
           }))}
-          activeTab={actionType}
-          setter={setActionType}
+          activeTab={action}
+          setter={setAction}
         />
       </SlideUpWrapper>
 
       {(() => {
-        if (actionType === TypeVaultManagerAction.Deposit) {
+        if (action === TypeVaultManagerAction.Deposit) {
           return (
             <div className="mt-6">
               <DepositAction />
@@ -45,7 +45,7 @@ export const VaultActionForm = React.forwardRef<
           );
         }
 
-        if (actionType === TypeVaultManagerAction.Withdraw) {
+        if (action === TypeVaultManagerAction.Withdraw) {
           return (
             <div className="mt-6">
               <WithdrawAction />

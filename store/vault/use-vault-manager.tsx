@@ -19,47 +19,45 @@ export const VaultManagerActionMap = {
 
 export type TypeVaultTransaction = {
   type: "deposit" | "withdraw" | "cancelWithdraw" | "claimIncentives";
+  title: string;
   description?: {
-    title: string;
-    description: string;
-  }[];
-  steps: {
-    type: string;
     label: string;
+    value: string;
   }[];
-  form: {
-    token: VaultDepositToken | any;
+  steps: any[];
+  token: {
     amount: number;
+    data: any;
   };
-  txStatus?: "loading" | "error" | "success";
-  txHash?: string;
 };
 
 export interface VaultManagerState {
-  actionType: TypeVaultManagerAction;
-  setActionType: (actionType: TypeVaultManagerAction) => void;
+  action: TypeVaultManagerAction;
+  setAction: (action: TypeVaultManagerAction) => void;
 
-  transaction: TypeVaultTransaction;
-  setTransaction: (transaction: TypeVaultTransaction) => void;
+  transactions: TypeVaultTransaction;
+  setTransactions: (transactions: TypeVaultTransaction) => void;
 
-  refreshManager: boolean;
-  setRefreshManager: (refreshManager: boolean) => void;
+  reload: boolean;
+  setReload: (reload: boolean) => void;
 
-  refreshMetadata: boolean;
-  setRefreshMetadata: (refreshMetadata: boolean) => void;
+  isContractLoading: boolean;
+  setIsContractLoading: (isContractLoading: boolean) => void;
 }
 
 export const useVaultManager = create<VaultManagerState>((set) => ({
-  actionType: TypeVaultManagerAction.Deposit,
-  setActionType: (actionType: TypeVaultManagerAction) => set({ actionType }),
+  action: TypeVaultManagerAction.Deposit,
+  setAction: (action: TypeVaultManagerAction) => set({ action }),
 
   // @ts-ignore
-  transaction: null,
-  setTransaction: (transaction: TypeVaultTransaction) => set({ transaction }),
+  transactions: null,
+  setTransactions: (transactions: TypeVaultTransaction) =>
+    set({ transactions }),
 
-  refreshManager: false,
-  setRefreshManager: (refreshManager: boolean) => set({ refreshManager }),
+  reload: false,
+  setReload: (reload: boolean) => set({ reload }),
 
-  refreshMetadata: false,
-  setRefreshMetadata: (refreshMetadata: boolean) => set({ refreshMetadata }),
+  isContractLoading: false,
+  setIsContractLoading: (isContractLoading: boolean) =>
+    set({ isContractLoading }),
 }));

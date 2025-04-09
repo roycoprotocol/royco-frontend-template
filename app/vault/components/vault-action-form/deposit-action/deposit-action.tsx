@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 import { z } from "zod";
@@ -14,7 +14,8 @@ import { useConnectWallet } from "@/app/_components/provider/connect-wallet-prov
 import { ErrorAlert } from "@/components/composables";
 import { DepositActionForm } from "./deposit-action-form/deposit-action-form";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
+import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 
 export const depositFormSchema = z.object({
   amount: z.string(),
@@ -32,7 +33,9 @@ export const DepositAction = React.forwardRef<
     return data?.depositTokens[0];
   }, [data]);
 
-  const { setTransaction } = useVaultManager();
+  const { setTransactions, reload } = useVaultManager();
+
+  const { getDepositTransaction } = useBoringVaultActions();
 
   const depositForm = useForm<z.infer<typeof depositFormSchema>>({
     resolver: zodResolver(depositFormSchema),
@@ -40,6 +43,12 @@ export const DepositAction = React.forwardRef<
       amount: "",
     },
   });
+
+  useEffect(() => {
+    if (reload) {
+      depositForm.reset();
+    }
+  }, [reload]);
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositForm.getValues("amount") || "0");
@@ -53,25 +62,22 @@ export const DepositAction = React.forwardRef<
       return;
     }
 
-    const transaction = {
-      type: "deposit" as const,
-      steps: [
-        {
-          type: "approve",
-          label: `Approve ${token.symbol}`,
-        },
-        {
-          type: "deposit",
-          label: `Deposit ${token.symbol}`,
-        },
-      ],
-      form: {
-        token: token,
-        amount: amount,
-      },
-    };
+    const depositTransactions = await getDepositTransaction(amount);
 
-    setTransaction(transaction);
+    if (depositTransactions && depositTransactions.steps.length > 0) {
+      const transactions = {
+        type: "deposit" as const,
+        title: "Deposit",
+        description: depositTransactions.description,
+        steps: depositTransactions.steps || [],
+        token: {
+          data: token,
+          amount: amount,
+        },
+      };
+
+      setTransactions(transactions);
+    }
   };
 
   return (

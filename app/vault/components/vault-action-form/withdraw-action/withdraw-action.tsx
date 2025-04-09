@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 
 import { cn } from "@/lib/utils";
@@ -15,7 +15,8 @@ import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
+import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 
 export const withdrawFormSchema = z.object({
   amount: z.string(),
@@ -28,14 +29,14 @@ export const WithdrawAction = React.forwardRef<
   const { address, chainId } = useAccount();
   const { connectWalletModal } = useConnectWallet();
 
-  const vault = useAtomValue(vaultManagerAtom);
-
   const { data } = useAtomValue(vaultMetadataAtom);
   const token = useMemo(() => {
     return data?.depositTokens[0];
   }, [data]);
 
-  const { setTransaction } = useVaultManager();
+  const { setTransactions, reload } = useVaultManager();
+
+  const { getWithdrawalTransaction } = useBoringVaultActions();
 
   const withdrawForm = useForm<z.infer<typeof withdrawFormSchema>>({
     resolver: zodResolver(withdrawFormSchema),
@@ -43,6 +44,12 @@ export const WithdrawAction = React.forwardRef<
       amount: "",
     },
   });
+
+  useEffect(() => {
+    if (reload) {
+      withdrawForm.reset();
+    }
+  }, [reload]);
 
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawForm.getValues("amount") || "0");
@@ -52,50 +59,26 @@ export const WithdrawAction = React.forwardRef<
       return;
     }
 
-    if (!vault || !token) {
+    if (!token) {
       return;
     }
 
-    if (!vault.baseAsset.allowWithdraws) {
-      toast.custom(<ErrorAlert message="Withdraws are not allowed" />);
-      return;
+    const withdrawTransactions = await getWithdrawalTransaction(amount);
+
+    if (withdrawTransactions && withdrawTransactions.steps.length > 0) {
+      const transactions = {
+        type: "withdraw" as const,
+        title: "Withdraw",
+        description: withdrawTransactions.description,
+        steps: withdrawTransactions.steps || [],
+        token: {
+          data: token,
+          amount: amount,
+        },
+      };
+
+      setTransactions(transactions);
     }
-
-    const expireDays = Math.ceil(
-      1 + vault.baseAsset.minimumSecondsToDeadline / 86400
-    );
-    const minDiscount = vault.baseAsset.minDiscount / 100;
-    const maxDiscount = vault.baseAsset.maxDiscount / 100;
-
-    const transaction = {
-      type: "withdraw" as const,
-      description: [
-        {
-          title: "What to Expect",
-          description: `Your withdrawal request will be reviewed by the vault manager within ${expireDays} days. If denied or canceled, the funds will return to vault.`,
-        },
-        {
-          title: "Slippage",
-          description: `${minDiscount}% - ${maxDiscount}%`,
-        },
-      ],
-      steps: [
-        {
-          type: "approve",
-          label: `Approve ${token.symbol}`,
-        },
-        {
-          type: "withdraw",
-          label: `Create Withdraw ${token.symbol} Request`,
-        },
-      ],
-      form: {
-        token: token,
-        amount: amount,
-      },
-    };
-
-    setTransaction(transaction);
   };
 
   return (

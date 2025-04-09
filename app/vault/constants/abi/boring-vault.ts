@@ -1,4 +1,4 @@
-export const abi = [
+export const BoringVaultABI = [
   {
     inputs: [
       { internalType: "address", name: "_owner", type: "address" },
