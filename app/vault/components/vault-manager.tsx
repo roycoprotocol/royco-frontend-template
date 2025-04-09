@@ -13,18 +13,14 @@ import { BalanceIndicator } from "./balance-indicator/balance-indicator";
 import { Rewards } from "./rewards/rewards";
 import { SlideUpWrapper } from "@/components/animations";
 import { TransactionModal } from "../common/transaction-modal/transaction-modal";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
 import { Withdrawals } from "./withdrawals/withdrawals";
+import { useVaultManager } from "@/store/vault/use-vault-manager";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data } = useAtomValue(vaultMetadataAtom);
-
-  if (!data) {
-    return null;
-  }
+  const { setReload } = useVaultManager();
 
   return (
     <div ref={ref} {...props} className={cn("py-5", className)}>
@@ -86,17 +82,23 @@ export const VaultManager = React.forwardRef<
         <div className="w-full lg:w-1/3">
           <SlideUpWrapper>
             <div className="w-full rounded-2xl border border-divider bg-white">
+              {/**
+               * Balance Indicator
+               */}
               <BalanceIndicator />
 
               <hr />
 
+              {/**
+               * Vault Action Form
+               */}
               <VaultActionForm />
             </div>
           </SlideUpWrapper>
         </div>
       </div>
 
-      <TransactionModal />
+      <TransactionModal onSuccess={() => setReload(true)} />
     </div>
   );
 });

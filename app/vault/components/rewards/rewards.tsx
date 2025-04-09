@@ -11,7 +11,7 @@ import {
 import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
 
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
 
@@ -36,14 +36,7 @@ export const Rewards = React.forwardRef<
        * Rewards
        */}
       <div className="mt-4 space-y-6">
-        {data.incentiveTokens && data.incentiveTokens.length === 0 && (
-          <AlertIndicator className="py-10">
-            No rewards available
-          </AlertIndicator>
-        )}
-
-        {data.incentiveTokens &&
-          data.incentiveTokens.length > 0 &&
+        {data.incentiveTokens && data.incentiveTokens.length > 0 ? (
           data.incentiveTokens.map((reward, index) => (
             <SlideUpWrapper key={index} delay={index * 0.1}>
               <div className="flex items-start justify-between">
@@ -85,7 +78,12 @@ export const Rewards = React.forwardRef<
                 </PrimaryLabel>
               </div>
             </SlideUpWrapper>
-          ))}
+          ))
+        ) : (
+          <AlertIndicator className="py-10">
+            No rewards available
+          </AlertIndicator>
+        )}
       </div>
     </div>
   );

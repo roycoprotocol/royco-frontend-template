@@ -12,7 +12,7 @@ import {
 import { CustomBadge } from "../../common/custom-badge";
 import formatNumber from "@/utils/numbers";
 import { Progress } from "@/components/ui/progress";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
 
 export const VaultDetails = React.forwardRef<

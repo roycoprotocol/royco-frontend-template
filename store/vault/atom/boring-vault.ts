@@ -1,16 +1,18 @@
-import { SpecificBoringPositionResponse } from "@/app/api/royco/data-contracts";
 import { atom } from "jotai";
 
-export type BoringVaultToken = {
-  address: string;
-  decimals: number;
-  price: number;
-  allowWithdraws: boolean;
-  secondsToMaturity: number;
-  minimumSecondsToDeadline: number;
-  minDiscount: number;
-  maxDiscount: number;
-  minimumShares: number;
+import {
+  SpecificBoringPositionResponse,
+  VaultDepositToken,
+} from "@/app/api/royco/data-contracts";
+
+export type BoringVaultToken = VaultDepositToken;
+
+export type BoringVaultContracts = {
+  vault: string;
+  teller: string;
+  accountant: string;
+  lens: string;
+  boringQueue: string;
 };
 
 export type BoringVaultWithdrawal = {
@@ -18,6 +20,7 @@ export type BoringVaultWithdrawal = {
   amountInBaseAsset: number;
   createdAt: number;
   status: string;
+  metadata: any;
 };
 
 export type BoringVaultRewards = SpecificBoringPositionResponse;
@@ -25,6 +28,7 @@ export type BoringVaultRewards = SpecificBoringPositionResponse;
 export interface BoringVault {
   baseAsset: BoringVaultToken;
   chainId: number;
+  contracts: BoringVaultContracts;
   totalValueLockedInBaseAsset: number;
   sharePriceInBaseAsset: number;
   decimals: number;

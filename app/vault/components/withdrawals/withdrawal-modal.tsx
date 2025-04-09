@@ -17,6 +17,7 @@ import { Calendar, CircleCheckBig, CircleX, Clock } from "lucide-react";
 import { formatDate } from "date-fns";
 import { capitalize } from "lodash";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
+import { useBoringVaultActions } from "../../providers/boring-vault/boring-vault-action-provider";
 
 export const WithdrawalModal = React.forwardRef<
   HTMLDivElement,
@@ -28,38 +29,41 @@ export const WithdrawalModal = React.forwardRef<
       amountInBaseAsset: number;
       createdAt: number;
       status: string;
+      metadata: any;
     };
   }
 >(({ className, isOpen, onOpenModal, withdrawal, ...props }, ref) => {
-  const { setTransaction } = useVaultManager();
+  const { setTransactions } = useVaultManager();
 
-  const handleCancelWithdrawal = () => {
-    if (!withdrawal.token) {
+  const { getCancelWithdrawalTransaction } = useBoringVaultActions();
+
+  const handleCancelWithdrawal = async () => {
+    if (!withdrawal.token || !withdrawal.metadata) {
       return;
     }
 
-    const transaction = {
-      type: "cancelWithdraw" as const,
-      description: [
-        {
-          title: "What to Expect",
-          description: `The funds will return to vault.`,
-        },
-      ],
-      steps: [
-        {
-          type: "cancel",
-          label: `Cancelation Request`,
-        },
-      ],
-      form: {
-        token: withdrawal.token,
-        amount: withdrawal.amountInBaseAsset,
-      },
-    };
+    const cancelWithdrawalTransactions = await getCancelWithdrawalTransaction(
+      withdrawal.metadata
+    );
 
-    setTransaction(transaction);
-    onOpenModal(false);
+    if (
+      cancelWithdrawalTransactions &&
+      cancelWithdrawalTransactions.steps.length > 0
+    ) {
+      const transactions = {
+        type: "cancelWithdraw" as const,
+        title: "Cancel Withdrawal",
+        description: cancelWithdrawalTransactions.description,
+        steps: cancelWithdrawalTransactions.steps || [],
+        token: {
+          data: withdrawal.token,
+          amount: withdrawal.amountInBaseAsset,
+        },
+      };
+
+      setTransactions(transactions);
+      onOpenModal(false);
+    }
   };
 
   return (

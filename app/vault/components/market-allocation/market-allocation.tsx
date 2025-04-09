@@ -6,7 +6,7 @@ import { useAtomValue } from "jotai";
 
 import { MarketAllocationTable } from "./market-allocation-table";
 import { marketAllocationColumns } from "./market-allocation-column";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 
 export const MarketAllocation = React.forwardRef<
   HTMLDivElement,
