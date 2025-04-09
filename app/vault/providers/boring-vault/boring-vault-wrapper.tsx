@@ -182,12 +182,13 @@ export const BoringVaultWrapper = React.forwardRef<
     token: BoringVaultToken;
   }) => {
     const userShares = (await fetchUserShares(address)) || 0;
+
     const userSharesInBaseAsset = new BigNumber(userShares)
       .times(new BigNumber(10).pow(DEFAULT_VAULT_DECIMALS))
       .times(sharePrice)
       .div(new BigNumber(10).pow(token.decimals));
 
-    const userSharesInUsd = userSharesInBaseAsset.times(token.price);
+    const userSharesInUsd = userSharesInBaseAsset.times(token.price.toString());
 
     const userUnlockTime = (await fetchUserUnlockTime(address)) || 0;
 
@@ -254,6 +255,7 @@ export const BoringVaultWrapper = React.forwardRef<
         account,
       });
     } catch (error) {
+      console.log({ error });
       toast.custom(<ErrorAlert message="Error: Vault data not found." />);
     } finally {
       setIsContractLoading(false);
