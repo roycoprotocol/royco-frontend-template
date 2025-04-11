@@ -32,7 +32,7 @@ import {
 } from "abitype";
 import { SolidityInt as ZodSolidityInt } from "abitype/zod";
 
-import { ethers } from "ethers";
+import { ethers, ParamType } from "ethers";
 
 import { isAddress } from "viem";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
@@ -61,19 +61,26 @@ const isSolidityIntType = (type: any) => {
   }
 };
 
-const isSolidityInt = (type: any, value: any) => {
-  try {
-    if (!isSolidityIntType(type)) return false;
+// const isSolidityInt = (type: any, value: any) => {
+//   try {
+//     if (!isSolidityIntType(type)) return false;
 
-    const coder = ethers.utils.defaultAbiCoder._getCoder(
-      ethers.utils.ParamType.from(type)
-    );
+//     const coder = ethers.AbiCoder.defaultAbiCoder().(
+//       ParamType.from(type)
+//     );
 
-    // console.log("coder", coder.maxValue());
-  } catch (error) {
-    return false;
-  }
-};
+//     // console.log("coder", coder.maxValue());
+//   } catch (error) {
+//     return false;
+//   }
+// };
+
+interface AbiParameterWithComponents {
+  type: string;
+  name?: string;
+  internalType?: string;
+  components?: AbiParameterWithComponents[];
+}
 
 export const InputValueSelector = React.forwardRef<
   HTMLDivElement,
@@ -92,23 +99,23 @@ export const InputValueSelector = React.forwardRef<
     const { actionsType, draggingKey } = useMarketBuilderManager();
 
     const [focusedType, setFocusedType] = React.useState<string | null>(
-      marketBuilderForm.watch(actionsType)[actionIndex].inputs[inputIndex]
-        .input_type
+      marketBuilderForm.watch(actionsType)?.[actionIndex]?.inputs?.[inputIndex]
+        ?.input_type ?? null
     );
 
     const [displayIndicator, setDisplayIndicator] = React.useState(false);
 
     const input_type =
-      marketBuilderForm.watch(actionsType)[actionIndex].inputs[inputIndex]
-        .input_type;
-    const input_value_type = marketBuilderForm.watch(actionsType)[actionIndex]
-      .contract_function.inputs[inputIndex].type as any;
+      marketBuilderForm.watch(actionsType)?.[actionIndex]?.inputs?.[inputIndex]
+        ?.input_type;
+    const input_value_type = marketBuilderForm.watch(actionsType)?.[actionIndex]
+      ?.contract_function?.inputs?.[inputIndex]?.type as any;
 
     // console.log("input_value_type", input_value_type);
 
-    const coder = ethers.utils.defaultAbiCoder._getCoder(
-      ethers.utils.ParamType.from("uint256")
-    );
+    // const coder = ethers.utils.defaultAbiCoder._getCoder(
+    //   ethers.utils.ParamType.from("uint256")
+    // );
 
     // console.log("coder", coder);
 
@@ -145,33 +152,45 @@ export const InputValueSelector = React.forwardRef<
         if (input_value_type === "tuple") {
           const outputAction = marketBuilderForm
             .watch(actionsType)
-            .find((action) => {
+            ?.find((action) => {
               return action.id === outputActionId;
             });
-          const inputAction = marketBuilderForm.watch(actionsType)[actionIndex];
+          const inputAction =
+            marketBuilderForm.watch(actionsType)?.[actionIndex];
 
           if (outputAction && inputAction) {
-            const outputActionFullType =
-              outputAction.contract_function.outputs[parseInt(outputIndex)];
-            const inputActionFullType =
-              inputAction.contract_function.inputs[inputIndex];
+            const outputActionFullType = outputAction.contract_function.outputs[
+              parseInt(outputIndex)
+            ] as AbiParameterWithComponents;
+            const inputActionFullType = inputAction.contract_function.inputs[
+              inputIndex
+            ] as AbiParameterWithComponents;
 
             // we want to ensure that all the types are the same
             if (
-              outputActionFullType.components.length ===
-              inputActionFullType.components.length
+              outputActionFullType?.components?.length ===
+              inputActionFullType?.components?.length
             ) {
               let tempIsValid = true;
 
-              for (let i = 0; i < outputActionFullType.components.length; i++) {
-                if (
-                  outputActionFullType.components[i].type !==
-                    inputActionFullType.components[i].type ||
-                  outputActionFullType.components[i].internalType !==
-                    inputActionFullType.components[i].internalType
+              if (
+                outputActionFullType.components &&
+                inputActionFullType.components
+              ) {
+                for (
+                  let i = 0;
+                  i < outputActionFullType.components.length;
+                  i++
                 ) {
-                  tempIsValid = false;
-                  break;
+                  if (
+                    outputActionFullType.components[i]?.type !==
+                      inputActionFullType.components[i]?.type ||
+                    outputActionFullType.components[i]?.internalType !==
+                      inputActionFullType.components[i]?.internalType
+                  ) {
+                    tempIsValid = false;
+                    break;
+                  }
                 }
               }
 
@@ -287,36 +306,35 @@ export const InputValueSelector = React.forwardRef<
                         </div>
                       )}
 
-                      {marketBuilderForm.watch(actionsType)[actionIndex].inputs[
-                        inputIndex
-                      ].input_type === "fixed" ? (
+                      {marketBuilderForm.watch(actionsType)?.[actionIndex]
+                        ?.inputs?.[inputIndex]?.input_type === "fixed" ? (
                         <Input
                           containerClassName="border-0 p-0 px-3 h-8 grow rounded-none"
                           className="border-0"
                           placeholder={
-                            marketBuilderForm.watch(actionsType)[actionIndex]
-                              .contract_function.inputs[inputIndex].type
+                            marketBuilderForm.watch(actionsType)?.[actionIndex]
+                              ?.contract_function?.inputs?.[inputIndex]?.type
                           }
                           value={
-                            marketBuilderForm.watch(actionsType)[actionIndex]
-                              .inputs[inputIndex].fixed_value
+                            marketBuilderForm.watch(actionsType)?.[actionIndex]
+                              ?.inputs?.[inputIndex]?.fixed_value
                           }
                           onChange={(e) => {
                             let newActions =
                               marketBuilderForm.watch(actionsType);
-                            newActions[actionIndex].inputs[
-                              inputIndex
-                            ].fixed_value = e.target.value;
+                            if (
+                              newActions?.[actionIndex]?.inputs?.[inputIndex]
+                            ) {
+                              newActions[actionIndex].inputs[
+                                inputIndex
+                              ].fixed_value = e.target.value;
+                            }
 
                             marketBuilderForm.setValue(actionsType, newActions);
-                            // marketBuilderForm.setValue(
-                            //   `${actionsType}.${actionIndex}.inputs.${inputIndex}.fixed_value`,
-                            //   e.target.value
-                            // );
                           }}
                         />
-                      ) : !!marketBuilderForm.watch(actionsType)[actionIndex]
-                          .inputs[inputIndex].dynamic_value ? (
+                      ) : !!marketBuilderForm.watch(actionsType)?.[actionIndex]
+                          ?.inputs?.[inputIndex]?.dynamic_value ? (
                         <Fragment>
                           <div className="ml-1 flex h-full w-fit min-w-10 flex-col place-content-center items-center px-2 text-primary">
                             {
@@ -345,7 +363,7 @@ export const InputValueSelector = React.forwardRef<
                           <div className="ml-2 mr-1 flex h-7 flex-col place-content-center items-center text-primary">
                             <span className="leading-7">
                               {
-                                marketBuilderForm.watch(actionsType)[
+                                marketBuilderForm.watch(actionsType)?.[
                                   actionIndex
                                 ].contract_function.inputs[inputIndex].type
                               }
@@ -360,8 +378,9 @@ export const InputValueSelector = React.forwardRef<
                           />
                           <div className="ml-2 text-placeholder">
                             {
-                              marketBuilderForm.watch(actionsType)[actionIndex]
-                                .contract_function.inputs[inputIndex].type
+                              marketBuilderForm.watch(actionsType)?.[
+                                actionIndex
+                              ].contract_function.inputs[inputIndex].type
                             }
                           </div>
                         </Fragment>
