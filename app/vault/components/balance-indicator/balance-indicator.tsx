@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, InfoIcon } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
 
@@ -391,6 +391,18 @@ export const BalanceIndicator = React.forwardRef<
               </DropdownAnimationWrapper>
             )}
           </AnimatePresence>
+        </div>
+
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span>
+                Depositing funds resets a 24-hour lockup on your entire balance,
+                delaying withdrawals until the period ends.
+              </span>
+            </span>
+          </SecondaryLabel>
         </div>
       </div>
     </div>

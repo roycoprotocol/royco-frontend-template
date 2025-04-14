@@ -3,7 +3,6 @@ import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { useAtomValue } from "jotai";
 import { boringVaultAtom } from "@/store/vault/atom/boring-vault";
-import { ethers } from "ethers";
 import BigNumber from "bignumber.js";
 import { erc20Abi } from "viem";
 import { readContract } from "@wagmi/core";
@@ -15,6 +14,7 @@ import {
   BoringQueueABI,
 } from "../../constants/abi";
 import { formatDate } from "date-fns";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 
 export function BoringVaultActionProvider({
   children,
@@ -22,6 +22,7 @@ export function BoringVaultActionProvider({
   children: ReactNode;
 }) {
   const { address } = useAccount();
+  const { data } = useAtomValue(vaultMetadataAtom);
 
   const boringVault = useAtomValue(boringVaultAtom);
 
@@ -183,13 +184,13 @@ export function BoringVaultActionProvider({
       if (new BigNumber(allowance.toString()).gte(shares)) {
         transactions.push({
           type: "approve",
-          label: `Approve ${boringVault.baseAsset.symbol}`,
+          label: `Approve ${data.name}`,
           txStatus: "success",
         });
       } else if (new BigNumber(allowance.toString()).lt(shares)) {
         transactions.push({
           type: "approve",
-          label: `Approve ${boringVault.baseAsset.symbol}`,
+          label: `Approve ${data.name}`,
           data: {
             address: boringVault.contracts.vault,
             abi: BoringVaultABI,
