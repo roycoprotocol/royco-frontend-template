@@ -124,7 +124,7 @@ export const VaultFAQ = React.forwardRef<
           {vault_faq.map((faq, index) => (
             <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
               <AccordionItem value={faq.question} className="border-b-0">
-                <AccordionTrigger className="text-base text-primary">
+                <AccordionTrigger className="py-3 text-base text-primary">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent>
