@@ -14,8 +14,10 @@ import { useAtomValue } from "jotai";
 import formatNumber from "@/utils/numbers";
 import { WarningAlert } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables/warning-alert";
 import { SlideUpWrapper } from "@/components/animations";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
-import { vaultManagerAtom } from "@/store/vault/vault-manager";
+import {
+  vaultMetadataAtom,
+  vaultManagerAtom,
+} from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
 
 export const WithdrawActionForm = React.forwardRef<

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { useParams } from "next/navigation";
 import { BoringVaultV1Provider } from "boring-vault-ui";
 import { vaultContractProviderMap } from "royco/vault";
+import { useAtomValue } from "jotai";
 
 import { useEthersProvider } from "../../hook/useEthersProvider";
 import { BoringVaultWrapper } from "./boring-vault-wrapper";
@@ -12,32 +12,41 @@ import { cn } from "@/lib/utils";
 import { AlertIndicator } from "@/components/common";
 import { SlideUpWrapper } from "@/components/animations";
 import { BoringVaultActionProvider } from "./boring-vault-action-provider";
+import { vaultParamsAtom } from "@/store/vault/vault-manager";
 
 export const BoringVaultProvider = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ children, className, ...props }, ref) => {
-  const { chain_id, vault_id } = useParams();
+  const vaultParams = useAtomValue(vaultParamsAtom);
 
   const vault = useMemo(() => {
-    const chainId = chain_id?.toString()?.toLowerCase();
-    const vaultId = vault_id?.toString()?.toLowerCase();
+    if (!vaultParams) {
+      return null;
+    }
+
+    const chainId = vaultParams.chainId;
+    const vaultId = vaultParams.vaultId;
 
     const _vault = vaultContractProviderMap.find(
       (v) => v.id === `${chainId}_${vaultId}`
     );
     return _vault;
-  }, [vault_id]);
+  }, [vaultParams]);
 
   const chain = useMemo(() => {
-    return chains[Number(chain_id) as keyof typeof chains];
-  }, [chain_id]);
+    if (!vaultParams) {
+      return null;
+    }
+
+    return chains[vaultParams.chainId as keyof typeof chains];
+  }, [vaultParams]);
 
   const provider = useEthersProvider({
-    chainId: Number(chain_id),
+    chainId: Number(chain?.chainId || 0),
   });
 
-  if (!vault || ("error" in provider && provider.error)) {
+  if (!vault || !chain || ("error" in provider && provider.error)) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
         <AlertIndicator

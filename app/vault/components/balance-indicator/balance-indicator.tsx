@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, InfoIcon } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
 
@@ -9,13 +9,18 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
-import { vaultManagerAtom } from "@/store/vault/vault-manager";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import {
+  vaultManagerAtom,
+  vaultMetadataAtom,
+} from "@/store/vault/vault-manager";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contracts";
+import { useBoringVaultActions } from "../../providers/boring-vault/boring-vault-action-provider";
+import toast from "react-hot-toast";
+import { ErrorAlert } from "@/components/composables";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -43,29 +48,46 @@ const DropdownAnimationWrapper = React.forwardRef<
   );
 });
 
+const AnimatePulseWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    isLoading: boolean;
+  }
+>(({ children, className, isLoading, ...props }, ref) => {
+  return (
+    <AnimatePresence mode="wait">
+      {isLoading ? (
+        <div ref={ref} className={cn(className)} {...props} />
+      ) : (
+        <>{children}</>
+      )}
+    </AnimatePresence>
+  );
+});
+
 export const BalanceIndicator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const vault = useAtomValue(vaultManagerAtom);
   const { data } = useAtomValue(vaultMetadataAtom);
 
-  const vault = useAtomValue(vaultManagerAtom);
+  const { setTransactions, isContractLoading } = useVaultManager();
 
-  const { setTransaction } = useVaultManager();
+  const { getClaimIncentiveTransaction } = useBoringVaultActions();
 
   const token = useMemo(() => {
     return data?.depositTokens[0];
   }, [data]);
 
   const principle = useMemo(() => {
-    const isLocked =
-      (vault?.account.unlockTime || 0) > 0 &&
-      (vault?.account.unlockTime || 0) > Date.now();
+    const unlockTime = vault?.account.unlockTime || 0;
+    const isLocked = unlockTime > 0 && unlockTime > Date.now();
 
     return {
-      amount: vault?.account.sharesInUsd || 0,
+      amountInUsd: vault?.account.sharesInUsd || 0,
       tokenAmount: vault?.account.sharesInBaseAsset || 0,
-      unlockTime: vault?.account.unlockTime || 0,
+      unlockTime,
       isLocked,
     };
   }, [vault]);
@@ -82,25 +104,42 @@ export const BalanceIndicator = React.forwardRef<
     };
   }, [vault]);
 
-  const [showPrincipleBreakdown, setShowPrincipleBreakdown] = useState(true);
+  const totalAmountInUsd = useMemo(() => {
+    return principle.amountInUsd + incentives.amountInUsd;
+  }, [principle, incentives]);
+
+  const [showPrincipleBreakdown, setShowPrincipleBreakdown] = useState(false);
   const [showIncentivesBreakdown, setShowIncentivesBreakdown] = useState(false);
 
-  const handleClaim = (incentive: VaultPositionUnclaimedRewardToken) => {
-    const transaction = {
-      type: "claimIncentives" as const,
-      steps: [
-        {
-          type: "claim",
-          label: `Claim ${incentive.symbol}`,
-        },
-      ],
-      form: {
-        token: incentive,
-        amount: incentive.tokenAmount,
-      },
-    };
+  const handleClaimIncentive = async (
+    incentive: VaultPositionUnclaimedRewardToken
+  ) => {
+    if (!incentive) {
+      toast.custom(<ErrorAlert message="Incentive is required" />);
+      return;
+    }
 
-    setTransaction(transaction);
+    const claimIncentiveTransactions = await getClaimIncentiveTransaction(
+      incentive.rewardIds
+    );
+
+    if (
+      claimIncentiveTransactions &&
+      claimIncentiveTransactions.steps.length > 0
+    ) {
+      const transactions = {
+        type: "claimIncentives" as const,
+        title: "Claim Incentive",
+        description: claimIncentiveTransactions.description,
+        steps: claimIncentiveTransactions.steps || [],
+        token: {
+          data: incentive,
+          amount: incentive.tokenAmount,
+        },
+      };
+
+      setTransactions(transactions);
+    }
   };
 
   return (
@@ -113,15 +152,18 @@ export const BalanceIndicator = React.forwardRef<
           Your Value
         </SecondaryLabel>
 
-        <PrimaryLabel className="mt-2 text-[32px] font-medium">
-          {formatNumber(
-            principle.amount,
-            { type: "currency" },
-            {
-              average: false,
-            }
-          )}
-        </PrimaryLabel>
+        <AnimatePulseWrapper
+          isLoading={isContractLoading}
+          className="mt-2 h-[40px] w-[200px] animate-pulse rounded-lg bg-gray-200"
+        >
+          <PrimaryLabel className="mt-2 text-[32px] font-medium">
+            {formatNumber(
+              totalAmountInUsd,
+              { type: "currency" },
+              { average: false }
+            )}
+          </PrimaryLabel>
+        </AnimatePulseWrapper>
       </div>
 
       <div className={cn("mt-6")}>
@@ -139,19 +181,24 @@ export const BalanceIndicator = React.forwardRef<
               className="cursor-pointer text-base font-normal"
             >
               <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1">
-                  <span>
-                    {formatNumber(
-                      principle.tokenAmount,
-                      { type: "currency" },
-                      {
-                        average: false,
-                      }
-                    )}
-                  </span>
+                <AnimatePulseWrapper
+                  isLoading={isContractLoading}
+                  className="h-[24px] w-[120px] animate-pulse rounded-lg bg-gray-200"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>
+                      {formatNumber(
+                        principle.amountInUsd,
+                        { type: "currency" },
+                        {
+                          average: false,
+                        }
+                      )}
+                    </span>
 
-                  <TokenDisplayer size={4} tokens={[token]} symbols={false} />
-                </div>
+                    <TokenDisplayer size={4} tokens={[token]} symbols={false} />
+                  </div>
+                </AnimatePulseWrapper>
 
                 <motion.div
                   animate={{ rotate: showPrincipleBreakdown ? 180 : 0 }}
@@ -257,23 +304,28 @@ export const BalanceIndicator = React.forwardRef<
               className="cursor-pointer text-base font-normal"
             >
               <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1">
-                  <span>
-                    {formatNumber(
-                      incentives.amountInUsd,
-                      { type: "currency" },
-                      {
-                        average: false,
-                      }
-                    )}
-                  </span>
+                <AnimatePulseWrapper
+                  isLoading={isContractLoading}
+                  className="h-[24px] w-[100px] animate-pulse rounded-lg bg-gray-200"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>
+                      {formatNumber(
+                        incentives.amountInUsd,
+                        { type: "currency" },
+                        {
+                          average: false,
+                        }
+                      )}
+                    </span>
 
-                  <TokenDisplayer
-                    size={4}
-                    tokens={incentives.data}
-                    symbols={false}
-                  />
-                </div>
+                    <TokenDisplayer
+                      size={4}
+                      tokens={incentives.data}
+                      symbols={false}
+                    />
+                  </div>
+                </AnimatePulseWrapper>
 
                 <motion.div
                   animate={{ rotate: showIncentivesBreakdown ? 180 : 0 }}
@@ -291,14 +343,7 @@ export const BalanceIndicator = React.forwardRef<
           <AnimatePresence>
             {showIncentivesBreakdown && (
               <DropdownAnimationWrapper className="fex-col mt-3 flex gap-3 rounded-lg border border-divider p-4">
-                {incentives.data && incentives.data.length === 0 && (
-                  <AlertIndicator className="py-4">
-                    No incentives available
-                  </AlertIndicator>
-                )}
-
-                {incentives.data &&
-                  incentives.data.length > 0 &&
+                {incentives.data && incentives.data.length > 0 ? (
                   incentives.data.map((item, index) => (
                     <div
                       key={index}
@@ -332,15 +377,32 @@ export const BalanceIndicator = React.forwardRef<
                         variant="ghost"
                         size="sm"
                         className="text-sm font-semibold text-success hover:bg-success/10 hover:text-primary"
-                        onClick={() => handleClaim(item)}
+                        onClick={() => handleClaimIncentive(item)}
                       >
                         Claim
                       </Button>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <AlertIndicator className="py-4">
+                    No incentives available
+                  </AlertIndicator>
+                )}
               </DropdownAnimationWrapper>
             )}
           </AnimatePresence>
+        </div>
+
+        <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+          <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+          <SecondaryLabel className="break-normal text-xs">
+            <span>
+              <span>
+                Depositing funds resets a 24-hour lockup on your entire balance,
+                delaying withdrawals until the period ends.
+              </span>
+            </span>
+          </SecondaryLabel>
         </div>
       </div>
     </div>

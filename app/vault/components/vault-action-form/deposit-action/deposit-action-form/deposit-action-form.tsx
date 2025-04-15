@@ -17,7 +17,7 @@ import { SlideUpWrapper } from "@/components/animations";
 import { WarningAlert } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables/warning-alert";
 import { LoadingSpinner } from "@/components/composables";
 import formatNumber from "@/utils/numbers";
-import { vaultMetadataAtom } from "@/store/vault/vault-metadata";
+import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
 
 export const DepositActionForm = React.forwardRef<
