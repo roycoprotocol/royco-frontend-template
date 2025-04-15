@@ -41,6 +41,7 @@ export const config = getDefaultConfig({
     Sonic,
     BerachainMainnet,
     BerachainTestnet,
+    Hyperevm,
   ],
   ssr: true,
   multiInjectedProviderDiscovery: true,

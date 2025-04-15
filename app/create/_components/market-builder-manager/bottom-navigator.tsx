@@ -22,7 +22,7 @@ import { switchChain } from "@wagmi/core";
 import toast from "react-hot-toast";
 import { ContractMap } from "royco/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
-import { Plume, REWARD_STYLE, Sonic } from "royco/constants";
+import { Hyperevm, Plume, REWARD_STYLE, Sonic } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
 import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 import { CreateActionsMap } from "../market-builder-flow/info-step/form-selectors";
@@ -111,7 +111,8 @@ export const BottomNavigator = React.forwardRef<
       frontendFee:
         marketBuilderForm.watch("chain").id === Sonic.id
           ? "5000000000000000" // 0.05%
-          : marketBuilderForm.watch("chain").id === Plume.id
+          : marketBuilderForm.watch("chain").id === Plume.id ||
+              marketBuilderForm.watch("chain").id === Hyperevm.id
             ? "0" // 0%
             : "40000000000000000", // 4%
       rewardStyle:
