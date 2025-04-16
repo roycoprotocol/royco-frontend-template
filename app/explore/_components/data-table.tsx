@@ -130,6 +130,10 @@ export function DataTable<TData, TValue>({
                     (cell) => cell.column.id === "pool_type"
                   );
 
+                  const quantityIpUsd = cells.find(
+                    (cell) => cell.column.id === "quantity_ip_usd"
+                  );
+
                   const appType = cells.find(
                     (cell) => cell.column.id === "app_type"
                   );
@@ -187,7 +191,7 @@ export function DataTable<TData, TValue>({
                           height="2.45rem"
                         >
                           <ScrollArea className="flex gap-x-2">
-                            {!!lockedQuantityUsd &&
+                            {/* {!!lockedQuantityUsd &&
                               columnVisibility.locked_quantity_usd &&
                               flexRender(
                                 lockedQuantityUsd.column.columnDef.cell,
@@ -196,7 +200,15 @@ export function DataTable<TData, TValue>({
                                   placeholderDatas,
                                   view,
                                 }
-                              )}
+                              )} */}
+
+                            {!!quantityIpUsd &&
+                              columnVisibility.quantity_ip_usd &&
+                              flexRender(quantityIpUsd.column.columnDef.cell, {
+                                ...quantityIpUsd.getContext(),
+                                placeholderDatas,
+                                view,
+                              })}
 
                             {!!chainId &&
                               columnVisibility.chain_id &&
