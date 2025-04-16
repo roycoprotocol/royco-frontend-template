@@ -263,6 +263,10 @@ export const baseRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>[] =
       header: "Accumulated Incentives",
       meta: "text-left",
       cell: ({ row }) => {
+        if (row.original.is_forfeited) {
+          return <div className={cn("")}>Forfeited</div>;
+        }
+
         let unclaimed_first_incentive = 0;
 
         if (row.original.tokens_data.length > 0) {
