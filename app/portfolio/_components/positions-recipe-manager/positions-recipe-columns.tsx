@@ -272,6 +272,10 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
       header: "Received Incentives",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
+        if (row.original.is_forfeited) {
+          return <div className={cn("w-full text-center")}>Forfeited</div>;
+        }
+
         return (
           <div
             className={cn("flex w-full flex-col items-center justify-center")}
@@ -321,9 +325,7 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
               </TooltipTrigger>
 
               <TooltipContent className="text-sm">
-                {row.original.is_claimed?.some(
-                  (is_claimed) => is_claimed === false
-                )
+                {row.original.can_claim
                   ? "You have unclaimed incentives"
                   : "No unclaimed incentives"}
               </TooltipContent>
