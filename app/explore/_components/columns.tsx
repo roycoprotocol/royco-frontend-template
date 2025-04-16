@@ -210,43 +210,30 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
     },
   },
   {
-    accessorKey: "locked_quantity_usd",
+    accessorKey: "quantity_ip_usd",
     enableResizing: true,
-    // header: exploreColumnNames.tvl,
     enableSorting: true,
     header: ({ column }: { column: any }) => {
       return <HeaderWrapper column={column} className="justify-center" />;
     },
-
     meta: {
       className: "min-w-32",
     },
     cell: (props: any) => {
-      const rowIndex = props.row.index;
-
-      let previousValue = 0;
-
-      if (
-        props.placeholderDatas[0] !== null &&
-        rowIndex < props.placeholderDatas[0].length
-      ) {
-        previousValue =
-          props.placeholderDatas[0][rowIndex].locked_quantity_usd || 0;
-      }
-
-      const currentValue = props.row.original.locked_quantity_usd;
+      const previousValue = 0;
+      const currentValue = props.row.original.quantity_ip_usd;
 
       return (
         <div
-          key={`${props.view}:market:${props.row.original.id}:locked_quantity_usd`}
+          key={`${props.view}:market:${props.row.original.id}:quantity_ip_usd`}
           className={cn(
             "tabular-nums",
             props.view === "grid" &&
               "body-2 flex w-fit shrink-0 flex-row space-x-1 rounded-full border border-divider px-[0.438rem] py-1 text-black"
           )}
         >
-          <Tooltip>
-            <TooltipTrigger
+          {props.row.original.market_type === MarketType.recipe.value ? (
+            <div
               className={cn(
                 "flex cursor-pointer",
                 props.view === "grid" &&
@@ -264,7 +251,6 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
                   currency: "USD",
                   notation: "compact",
                   useGrouping: true,
-                  // notation: props.view === "grid" ? "compact" : "standard",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 }}
@@ -274,15 +260,91 @@ export const columns: ColumnDef<EnrichedMarketDataType> = [
 
               {props.view === "grid" && (
                 <div className="text-secondary">
-                  <span className="leading-5">TVL</span>
+                  <span className="leading-5">Fillable</span>
                 </div>
               )}
-            </TooltipTrigger>
-          </Tooltip>
+            </div>
+          ) : (
+            <div>No Limit</div>
+          )}
         </div>
       );
     },
   },
+  // {
+  //   accessorKey: "locked_quantity_usd",
+  //   enableResizing: true,
+  //   // header: exploreColumnNames.tvl,
+  //   enableSorting: true,
+  //   header: ({ column }: { column: any }) => {
+  //     return <HeaderWrapper column={column} className="justify-center" />;
+  //   },
+
+  //   meta: {
+  //     className: "min-w-32",
+  //   },
+  //   cell: (props: any) => {
+  //     const rowIndex = props.row.index;
+
+  //     let previousValue = 0;
+
+  //     if (
+  //       props.placeholderDatas[0] !== null &&
+  //       rowIndex < props.placeholderDatas[0].length
+  //     ) {
+  //       previousValue =
+  //         props.placeholderDatas[0][rowIndex].locked_quantity_usd || 0;
+  //     }
+
+  //     const currentValue = props.row.original.locked_quantity_usd;
+
+  //     return (
+  //       <div
+  //         key={`${props.view}:market:${props.row.original.id}:locked_quantity_usd`}
+  //         className={cn(
+  //           "tabular-nums",
+  //           props.view === "grid" &&
+  //             "body-2 flex w-fit shrink-0 flex-row space-x-1 rounded-full border border-divider px-[0.438rem] py-1 text-black"
+  //         )}
+  //       >
+  //         <Tooltip>
+  //           <TooltipTrigger
+  //             className={cn(
+  //               "flex cursor-pointer",
+  //               props.view === "grid" &&
+  //                 "flex-row flex-nowrap items-center space-x-1"
+  //             )}
+  //           >
+  //             <SpringNumber
+  //               defaultColor={
+  //                 props.view === "grid" ? "text-secondary" : "text-black"
+  //               }
+  //               previousValue={previousValue}
+  //               currentValue={currentValue}
+  //               numberFormatOptions={{
+  //                 style: "currency",
+  //                 currency: "USD",
+  //                 notation: "compact",
+  //                 useGrouping: true,
+  //                 // notation: props.view === "grid" ? "compact" : "standard",
+  //                 minimumFractionDigits: 2,
+  //                 maximumFractionDigits: 2,
+  //               }}
+  //               className={cn("h-5")}
+  //               spanClassName={cn("leading-5")}
+  //             />
+
+  //             {props.view === "grid" && (
+  //               <div className="text-secondary">
+  //                 <span className="leading-5">TVL</span>
+  //               </div>
+  //             )}
+  //           </TooltipTrigger>
+  //         </Tooltip>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "total_incentive_amounts_usd",
     enableResizing: true,

@@ -89,30 +89,39 @@ export const MarketDetails = React.forwardRef<
       {...props}
     >
       {/**
-       * TVL
+       * Fillable
        */}
       <div className="flex flex-row justify-between">
-        <div>
-          <TertiaryLabel className="text-sm">TVL</TertiaryLabel>
-          <PrimaryLabel className="mt-1 text-2xl font-500 ">
-            <SpringNumber
-              previousValue={
-                previousMarketData && previousMarketData.locked_quantity_usd
-                  ? previousMarketData.locked_quantity_usd
-                  : 0
-              }
-              currentValue={currentMarketData.locked_quantity_usd ?? 0}
-              numberFormatOptions={{
-                style: "currency",
-                currency: "USD",
-                notation: "compact",
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }}
-            />
-          </PrimaryLabel>
-        </div>
+        {marketMetadata.market_type === MarketType.recipe.id ? (
+          <div>
+            <TertiaryLabel className="text-sm">Fillable</TertiaryLabel>
+            <PrimaryLabel className="mt-1 text-2xl font-500 ">
+              <SpringNumber
+                previousValue={
+                  previousMarketData && previousMarketData.quantity_ip_usd
+                    ? previousMarketData.quantity_ip_usd
+                    : 0
+                }
+                currentValue={currentMarketData.quantity_ip_usd ?? 0}
+                numberFormatOptions={{
+                  style: "currency",
+                  currency: "USD",
+                  notation: "compact",
+                  useGrouping: true,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }}
+              />
+            </PrimaryLabel>
+          </div>
+        ) : (
+          <div>
+            <TertiaryLabel className="text-sm">Fillable</TertiaryLabel>
+            <PrimaryLabel className="mt-1 text-2xl font-500">
+              No Limit
+            </PrimaryLabel>
+          </div>
+        )}
 
         {marketAssetType && marketMultiplier && (
           <div className="flex flex-col items-end">
@@ -283,15 +292,17 @@ export const MarketDetails = React.forwardRef<
           </InfoCard.Row>
         )}
 
-        {marketMetadata.market_type === MarketType.recipe.id && (
-          <InfoCard.Row className={INFO_ROW_CLASSES}>
-            <InfoCard.Row.Key>Amount Fillable</InfoCard.Row.Key>
+        <InfoCard.Row className={INFO_ROW_CLASSES}>
+          <InfoCard.Row.Key>TVL</InfoCard.Row.Key>
 
-            <InfoCard.Row.Value>
-              <span>{formattedFillableAmount}</span>
-            </InfoCard.Row.Value>
-          </InfoCard.Row>
-        )}
+          <InfoCard.Row.Value>
+            <span>
+              {formatNumber(currentMarketData.locked_quantity_usd ?? 0, {
+                type: "currency",
+              })}
+            </span>
+          </InfoCard.Row.Value>
+        </InfoCard.Row>
       </InfoCard>
 
       {/**
