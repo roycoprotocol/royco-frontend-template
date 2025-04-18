@@ -290,7 +290,7 @@ export const YieldBreakdown = React.forwardRef<
                 {breakdown.some((item) => item.category === "base") && (
                   <div>
                     <BreakdownItem>
-                      <BreakdownTitle>Negotiable Rate</BreakdownTitle>
+                      <BreakdownTitle>Royco Fixed Rate</BreakdownTitle>
                       <BreakdownContent
                         className="mt-1"
                         breakdown={breakdown.filter(
@@ -306,7 +306,7 @@ export const YieldBreakdown = React.forwardRef<
 
                 {breakdown.some((item) => item.category !== "base") && (
                   <BreakdownItem>
-                    <BreakdownTitle>Underlying Rate</BreakdownTitle>
+                    <BreakdownTitle>Variable Rate</BreakdownTitle>
                     <BreakdownContent
                       className="mt-1"
                       breakdown={breakdown.filter(
