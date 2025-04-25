@@ -60,7 +60,9 @@ export const ChainFilter = React.forwardRef<
   };
 
   const isChainSelected = (chainId: number) => {
-    const chainFilter = filters.find((filter) => filter.id === "chainId");
+    const chainFilter = filters.find(
+      (filter) => filter.id === "chainId" && Array.isArray(filter.value)
+    );
     return chainFilter
       ? (chainFilter.value as number[]).includes(chainId)
       : false;
