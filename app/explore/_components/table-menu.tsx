@@ -20,6 +20,17 @@ import { Switch } from "../../../components/ui/switch";
 import { useParams, usePathname } from "next/navigation";
 import { PoolTypeFilter } from "./ui/pool-type-filter";
 import { AppTypeFilter } from "./ui/app-type-filter";
+import { ExploreChainFilter } from "./ui/explore-chain-filter";
+import {
+  exploreFiltersAtom,
+  loadableExploreMarketAtom,
+} from "@/store/explore/atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { explorePageAtom } from "@/store/explore/atoms";
+import NumberFlow from "@number-flow/react";
+import { LoadingCircle } from "@/components/animations/loading-circle";
+import { ExploreMarketResponse } from "royco/api";
+import { produce } from "immer";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
@@ -34,29 +45,31 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       [pathname]
     );
 
-    const {
-      exploreView: view,
-      setExploreView,
-      exploreIsVerified,
-      setExploreIsVerified,
-      exploreAllMarkets,
-      setExploreAllMarkets,
-    } = useExplore();
+    const [filters, setFilters] = useAtom(exploreFiltersAtom);
+    const [page, setPage] = useAtom(explorePageAtom);
+
+    const exploreIsVerified = useMemo(() => {
+      return (
+        filters.find((filter) => filter.id === "isVerified")?.value ?? true
+      );
+    }, [filters]);
+
+    const setExploreIsVerified = (isVerified: boolean) => {
+      const isVerifiedFilterIndex = filters.findIndex(
+        (filter) => filter.id === "isVerified"
+      );
+
+      if (isVerifiedFilterIndex !== -1) {
+        let newFilters = [...filters];
+        newFilters[isVerifiedFilterIndex].value = isVerified;
+        setFilters(newFilters);
+      }
+    };
 
     /**
      * @description Placeholder data state
      */
     const [placeholderDatas, setPlaceholderDatas] = useImmer([null, null]);
-
-    const {
-      exploreSort: sorting,
-      exploreFilters: filters,
-      exploreSearch: searchKey,
-      explorePageIndex: pageIndex,
-      exploreCustomPoolParams: customPoolParams,
-      exploreAllMarkets: showAllMarkets,
-      setExplorePageIndex: setPageIndex,
-    } = useExplore();
 
     useEffect(() => {
       if (typeof window !== "undefined") {
@@ -67,69 +80,31 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       }
     }, []);
 
-    // const { isLoading, isError, isRefetching, count } = usePoolTable({
-    //   sorting,
-    //   filters,
-    //   searchKey,
-    //   pageIndex,
-    //   customPoolParams,
-    // });
-
     const { customTokenData } = useGlobalStates();
 
-    const updatedFilters = useMemo(() => {
-      if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "default") {
-        const filterItem = filters.find((filter) => filter.id === "category");
+    const {
+      data: propsData,
+      isLoading,
+      isRefetching,
+    } = useAtomValue(loadableExploreMarketAtom);
 
-        if (filterItem && showAllMarkets) {
-          return filters.filter((filter) => filter.id !== "category");
-        }
+    const [placeholderData, setPlaceholderData] = useImmer<
+      Array<ExploreMarketResponse | undefined>
+    >([undefined, undefined]);
 
-        if (!filterItem && !showAllMarkets) {
-          return [
-            ...filters,
-            {
-              id: "category",
-              value: "boyco",
-              condition: "NOT",
-            },
-          ];
-        }
-      }
-
-      return filters;
-    }, [filters, showAllMarkets]);
-
-    const { isLoading, isError, isRefetching, count } = useEnrichedMarkets({
-      sorting,
-      filters: updatedFilters,
-      page_index: pageIndex,
-      search_key: searchKey,
-      is_verified: showVerifiedMarket ? true : exploreIsVerified,
-      custom_token_data: customTokenData,
-    });
-
-    /**
-     * @description Placeholder data setter
-     */
     useEffect(() => {
-      if (
-        isLoading === false &&
-        count !== undefined &&
-        count !== null &&
-        !isEqual(count, placeholderDatas[1])
-      ) {
-        setPlaceholderDatas((prevDatas: any) => {
-          const newData = [...prevDatas, count];
-
-          if (newData.length > 2) {
-            return newData.slice(1);
-          }
-
-          return newData;
+      if (!isEqual(propsData, placeholderData[1]) && !!propsData) {
+        setPlaceholderData((prevDatas) => {
+          return produce(prevDatas, (draft) => {
+            // Prevent overwriting previous data with the same object reference
+            if (!isEqual(draft[1], propsData)) {
+              draft[0] = draft[1]; // Set previous data to the current data
+              draft[1] = propsData; // Set current data to the new data
+            }
+          });
         });
       }
-    }, [count]);
+    }, [propsData]);
 
     return (
       <div
@@ -144,17 +119,10 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
         <div className="body-2 sticky top-0 z-20 flex h-16 shrink-0 flex-row place-content-center items-center justify-between border-b border-divider bg-white px-5 text-primary">
           <h3 className="flex flex-row items-center gap-2">
             <div className="tabular-nums">
-              {isLoading ? (
-                <LoadingSpinner className="inline-block h-4 w-4" />
+              {placeholderData[1]?.count !== undefined ? (
+                <NumberFlow value={placeholderData[1]?.count ?? 0} />
               ) : (
-                <SpringNumber
-                  previousValue={placeholderDatas[0] || 0}
-                  currentValue={count ?? 0}
-                  numberFormatOptions={{
-                    maximumFractionDigits: 0,
-                    style: "decimal",
-                  }}
-                />
+                <LoadingCircle size={16} className="inline-block" />
               )}
             </div>
             <div>Markets</div>
@@ -185,12 +153,6 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-b border-divider px-5 py-4">
-          <h4 className="badge text-tertiary">VIEW AS</h4>
-
-          <ViewSelector />
-        </div>
-
         <div className="flex flex-col px-5 py-4">
           <h4 className="badge text-tertiary">FILTER</h4>
 
@@ -207,6 +169,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
                       !exploreIsVerified ? "true" : "false"
                     );
                   }
+
                   setExploreIsVerified(!exploreIsVerified);
                 }}
               />
@@ -216,19 +179,42 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           {/**
            * @description Show all markets
            */}
-          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "default" && (
-            <div className="body-2 mt-4 flex justify-between text-primary">
-              <h5 className="">Show Inactive Markets</h5>
+          <div className="body-2 mt-4 flex justify-between text-primary">
+            <h5 className="">Show Inactive Markets</h5>
 
-              <Switch
-                checked={exploreAllMarkets}
-                onCheckedChange={() => {
-                  setPageIndex(0);
-                  setExploreAllMarkets(!exploreAllMarkets);
-                }}
-              />
-            </div>
-          )}
+            <Switch
+              checked={
+                filters.some((filter) => filter.id === "fillableUsd")
+                  ? false
+                  : true
+              }
+              onCheckedChange={(e) => {
+                if (e === true) {
+                  // Show all markets (active + inactive)
+                  const newFilters = filters.filter(
+                    (filter) => filter.id !== "fillableUsd"
+                  );
+
+                  setFilters(newFilters);
+                } else {
+                  // Show only active markets
+                  let newFilters = filters.filter(
+                    (filter) => filter.id !== "fillableUsd"
+                  );
+
+                  newFilters.push({
+                    id: "fillableUsd",
+                    value: 0,
+                    condition: "gt",
+                  });
+
+                  setFilters(newFilters);
+                }
+
+                setPage(1);
+              }}
+            />
+          </div>
 
           {/**
            * @description Pool Type filter
@@ -289,7 +275,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
               <h5 className="">Chain</h5>
 
               <div className="flex flex-wrap gap-2">
-                <ChainsFilter />
+                <ExploreChainFilter />
               </div>
             </div>
           )}

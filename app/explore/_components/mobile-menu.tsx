@@ -20,9 +20,6 @@ export const MobileMenu = React.forwardRef<HTMLDivElement, MobileMenuProps>(
           </div>
         </DrawerTrigger>
         <DrawerContent className="flex max-h-[80vh] flex-col items-center border bg-white focus:outline-none">
-          {/**
-           * Todo: Make it live
-           */}
           <TableMenu className="max-h-[80vh] overflow-y-scroll rounded-none border-none pb-5" />
         </DrawerContent>
       </Drawer>

@@ -1,11 +1,12 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { useExplore } from "@/store";
-import { CircleXIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
+import { useAtom } from "jotai";
+import { exploreSearchKeyAtom } from "@/store/explore/atoms";
 
 export const SearchBar = () => {
-  const { exploreSearch, setExploreSearch, setExplorePageIndex } = useExplore();
+  const [exploreSearchKey, setExploreSearchKey] = useAtom(exploreSearchKeyAtom);
 
   return (
     <div className="h-[2.875rem] w-full pr-1 md:min-w-40 lg:w-1/3 lg:min-w-40">
@@ -14,10 +15,9 @@ export const SearchBar = () => {
         <Input
           containerClassName="border-none text-black p-0 h-5 grow"
           className="body-2 placeholder:text-secondary"
-          value={exploreSearch}
+          value={exploreSearchKey}
           onChange={(e) => {
-            setExplorePageIndex(0);
-            setExploreSearch(e.target.value);
+            setExploreSearchKey(e.target.value);
           }}
           placeholder="Search"
         />

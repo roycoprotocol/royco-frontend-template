@@ -3,9 +3,7 @@ import "./explore/local.css";
 import { cn } from "@/lib/utils";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import {
-  MarketsTable,
   MobileMenu,
-  Pagination,
   RoycoStats,
   SearchBar,
   TableMenu,
@@ -18,6 +16,7 @@ import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { PlumeBlackLogo } from "./_components/assets/plume/plume-black";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
+import { ExploreMarketManager } from "./explore/_components/explore-market-manager";
 
 const Page = () => {
   const Content = () => {
@@ -143,14 +142,12 @@ const Page = () => {
 
                 <div className="flex w-fit flex-row items-center space-x-3">
                   {/* <Sorter /> */}
-                  <ColumnToggler />
+                  {/* <ColumnToggler /> */}
                 </div>
               </div>
             </div>
 
-            <MarketsTable />
-
-            <Pagination />
+            <ExploreMarketManager />
           </div>
         </div>
 

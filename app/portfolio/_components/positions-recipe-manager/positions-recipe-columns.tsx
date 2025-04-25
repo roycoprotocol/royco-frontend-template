@@ -41,6 +41,12 @@ import { secondsToDuration } from "@/app/create/_components/market-builder-form/
 import formatNumber from "@/utils/numbers";
 import validator from "validator";
 import { TokenDisplayer } from "@/components/common";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { original } from "immer";
 
 export type PositionsRecipeDataElement = NonNullable<
   NonNullable<
@@ -266,45 +272,64 @@ export const positionsRecipeColumns: ColumnDef<PositionsRecipeColumnDataElement>
       header: "Received Incentives",
       meta: "min-w-48 text-center",
       cell: ({ row }) => {
+        if (row.original.is_forfeited) {
+          return <div className={cn("w-full text-center")}>Forfeited</div>;
+        }
+
         return (
           <div
             className={cn("flex w-full flex-col items-center justify-center")}
           >
-            <div>
-              {row.original.tokens_data.some(
-                (token) => token.type !== "point"
-              ) && (
-                <div className="flex flex-row items-center gap-1">
-                  {formatNumber(
-                    row.original.tokens_data.reduce(
-                      (acc, token) => acc + token.token_amount_usd,
-                      0
-                    ),
-                    {
-                      type: "currency",
-                    }
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-row items-center font-normal">
-              {row.original.tokens_data.map((token) => {
-                return (
-                  <div key={token.id} className="flex flex-row items-center">
-                    {formatNumber(token.token_amount, { type: "number" })}
-
-                    <TokenDisplayer
-                      imageClassName="hidden"
-                      symbolClassName="font-normal"
-                      size={4}
-                      tokens={[token]}
-                      symbols={true}
-                    />
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="flex flex-col items-center gap-1">
+                  <div>
+                    {row.original.tokens_data.some(
+                      (token) => token.type !== "point"
+                    ) && (
+                      <div className="flex flex-row items-center gap-1">
+                        {formatNumber(
+                          row.original.tokens_data.reduce(
+                            (acc, token) => acc + token.token_amount_usd,
+                            0
+                          ),
+                          {
+                            type: "currency",
+                          }
+                        )}
+                      </div>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="flex flex-row items-center font-normal">
+                    {row.original.tokens_data.map((token) => {
+                      return (
+                        <div
+                          key={token.id}
+                          className="flex flex-row items-center"
+                        >
+                          {formatNumber(token.token_amount, { type: "number" })}
+
+                          <TokenDisplayer
+                            imageClassName="hidden"
+                            symbolClassName="font-normal"
+                            size={4}
+                            tokens={[token]}
+                            symbols={true}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </TooltipTrigger>
+
+              <TooltipContent className="text-sm">
+                {row.original.can_claim
+                  ? "You have unclaimed incentives"
+                  : "No unclaimed incentives"}
+              </TooltipContent>
+            </Tooltip>
           </div>
         );
       },

@@ -56,6 +56,8 @@ interface ExploreState {
 
 export const exploreColumnNames = {
   name: "Market",
+  chainId: "Chain",
+  fillableUsd: "Fillable",
   input_token_id: "Asset",
   chain_id: "Chain",
   market_type: "Lockup",
@@ -65,6 +67,7 @@ export const exploreColumnNames = {
   chain: "Chain",
   pool_type: "Pool Type",
   app_type: "Gem Allocation",
+  quantity_ip_usd: "Fillable",
 };
 
 export const exploreColumnTooltips = {
@@ -193,7 +196,11 @@ export const useExplore = create<ExploreState>((set) => ({
     set({ exploreFilters }),
   exploreSort: [
     {
-      id: "locked_quantity_usd",
+      id: "total_incentive_amounts_usd",
+      desc: true,
+    },
+    {
+      id: "quantity_ip_usd",
       desc: true,
     },
   ],
@@ -216,6 +223,7 @@ export const useExplore = create<ExploreState>((set) => ({
     chain_id: true,
     pool_type: true,
     app_type: true,
+    quantity_ip_usd: true,
   },
   exploreColumnNames: exploreColumnNames,
   setExploreColumnVisibility: (exploreColumnVisibility) =>
