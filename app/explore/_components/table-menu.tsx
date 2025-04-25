@@ -10,17 +10,12 @@ import { useExplore, useGlobalStates } from "@/store";
 import { useEnrichedMarkets } from "royco/hooks";
 import { LoadingSpinner, SpringNumber } from "@/components/composables";
 
-import {
-  AssetsFilter,
-  ChainsFilter,
-  IncentivesFilter,
-  ViewSelector,
-} from "./ui";
+import { AssetsFilter } from "./ui";
 import { Switch } from "../../../components/ui/switch";
 import { useParams, usePathname } from "next/navigation";
 import { PoolTypeFilter } from "./ui/pool-type-filter";
 import { AppTypeFilter } from "./ui/app-type-filter";
-import { ExploreChainFilter } from "./ui/explore-chain-filter";
+import { ChainFilter } from "./ui/chain-filter";
 import {
   exploreFiltersAtom,
   loadableExploreMarketAtom,
@@ -275,7 +270,7 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
               <h5 className="">Chain</h5>
 
               <div className="flex flex-wrap gap-2">
-                <ExploreChainFilter />
+                <ChainFilter />
               </div>
             </div>
           )}

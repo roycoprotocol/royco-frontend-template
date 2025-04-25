@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { produce } from "immer";
 import { isEqual } from "lodash";
 import { useImmer } from "use-immer";
 import { LoadingCircle } from "@/components/animations/loading-circle";
-import { useAccount } from "wagmi";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useGlobalStates } from "@/store";
 import { useAtom, useAtomValue } from "jotai";
 import {
   explorePageAtom,
@@ -17,11 +15,6 @@ import {
 import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
-import {
-  boycoColumns,
-  exploreMarketColumns,
-  sonicColumns,
-} from "./explore-market-columns";
 import { ExploreMarketTable } from "./explore-market-table";
 import { ExploreMarketPagination } from "./explore-market-pagination";
 
@@ -30,9 +23,6 @@ export const ExploreMarketManager = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const [page, setPage] = useAtom(explorePageAtom);
-  const { address } = useAccount();
-
-  const { customTokenData } = useGlobalStates();
 
   const {
     data: propsData,
@@ -58,18 +48,6 @@ export const ExploreMarketManager = React.forwardRef<
       });
     }
   }, [propsData]);
-
-  const exploreColumns = useMemo(() => {
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-      return boycoColumns;
-    }
-
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
-      return sonicColumns;
-    }
-
-    return exploreMarketColumns;
-  }, [exploreMarketColumns]);
 
   if (!placeholderData[1]) {
     return (

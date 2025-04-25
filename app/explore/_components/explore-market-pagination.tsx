@@ -1,8 +1,8 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import React from "react";
 import { Button } from "@/components/ui/button";
 
 export const ExploreMarketPagination = React.forwardRef<
@@ -47,12 +47,6 @@ export const ExploreMarketPagination = React.forwardRef<
         </span>
       </Button>
 
-      {/* <div className="caption flex h-full shrink-0 items-center rounded-lg border border-divider bg-white px-3 text-secondary">
-          <span className="leading-8">
-            Page {pageIndex + 1} of {totalPages}
-          </span>
-        </div> */}
-
       {/**
        * @position right
        * @description Navigation buttons, left and right
@@ -66,12 +60,6 @@ export const ExploreMarketPagination = React.forwardRef<
             disabled={!canPrevPage}
             onClick={handlePrevPage}
             className="rounded-xl px-2"
-            // className={cn(
-            //   "flex h-8 w-8 flex-col place-content-center items-center rounded-lg border border-divider bg-white transition-all duration-200 ease-in-out",
-            //   getCanPrevPage()
-            //     ? "cursor-pointer text-secondary hover:bg-focus"
-            //     : "cursor-not-allowed text-tertiary opacity-40"
-            // )}
           >
             <ChevronLeftIcon
               strokeWidth={1.5}
@@ -91,22 +79,6 @@ export const ExploreMarketPagination = React.forwardRef<
           <span className="text-sm">View More Markets</span>
           <ChevronRightIcon strokeWidth={1.5} className="h-6 w-6 p-[0.15rem]" />
         </Button>
-
-        {/* <Button
-            disabled={!getCanNextPage()}
-            onClick={nextPage}
-            className={cn(
-              "flex h-8 w-8 flex-col place-content-center items-center rounded-lg border border-divider bg-white transition-all duration-200 ease-in-out",
-              getCanNextPage()
-                ? "cursor-pointer text-secondary hover:bg-focus"
-                : "cursor-not-allowed text-tertiary opacity-40"
-            )}
-          >
-            <ChevronRightIcon
-              strokeWidth={1.5}
-              className="h-8 w-8 p-[0.15rem]"
-            />
-          </Button> */}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
@@ -66,39 +66,21 @@ export const AppTypeFilter = React.forwardRef<
   };
 
   return (
-    <Fragment>
-      <div className="flex flex-wrap gap-2">
-        {Object.values(SONIC_APP_TYPE).map((appType) => {
-          return (
-            <ToggleBadge
-              key={`filter:app-type:${appType}`}
-              onClick={() => handleAppTypeToggle(appType)}
-              className={cn(
-                isAppTypeSelected(appType) && "bg-focus",
-                "border border-success text-success hover:border-green-800 hover:text-green-800"
-              )}
-            >
-              {getAppType(appType)}
-            </ToggleBadge>
-          );
-        })}
-      </div>
-    </Fragment>
+    <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
+      {Object.values(SONIC_APP_TYPE).map((appType) => {
+        return (
+          <ToggleBadge
+            key={`filter:app-type:${appType}`}
+            onClick={() => handleAppTypeToggle(appType)}
+            className={cn(
+              isAppTypeSelected(appType) && "bg-focus",
+              "border border-success text-success hover:border-green-800 hover:text-green-800"
+            )}
+          >
+            {getAppType(appType)}
+          </ToggleBadge>
+        );
+      })}
+    </div>
   );
 });
-
-// <div key={`filter:app-type:${appType}`}>
-//   <AppTypeFilterWrapper
-//     filter={{
-//       id: "id",
-//       value: appType,
-//       matches: sonicMarketMap
-//         .filter((market) => market.appType === appType)
-//         .map((market) => market.id),
-//     }}
-//     token={{
-//       id: appType,
-//       symbol: getAppType(appType),
-//     }}
-//   />
-// </div>

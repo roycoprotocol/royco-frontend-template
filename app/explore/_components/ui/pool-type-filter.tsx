@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
@@ -68,22 +68,20 @@ export const PoolTypeFilter = React.forwardRef<
   };
 
   return (
-    <Fragment>
-      <div className="flex flex-wrap gap-2">
-        {Object.values(MULTIPLIER_ASSET_TYPE).map((poolType) => (
-          <div key={`filter:pool-type:${poolType}`}>
-            <ToggleBadge
-              onClick={() => handlePoolTypeToggle(poolType)}
-              className={cn(
-                isPoolTypeSelected(poolType) && "bg-focus",
-                "border border-success text-success hover:border-green-800 hover:text-green-800"
-              )}
-            >
-              {getPoolType(poolType)}
-            </ToggleBadge>
-          </div>
-        ))}
-      </div>
-    </Fragment>
+    <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
+      {Object.values(MULTIPLIER_ASSET_TYPE).map((poolType) => (
+        <div key={`filter:pool-type:${poolType}`}>
+          <ToggleBadge
+            onClick={() => handlePoolTypeToggle(poolType)}
+            className={cn(
+              isPoolTypeSelected(poolType) && "bg-focus",
+              "border border-success text-success hover:border-green-800 hover:text-green-800"
+            )}
+          >
+            {getPoolType(poolType)}
+          </ToggleBadge>
+        </div>
+      ))}
+    </div>
   );
 });
