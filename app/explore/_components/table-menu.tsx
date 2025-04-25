@@ -238,15 +238,16 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
           {/**
            * @description Asset filter
            */}
-          {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "sonic" && (
-            <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
-              <h5 className="">Input Asset</h5>
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "sonic" &&
+            process.env.NEXT_PUBLIC_FRONTEND_TAG !== "plume" && (
+              <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
+                <h5 className="">Input Asset</h5>
 
-              <div className="flex flex-wrap gap-2">
-                <AssetsFilter />
+                <div className="flex flex-wrap gap-2">
+                  <AssetsFilter />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/**
            * @description Incentive filter

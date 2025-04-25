@@ -343,7 +343,7 @@ export const YieldBreakdown = React.forwardRef<
                 {activeIncentives && activeIncentives.length > 0 && (
                   <div>
                     <BreakdownItem>
-                      <BreakdownTitle>Negotiable Rate</BreakdownTitle>
+                      <BreakdownTitle>Royco Fixed Rate</BreakdownTitle>
                       <BreakdownContent
                         className="mt-1"
                         breakdown={activeIncentives}
@@ -357,7 +357,7 @@ export const YieldBreakdown = React.forwardRef<
 
                 {combinedUnderlyingAndNativeIncentives.length > 0 && (
                   <BreakdownItem>
-                    <BreakdownTitle>Underlying Rate</BreakdownTitle>
+                    <BreakdownTitle>Variable Rate</BreakdownTitle>
                     <BreakdownContent
                       className="mt-1"
                       breakdown={combinedUnderlyingAndNativeIncentives}
