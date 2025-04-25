@@ -8,7 +8,6 @@ import {
   SearchBar,
   TableMenu,
 } from "./explore/_components";
-import { ColumnToggler } from "./explore/_components/ui";
 import { Protector } from "./protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
 import { Button } from "@/components/ui/button";
@@ -118,8 +117,6 @@ const Page = () => {
               <SearchBar />
 
               <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
-                {/* <Sorter /> */}
-
                 {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
                   <TokenEstimator className="h-full" marketCategory="sonic">
                     <Button
@@ -131,8 +128,6 @@ const Page = () => {
                     </Button>
                   </TokenEstimator>
                 )}
-
-                <ColumnToggler />
               </div>
 
               <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 md:hidden">
@@ -140,10 +135,7 @@ const Page = () => {
                   <MobileMenu />
                 </div>
 
-                <div className="flex w-fit flex-row items-center space-x-3">
-                  {/* <Sorter /> */}
-                  {/* <ColumnToggler /> */}
-                </div>
+                <div className="flex w-fit flex-row items-center space-x-3"></div>
               </div>
             </div>
 

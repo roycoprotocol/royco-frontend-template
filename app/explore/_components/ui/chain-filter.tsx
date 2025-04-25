@@ -16,7 +16,7 @@ import {
 } from "royco/constants";
 import { ToggleBadge } from "@/components/common/toggle-badge";
 
-export const ExploreInputTokenFilter = React.forwardRef<
+export const ChainFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -36,7 +36,7 @@ export const ExploreInputTokenFilter = React.forwardRef<
 
   const handleChainToggle = (chainId: number) => {
     const chainIdFilterIndex = filters.findIndex(
-      (filter) => filter.id === "chainId"
+      (filter) => filter.id === "chainId" && filter.condition === "inArray"
     );
     const currentChainIds =
       chainIdFilterIndex !== -1
@@ -68,16 +68,33 @@ export const ExploreInputTokenFilter = React.forwardRef<
 
   return (
     <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
-      {chains.map((chain) => (
-        <ToggleBadge
-          onClick={() => handleChainToggle(chain.id)}
-          className={cn(isChainSelected(chain.id) && "bg-focus")}
-          key={`filter:input-token:${chain.id}`}
-          tokens={[chain]}
-        />
-      ))}
+      {chains.map((chain) => {
+        const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
+
+        let shouldHide = false;
+
+        if (frontendTag !== "dev" && frontendTag !== "testnet") {
+          if (chain?.testnet === true) {
+            shouldHide = true;
+          } else if (chain.id === 98866) {
+            shouldHide = true;
+          }
+        }
+
+        return (
+          <ToggleBadge
+            onClick={() => handleChainToggle(chain.id)}
+            className={cn(
+              shouldHide && "hidden",
+              isChainSelected(chain.id) && "bg-focus"
+            )}
+            key={`filter:chains:${chain.id}`}
+            tokens={[chain]}
+          />
+        );
+      })}
     </div>
   );
 });
 
-ExploreInputTokenFilter.displayName = "ExploreInputTokenFilter";
+ChainFilter.displayName = "ChainFilter";

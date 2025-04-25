@@ -1,13 +1,6 @@
 import { cn } from "@/lib/utils";
-import {
-  SpringNumber,
-  IncentiveBreakdown,
-  YieldBreakdown,
-} from "@/components/composables";
-import { EnrichedMarketDataType } from "royco/queries";
-import { InfoGrid, TokenDisplayer } from "@/components/common";
-
-import { useExplore } from "@/store/use-explore";
+import { IncentiveBreakdown, YieldBreakdown } from "@/components/composables";
+import { TokenDisplayer } from "@/components/common";
 import {
   Tooltip,
   TooltipContent,
@@ -31,16 +24,11 @@ import {
 } from "@/components/ui/hover-card";
 import { MarketType } from "@/store";
 import validator from "validator";
-import {
-  getMarketAssetType,
-  getMarketMultiplier,
-  MULTIPLIER_ASSET_TYPE,
-} from "royco/boyco";
+import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { SONIC_APP_TYPE, sonicMarketMap } from "royco/sonic";
+import { SONIC_APP_TYPE } from "royco/sonic";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
 import { Button } from "@/components/ui/button";
-import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { useAtom } from "jotai";
 import { exploreSortingAtom } from "@/store/explore/atoms";
 import { EnrichedMarket } from "royco/api";
