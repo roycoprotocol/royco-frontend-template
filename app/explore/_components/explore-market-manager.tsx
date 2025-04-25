@@ -1,105 +1,63 @@
 "use client";
 
-import React, { useMemo } from "react";
-
-import { LoadingSpinner } from "@/components/composables";
-import { DataTable } from "./data-table";
-
-import { isEqual } from "lodash";
-
-import { useEffect } from "react";
-
-import { columns, boycoColumns, sonicColumns } from "./columns";
-import { useExplore, useGlobalStates, useMarketManager } from "@/store";
-import { useEnrichedMarkets } from "royco/hooks";
-
-import { AnimatePresence, motion } from "framer-motion";
-
+import React, { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { produce } from "immer";
-
+import { isEqual } from "lodash";
 import { useImmer } from "use-immer";
-import { usePathname } from "next/navigation";
+import { LoadingCircle } from "@/components/animations/loading-circle";
+import { useAccount } from "wagmi";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useGlobalStates } from "@/store";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  explorePageAtom,
+  loadableExploreMarketAtom,
+} from "@/store/explore/atoms";
+import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
+import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import {
+  boycoColumns,
+  exploreMarketColumns,
+  sonicColumns,
+} from "./explore-market-columns";
+import { ExploreMarketTable } from "./explore-market-table";
+import { ExploreMarketPagination } from "./explore-market-pagination";
 
-export const MarketsTable = () => {
-  const [placeholderDatas, setPlaceholderDatas] = useImmer<Array<any | null>>([
-    null,
-    null,
-  ]);
-
-  const pathname = usePathname();
-  const showVerifiedMarket = useMemo(
-    () => (pathname === "/" ? true : false),
-    [pathname]
-  );
-
-  const {
-    exploreSortKey: sortKey,
-    exploreFilters: filters,
-    exploreSort: sorting,
-    exploreSearch: searchKey,
-    explorePageIndex: pageIndex,
-    exploreCustomPoolParams: customPoolParams,
-    exploreIsVerified: isVerified,
-    exploreAllMarkets: showAllMarkets,
-  } = useExplore();
+export const ExploreMarketManager = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const [page, setPage] = useAtom(explorePageAtom);
+  const { address } = useAccount();
 
   const { customTokenData } = useGlobalStates();
 
-  const updatedFilters = useMemo(() => {
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "default") {
-      const filterItem = filters.find((filter) => filter.id === "category");
+  const {
+    data: propsData,
+    isLoading,
+    isRefetching,
+    isError,
+  } = useAtomValue(loadableExploreMarketAtom);
 
-      if (filterItem && showAllMarkets) {
-        return filters.filter((filter) => filter.id !== "category");
-      }
+  const [placeholderData, setPlaceholderData] = useImmer<
+    Array<ExploreMarketResponse | undefined>
+  >([undefined, undefined]);
 
-      if (!filterItem && !showAllMarkets) {
-        return [
-          ...filters,
-          {
-            id: "category",
-            value: "boyco",
-            condition: "NOT",
-          },
-        ];
-      }
-    }
-
-    return filters;
-  }, [filters, showAllMarkets]);
-
-  const { data, isLoading, isError, error, isRefetching, count } =
-    useEnrichedMarkets({
-      sorting,
-      filters: updatedFilters,
-      page_index: pageIndex,
-      search_key: searchKey,
-      is_verified: showVerifiedMarket ? true : isVerified,
-      custom_token_data: customTokenData,
-    });
-
-  /**
-   * @description Optimized for speed
-   */
   useEffect(() => {
-    if (
-      isLoading === false &&
-      data !== undefined &&
-      data !== null &&
-      !isEqual(data, placeholderDatas[1])
-    ) {
-      // @ts-ignore
-      setPlaceholderDatas((prevDatas: any) => {
-        return produce(prevDatas, (draft: any) => {
-          draft.push(data);
-
-          if (draft.length > 2) {
-            draft.shift();
+    if (!isEqual(propsData, placeholderData[1]) && !!propsData) {
+      setPlaceholderData((prevDatas) => {
+        return produce(prevDatas, (draft) => {
+          // Prevent overwriting previous data with the same object reference
+          if (!isEqual(draft[1], propsData)) {
+            draft[0] = draft[1]; // Set previous data to the current data
+            draft[1] = propsData; // Set current data to the new data
           }
         });
       });
     }
-  }, [data, isLoading, placeholderDatas]);
+  }, [propsData]);
 
   const exploreColumns = useMemo(() => {
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
@@ -110,22 +68,18 @@ export const MarketsTable = () => {
       return sonicColumns;
     }
 
-    return columns;
-  }, [columns]);
+    return exploreMarketColumns;
+  }, [exploreMarketColumns]);
 
-  if (
-    isLoading === true &&
-    placeholderDatas[0] === null &&
-    placeholderDatas[1] === null
-  ) {
+  if (!placeholderData[1]) {
     return (
       <div className="flex flex-col items-center p-5">
-        <LoadingSpinner className="h-5 w-5" />
+        <LoadingCircle />
       </div>
     );
   }
 
-  if (isError || count === 0) {
+  if (isError || propsData?.count === 0) {
     return (
       <AnimatePresence mode="sync">
         <motion.div
@@ -195,20 +149,26 @@ export const MarketsTable = () => {
   }
 
   return (
-    <DataTable
-      /**
-       * @TODO Strictly type this
-       */
-      // @ts-ignore
-      columns={exploreColumns}
-      // @ts-ignore
-      data={placeholderDatas[1] === null ? data : placeholderDatas[1]}
-      // @ts-ignore
-      placeholderDatas={placeholderDatas}
-      props={{
-        sorting,
-      }}
-      loading={isLoading || isRefetching}
-    />
+    <div ref={ref} {...props} className={cn("w-full ", className)}>
+      <ScrollArea
+        className={cn(
+          "w-full overflow-hidden rounded-2xl border border-divider bg-white"
+        )}
+      >
+        <ExploreMarketTable
+          data={placeholderData[1]?.data ? placeholderData[1].data : []}
+          isLoading={isLoading}
+          isRefetching={isRefetching}
+        />
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
+      <ExploreMarketPagination
+        className="mt-3"
+        pageIndex={page}
+        totalPages={placeholderData[1]?.page?.total || 1}
+        setPageIndex={setPage}
+      />
+    </div>
   );
-};
+});

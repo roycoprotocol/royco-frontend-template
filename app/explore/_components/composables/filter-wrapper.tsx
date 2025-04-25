@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils";
 import { TokenBadge } from "@/components/common";
 import { useExplore } from "@/store";
 import { MarketFilter } from "royco/queries";
+import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import { useAtom } from "jotai";
+import { ToggleBadge } from "@/components/common/toggle-badge";
+import { SupportedChainlist } from "royco/constants";
 
 interface FilterWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
   filter: MarketFilter;
@@ -66,15 +70,15 @@ FilterWrapper.displayName = "FilterWrapper";
 
 const ChainFilterWrapper = React.forwardRef<HTMLDivElement, FilterWrapperProps>(
   ({ className, children, filter, token, ...props }, ref) => {
-    const { exploreFilters, setExploreFilters, setExplorePageIndex } =
-      useExplore();
+    const [filters, setFilters] = useAtom(exploreFiltersAtom);
+    const [page, setPage] = useAtom(explorePageAtom);
 
     const doFilterExists = ({ id, value }: MarketFilter): [boolean, number] => {
-      for (let i = 0; i < exploreFilters.length; i++) {
+      for (let i = 0; i < filters.length; i++) {
         if (
-          exploreFilters[i].id === id &&
-          exploreFilters[i].value.toString() === value.toString() &&
-          exploreFilters[i].condition === undefined
+          filters[i].id === id &&
+          filters[i].value.toString() === value.toString() &&
+          filters[i].condition === undefined
         ) {
           return [true, i];
         }
@@ -84,7 +88,7 @@ const ChainFilterWrapper = React.forwardRef<HTMLDivElement, FilterWrapperProps>(
     };
 
     const setFilter = (filter: MarketFilter) => {
-      const filters = [...exploreFilters];
+      const newFilters = [...filters];
 
       const [filterExists, filterIndex] = doFilterExists({
         id: filter.id,
@@ -97,25 +101,33 @@ const ChainFilterWrapper = React.forwardRef<HTMLDivElement, FilterWrapperProps>(
         filters.push(filter);
       }
 
-      setExploreFilters(filters);
-      setExplorePageIndex(0);
+      setFilters(newFilters);
+      setPage(1);
     };
 
     return (
-      <TokenBadge
-        onClick={() => setFilter(filter)}
-        className={cn(
-          exploreFilters.some(
-            (f) =>
-              f.id === filter.id &&
-              f.value === filter.value &&
-              f.condition === undefined
-          )
-            ? "bg-focus"
-            : ""
-        )}
-        token={token}
+      <ToggleBadge
+        tokens={SupportedChainlist.map((chain) => ({
+          id: chain.id.toString(),
+          image: chain.image,
+          symbol: chain.name,
+        }))}
       />
+
+      // <TokenBadge
+      //   onClick={() => setFilter(filter)}
+      //   className={cn(
+      //     filters.some(
+      //       (f) =>
+      //         f.id === filter.id &&
+      //         f.value === filter.value &&
+      //         f.condition === undefined
+      //     )
+      //       ? "bg-focus"
+      //       : ""
+      //   )}
+      //   token={token}
+      // />
     );
   }
 );

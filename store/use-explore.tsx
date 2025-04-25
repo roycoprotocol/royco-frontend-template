@@ -56,6 +56,8 @@ interface ExploreState {
 
 export const exploreColumnNames = {
   name: "Market",
+  chainId: "Chain",
+  fillableUsd: "Fillable",
   input_token_id: "Asset",
   chain_id: "Chain",
   market_type: "Lockup",
