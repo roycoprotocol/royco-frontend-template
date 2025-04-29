@@ -26,9 +26,7 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -43,9 +41,7 @@
                       "example": {},
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -64,9 +60,7 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -100,9 +94,7 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -122,9 +114,7 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -147,9 +137,7 @@
                       },
                       "additionalProperties": {
                         "type": "object",
-                        "required": [
-                          "status"
-                        ],
+                        "required": ["status"],
                         "properties": {
                           "status": {
                             "type": "string"
@@ -175,9 +163,7 @@
             "api-key-query": []
           }
         ],
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/api/v1/token/quote/{chainId}/{contractAddress}": {
@@ -268,9 +254,7 @@
           }
         ],
         "summary": "Get token quote",
-        "tags": [
-          "Token"
-        ]
+        "tags": ["Token"]
       }
     },
     "/api/v1/token/directory": {
@@ -516,9 +500,7 @@
                       "source": "external",
                       "searchId": "none",
                       "owner": "0x0e24b0f342f034446ec814281ad1a7653cbd85e9",
-                      "issuers": [
-                        "0x0e24b0f342f034446ec814281ad1a7653cbd85e9"
-                      ],
+                      "issuers": ["0x0e24b0f342f034446ec814281ad1a7653cbd85e9"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -557,9 +539,7 @@
                       "source": "external",
                       "searchId": "none",
                       "owner": "0x895614c89bec7d11454312f740854d08cbf57a78",
-                      "issuers": [
-                        "0x895614c89bec7d11454312f740854d08cbf57a78"
-                      ],
+                      "issuers": ["0x895614c89bec7d11454312f740854d08cbf57a78"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -577,9 +557,7 @@
                       "source": "external",
                       "searchId": "1-0x6a8b97bd31394075cb6dbd88dbb65808575b1a48",
                       "owner": "0x00aa367b7692be05e47b9c461ff35410208158b0",
-                      "issuers": [
-                        "0xbb856548bcd0eba1749c2336244139f1dbe93498"
-                      ],
+                      "issuers": ["0xbb856548bcd0eba1749c2336244139f1dbe93498"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -636,9 +614,7 @@
                       "source": "external",
                       "searchId": "1-0x31dd27d7479b09f1c96aa94681845c0eb0026ef8",
                       "owner": "0x5ae60fdd3b5edc65bc44fc32738628ab4144a61f",
-                      "issuers": [
-                        "0x5ae60fdd3b5edc65bc44fc32738628ab4144a61f"
-                      ],
+                      "issuers": ["0x5ae60fdd3b5edc65bc44fc32738628ab4144a61f"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -656,9 +632,7 @@
                       "source": "external",
                       "searchId": "1-0xbd1e5b7fa18f2679070c8ba9ab6415ef786720cc",
                       "owner": "0x351a6741b45fd744d0419c5770dcc9f1a7787018",
-                      "issuers": [
-                        "0x351a6741b45fd744d0419c5770dcc9f1a7787018"
-                      ],
+                      "issuers": ["0x351a6741b45fd744d0419c5770dcc9f1a7787018"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -676,9 +650,7 @@
                       "source": "external",
                       "searchId": "none",
                       "owner": "0x977767f401fc909614905857c9174bd08af02363",
-                      "issuers": [
-                        "0x2407ccfff27a6c40f8c8926959ae56ca8d1c3edc"
-                      ],
+                      "issuers": ["0x2407ccfff27a6c40f8c8926959ae56ca8d1c3edc"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -703,9 +675,7 @@
           }
         ],
         "summary": "Get token directory",
-        "tags": [
-          "Token"
-        ]
+        "tags": ["Token"]
       }
     },
     "/api/v1/addons/test/{id}": {
@@ -717,9 +687,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Addons"
-        ]
+        "tags": ["Addons"]
       }
     },
     "/api/v1/addons/refresh/{id}": {
@@ -731,9 +699,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Addons"
-        ]
+        "tags": ["Addons"]
       }
     },
     "/api/v1/market/info/{id}": {
@@ -1010,9 +976,7 @@
           }
         ],
         "summary": "Get market info",
-        "tags": [
-          "Market"
-        ]
+        "tags": ["Market"]
       }
     },
     "/api/v1/market/explore": {
@@ -1100,14 +1064,14 @@
                           ],
                           "decimals": 18,
                           "searchId": "none",
-                          "rawAmount": 1.3930348258706467e+28,
+                          "rawAmount": 1.3930348258706467e28,
                           "yieldRate": 0,
                           "lastUpdated": "2025-04-08 00:43:00",
                           "rawMetadata": {
                             "yieldType": "recipe",
                             "depositUsd": 10000000,
                             "lockupTime": "2592000",
-                            "incentiveRawAmount": 1.3930348258706467e+28
+                            "incentiveRawAmount": 1.3930348258706467e28
                           },
                           "tokenAmount": 13930348258.706467,
                           "totalSupply": 0,
@@ -1115,7 +1079,7 @@
                           "tokenAmountUsd": 0,
                           "annualTokenRate": 16948.5903814262,
                           "contractAddress": "0x5e75334f4270ffe07a80b28fc831bfab2d83706e",
-                          "remainingRawAmount": 1.0539194708370547e+28,
+                          "remainingRawAmount": 1.0539194708370547e28,
                           "remainingTokenAmount": 10539194708.370546,
                           "remainingTokenAmountUsd": 0
                         },
@@ -1158,14 +1122,14 @@
                           ],
                           "decimals": 18,
                           "searchId": "none",
-                          "rawAmount": 1.3930348258706467e+28,
+                          "rawAmount": 1.3930348258706467e28,
                           "yieldRate": 0.0005517160144845244,
                           "lastUpdated": "2025-04-08 00:43:00",
                           "rawMetadata": {
                             "yieldType": "recipe",
                             "depositUsd": 10000000,
                             "lockupTime": "2592000",
-                            "incentiveRawAmount": 1.3930348258706467e+28
+                            "incentiveRawAmount": 1.3930348258706467e28
                           },
                           "tokenAmount": 13930348258.706467,
                           "totalSupply": 0,
@@ -1173,7 +1137,7 @@
                           "tokenAmountUsd": 0,
                           "annualTokenRate": 16948.5903814262,
                           "contractAddress": "0x5e75334f4270ffe07a80b28fc831bfab2d83706e",
-                          "remainingRawAmount": 1.0539194708370547e+28,
+                          "remainingRawAmount": 1.0539194708370547e28,
                           "remainingTokenAmount": 10539194708.370546,
                           "remainingTokenAmountUsd": 0,
                           "customTokenData": [
@@ -1338,9 +1302,7 @@
           }
         ],
         "summary": "Get all markets",
-        "tags": [
-          "Market"
-        ]
+        "tags": ["Market"]
       }
     },
     "/api/v1/market/explore/settings": {
@@ -1510,9 +1472,7 @@
                       "fdv": 17752948.447618704,
                       "totalSupply": 0.08664856216123584,
                       "lastUpdated": "2025-04-12 00:56:00",
-                      "ids": [
-                        "1-0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc"
-                      ]
+                      "ids": ["1-0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc"]
                     },
                     {
                       "id": "1-0x004375dff511095cc5a197a54140a24efef3a416",
@@ -1531,9 +1491,7 @@
                       "fdv": 126399.7587038459,
                       "totalSupply": 1.198296124e-9,
                       "lastUpdated": "2025-04-12 00:56:00",
-                      "ids": [
-                        "1-0x004375dff511095cc5a197a54140a24efef3a416"
-                      ]
+                      "ids": ["1-0x004375dff511095cc5a197a54140a24efef3a416"]
                     }
                   ],
                   "dynamicInputTokenFilters": [
@@ -1606,9 +1564,7 @@
                       "totalSupply": 842319.9002803117,
                       "tokenAmountUsd": 419854.3181064631,
                       "contractAddress": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
-                      "ids": [
-                        "146-0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38"
-                      ]
+                      "ids": ["146-0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38"]
                     },
                     {
                       "id": "11155111-0x6bb8f9606c147f22e2a541ea93d6bad768db69a9",
@@ -1654,9 +1610,7 @@
                       "totalSupply": 0.000001189368834352,
                       "tokenAmountUsd": 115979.04005019652,
                       "contractAddress": "0x6e4e95fab7db1f0524b4b0a05f0b9c96380b7dfa",
-                      "ids": [
-                        "146-0x6e4e95fab7db1f0524b4b0a05f0b9c96380b7dfa"
-                      ]
+                      "ids": ["146-0x6e4e95fab7db1f0524b4b0a05f0b9c96380b7dfa"]
                     },
                     {
                       "id": "11155111-0xcd3c96dd0a0ef94e6a389f88ce49ac0b23f0d551",
@@ -1728,9 +1682,7 @@
                       "totalSupply": 63123637092.72057,
                       "tokenAmountUsd": 29576.30262772615,
                       "contractAddress": "0xe3cf8dbcbdc9b220ddead0bd6342e245daff934d",
-                      "ids": [
-                        "8453-0xe3cf8dbcbdc9b220ddead0bd6342e245daff934d"
-                      ]
+                      "ids": ["8453-0xe3cf8dbcbdc9b220ddead0bd6342e245daff934d"]
                     },
                     {
                       "id": "42161-0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
@@ -1776,9 +1728,7 @@
                       "totalSupply": 1916841,
                       "tokenAmountUsd": 10059.77886734402,
                       "contractAddress": "0xbe27993204ec64238f71a527b4c4d5f4949034c3",
-                      "ids": [
-                        "146-0xbe27993204ec64238f71a527b4c4d5f4949034c3"
-                      ]
+                      "ids": ["146-0xbe27993204ec64238f71a527b4c4d5f4949034c3"]
                     },
                     {
                       "id": "146-0xd14117baf6ec5d12be68cd06e763a4b82c9b6d1d",
@@ -1800,9 +1750,7 @@
                       "totalSupply": 566.2852490978362,
                       "tokenAmountUsd": 9204.655055321633,
                       "contractAddress": "0xd14117baf6ec5d12be68cd06e763a4b82c9b6d1d",
-                      "ids": [
-                        "146-0xd14117baf6ec5d12be68cd06e763a4b82c9b6d1d"
-                      ]
+                      "ids": ["146-0xd14117baf6ec5d12be68cd06e763a4b82c9b6d1d"]
                     },
                     {
                       "id": "8453-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
@@ -1899,9 +1847,7 @@
                       "totalSupply": 2095406.07181439,
                       "tokenAmountUsd": 2451.7832096898383,
                       "contractAddress": "0x04c0599ae5a44757c0af6f9ec3b93da8976c150a",
-                      "ids": [
-                        "8453-0x04c0599ae5a44757c0af6f9ec3b93da8976c150a"
-                      ]
+                      "ids": ["8453-0x04c0599ae5a44757c0af6f9ec3b93da8976c150a"]
                     },
                     {
                       "id": "146-0xa2161e75edf50d70544e6588788a5732a3105c00",
@@ -1923,9 +1869,7 @@
                       "totalSupply": 15893.7984707619,
                       "tokenAmountUsd": 2243.053173201597,
                       "contractAddress": "0xa2161e75edf50d70544e6588788a5732a3105c00",
-                      "ids": [
-                        "146-0xa2161e75edf50d70544e6588788a5732a3105c00"
-                      ]
+                      "ids": ["146-0xa2161e75edf50d70544e6588788a5732a3105c00"]
                     },
                     {
                       "id": "98865-0xdddd73f5df1f0dc31373357beac77545dc5a6f3f",
@@ -1995,9 +1939,7 @@
                       "totalSupply": 298045.8064589257,
                       "tokenAmountUsd": 76.67493952399843,
                       "contractAddress": "0x2416092f143378750bb29b79ed961ab195cceea5",
-                      "ids": [
-                        "8453-0x2416092f143378750bb29b79ed961ab195cceea5"
-                      ]
+                      "ids": ["8453-0x2416092f143378750bb29b79ed961ab195cceea5"]
                     },
                     {
                       "id": "8453-0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
@@ -2019,9 +1961,7 @@
                       "totalSupply": 373334.07822321,
                       "tokenAmountUsd": 59.660190653482054,
                       "contractAddress": "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
-                      "ids": [
-                        "8453-0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22"
-                      ]
+                      "ids": ["8453-0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22"]
                     },
                     {
                       "id": "146-0xb1e25689d55734fd3fffc939c4c3eb52dff8a794",
@@ -2043,9 +1983,7 @@
                       "totalSupply": 48414828.53035685,
                       "tokenAmountUsd": 50.47186247151451,
                       "contractAddress": "0xb1e25689d55734fd3fffc939c4c3eb52dff8a794",
-                      "ids": [
-                        "146-0xb1e25689d55734fd3fffc939c4c3eb52dff8a794"
-                      ]
+                      "ids": ["146-0xb1e25689d55734fd3fffc939c4c3eb52dff8a794"]
                     },
                     {
                       "id": "11155111-0xde5b3b0ec05ea99b2d82cd545c2d7353ad3ffc8f",
@@ -2116,9 +2054,7 @@
                       "totalSupply": 430905.0656252371,
                       "tokenAmountUsd": 7.808593715420872,
                       "contractAddress": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
-                      "ids": [
-                        "8453-0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c"
-                      ]
+                      "ids": ["8453-0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c"]
                     },
                     {
                       "id": "8453-0xedfa23602d0ec14714057867a78d01e94176bea0",
@@ -2140,9 +2076,7 @@
                       "totalSupply": 0,
                       "tokenAmountUsd": 2.906773781346077,
                       "contractAddress": "0xedfa23602d0ec14714057867a78d01e94176bea0",
-                      "ids": [
-                        "8453-0xedfa23602d0ec14714057867a78d01e94176bea0"
-                      ]
+                      "ids": ["8453-0xedfa23602d0ec14714057867a78d01e94176bea0"]
                     },
                     {
                       "id": "98866-0xab306afbf157534cdea99bf197f473362468692e",
@@ -2212,9 +2146,7 @@
                       "totalSupply": 1000000000,
                       "tokenAmountUsd": 0.000004986492356045399,
                       "contractAddress": "0x950847d1dd451b67a2fc1795c0c9a53cf88e63a2",
-                      "ids": [
-                        "8453-0x950847d1dd451b67a2fc1795c0c9a53cf88e63a2"
-                      ]
+                      "ids": ["8453-0x950847d1dd451b67a2fc1795c0c9a53cf88e63a2"]
                     }
                   ]
                 }
@@ -2233,9 +2165,7 @@
             "api-key-query": []
           }
         ],
-        "tags": [
-          "Market"
-        ]
+        "tags": ["Market"]
       }
     },
     "/api/v1/market/create": {
@@ -2294,9 +2224,7 @@
           }
         ],
         "summary": "Create a market",
-        "tags": [
-          "Market"
-        ]
+        "tags": ["Market"]
       }
     },
     "/api/v1/vault/info/{id}": {
@@ -2340,10 +2268,7 @@
                   "vaultAddress": "0x74d1fafa4e0163b2f1035f1b052137f3f9bad5cc",
                   "name": "Roy USDC Mainnet",
                   "description": "Deposit assets to earn highest yields.",
-                  "chainIds": [
-                    1,
-                    146
-                  ],
+                  "chainIds": [1, 146],
                   "capacity": {
                     "ratio": 0.00004699952027437871,
                     "maxUsd": 1000000,
@@ -2435,9 +2360,7 @@
           }
         ],
         "summary": "Get vault info",
-        "tags": [
-          "Vault"
-        ]
+        "tags": ["Vault"]
       }
     },
     "/api/v1/position/recipe": {
@@ -3629,9 +3552,7 @@
           }
         ],
         "summary": "Get recipe positions",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/recipe/{id}/{accountAddress}": {
@@ -3795,9 +3716,7 @@
           }
         ],
         "summary": "Get recipe position of an account address inside a recipe market",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/vault": {
@@ -4307,9 +4226,7 @@
           }
         ],
         "summary": "Get vault positions",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/vault/{id}/{accountAddress}": {
@@ -4477,9 +4394,7 @@
           }
         ],
         "summary": "Get vault position of an account address inside a vault",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/boyco": {
@@ -4521,9 +4436,7 @@
           }
         ],
         "summary": "Get boyco positions",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/boyco/{id}/{accountAddress}": {
@@ -4588,9 +4501,7 @@
           }
         ],
         "summary": "Get boyco position of an account address inside a boyco market",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/boring": {
@@ -4632,9 +4543,7 @@
           }
         ],
         "summary": "Get boring positions",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/position/boring/{id}/{accountAddress}": {
@@ -4699,9 +4608,7 @@
           }
         ],
         "summary": "Get boring position of an account address inside a vault",
-        "tags": [
-          "Position"
-        ]
+        "tags": ["Position"]
       }
     },
     "/api/v1/contract/{chainId}/{contractAddress}": {
@@ -4756,9 +4663,7 @@
           }
         ],
         "summary": "Get contract data",
-        "tags": [
-          "Contract"
-        ]
+        "tags": ["Contract"]
       }
     },
     "/api/v1/chart/{id}": {
@@ -4812,9 +4717,7 @@
           }
         ],
         "summary": "Get chart",
-        "tags": [
-          "Chart"
-        ]
+        "tags": ["Chart"]
       }
     },
     "/api/v1/stats/assets/{accountAddress}": {
@@ -5329,9 +5232,7 @@
                       "source": "external",
                       "searchId": "none",
                       "owner": "0x0e24b0f342f034446ec814281ad1a7653cbd85e9",
-                      "issuers": [
-                        "0x0e24b0f342f034446ec814281ad1a7653cbd85e9"
-                      ],
+                      "issuers": ["0x0e24b0f342f034446ec814281ad1a7653cbd85e9"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -5376,9 +5277,7 @@
                       "source": "external",
                       "searchId": "none",
                       "owner": "0x77777cc68b333a2256b436d675e8d257699aa667",
-                      "issuers": [
-                        "0xad7812bba8e8c9ff8e14825e748a247f5a4d575c"
-                      ],
+                      "issuers": ["0xad7812bba8e8c9ff8e14825e748a247f5a4d575c"],
                       "type": "point",
                       "price": 0,
                       "fdv": 0,
@@ -5533,9 +5432,7 @@
           }
         ],
         "summary": "Get total assets for an account",
-        "tags": [
-          "Stats"
-        ]
+        "tags": ["Stats"]
       }
     },
     "/api/v1/action/recipe/ap/market": {
@@ -5577,9 +5474,7 @@
           }
         ],
         "summary": "Recipe AP Market Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     },
     "/api/v1/action/recipe/ip/market": {
@@ -5621,9 +5516,7 @@
           }
         ],
         "summary": "Recipe IP Market Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     },
     "/api/v1/action/recipe/ip/limit": {
@@ -5665,9 +5558,7 @@
           }
         ],
         "summary": "Recipe IP Limit Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     },
     "/api/v1/action/recipe/ap/limit": {
@@ -5709,9 +5600,7 @@
           }
         ],
         "summary": "Recipe AP Limit Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     },
     "/api/v1/action/vault/ap/market": {
@@ -5753,9 +5642,7 @@
           }
         ],
         "summary": "Vault AP Market Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     },
     "/api/v1/action/vault/ap/limit": {
@@ -5797,9 +5684,7 @@
           }
         ],
         "summary": "Vault AP Limit Action",
-        "tags": [
-          "Action"
-        ]
+        "tags": ["Action"]
       }
     }
   },
@@ -5868,9 +5753,7 @@
             "example": 59689963893.2
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "TokenQuoteRequestBody": {
         "type": "object",
@@ -5961,11 +5844,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -6115,11 +5994,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -6245,10 +6120,7 @@
             "default": "and"
           }
         },
-        "required": [
-          "id",
-          "value"
-        ]
+        "required": ["id", "value"]
       },
       "Sorting": {
         "type": "object",
@@ -6267,9 +6139,7 @@
             "default": false
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "RequestPage": {
         "type": "object",
@@ -6443,11 +6313,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -6618,11 +6484,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -6843,11 +6705,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -7009,11 +6867,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -7175,11 +7029,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -7244,11 +7094,7 @@
             "type": "string",
             "title": "Yield Text",
             "description": "Yield rate in string format to represent any arbitrary yields",
-            "examples": [
-              "10x AAVE",
-              "25 BTC pro-rata",
-              "3x DAI per share"
-            ]
+            "examples": ["10x AAVE", "25 BTC pro-rata", "3x DAI per share"]
           }
         },
         "required": [
@@ -7289,10 +7135,7 @@
             }
           }
         },
-        "required": [
-          "commands",
-          "state"
-        ]
+        "required": ["commands", "state"]
       },
       "MarketRecipeMetadata": {
         "type": "object",
@@ -7316,10 +7159,7 @@
             ]
           }
         },
-        "required": [
-          "depositRecipe",
-          "withdrawRecipe"
-        ]
+        "required": ["depositRecipe", "withdrawRecipe"]
       },
       "MarketVaultMetadata": {
         "type": "object",
@@ -7333,9 +7173,7 @@
             "type": "array"
           }
         },
-        "required": [
-          "baseIncentives"
-        ]
+        "required": ["baseIncentives"]
       },
       "MarketMetadata": {
         "type": "object",
@@ -7361,10 +7199,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -7413,11 +7248,7 @@
             "title": "Reward Style",
             "description": "The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable",
             "example": 0,
-            "enum": [
-              0,
-              1,
-              2
-            ]
+            "enum": [0, 1, 2]
           },
           "tvlUsd": {
             "type": "number",
@@ -7684,16 +7515,10 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           }
         },
-        "required": [
-          "id",
-          "marketType"
-        ]
+        "required": ["id", "marketType"]
       },
       "ExploreMarketResponse": {
         "type": "object",
@@ -7706,9 +7531,7 @@
             }
           }
         },
-        "required": [
-          "data"
-        ]
+        "required": ["data"]
       },
       "ExploreSettingsMarketBody": {
         "type": "object",
@@ -7741,10 +7564,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "name": {
             "type": "string",
@@ -7789,10 +7609,7 @@
             "example": "success"
           }
         },
-        "required": [
-          "status",
-          "message"
-        ]
+        "required": ["status", "message"]
       },
       "VaultInfoRequestBody": {
         "type": "object",
@@ -7823,11 +7640,7 @@
             "example": 0.5
           }
         },
-        "required": [
-          "currentUsd",
-          "currentUsd",
-          "ratio"
-        ]
+        "required": ["currentUsd", "currentUsd", "ratio"]
       },
       "VaultManager": {
         "type": "object",
@@ -7863,11 +7676,7 @@
             "example": "https://veda.tech/"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "symbol"
-        ]
+        "required": ["id", "name", "symbol"]
       },
       "VaultDepositToken": {
         "type": "object",
@@ -7945,11 +7754,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -8099,11 +7904,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -8164,11 +7965,7 @@
             "title": "Category",
             "description": "The category of the reward token",
             "example": "active",
-            "enum": [
-              "active",
-              "native",
-              "external"
-            ]
+            "enum": ["active", "native", "external"]
           },
           "label": {
             "type": "string",
@@ -8204,11 +8001,7 @@
             "type": "string",
             "title": "Yield Text",
             "description": "Yield rate in string format to represent any arbitrary yields",
-            "examples": [
-              "10x AAVE",
-              "25 BTC pro-rata",
-              "3x DAI per share"
-            ]
+            "examples": ["10x AAVE", "25 BTC pro-rata", "3x DAI per share"]
           },
           "scaleRatio": {
             "type": "number",
@@ -8317,11 +8110,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -8470,12 +8259,7 @@
             "example": "1714531200"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "inputToken",
-          "incentiveTokens"
-        ]
+        "required": ["id", "name", "inputToken", "incentiveTokens"]
       },
       "VaultInfoResponse": {
         "type": "object",
@@ -8513,10 +8297,7 @@
           "chainIds": {
             "title": "Chain IDs",
             "description": "The chain IDs of the vault",
-            "example": [
-              1,
-              146
-            ],
+            "example": [1, 146],
             "type": "array",
             "items": {
               "type": "number"
@@ -8562,9 +8343,7 @@
           "depositTokenIds": {
             "title": "Deposit Token IDs",
             "description": "The deposit token IDs of the vault",
-            "example": [
-              "146-0x29219dd400f2bf60e5a23d13be72b486d4038894"
-            ],
+            "example": ["146-0x29219dd400f2bf60e5a23d13be72b486d4038894"],
             "type": "array",
             "items": {
               "type": "string"
@@ -8573,9 +8352,7 @@
           "incentiveTokenIds": {
             "title": "Incentive Token IDs",
             "description": "The incentive token IDs of the vault",
-            "example": [
-              "146-0x29219dd400f2bf60e5a23d13be72b486d4038894"
-            ],
+            "example": ["146-0x29219dd400f2bf60e5a23d13be72b486d4038894"],
             "type": "array",
             "items": {
               "type": "string"
@@ -8713,30 +8490,64 @@
       "ResponsePage": {
         "type": "object",
         "properties": {
-          "index": {
-            "type": "number",
-            "title": "Page Index",
-            "description": "Page index",
-            "example": 1
+          "filters": {
+            "title": "Filters Array",
+            "description": "Array of filter objects to apply to the results",
+            "example": [
+              {
+                "id": "chainId",
+                "value": 1
+              },
+              {
+                "id": "tvlUsd",
+                "value": 1000000,
+                "condition": "gte"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            }
           },
-          "size": {
-            "type": "number",
-            "title": "Page Size",
-            "description": "Page size",
-            "example": 3
+          "sorting": {
+            "title": "Sorting Object",
+            "description": "Object type to sort results with",
+            "example": {
+              "id": "tvlUsd",
+              "desc": true
+            },
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sorting"
+            }
           },
-          "total": {
-            "type": "number",
-            "title": "Page Total",
-            "description": "Page total",
-            "example": 10
+          "page": {
+            "title": "Request Page Object",
+            "description": "Object type to request a page of results",
+            "default": {
+              "index": 1,
+              "size": 10
+            },
+            "example": {
+              "index": 1,
+              "size": 3
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RequestPage"
+              }
+            ]
+          },
+          "customTokenData": {
+            "title": "Custom Token Data",
+            "description": "Array of custom token assumptions --  if not provided, the default quote data will be used.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomTokenDataElement"
+            }
           }
         },
-        "required": [
-          "index",
-          "size",
-          "total"
-        ]
+        "required": ["index", "size", "total"]
       },
       "BaseEnrichedTokenDataWithWithdrawStatus": {
         "type": "object",
@@ -8814,11 +8625,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -8995,11 +8802,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -9132,10 +8935,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -9159,11 +8959,7 @@
             "title": "Reward Style",
             "description": "The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable",
             "example": 0,
-            "enum": [
-              0,
-              1,
-              2
-            ]
+            "enum": [0, 1, 2]
           },
           "isForfeited": {
             "type": "boolean",
@@ -9306,11 +9102,7 @@
             }
           }
         },
-        "required": [
-          "page",
-          "count",
-          "data"
-        ]
+        "required": ["page", "count", "data"]
       },
       "SpecificRecipePositionRequest": {
         "type": "object",
@@ -9401,11 +9193,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -9499,11 +9287,7 @@
             "title": "Reward Style",
             "description": "The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable",
             "example": 0,
-            "enum": [
-              0,
-              1,
-              2
-            ]
+            "enum": [0, 1, 2]
           }
         },
         "required": [
@@ -9606,11 +9390,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -9704,11 +9484,7 @@
             "title": "Reward Style",
             "description": "The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable",
             "example": 0,
-            "enum": [
-              0,
-              1,
-              2
-            ]
+            "enum": [0, 1, 2]
           }
         },
         "required": [
@@ -9811,11 +9587,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -9935,10 +9707,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -10055,10 +9824,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -10207,11 +9973,7 @@
             }
           }
         },
-        "required": [
-          "page",
-          "count",
-          "data"
-        ]
+        "required": ["page", "count", "data"]
       },
       "SpecificVaultPositionRequest": {
         "type": "object",
@@ -10302,11 +10064,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -10484,11 +10242,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -10608,10 +10362,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -10826,11 +10577,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -10991,11 +10738,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -11111,10 +10854,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -11288,11 +11028,7 @@
             }
           }
         },
-        "required": [
-          "page",
-          "count",
-          "data"
-        ]
+        "required": ["page", "count", "data"]
       },
       "SpecificBoycoPositionRequest": {
         "type": "object",
@@ -11338,10 +11074,7 @@
             "title": "Market Type",
             "description": "The type of market: 0 = Recipe, 1 = Vault",
             "example": 0,
-            "enum": [
-              0,
-              1
-            ]
+            "enum": [0, 1]
           },
           "marketId": {
             "type": "string",
@@ -11503,11 +11236,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -11584,11 +11313,7 @@
           "rewardIds": {
             "title": "Reward IDs",
             "description": "The IDs of the reward tokens",
-            "example": [
-              "1",
-              "2",
-              "3"
-            ],
+            "example": ["1", "2", "3"],
             "type": "array",
             "items": {
               "type": "string"
@@ -11692,11 +11417,7 @@
             "title": "Type",
             "description": "The type of the token",
             "example": "token",
-            "enum": [
-              "token",
-              "point",
-              "lp"
-            ]
+            "enum": ["token", "point", "lp"]
           },
           "price": {
             "type": "number",
@@ -11773,11 +11494,7 @@
           "rewardIds": {
             "title": "Reward IDs",
             "description": "The IDs of the reward tokens",
-            "example": [
-              "1",
-              "2",
-              "3"
-            ],
+            "example": ["1", "2", "3"],
             "type": "array",
             "items": {
               "type": "string"
@@ -11889,11 +11606,7 @@
             }
           }
         },
-        "required": [
-          "page",
-          "count",
-          "data"
-        ]
+        "required": ["page", "count", "data"]
       },
       "SpecificBoringPositionRequest": {
         "type": "object",
@@ -12021,11 +11734,7 @@
             "example": 1000.5
           }
         },
-        "required": [
-          "inputTokens",
-          "incentiveTokens",
-          "balanceUsd"
-        ]
+        "required": ["inputTokens", "incentiveTokens", "balanceUsd"]
       },
       "RecipeAPMarketActionBody": {
         "type": "object",
@@ -12051,10 +11760,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity"
-        ]
+        "required": ["id", "quantity"]
       },
       "RawTxOption": {
         "type": "object",
@@ -12139,10 +11845,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity"
-        ]
+        "required": ["id", "quantity"]
       },
       "RecipeIPMarketActionResponse": {
         "type": "object",
@@ -12242,12 +11945,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity",
-          "tokenIds",
-          "tokenAmounts"
-        ]
+        "required": ["id", "quantity", "tokenIds", "tokenAmounts"]
       },
       "RecipeIPLimitActionResponse": {
         "type": "object",
@@ -12346,12 +12044,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity",
-          "tokenIds",
-          "tokenAmounts"
-        ]
+        "required": ["id", "quantity", "tokenIds", "tokenAmounts"]
       },
       "RecipeAPLimitActionResponse": {
         "type": "object",
@@ -12428,10 +12121,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity"
-        ]
+        "required": ["id", "quantity"]
       },
       "VaultAPMarketActionResponse": {
         "type": "object",
@@ -12515,12 +12205,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "quantity",
-          "tokenIds",
-          "tokenRates"
-        ]
+        "required": ["id", "quantity", "tokenIds", "tokenRates"]
       },
       "VaultAPLimitActionResponse": {
         "type": "object",

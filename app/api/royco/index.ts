@@ -1,3 +1,6 @@
-import { Api } from "./Api";
+import { Api } from "royco/api";
 
-export const api = new Api();
+// Create a new instance of the API client with the proxied base URL
+export const api = new Api({
+  baseURL: "/", // This will be proxied
+});

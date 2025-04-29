@@ -1,30 +1,61 @@
 "use client";
 
-import { Fragment, useState, useEffect } from "react";
-import { LoadingSpinner } from "@/components/composables";
-import { PoolTypeFilterWrapper } from "../composables";
-import {
-  overrideMarketMap as boycoMarketMap,
-  MULTIPLIER_ASSET_TYPE,
-} from "royco/boyco";
+import React from "react";
+import { cn } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
+import { ToggleBadge } from "@/components/common/toggle-badge";
 
-const chainId = 1;
-const marketType = 0;
+export const PoolTypeFilter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const [filters, setFilters] = useAtom(exploreFiltersAtom);
+  const [page, setPage] = useAtom(explorePageAtom);
 
-export const PoolTypeFilter = () => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="flex w-full flex-col place-content-center items-center">
-        <LoadingSpinner className="h-5 w-5" />
-      </div>
+  const handlePoolTypeToggle = (poolType: MULTIPLIER_ASSET_TYPE) => {
+    const poolTypeFilterIndex = filters.findIndex(
+      (filter) => filter.id === "marketMetadata.boyco.assetType"
     );
-  }
+
+    const currentPoolTypes =
+      poolTypeFilterIndex !== -1
+        ? (filters[poolTypeFilterIndex].value as string[])
+        : [];
+
+    const newPoolTypes = currentPoolTypes.includes(poolType)
+      ? currentPoolTypes.filter((id) => id !== poolType)
+      : [...currentPoolTypes, poolType];
+
+    const newFilters =
+      newPoolTypes.length === 0
+        ? filters.filter(
+            (filter) => filter.id !== "marketMetadata.boyco.assetType"
+          )
+        : [
+            ...filters.filter(
+              (filter) => filter.id !== "marketMetadata.boyco.assetType"
+            ),
+            {
+              id: "marketMetadata.boyco.assetType",
+              value: newPoolTypes,
+              condition: "inArray",
+            },
+          ];
+
+    setFilters(newFilters);
+    setPage(1);
+  };
+
+  const isPoolTypeSelected = (poolType: MULTIPLIER_ASSET_TYPE) => {
+    const poolTypeFilter = filters.find(
+      (filter) => filter.id === "marketMetadata.boyco.assetType"
+    );
+    return poolTypeFilter
+      ? (poolTypeFilter.value as string[]).includes(poolType)
+      : false;
+  };
 
   const getPoolType = (poolType: MULTIPLIER_ASSET_TYPE) => {
     if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
@@ -37,26 +68,20 @@ export const PoolTypeFilter = () => {
   };
 
   return (
-    <Fragment>
-      <div className="flex flex-wrap gap-2">
-        {Object.values(MULTIPLIER_ASSET_TYPE).map((poolType) => (
-          <div key={`filter-wrapper:pool-type:${poolType}`}>
-            <PoolTypeFilterWrapper
-              filter={{
-                id: "id",
-                value: poolType,
-                matches: boycoMarketMap
-                  .filter((market) => market.assetType === poolType)
-                  .map((market) => `${chainId}_${marketType}_${market.id}`),
-              }}
-              token={{
-                id: poolType,
-                symbol: getPoolType(poolType),
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    </Fragment>
+    <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
+      {Object.values(MULTIPLIER_ASSET_TYPE).map((poolType) => (
+        <div key={`filter:pool-type:${poolType}`}>
+          <ToggleBadge
+            onClick={() => handlePoolTypeToggle(poolType)}
+            className={cn(
+              isPoolTypeSelected(poolType) && "bg-focus",
+              "border border-success text-success hover:border-green-800 hover:text-green-800"
+            )}
+          >
+            {getPoolType(poolType)}
+          </ToggleBadge>
+        </div>
+      ))}
+    </div>
   );
-};
+});

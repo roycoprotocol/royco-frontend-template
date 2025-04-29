@@ -6,6 +6,7 @@ import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
 import { SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
+import { EnrichedMarket, TokenQuote } from "@/app/api/royco/data-contracts";
 
 const BreakdownTitle = React.forwardRef<
   HTMLDivElement,
@@ -24,16 +25,20 @@ const BreakdownItem = React.forwardRef<
 const BreakdownRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    item:
-      | EnrichedMarketDataType["yield_breakdown"][number]
-      | EnrichedMarketDataType["external_incentives"][number];
-    base_key: string;
+    item: TokenQuote & {
+      rawAmount?: string;
+      tokenAmount?: number;
+      tokenAmountUsd?: number;
+      yieldRate?: number;
+      yieldText?: string;
+    };
+    baseKey: string;
   }
->(({ className, item, base_key, ...props }, ref) => {
+>(({ className, item, baseKey, ...props }, ref) => {
   return (
     <div
       ref={ref}
-      key={`incentive-breakdown:${base_key}:${item.id}`}
+      key={`incentive-breakdown:${baseKey}:${item.id}`}
       className="flex flex-row items-center justify-between gap-8 font-light"
       {...props}
     >
@@ -45,18 +50,6 @@ const BreakdownRow = React.forwardRef<
       ) : (
         <TokenDisplayer tokens={[item] as any} symbols={true} />
       )}
-
-      {item.token_amount && (
-        <div className="flex flex-row items-center gap-2">
-          <div>{formatNumber(item.token_amount)}</div>
-        </div>
-      )}
-
-      {item.value && (
-        <div className="flex flex-row items-center gap-2">
-          <div>{item.value}</div>
-        </div>
-      )}
     </div>
   );
 });
@@ -64,16 +57,20 @@ const BreakdownRow = React.forwardRef<
 const BreakdownContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown:
-      | EnrichedMarketDataType["yield_breakdown"]
-      | EnrichedMarketDataType["external_incentives"];
-    base_key: string;
+    breakdown: (TokenQuote & {
+      rawAmount?: string;
+      tokenAmount?: number;
+      tokenAmountUsd?: number;
+      yieldRate?: number;
+      yieldText?: string;
+    })[];
+    baseKey: string;
   }
->(({ className, breakdown, base_key, ...props }, ref) => {
+>(({ className, breakdown, baseKey, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {breakdown.map((item) => (
-        <BreakdownRow key={item.id} item={item} base_key={base_key} />
+        <BreakdownRow key={item.id} item={item} baseKey={baseKey} />
       ))}
     </div>
   );
@@ -82,54 +79,78 @@ const BreakdownContent = React.forwardRef<
 export const IncentiveBreakdown = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["yield_breakdown"];
-    external_incentives: EnrichedMarketDataType["external_incentives"];
-    base_key: string;
+    baseKey: string;
+    activeIncentives?: EnrichedMarket["activeIncentives"];
+    underlyingIncentives?: EnrichedMarket["underlyingIncentives"];
+    nativeIncentives?: EnrichedMarket["nativeIncentives"];
+    externalIncentives?: EnrichedMarket["externalIncentives"];
   }
->(({ className, breakdown, external_incentives, base_key, ...props }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex flex-col gap-3 text-base font-normal text-black",
-        className
-      )}
-      {...props}
-    >
-      {breakdown.some((item) => item.category === "base") && (
-        <div>
-          <BreakdownItem>
-            <BreakdownTitle>Negotiable Incentives</BreakdownTitle>
-            <BreakdownContent
-              className="mt-1"
-              breakdown={breakdown.filter((item) => item.category === "base")}
-              base_key={base_key}
-            />
-          </BreakdownItem>
-        </div>
-      )}
+>(
+  (
+    {
+      className,
+      activeIncentives,
+      nativeIncentives,
+      underlyingIncentives,
+      externalIncentives,
+      baseKey,
+      ...props
+    },
+    ref
+  ) => {
+    const combinedUnderlyingAndNativeIncentives = [
+      ...(underlyingIncentives || []),
+      ...(nativeIncentives || []),
+    ];
 
-      {breakdown.some((item) => item.category !== "base") && (
-        <BreakdownItem>
-          <BreakdownTitle>Underlying Incentives</BreakdownTitle>
-          <BreakdownContent
-            className="mt-1"
-            breakdown={breakdown.filter((item) => item.category !== "base")}
-            base_key={base_key}
-          />
-        </BreakdownItem>
-      )}
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col gap-3 text-base font-normal text-black",
+          className
+        )}
+        {...props}
+      >
+        {activeIncentives && activeIncentives.length > 0 && (
+          <div>
+            <BreakdownItem>
+              <BreakdownTitle>Negotiable Incentives</BreakdownTitle>
+              <BreakdownContent
+                className="mt-1"
+                breakdown={activeIncentives}
+                baseKey={baseKey}
+              />
+            </BreakdownItem>
+          </div>
+        )}
 
-      {external_incentives.length > 0 && (
-        <BreakdownItem>
-          <BreakdownTitle>Additional Incentives</BreakdownTitle>
-          <BreakdownContent
-            className="mt-1"
-            breakdown={external_incentives}
-            base_key={base_key}
-          />
-        </BreakdownItem>
-      )}
-    </div>
-  );
-});
+        {combinedUnderlyingAndNativeIncentives.length > 0 && (
+          <div>
+            <BreakdownItem>
+              <BreakdownTitle>Underlying Incentives</BreakdownTitle>
+              <BreakdownContent
+                className="mt-1"
+                breakdown={combinedUnderlyingAndNativeIncentives}
+                baseKey={baseKey}
+              />
+            </BreakdownItem>
+          </div>
+        )}
+
+        {externalIncentives && externalIncentives.length > 0 && (
+          <div>
+            <BreakdownItem>
+              <BreakdownTitle>Additional Incentives</BreakdownTitle>
+              <BreakdownContent
+                className="mt-1"
+                breakdown={externalIncentives}
+                baseKey={baseKey}
+              />
+            </BreakdownItem>
+          </div>
+        )}
+      </div>
+    );
+  }
+);

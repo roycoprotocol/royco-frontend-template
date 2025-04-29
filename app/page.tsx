@@ -3,9 +3,7 @@ import "./explore/local.css";
 import { cn } from "@/lib/utils";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import {
-  MarketsTable,
   MobileMenu,
-  Pagination,
   RoycoStats,
   SearchBar,
   TableMenu,
@@ -18,6 +16,7 @@ import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { PlumeBlackLogo } from "../assets/logo/plume/plume-black";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
+import { ExploreMarketManager } from "./explore/_components/explore-market-manager";
 
 const Page = () => {
   const Content = () => {
@@ -119,8 +118,6 @@ const Page = () => {
               <SearchBar />
 
               <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
-                {/* <Sorter /> */}
-
                 {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
                   <TokenEstimator className="h-full" marketCategory="sonic">
                     <Button
@@ -132,8 +129,6 @@ const Page = () => {
                     </Button>
                   </TokenEstimator>
                 )}
-
-                <ColumnToggler />
               </div>
 
               <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 md:hidden">
@@ -141,16 +136,11 @@ const Page = () => {
                   <MobileMenu />
                 </div>
 
-                <div className="flex w-fit flex-row items-center space-x-3">
-                  {/* <Sorter /> */}
-                  <ColumnToggler />
-                </div>
+                <div className="flex w-fit flex-row items-center space-x-3"></div>
               </div>
             </div>
 
-            <MarketsTable />
-
-            <Pagination />
+            <ExploreMarketManager />
           </div>
         </div>
 

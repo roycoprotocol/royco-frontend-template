@@ -1,17 +1,10 @@
-import {
-  MobileMenu,
-  MarketsTable,
-  SearchBar,
-  RoycoStats,
-  TableMenu,
-} from "../_components";
+import { MobileMenu, SearchBar, RoycoStats, TableMenu } from "../_components";
 import "../local.css";
-
-import { ColumnToggler, Sorter } from "../_components/ui";
-import { Pagination } from "../_components/pagination";
 import { cn } from "@/lib/utils";
 import { Protector } from "../../_components/common/protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
+import { ExploreMarketManager } from "../_components/explore-market-manager";
+import { RoycoRoyalty } from "../_components/royco-royalty";
 
 const Page = () => {
   const Content = () => {
@@ -76,31 +69,22 @@ const Page = () => {
 
               <SearchBar />
 
-              <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
-                {/* <Sorter /> */}
-
-                <ColumnToggler />
-              </div>
+              <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex"></div>
 
               <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 md:hidden">
                 <div className="flex h-full flex-row space-x-2">
                   <MobileMenu />
                 </div>
 
-                <div className="flex w-fit flex-row items-center space-x-3">
-                  {/* <Sorter /> */}
-                  <ColumnToggler />
-                </div>
+                <div className="flex w-fit flex-row items-center space-x-3"></div>
               </div>
             </div>
 
-            <MarketsTable />
-
-            <Pagination />
+            <ExploreMarketManager />
           </div>
         </div>
 
-        {/* <RoycoRoyalty /> */}
+        <RoycoRoyalty />
       </div>
     );
   };
