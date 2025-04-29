@@ -12,26 +12,20 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { ConnectWalletButton } from "./connect-wallet-button";
+import { ConnectWalletButton } from "../common/connect-wallet-button/connect-wallet-button";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-import { GetUpdatesButton } from "./composables";
-import { MaxWidthWrapper } from "./composables/max-width-wrapper";
+import { MaxWidthWrapper } from "../../_containers/wrappers/max-width-wrapper";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { DropdownMenu } from "../../../components/ui/dropdown-menu";
-import {
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { BeraToken } from "../assets/bera-token";
-import { PlumeLogo } from "../assets/plume/plume";
+import { PlumeLogo } from "../../../assets/logo/plume/plume";
 
 const NavbarLinks = [
   // {

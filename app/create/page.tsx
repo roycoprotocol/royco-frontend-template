@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { MarketBuilder } from "./_components";
 import "./local.css";
-import { Protector } from "../protector";
+import { Protector } from "../_components/common/protector";
 
 const Page = () => {
   const Content = () => {

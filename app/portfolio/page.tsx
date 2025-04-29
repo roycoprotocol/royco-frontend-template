@@ -1,7 +1,7 @@
 import "./local.css";
 
 import { cn } from "@/lib/utils";
-import { Protector } from "../protector";
+import { Protector } from "../_components/common/protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { PositionsTable } from "./_components/positions-table";
 import { MarketManagerStoreProvider } from "@/store";

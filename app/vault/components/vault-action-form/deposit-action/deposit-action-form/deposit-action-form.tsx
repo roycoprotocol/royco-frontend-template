@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import { InputAmountSelector } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables";
 import {
   PrimaryLabel,
+  SecondaryLabel,
   TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { depositFormSchema } from "../deposit-action";
@@ -19,6 +20,7 @@ import { LoadingSpinner } from "@/components/composables";
 import formatNumber from "@/utils/numbers";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
+import { InfoTip } from "@/app/_components/common/info-tip";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,
@@ -58,40 +60,50 @@ export const DepositActionForm = React.forwardRef<
     return balance >= parseFloat(amount || "0");
   }, [isLoadingWalletBalance, balance, depositForm.watch("amount")]);
 
+  const dailyYieldAmount = useMemo(() => {
+    const amount = parseFloat(depositForm.getValues("amount") || "0");
+
+    if (!amount) {
+      return 0;
+    }
+
+    return (amount * data.yieldRate * token.price) / 365;
+  }, [depositForm.watch("amount")]);
+
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       <SlideUpWrapper delay={0.1}>
-        <PrimaryLabel className="text-sm font-normal">Amount</PrimaryLabel>
+        <div className="flex items-end justify-between">
+          <PrimaryLabel className="text-sm font-normal">Amount</PrimaryLabel>
+
+          <TertiaryLabel
+            onClick={() => {
+              depositForm.setValue("amount", balance?.toString() ?? "");
+            }}
+            className={cn(
+              "text-_tertiary_ flex cursor-pointer items-center justify-center text-xs font-normal underline decoration-_divider_ underline-offset-2",
+              "transition-all duration-200 ease-in-out hover:opacity-80"
+            )}
+          >
+            Max
+          </TertiaryLabel>
+        </div>
 
         <InputAmountSelector
-          containerClassName="mt-2"
+          containerClassName="my-3 bg-transparent border-none px-0"
+          className="font-fragmentMono text-2xl font-normal"
+          placeholder="0.00"
           currentValue={depositForm.watch("amount")}
           setCurrentValue={(value) => {
             depositForm.setValue("amount", value);
           }}
-          Prefix={() => {
-            return (
-              <div
-                onClick={() => {
-                  depositForm.setValue("amount", balance?.toString() ?? "");
-                }}
-                className={cn(
-                  "flex cursor-pointer items-center justify-center",
-                  "text-xs font-300 text-secondary underline decoration-tertiary decoration-dotted underline-offset-[3px]",
-                  "transition-all duration-200 ease-in-out hover:opacity-80"
-                )}
-              >
-                Max
-              </div>
-            );
-          }}
           Suffix={() => {
             return (
               <TokenDisplayer
-                size={4}
+                size={6}
                 tokens={[token]}
                 symbols={true}
-                symbolClassName="text-primary text-xs font-semibold"
+                symbolClassName="text-primary text-base font-normal"
               />
             );
           }}
@@ -100,8 +112,8 @@ export const DepositActionForm = React.forwardRef<
         {/**
          * Balance
          */}
-        <TertiaryLabel className="mt-1 justify-end space-x-1">
-          <span>Balance:</span>
+        <SecondaryLabel className="space-x-1 border-t border-_divider_ pt-1 text-xs font-medium text-_secondary_">
+          <span>AVAILABLE:</span>
 
           <span className="flex items-center justify-center">
             {isLoadingWalletBalance ? (
@@ -111,7 +123,7 @@ export const DepositActionForm = React.forwardRef<
             )}
             <span className="ml-1">{token.symbol}</span>
           </span>
-        </TertiaryLabel>
+        </SecondaryLabel>
       </SlideUpWrapper>
 
       {/**
@@ -119,11 +131,50 @@ export const DepositActionForm = React.forwardRef<
        */}
       {!hasSufficientBalance && (
         <SlideUpWrapper className="mt-3" delay={0.4}>
-          <WarningAlert>
+          <WarningAlert className="min-h-10 place-content-center rounded-sm">
             WARNING: You don't have sufficient balance.
           </WarningAlert>
         </SlideUpWrapper>
       )}
+
+      <SlideUpWrapper delay={0.2} className="mt-6">
+        <PrimaryLabel className="text-sm font-normal">
+          <div className="flex items-center gap-1">
+            <span>Projected Yield</span>
+
+            <InfoTip>
+              Projected yield based on curator's assumptions of incentive value.
+              Returns are not guaranteed.
+            </InfoTip>
+          </div>
+        </PrimaryLabel>
+
+        <div className="my-3 flex items-end gap-2">
+          <div className="font-fragmentMono text-2xl font-normal">
+            {formatNumber(data.yieldRate, {
+              type: "percent",
+            })}
+          </div>
+
+          <SecondaryLabel className="mb-1">
+            {formatNumber(dailyYieldAmount, {
+              type: "currency",
+            }) + " per day"}
+          </SecondaryLabel>
+        </div>
+
+        <SecondaryLabel className="mt-1 text-xs font-medium text-_secondary_">
+          <div className="flex items-center gap-1">
+            <span className="flex gap-1">
+              Calculated on
+              <span className="border-b-2 border-dotted border-current">
+                Base
+              </span>
+              Assumptions
+            </span>
+          </div>
+        </SecondaryLabel>
+      </SlideUpWrapper>
     </div>
   );
 });

@@ -26,7 +26,7 @@ import { NoActionsIndicator } from "./empty-state-indicator";
 import { InputOutputLists } from "./input-output-lists";
 import { FillQuantity } from "./fill-quantity";
 import { BuilderSectionWrapper } from "../../composables";
-import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
+import { CopyWrapper } from "@/app/_containers/wrappers/copy-wrapper";
 
 export const ActionsStep = React.forwardRef<
   HTMLDivElement,

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CheckCircleIcon } from "lucide-react";
+import { Check, CheckCircleIcon, SquareCheckIcon } from "lucide-react";
 import React from "react";
 
 export const TransactionRow = React.forwardRef<
@@ -18,7 +18,7 @@ export const TransactionRow = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex items-center gap-3 rounded-xl border border-divider bg-white p-2",
+        "flex items-center gap-3 rounded-sm border border-_divider_ p-2",
         className
       )}
       {...props}
@@ -26,8 +26,8 @@ export const TransactionRow = React.forwardRef<
       {/**
        * Index
        */}
-      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-divider">
-        <div className="font-gt text-sm font-light text-primary">
+      <div className="bg-_surface_tertiary flex h-6 w-6 shrink-0 items-center justify-center rounded-sm">
+        <div className="text-sm font-normal text-_primary_">
           {transactionIndex}
         </div>
       </div>
@@ -36,16 +36,15 @@ export const TransactionRow = React.forwardRef<
        * Details
        */}
       <div className="grow text-left">
-        <div className="font-gt text-sm font-light text-primary">
+        <div className="text-base font-normal text-_primary_">
           {transaction.label}
         </div>
       </div>
 
       {transaction.txStatus === "success" && (
-        <CheckCircleIcon
-          strokeWidth={2}
-          className="h-6 w-6 p-[0.2rem] text-success"
-        />
+        <div className="flex h-5 w-5 items-center justify-center rounded bg-_primary_">
+          <Check className="h-3 w-3 text-white" strokeWidth={5} />
+        </div>
       )}
     </div>
   );

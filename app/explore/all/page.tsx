@@ -10,7 +10,7 @@ import "../local.css";
 import { ColumnToggler, Sorter } from "../_components/ui";
 import { Pagination } from "../_components/pagination";
 import { cn } from "@/lib/utils";
-import { Protector } from "../../protector";
+import { Protector } from "../../_components/common/protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 
 const Page = () => {

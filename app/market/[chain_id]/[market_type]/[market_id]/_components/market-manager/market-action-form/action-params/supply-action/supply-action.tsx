@@ -17,7 +17,6 @@ import { RecipeActionForms } from "./recipe-action-forms";
 import { Button } from "@/components/ui/button";
 import { useAccount, useChainId } from "wagmi";
 import { switchChain } from "@wagmi/core";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { config } from "@/components/rainbow-modal/modal-config";
 import { useMarketFormDetails } from "../../use-market-form-details";
 import toast from "react-hot-toast";
@@ -31,6 +30,7 @@ import LightningIcon from "../../../../icons/lightning";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import formatNumber from "@/utils/numbers";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,

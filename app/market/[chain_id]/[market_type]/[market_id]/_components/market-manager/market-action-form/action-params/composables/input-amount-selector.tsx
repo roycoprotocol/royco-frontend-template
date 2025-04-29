@@ -13,6 +13,7 @@ export const InputAmountSelector = React.forwardRef<
     Prefix?: React.FC;
     Suffix?: React.FC;
     disabled?: boolean;
+    placeholder?: string;
   }
 >(
   (
@@ -22,6 +23,7 @@ export const InputAmountSelector = React.forwardRef<
       setCurrentValue,
       containerClassName,
       disabled,
+      placeholder = "Amount",
       ...props
     },
     ref
@@ -36,7 +38,7 @@ export const InputAmountSelector = React.forwardRef<
           containerClassName
         )}
         className={cn("", className)}
-        placeholder="Amount"
+        placeholder={placeholder}
         value={parseTextToFormattedValue(currentValue)}
         onChange={(e) => {
           setCurrentValue(parseFormattedValueToText(e.target.value));

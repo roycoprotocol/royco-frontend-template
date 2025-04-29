@@ -26,6 +26,7 @@ import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { api } from "@/app/api/royco";
 import { vaultContractProviderMap } from "royco/vault";
 import BigNumber from "bignumber.js";
+import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -278,7 +279,7 @@ export const BoringVaultWrapper = React.forwardRef<
   if (isLoading) {
     return (
       <div className="flex w-full flex-col place-content-center items-center pt-16">
-        <LoadingSpinner className="h-5 w-5" />
+        <LoadingIndicator className="h-5 w-5" />
       </div>
     );
   }

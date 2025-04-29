@@ -32,8 +32,9 @@ import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
 import { ErrorAlert } from "@/components/composables";
 import { LoadingSpinner } from "@/components/composables";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
+import { SuccessIcon } from "@/assets/icons/success";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -200,7 +201,7 @@ export const TransactionModal = React.forwardRef<
     >
       {isOpen && (
         <DialogContent
-          className={cn("sm:max-w-[425px]", className)}
+          className={cn("p-6 sm:max-w-[500px]", className)}
           ref={ref}
           {...props}
           onInteractOutside={(e) => {
@@ -218,27 +219,23 @@ export const TransactionModal = React.forwardRef<
            * Transaction Header
            */}
           <DialogHeader>
-            <div
-              className={cn(
-                "flex flex-col gap-2",
-                isTxSuccess ? "items-center" : "items-start"
-              )}
-            >
+            <div className={cn("flex flex-col items-start gap-2")}>
               {isTxSuccess && (
                 <SlideUpWrapper
                   layoutId={`transaction-modal-success-icon-${isTxSuccess}`}
                 >
-                  <CheckCircleIcon
-                    strokeWidth={2}
-                    className="h-6 w-6 p-[0.2rem] text-success"
-                  />
+                  <SuccessIcon className="mb-4 h-10 w-10" />
                 </SlideUpWrapper>
               )}
 
               <SlideUpWrapper
                 layoutId={`transaction-modal-title-${isTxSuccess}`}
               >
-                <DialogTitle>{transactions?.title}</DialogTitle>
+                <DialogTitle className="text-2xl font-medium">
+                  {isTxSuccess
+                    ? transactions?.successTitle
+                    : transactions?.title}
+                </DialogTitle>
               </SlideUpWrapper>
 
               <SlideUpWrapper
@@ -246,18 +243,18 @@ export const TransactionModal = React.forwardRef<
               >
                 <div className="flex items-center gap-1">
                   <TokenDisplayer
-                    size={4}
+                    size={6}
                     tokens={[transactions?.token.data]}
                     symbols={false}
                   />
 
-                  <span className="text-base font-normal">
+                  <span className="text-2xl font-medium text-_primary_">
                     {formatNumber(transactions?.token.amount, {
                       type: "number",
                     })}
                   </span>
 
-                  <span className="text-base font-normal">
+                  <span className="text-2xl font-medium text-_primary_">
                     {transactions?.token.data.symbol}
                   </span>
                 </div>
@@ -268,22 +265,36 @@ export const TransactionModal = React.forwardRef<
           {/**
            * Transaction Description
            */}
-          {transactions?.description &&
-            transactions?.description.length > 0 && (
-              <div className="mt-4 flex flex-col gap-6">
-                {transactions?.description?.map((item: any) => (
-                  <div>
-                    {item.label && (
-                      <SecondaryLabel className="text-xs font-medium">
+          {transactions?.description && (
+            <SecondaryLabel className="break-normal text-base font-normal text-_secondary_">
+              {transactions?.description}
+            </SecondaryLabel>
+          )}
+
+          {/**
+           * Transaction Metadata
+           */}
+          {!isTxSuccess &&
+            transactions?.metadata &&
+            transactions?.metadata.length > 0 && (
+              <div className="mt-6">
+                <SecondaryLabel className="text-xs font-medium">
+                  DETAILS
+                </SecondaryLabel>
+
+                <div className="mt-3 flex flex-col gap-4">
+                  {transactions?.metadata?.map((item: any) => (
+                    <div className="flex justify-between gap-1">
+                      <SecondaryLabel className="text-base font-normal text-_secondary_">
                         {item.label}
                       </SecondaryLabel>
-                    )}
 
-                    <PrimaryLabel className="mt-2 text-sm font-normal">
-                      {item.value}
-                    </PrimaryLabel>
-                  </div>
-                ))}
+                      <PrimaryLabel className="text-base font-normal text-_primary_">
+                        {item.value}
+                      </PrimaryLabel>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -294,52 +305,28 @@ export const TransactionModal = React.forwardRef<
             transactions.steps &&
             transactions.steps.length > 0 && (
               <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <SecondaryLabel className="text-xs font-medium">
-                    Transaction Steps
-                  </SecondaryLabel>
+                <SecondaryLabel className="text-xs font-medium">
+                  TRANSACTION STEPS
+                </SecondaryLabel>
 
-                  <PrimaryLabel
-                    onClick={() => {
-                      setShowTransactionBreakdown(!showTransactionBreakdown);
-                    }}
-                    className="cursor-pointer text-xs font-medium"
-                  >
-                    <div className="flex items-center gap-1">
-                      <span>Show {transactions?.steps.length} Steps</span>
-
-                      <motion.div
-                        animate={{ rotate: showTransactionBreakdown ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <ChevronsUpDown className="h-4 w-4 text-secondary" />
-                      </motion.div>
+                <DropdownAnimationWrapper>
+                  <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
+                    <div className={cn("flex flex-col gap-2")}>
+                      {transactions.steps.map(
+                        (txOptions: any, txIndex: any) => {
+                          const key = `transaction:${txOptions.id}`;
+                          return (
+                            <TransactionRow
+                              key={key}
+                              transactionIndex={txIndex + 1}
+                              transaction={txOptions}
+                            />
+                          );
+                        }
+                      )}
                     </div>
-                  </PrimaryLabel>
-                </div>
-
-                <AnimatePresence>
-                  {showTransactionBreakdown && (
-                    <DropdownAnimationWrapper>
-                      <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
-                        <div className={cn("flex flex-col gap-2")}>
-                          {transactions.steps.map(
-                            (txOptions: any, txIndex: any) => {
-                              const key = `transaction:${txOptions.id}`;
-                              return (
-                                <TransactionRow
-                                  key={key}
-                                  transactionIndex={txIndex + 1}
-                                  transaction={txOptions}
-                                />
-                              );
-                            }
-                          )}
-                        </div>
-                      </div>
-                    </DropdownAnimationWrapper>
-                  )}
-                </AnimatePresence>
+                  </div>
+                </DropdownAnimationWrapper>
               </div>
             )}
 
@@ -362,7 +349,7 @@ export const TransactionModal = React.forwardRef<
                         }
                       }}
                       size="sm"
-                      className={cn("w-full", className)}
+                      className={cn("h-10 w-full rounded-sm")}
                     >
                       Connect Wallet
                     </Button>
@@ -386,7 +373,7 @@ export const TransactionModal = React.forwardRef<
                         }
                       }}
                       size="sm"
-                      className={cn("w-full", className)}
+                      className={cn("h-10 w-full rounded-sm")}
                     >
                       Switch Chain
                     </Button>
@@ -398,7 +385,7 @@ export const TransactionModal = React.forwardRef<
                     <Button
                       onClick={handleAction}
                       size="sm"
-                      className={cn("w-full", className)}
+                      className={cn("h-10 w-full rounded-sm")}
                       disabled={isTxLoading}
                     >
                       {isTxLoading ? (
@@ -415,7 +402,7 @@ export const TransactionModal = React.forwardRef<
                 variant="outline"
                 size="sm"
                 onClick={handleClose}
-                className="mt-2 w-full justify-center"
+                className="mt-2 h-10 w-full justify-center rounded-sm"
                 disabled={isTxLoading}
               >
                 <div className="text-error">Cancel</div>
@@ -428,7 +415,7 @@ export const TransactionModal = React.forwardRef<
               variant="outline"
               size="sm"
               onClick={handleClose}
-              className="mt-3 w-full justify-center"
+              className="mt-3 h-10 w-full justify-center rounded-sm"
             >
               Close
             </Button>

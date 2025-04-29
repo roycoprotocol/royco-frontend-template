@@ -11,12 +11,12 @@ import {
   TableMenu,
 } from "./explore/_components";
 import { ColumnToggler } from "./explore/_components/ui";
-import { Protector } from "./protector";
+import { Protector } from "./_components/common/protector";
 import { BoycoStats } from "./explore/_components/boyco-stats";
 import { Button } from "@/components/ui/button";
 import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator";
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
-import { PlumeBlackLogo } from "./_components/assets/plume/plume-black";
+import { PlumeBlackLogo } from "../assets/logo/plume/plume-black";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 
 const Page = () => {

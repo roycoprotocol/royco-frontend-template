@@ -12,6 +12,7 @@ import {
 } from "@/store/vault/use-vault-manager";
 import { DepositAction } from "./deposit-action/deposit-action";
 import { WithdrawAction } from "./withdraw-action/withdraw-action";
+import { CustomHorizontalTabs } from "../../common/custom-horizontal-tabs";
 
 export const VaultActionForm = React.forwardRef<
   HTMLDivElement,
@@ -20,19 +21,16 @@ export const VaultActionForm = React.forwardRef<
   const { action, setAction } = useVaultManager();
 
   return (
-    <div ref={ref} {...props} className={cn("p-5", className)}>
+    <div ref={ref} {...props} className={cn("", className)}>
       <SlideUpWrapper delay={0.1} className={cn("flex flex-col")}>
-        <HorizontalTabs
-          className={cn("")}
-          size="sm"
-          key="vault:action-type:container"
-          baseId="vault:action-type"
+        <CustomHorizontalTabs
           tabs={Object.values(VaultManagerActionMap).map((action) => ({
             id: action.value,
             label: action.label,
           }))}
+          baseId="vault-action-form"
           activeTab={action}
-          setter={setAction}
+          onTabChange={(id) => setAction(id as TypeVaultManagerAction)}
         />
       </SlideUpWrapper>
 
