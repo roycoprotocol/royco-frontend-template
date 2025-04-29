@@ -1,7 +1,7 @@
 import { MobileMenu, SearchBar, RoycoStats, TableMenu } from "../_components";
 import "../local.css";
 import { cn } from "@/lib/utils";
-import { Protector } from "../../protector";
+import { Protector } from "../../_components/common/protector";
 import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { ExploreMarketManager } from "../_components/explore-market-manager";
 import { RoycoRoyalty } from "../_components/royco-royalty";

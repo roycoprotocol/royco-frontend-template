@@ -10,12 +10,12 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { ErrorAlert } from "@/components/composables";
 import { DepositActionForm } from "./deposit-action-form/deposit-action-form";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const depositFormSchema = z.object({
   amount: z.string(),
@@ -68,8 +68,10 @@ export const DepositAction = React.forwardRef<
       const transactions = {
         type: "deposit" as const,
         title: "Deposit",
+        successTitle: "Deposit Complete",
         description: depositTransactions.description,
         steps: depositTransactions.steps || [],
+        metadata: depositTransactions.metadata,
         token: {
           data: token,
           amount: amount,
@@ -99,7 +101,7 @@ export const DepositAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="bg-_highlight_ h-10 w-full rounded-sm"
               >
                 Connect Wallet
               </Button>
@@ -123,7 +125,7 @@ export const DepositAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="bg-_highlight_ h-10 w-full rounded-sm"
               >
                 Switch Chain
               </Button>
@@ -140,7 +142,7 @@ export const DepositAction = React.forwardRef<
                 }
               }}
               size="sm"
-              className="w-full"
+              className="bg-_highlight_ h-10 w-full rounded-sm"
             >
               Deposit
             </Button>

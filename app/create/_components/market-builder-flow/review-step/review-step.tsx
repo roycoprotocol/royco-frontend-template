@@ -20,7 +20,7 @@ import { AnimatePresence } from "framer-motion";
 import { useActionsDecoder, useActionsEncoder } from "royco/hooks";
 import { ActionFlow, AlertLabel } from "@/components/composables";
 import { toFunctionSelector, toFunctionSignature } from "viem";
-import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
+import { CopyWrapper } from "@/app/_containers/wrappers/copy-wrapper";
 
 export const ReviewStep = React.forwardRef<
   HTMLDivElement,

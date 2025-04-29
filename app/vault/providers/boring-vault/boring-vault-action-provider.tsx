@@ -88,7 +88,18 @@ export function BoringVaultActionProvider({
         },
       });
 
-      return { steps: transactions };
+      const metadata = [
+        {
+          label: "Timing",
+          value: "Instant",
+        },
+        {
+          label: "Source",
+          value: address.slice(0, 6) + "..." + address.slice(-4),
+        },
+      ];
+
+      return { steps: transactions, metadata };
     } catch (error) {
       toast.custom(
         <ErrorAlert message="Failed to create deposit transaction." />
@@ -216,18 +227,27 @@ export function BoringVaultActionProvider({
         },
       });
 
+      const description = `Your withdrawal request will be submitted to the vault manager and processed within ${daysValid} business days. You will not earn rewards during this period.`;
+
+      const metadata = [
+        {
+          label: "Slippage",
+          value: `0% - ${maxDiscount}%`,
+        },
+        {
+          label: "Timing",
+          value: `Up to ${daysValid} Business Days`,
+        },
+        {
+          label: "Destination",
+          value: address.slice(0, 6) + "..." + address.slice(-4),
+        },
+      ];
+
       return {
-        description: [
-          {
-            label: "What to Expect",
-            value: `Your withdrawal request will be reviewed by the vault manager within ${daysValid} days. If denied or canceled, the funds will return to vault.`,
-          },
-          {
-            label: "Slippage",
-            value: `${minDiscount}% - ${maxDiscount}%`,
-          },
-        ],
+        description,
         steps: transactions,
+        metadata,
       };
     } catch (error) {
       toast.custom(
@@ -295,12 +315,7 @@ export function BoringVaultActionProvider({
       });
 
       return {
-        description: [
-          {
-            label: "What to Expect",
-            value: `The funds will return to vault.`,
-          },
-        ],
+        description: `The funds will return to vault.`,
         steps: transactions,
       };
     } catch (error) {
@@ -338,7 +353,18 @@ export function BoringVaultActionProvider({
         },
       });
 
-      return { steps: transactions };
+      const metadata = [
+        {
+          label: "Timing",
+          value: "Instant",
+        },
+        {
+          label: "Destination",
+          value: address.slice(0, 6) + "..." + address.slice(-4),
+        },
+      ];
+
+      return { steps: transactions, metadata };
     } catch (error) {
       toast.custom(<ErrorAlert message="Failed to claim incentive." />);
       return { steps: [] };
@@ -360,11 +386,12 @@ export function BoringVaultActionProvider({
 }
 
 type TypeVaultTransactionReturn = {
-  description?: {
+  description?: string;
+  steps: any[];
+  metadata?: {
     label: string;
     value: string;
   }[];
-  steps: any[];
 };
 
 interface BoringVaultActions {

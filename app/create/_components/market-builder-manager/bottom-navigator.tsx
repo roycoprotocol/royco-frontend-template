@@ -24,8 +24,8 @@ import { ContractMap } from "royco/contracts";
 import { useCreateRecipeMarket, useCreateVaultMarket } from "royco/hooks";
 import { Hyperevm, Plume, REWARD_STYLE, Sonic } from "royco/constants";
 import { BuilderSectionWrapper } from "../composables";
-import { useConnectWallet } from "../../../_components/provider/connect-wallet-provider";
 import { CreateActionsMap } from "../market-builder-flow/info-step/form-selectors";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 const getFrontendFee = () => {
   /**

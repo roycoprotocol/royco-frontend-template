@@ -25,7 +25,6 @@ import {
 } from "@/components/composables";
 import { Button } from "@/components/ui/button";
 import { useAccount, useDisconnect } from "wagmi";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useGlobalStates, useJoin } from "@/store";
 import { useSignMessage } from "wagmi";
@@ -39,6 +38,7 @@ import { useTotalWalletsBalance } from "../hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { SignMessageInfoCard } from "./sign-message-info-card";
 import { toast } from "sonner";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const WalletConnectionLabel = React.forwardRef<
   HTMLDivElement,

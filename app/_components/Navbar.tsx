@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { ActualNavbar } from "./ui";
+import { ActualNavbar } from "./ui/actual-navbar";
 import { usePathname } from "next/navigation";
 
 export const Navbar: React.FC = () => {

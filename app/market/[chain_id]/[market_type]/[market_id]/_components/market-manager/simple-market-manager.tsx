@@ -7,7 +7,7 @@ import { MarketInfo } from "./market-info";
 import { useMarketManager } from "@/store/use-market-manager";
 import { SecondaryLabel } from "../composables/common-labels";
 import { motion } from "framer-motion";
-import { RoycoLogoWhite } from "@/app/_components/assets/royco-logo-white";
+import { RoycoLogoWhiteIcon } from "@/assets/logo/royco-logo-white";
 
 export const SimpleMarketManager = forwardRef<
   HTMLDivElement,
@@ -56,7 +56,7 @@ export const SimpleMarketManager = forwardRef<
       >
         <SecondaryLabel className="flex items-center justify-between gap-2 font-light text-white">
           <div className="flex items-center gap-1">
-            <RoycoLogoWhite className="h-5" />
+            <RoycoLogoWhiteIcon className="h-5" />
             <span>Advanced Mode</span>
           </div>
 

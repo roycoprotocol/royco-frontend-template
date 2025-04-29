@@ -12,7 +12,6 @@ import {
 import { RoyaltyFormPopUp } from "./royalty-form-pop-up";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { useUsername } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { getUserInfoQueryFunction, useUserInfo } from "@/components/user/hooks";
@@ -25,6 +24,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { OtpForm } from "../otp-form";
 import { SuccessScreen } from "../success-screen";
 import { useQuery } from "@tanstack/react-query";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const RoyaltyForm = React.forwardRef<
   HTMLDivElement,

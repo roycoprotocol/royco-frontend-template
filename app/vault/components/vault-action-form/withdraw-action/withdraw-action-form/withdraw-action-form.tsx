@@ -50,37 +50,37 @@ export const WithdrawActionForm = React.forwardRef<
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
       <SlideUpWrapper delay={0.1}>
-        <PrimaryLabel className="text-sm font-normal">Amount</PrimaryLabel>
+        <div className="flex items-end justify-between">
+          <PrimaryLabel className="text-sm font-normal">Amount</PrimaryLabel>
+
+          <TertiaryLabel
+            onClick={() => {
+              withdrawForm.setValue("amount", balance?.toString() ?? "");
+            }}
+            className={cn(
+              "text-_tertiary_ flex cursor-pointer items-center justify-center text-xs font-normal underline decoration-_divider_ underline-offset-2",
+              "transition-all duration-200 ease-in-out hover:opacity-80"
+            )}
+          >
+            Max
+          </TertiaryLabel>
+        </div>
 
         <InputAmountSelector
-          containerClassName="mt-2"
+          containerClassName="my-3 bg-transparent border-none px-0"
+          className="font-fragmentMono text-2xl font-normal"
+          placeholder="0.00"
           currentValue={withdrawForm.watch("amount")}
           setCurrentValue={(value) => {
             withdrawForm.setValue("amount", value);
           }}
-          Prefix={() => {
-            return (
-              <div
-                onClick={() => {
-                  withdrawForm.setValue("amount", balance?.toString() ?? "");
-                }}
-                className={cn(
-                  "flex cursor-pointer items-center justify-center",
-                  "text-xs font-300 text-secondary underline decoration-tertiary decoration-dotted underline-offset-[3px]",
-                  "transition-all duration-200 ease-in-out hover:opacity-80"
-                )}
-              >
-                Max
-              </div>
-            );
-          }}
           Suffix={() => {
             return (
               <TokenDisplayer
-                size={4}
+                size={6}
                 tokens={[token]}
                 symbols={true}
-                symbolClassName="text-primary text-xs font-semibold"
+                symbolClassName="text-primary text-base font-normal"
               />
             );
           }}
@@ -89,14 +89,14 @@ export const WithdrawActionForm = React.forwardRef<
         {/**
          * Balance
          */}
-        <TertiaryLabel className="mt-1 justify-start space-x-1">
-          <span>Available Balance:</span>
+        <SecondaryLabel className="space-x-1 border-t border-_divider_ pt-1 text-xs font-medium text-_secondary_">
+          <span>AVAILABLE BALANCE:</span>
 
           <span className="flex items-center justify-center">
             <span>{formatNumber(balance || 0)}</span>
             <span className="ml-1">{token.symbol}</span>
           </span>
-        </TertiaryLabel>
+        </SecondaryLabel>
       </SlideUpWrapper>
 
       {/**
@@ -104,7 +104,7 @@ export const WithdrawActionForm = React.forwardRef<
        */}
       {!hasSufficientBalance && (
         <SlideUpWrapper className="mt-3" delay={0.4}>
-          <WarningAlert>
+          <WarningAlert className="min-h-10 place-content-center rounded-sm">
             WARNING: You don't have sufficient balance.
           </WarningAlert>
         </SlideUpWrapper>

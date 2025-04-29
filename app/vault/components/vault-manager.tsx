@@ -1,47 +1,29 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { ChevronLeftIcon } from "lucide-react";
-import { useAtomValue, useSetAtom } from "jotai";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { VaultDetails } from "./vault-details/vault-details";
-import { MarketAllocation } from "./market-allocation/market-allocation";
-import { VaultFAQ } from "./vault-faq/vault-faq";
 import { VaultActionForm } from "./vault-action-form/action-form";
-import { BalanceIndicator } from "./balance-indicator/balance-indicator";
-import { Rewards } from "./rewards/rewards";
 import { SlideUpWrapper } from "@/components/animations";
 import { TransactionModal } from "../common/transaction-modal/transaction-modal";
-import { Withdrawals } from "./withdrawals/withdrawals";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  TypeVaultDetailsOption,
+  useVaultManager,
+  VaultDetailsOptionMap,
+} from "@/store/vault/use-vault-manager";
+import { Overview } from "./overview/overview";
+import { Positions } from "./positions/positions";
+import { CustomHorizontalTabs } from "../common/custom-horizontal-tabs";
 
 export const VaultManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { setReload } = useVaultManager();
+  const { setReload, detailsOption, setDetailsOption } = useVaultManager();
 
   return (
-    <div ref={ref} {...props} className={cn("py-5", className)}>
-      {/**
-       * Back Button
-       */}
-      <div className="flex justify-start">
-        <SecondaryLabel
-          onClick={() => window.open("/", "_self", "noopener noreferrer")}
-          className={cn(
-            "flex cursor-pointer items-center",
-            "font-light text-white",
-            "transition-all duration-200 ease-in-out hover:opacity-80"
-          )}
-        >
-          <ChevronLeftIcon strokeWidth={1.5} className="-ml-2 h-6 w-6 " />
-          <span>Back</span>
-        </SecondaryLabel>
-      </div>
-
-      <div className="mt-7 flex flex-col gap-y-4 lg:flex-row lg:gap-x-3">
+    <div ref={ref} {...props} className={cn("py-8", className)}>
+      <div className="flex flex-col lg:flex-row lg:gap-x-10">
         <div className="w-full lg:w-2/3">
           {/**
            * Vault Details
@@ -51,53 +33,57 @@ export const VaultManager = React.forwardRef<
           </SlideUpWrapper>
 
           {/**
-           * Rewards
+           * Vault Details Tabs
            */}
-          <SlideUpWrapper className="mt-4" delay={0.1}>
-            <Rewards />
+          <SlideUpWrapper delay={0.1} className="mt-8">
+            <CustomHorizontalTabs
+              tabs={Object.values(VaultDetailsOptionMap).map((option) => ({
+                id: option.value,
+                label: option.label,
+              }))}
+              baseId="vault-details-option"
+              activeTab={detailsOption}
+              onTabChange={(id) =>
+                setDetailsOption(id as TypeVaultDetailsOption)
+              }
+            />
           </SlideUpWrapper>
 
           {/**
-           * Market Allocation
+           * Vault Details Content
            */}
-          <SlideUpWrapper className="mt-4" delay={0.2}>
-            <MarketAllocation />
-          </SlideUpWrapper>
+          {(() => {
+            if (detailsOption === TypeVaultDetailsOption.Overview) {
+              return (
+                <div className="mt-8">
+                  <Overview />
+                </div>
+              );
+            }
 
-          {/**
-           * Withdrawals
-           */}
-          <SlideUpWrapper className="mt-4" delay={0.3}>
-            <Withdrawals />
-          </SlideUpWrapper>
-
-          {/**
-           * Vault FAQ
-           */}
-          <SlideUpWrapper className="mt-4" delay={0.4}>
-            <VaultFAQ />
-          </SlideUpWrapper>
+            if (detailsOption === TypeVaultDetailsOption.Positions) {
+              return (
+                <div className="mt-8">
+                  <Positions />
+                </div>
+              );
+            }
+          })()}
         </div>
 
-        <div className="w-full lg:w-1/3">
+        {/**
+         * Vault Action Form
+         */}
+        <div className="mt-8 w-full lg:mt-0 lg:w-1/3">
           <SlideUpWrapper>
-            <div className="w-full rounded-2xl border border-divider bg-white">
-              {/**
-               * Balance Indicator
-               */}
-              <BalanceIndicator />
-
-              <hr />
-
-              {/**
-               * Vault Action Form
-               */}
-              <VaultActionForm />
-            </div>
+            <VaultActionForm />
           </SlideUpWrapper>
         </div>
       </div>
 
+      {/**
+       * Transaction Modal
+       */}
       <TransactionModal onSuccess={() => setReload(true)} />
     </div>
   );

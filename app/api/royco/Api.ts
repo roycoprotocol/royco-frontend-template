@@ -17,6 +17,8 @@ import {
   ChartRequestBody,
   ChartResponse,
   ContractResponse,
+  CreateMarketBody,
+  CreateMarketResponse,
   ExploreMarketBody,
   ExploreMarketResponse,
   ExploreSettingsMarketBody,
@@ -42,6 +44,8 @@ import {
   SpecificVaultPositionResponse,
   StatsFinalResponse,
   StatsRequestBody,
+  TokenDirectoryRequestBody,
+  TokenDirectoryResponse,
   TokenQuoteRequestBody,
   TokenQuoteResponse,
   VaultAPLimitActionBody,
@@ -54,7 +58,9 @@ import {
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class Api<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -153,6 +159,28 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
       ...params,
     });
   /**
+   * @description Get token directory based on the filters and page
+   *
+   * @tags Token
+   * @name TokenControllerGetTokenDirectory
+   * @summary Get token directory
+   * @request POST:/api/v1/token/directory
+   * @secure
+   */
+  tokenControllerGetTokenDirectory = (
+    data?: TokenDirectoryRequestBody,
+    params: RequestParams = {}
+  ) =>
+    this.request<TokenDirectoryResponse, any>({
+      path: `/api/v1/token/directory`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * No description
    *
    * @tags Addons
@@ -172,7 +200,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @name AddonsControllerRefreshIncentives
    * @request GET:/api/v1/addons/refresh/{id}
    */
-  addonsControllerRefreshIncentives = (id: string, params: RequestParams = {}) =>
+  addonsControllerRefreshIncentives = (
+    id: string,
+    params: RequestParams = {}
+  ) =>
     this.request<void, any>({
       path: `/api/v1/addons/refresh/${id}`,
       method: "GET",
@@ -187,7 +218,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/market/info/{id}
    * @secure
    */
-  marketControllerGetMarket = (id: string, data?: InfoMarketBody, params: RequestParams = {}) =>
+  marketControllerGetMarket = (
+    id: string,
+    data?: InfoMarketBody,
+    params: RequestParams = {}
+  ) =>
     this.request<InfoMarketResponse, any>({
       path: `/api/v1/market/info/${id}`,
       method: "POST",
@@ -206,7 +241,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/market/explore
    * @secure
    */
-  marketControllerGetMarkets = (data?: ExploreMarketBody, params: RequestParams = {}) =>
+  marketControllerGetMarkets = (
+    data?: ExploreMarketBody,
+    params: RequestParams = {}
+  ) =>
     this.request<ExploreMarketResponse, any>({
       path: `/api/v1/market/explore`,
       method: "POST",
@@ -224,9 +262,34 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/market/explore/settings
    * @secure
    */
-  marketControllerGetMarketSettings = (data?: ExploreSettingsMarketBody, params: RequestParams = {}) =>
+  marketControllerGetMarketSettings = (
+    data?: ExploreSettingsMarketBody,
+    params: RequestParams = {}
+  ) =>
     this.request<ExploreSettingsMarketResponse, any>({
       path: `/api/v1/market/explore/settings`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Create a market
+   *
+   * @tags Market
+   * @name MarketControllerCreateMarket
+   * @summary Create a market
+   * @request POST:/api/v1/market/create
+   * @secure
+   */
+  marketControllerCreateMarket = (
+    data: CreateMarketBody,
+    params: RequestParams = {}
+  ) =>
+    this.request<CreateMarketResponse, any>({
+      path: `/api/v1/market/create`,
       method: "POST",
       body: data,
       secure: true,
@@ -243,7 +306,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/vault/info/{id}
    * @secure
    */
-  vaultControllerGetVaultInfo = (id: string, data?: VaultInfoRequestBody, params: RequestParams = {}) =>
+  vaultControllerGetVaultInfo = (
+    id: string,
+    data?: VaultInfoRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<VaultInfoResponse, any>({
       path: `/api/v1/vault/info/${id}`,
       method: "POST",
@@ -262,7 +329,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/position/recipe
    * @secure
    */
-  positionControllerGetRecipePositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+  positionControllerGetRecipePositions = (
+    data?: BaseRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<RecipePositionResponse, any>({
       path: `/api/v1/position/recipe`,
       method: "POST",
@@ -305,7 +375,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/position/vault
    * @secure
    */
-  positionControllerGetVaultPositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+  positionControllerGetVaultPositions = (
+    data?: BaseRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<VaultPositionResponse, any>({
       path: `/api/v1/position/vault`,
       method: "POST",
@@ -348,7 +421,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/position/boyco
    * @secure
    */
-  positionControllerGetBoycoPositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+  positionControllerGetBoycoPositions = (
+    data?: BaseRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<BoycoPositionResponse, any>({
       path: `/api/v1/position/boyco`,
       method: "POST",
@@ -391,7 +467,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/position/boring
    * @secure
    */
-  positionControllerGetBoringPositions = (data?: BaseRequestBody, params: RequestParams = {}) =>
+  positionControllerGetBoringPositions = (
+    data?: BaseRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<BoringPositionResponse, any>({
       path: `/api/v1/position/boring`,
       method: "POST",
@@ -434,7 +513,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request GET:/api/v1/contract/{chainId}/{contractAddress}
    * @secure
    */
-  contractControllerGetContract = (chainId: number, contractAddress: string, params: RequestParams = {}) =>
+  contractControllerGetContract = (
+    chainId: number,
+    contractAddress: string,
+    params: RequestParams = {}
+  ) =>
     this.request<ContractResponse, any>({
       path: `/api/v1/contract/${chainId}/${contractAddress}`,
       method: "GET",
@@ -451,7 +534,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/chart/{id}
    * @secure
    */
-  chartControllerGetMarketChart = (id: string, data?: ChartRequestBody, params: RequestParams = {}) =>
+  chartControllerGetMarketChart = (
+    id: string,
+    data?: ChartRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<ChartResponse, any>({
       path: `/api/v1/chart/${id}`,
       method: "POST",
@@ -470,7 +557,11 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/stats/assets/{accountAddress}
    * @secure
    */
-  statsControllerGetStats = (accountAddress: string, data?: StatsRequestBody, params: RequestParams = {}) =>
+  statsControllerGetStats = (
+    accountAddress: string,
+    data?: StatsRequestBody,
+    params: RequestParams = {}
+  ) =>
     this.request<StatsFinalResponse, any>({
       path: `/api/v1/stats/assets/${accountAddress}`,
       method: "POST",
@@ -489,7 +580,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/recipe/ap/market
    * @secure
    */
-  actionControllerRecipeApMarketAction = (data: RecipeAPMarketActionBody, params: RequestParams = {}) =>
+  actionControllerRecipeApMarketAction = (
+    data: RecipeAPMarketActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<RecipeAPMarketActionResponse, any>({
       path: `/api/v1/action/recipe/ap/market`,
       method: "POST",
@@ -508,7 +602,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/recipe/ip/market
    * @secure
    */
-  actionControllerRecipeIpMarketAction = (data: RecipeIPMarketActionBody, params: RequestParams = {}) =>
+  actionControllerRecipeIpMarketAction = (
+    data: RecipeIPMarketActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<RecipeIPMarketActionResponse, any>({
       path: `/api/v1/action/recipe/ip/market`,
       method: "POST",
@@ -527,7 +624,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/recipe/ip/limit
    * @secure
    */
-  actionControllerRecipeIpLimitAction = (data: RecipeIPLimitActionBody, params: RequestParams = {}) =>
+  actionControllerRecipeIpLimitAction = (
+    data: RecipeIPLimitActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<RecipeIPLimitActionResponse, any>({
       path: `/api/v1/action/recipe/ip/limit`,
       method: "POST",
@@ -546,7 +646,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/recipe/ap/limit
    * @secure
    */
-  actionControllerRecipeApLimitAction = (data: RecipeAPLimitActionBody, params: RequestParams = {}) =>
+  actionControllerRecipeApLimitAction = (
+    data: RecipeAPLimitActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<RecipeAPLimitActionResponse, any>({
       path: `/api/v1/action/recipe/ap/limit`,
       method: "POST",
@@ -565,7 +668,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/vault/ap/market
    * @secure
    */
-  actionControllerVaultApMarketAction = (data: VaultAPMarketActionBody, params: RequestParams = {}) =>
+  actionControllerVaultApMarketAction = (
+    data: VaultAPMarketActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<VaultAPMarketActionResponse, any>({
       path: `/api/v1/action/vault/ap/market`,
       method: "POST",
@@ -584,7 +690,10 @@ export class Api<SecurityDataType = unknown> extends HttpClient<SecurityDataType
    * @request POST:/api/v1/action/vault/ap/limit
    * @secure
    */
-  actionControllerVaultApLimitAction = (data: VaultAPLimitActionBody, params: RequestParams = {}) =>
+  actionControllerVaultApLimitAction = (
+    data: VaultAPLimitActionBody,
+    params: RequestParams = {}
+  ) =>
     this.request<VaultAPLimitActionResponse, any>({
       path: `/api/v1/action/vault/ap/limit`,
       method: "POST",

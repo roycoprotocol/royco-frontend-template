@@ -1,5 +1,20 @@
-import { VaultDepositToken } from "@/app/api/royco/data-contracts";
 import { create } from "zustand";
+
+export enum TypeVaultDetailsOption {
+  Overview = "overview",
+  Positions = "positions",
+}
+
+export const VaultDetailsOptionMap = {
+  [TypeVaultDetailsOption.Overview]: {
+    value: TypeVaultDetailsOption.Overview,
+    label: "Overview",
+  },
+  [TypeVaultDetailsOption.Positions]: {
+    value: TypeVaultDetailsOption.Positions,
+    label: "Positions",
+  },
+};
 
 export enum TypeVaultManagerAction {
   Deposit = "deposit",
@@ -20,7 +35,9 @@ export const VaultManagerActionMap = {
 export type TypeVaultTransaction = {
   type: "deposit" | "withdraw" | "cancelWithdraw" | "claimIncentives";
   title: string;
-  description?: {
+  successTitle?: string;
+  description?: string;
+  metadata?: {
     label: string;
     value: string;
   }[];
@@ -32,6 +49,9 @@ export type TypeVaultTransaction = {
 };
 
 export interface VaultManagerState {
+  detailsOption: TypeVaultDetailsOption;
+  setDetailsOption: (detailsOption: TypeVaultDetailsOption) => void;
+
   action: TypeVaultManagerAction;
   setAction: (action: TypeVaultManagerAction) => void;
 
@@ -46,6 +66,10 @@ export interface VaultManagerState {
 }
 
 export const useVaultManager = create<VaultManagerState>((set) => ({
+  detailsOption: TypeVaultDetailsOption.Overview,
+  setDetailsOption: (detailsOption: TypeVaultDetailsOption) =>
+    set({ detailsOption }),
+
   action: TypeVaultManagerAction.Deposit,
   setAction: (action: TypeVaultManagerAction) => set({ action }),
 

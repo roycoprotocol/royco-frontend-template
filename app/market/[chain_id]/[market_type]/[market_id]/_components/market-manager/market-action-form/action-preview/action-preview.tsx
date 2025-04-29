@@ -11,11 +11,11 @@ import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { ErrorAlert } from "@/components/composables";
 import { useAccount, useChainId } from "wagmi";
 import { useMarketFormDetails } from "../use-market-form-details";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { Button } from "@/components/ui/button";
 import { useActiveMarket } from "../../../hooks";
 import toast from "react-hot-toast";
 import { PreviewStep } from "./preview-step";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const ActionPreview = React.forwardRef<
   HTMLDivElement,

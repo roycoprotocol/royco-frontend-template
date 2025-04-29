@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { create } from "zustand";
 import { detect } from "detect-browser";
 import { cn } from "@/lib/utils";
-import { restrictedCountries } from "@/app/_components/provider/connect-wallet-provider";
 import { useDisconnect } from "wagmi";
+import { restrictedCountries } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const BrowserDetector = React.forwardRef<
   HTMLDivElement,

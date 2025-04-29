@@ -3,17 +3,15 @@
 import React, { useMemo } from "react";
 import { useAtomValue } from "jotai";
 import { SupportedChainMap } from "royco/constants";
-
 import { cn } from "@/lib/utils";
 import {
   SecondaryLabel,
   PrimaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { CustomBadge } from "../../common/custom-badge";
 import formatNumber from "@/utils/numbers";
-import { Progress } from "@/components/ui/progress";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
-import { TokenDisplayer } from "@/components/common";
+import { UsdcCoinIcon } from "../../assets/usdc";
+import { CustomProgress } from "../../common/custom-progress";
 
 export const VaultDetails = React.forwardRef<
   HTMLDivElement,
@@ -26,109 +24,69 @@ export const VaultDetails = React.forwardRef<
   }, [data.chainId]);
 
   return (
-    <div
-      ref={ref}
-      {...props}
-      className={cn(
-        "rounded-2xl border border-divider bg-white p-6",
-        className
-      )}
-    >
-      <div>
-        <PrimaryLabel className="text-[40px] font-medium">
-          {data.name} Vault
-        </PrimaryLabel>
+    <div ref={ref} {...props} className={cn(className)}>
+      {/**
+       * Header
+       */}
+      <div className="flex gap-4">
+        <UsdcCoinIcon className="h-24 w-24" />
 
-        <div className="mt-3 flex items-center gap-1">
-          {data.managers &&
-            data.managers.length > 0 &&
-            data.managers.map((manager) => {
-              return (
-                <CustomBadge
-                  key={manager.id}
-                  icon={manager.image}
-                  label={manager.name}
+        <div className="flex flex-col gap-4">
+          <PrimaryLabel className="font-shippori text-[40px] font-normal text-_primary_">
+            {data.name}
+          </PrimaryLabel>
+
+          <div className="flex items-center divide-x divide-_divider_">
+            {data.managers &&
+              data.managers.length > 0 &&
+              data.managers.map((manager, index) => {
+                return (
+                  <div
+                    className={cn(
+                      "flex items-center gap-1 px-3",
+                      !index && "pl-0"
+                    )}
+                  >
+                    <img
+                      src={manager.image}
+                      alt={manager.name}
+                      width={16}
+                      height={16}
+                      className="rounded-full"
+                    />
+                    <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                      {manager.name.toUpperCase()}
+                    </SecondaryLabel>
+                  </div>
+                );
+              })}
+
+            {data.chainId && (
+              <div className="flex items-center gap-1 pl-3">
+                <img
+                  src={chain.image}
+                  alt={chain.name}
+                  width={16}
+                  height={16}
+                  className="rounded-full"
                 />
-              );
-            })}
-
-          {data.chainId && (
-            <CustomBadge icon={chain.image} label={chain.name} />
-          )}
+                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                  {chain.name.toUpperCase()}
+                </SecondaryLabel>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-8 sm:flex-row">
-        <div className="shrink-0">
-          <SecondaryLabel className="text-xs font-medium">
-            Deposit
-          </SecondaryLabel>
-
-          <PrimaryLabel className="mt-2 text-2xl font-normal">
-            <TokenDisplayer
-              size={6}
-              tokens={data.depositTokens}
-              symbols={true}
-              symbolClassName="font-normal text-primary text-2xl leading-7"
-            />
-          </PrimaryLabel>
-        </div>
-
-        <div className="shrink-0">
-          <SecondaryLabel className="text-xs font-medium">
-            Est. APY
-          </SecondaryLabel>
-
-          <PrimaryLabel className="mt-2 text-2xl font-normal">
-            <div className="flex items-center gap-1">
-              <span className="leading-7 text-primary">
-                {formatNumber(data.yieldRate, {
-                  type: "percent",
-                })}
-              </span>
-
-              <TokenDisplayer
-                size={6}
-                tokens={data.incentiveTokens}
-                symbols={false}
-              />
-            </div>
-          </PrimaryLabel>
-        </div>
-
-        <div className="shrink-0">
-          <SecondaryLabel className="text-xs font-medium">
-            Max Lockup
-          </SecondaryLabel>
-
-          <PrimaryLabel className="mt-2 text-2xl font-normal">
-            {data.maxLockup !== "0"
-              ? (() => {
-                  const seconds = Number(data.maxLockup);
-                  if (seconds < 3600) {
-                    return `${seconds}sec`;
-                  }
-                  const hours = Math.ceil(seconds / 3600);
-                  if (seconds < 86400) {
-                    return `${hours}hr`;
-                  }
-                  const days = Math.ceil(seconds / 86400);
-                  return `${days}d`;
-                })()
-              : "None"}
-          </PrimaryLabel>
-        </div>
-      </div>
-
+      {/**
+       * Vault Capacity
+       */}
       <div className="mt-6">
-        <Progress
-          value={data.capacity.ratio * 100}
-          className="h-2 bg-z2"
-          indicatorClassName="bg-warning"
-        />
+        <CustomProgress value={data.capacity.ratio * 100} />
 
         <div className="mt-2 flex items-center justify-between">
-          <SecondaryLabel className="text-xs font-medium">
+          <SecondaryLabel className="text-xs font-normal text-_secondary_">
             <div className="flex items-center gap-1">
               <span>
                 {formatNumber(data.capacity.currentUsd, {
@@ -139,7 +97,7 @@ export const VaultDetails = React.forwardRef<
             </div>
           </SecondaryLabel>
 
-          <SecondaryLabel className="text-xs font-medium">
+          <SecondaryLabel className="text-xs font-normal text-_secondary_">
             <div className="flex items-center gap-1">
               <span>
                 {formatNumber(1 - data.capacity.ratio, {

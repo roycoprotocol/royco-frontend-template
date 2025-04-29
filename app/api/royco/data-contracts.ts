@@ -98,7 +98,14 @@ export interface TokenQuote {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -211,7 +218,14 @@ export interface TokenQuoteResponse {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -270,6 +284,95 @@ export interface TokenQuoteResponse {
    */
   lastUpdated: string;
 }
+
+export interface Filter {
+  /**
+   * Filter ID
+   * Column ID to apply the filter on
+   * @example "chainId"
+   */
+  id: string;
+  /**
+   * Filter Value
+   * Value to filter by
+   * @example "146"
+   */
+  value: string | number | boolean | string[] | number[];
+  /**
+   * Filter Condition
+   * Condition to apply the filter on -- if not provided, defaults to "eq"
+   * @default "eq"
+   * @example "gte"
+   */
+  condition?: string;
+  /**
+   * Filter Join
+   * Join to union the filters on -- if not provided, defaults to "and"
+   * @default "and"
+   * @example "or"
+   */
+  join?: string;
+}
+
+export interface Sorting {
+  /**
+   * Sorting ID
+   * Column ID to sort by
+   * @example "tvlUsd"
+   */
+  id: string;
+  /**
+   * Sorting Order
+   * Sorting order -- if not provided, defaults to "desc"
+   * @default false
+   * @example true
+   */
+  desc?: boolean;
+}
+
+export interface RequestPage {
+  /**
+   * Page Index
+   * Page index
+   * @example 1
+   */
+  index?: number;
+  /**
+   * Page Size
+   * Page size
+   * @example 3
+   */
+  size?: number;
+}
+
+export interface TokenDirectoryRequestBody {
+  /**
+   * Filters Array
+   * Array of filter objects to apply to the results
+   * @example [{"id":"chainId","value":1},{"id":"tvlUsd","value":1000000,"condition":"gte"}]
+   */
+  filters?: Filter[];
+  /**
+   * Sorting Object
+   * Object type to sort results with
+   * @example {"id":"tvlUsd","desc":true}
+   */
+  sorting?: Sorting[];
+  /**
+   * Request Page Object
+   * Object type to request a page of results
+   * @default {"index":1,"size":10}
+   * @example {"index":1,"size":3}
+   */
+  page?: RequestPage;
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+}
+
+export type TokenDirectoryResponse = object;
 
 export interface InfoMarketBody {
   /**
@@ -332,7 +435,14 @@ export interface BaseEnrichedTokenData {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -463,7 +573,14 @@ export interface MarketActiveIncentiveDetailed {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -638,7 +755,14 @@ export interface MarketUnderlyingIncentive {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -762,7 +886,14 @@ export interface MarketNativeIncentive {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -886,7 +1017,14 @@ export interface MarketExternalIncentive {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -1186,66 +1324,6 @@ export interface InfoMarketResponse {
   lastUpdated: string;
 }
 
-export interface Filter {
-  /**
-   * Filter ID
-   * Column ID to apply the filter on
-   * @example "chainId"
-   */
-  id: string;
-  /**
-   * Filter Value
-   * Value to filter by
-   * @example "146"
-   */
-  value: string | number | boolean | string[] | number[];
-  /**
-   * Filter Condition
-   * Condition to apply the filter on -- if not provided, defaults to "eq"
-   * @default "eq"
-   * @example "gte"
-   */
-  condition?: string;
-  /**
-   * Filter Join
-   * Join to union the filters on -- if not provided, defaults to "and"
-   * @default "and"
-   * @example "or"
-   */
-  join?: string;
-}
-
-export interface Sorting {
-  /**
-   * Sorting ID
-   * Column ID to sort by
-   * @example "tvlUsd"
-   */
-  id: string;
-  /**
-   * Sorting Order
-   * Sorting order -- if not provided, defaults to "desc"
-   * @default false
-   * @example true
-   */
-  desc?: boolean;
-}
-
-export interface RequestPage {
-  /**
-   * Page Index
-   * Page index
-   * @example 1
-   */
-  index?: number;
-  /**
-   * Page Size
-   * Page size
-   * @example 3
-   */
-  size?: number;
-}
-
 export interface ExploreMarketBody {
   /**
    * Filters Array
@@ -1273,34 +1351,37 @@ export interface ExploreMarketBody {
   customTokenData?: CustomTokenDataElement[];
 }
 
-export interface ResponsePage {
-  /**
-   * Page Index
-   * Page index
-   * @example 1
-   */
-  index: number;
-  /**
-   * Page Size
-   * Page size
-   * @example 3
-   */
-  size: number;
-  /**
-   * Page Total
-   * Page total
-   * @example 10
-   */
-  total: number;
-}
-
-export interface EnrichedMarket {
+export interface ExploreMarketResponseDataElement {
   /**
    * ID
    * The global unique identifier of the market: chainId_marketType_marketId
    * @example "1_0_0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
    */
   id: string;
+  /**
+   * Market Type
+   * The type of market: 0 = Recipe, 1 = Vault
+   * @example 0
+   */
+  marketType: 0 | 1;
+}
+
+export interface ExploreMarketResponse {
+  /** data */
+  data: ExploreMarketResponseDataElement[];
+}
+
+export interface ExploreSettingsMarketBody {
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+}
+
+export type ExploreSettingsMarketResponse = object;
+
+export interface CreateMarketBody {
   /**
    * Chain ID
    * Network ID of the blockchain
@@ -1314,12 +1395,6 @@ export interface EnrichedMarket {
    */
   marketType: 0 | 1;
   /**
-   * Market ID
-   * The on-chain identifier of the market: For recipe market, it's market hash -- for vault market, it's wrapped vault address
-   * @example "0x83c459782b2ff36629401b1a592354fc085f29ae00cf97b803f73cac464d389b"
-   */
-  marketId: string;
-  /**
    * Name
    * The name of the market
    * @example "Swap USDC to stkGHO for 1 mo"
@@ -1332,187 +1407,27 @@ export interface EnrichedMarket {
    */
   description: string;
   /**
-   * Category
-   * The category of the market
-   * @example "default"
-   */
-  category: string;
-  /**
-   * Underlying Vault Address
-   * The address of the underlying vault -- only vault markets have an underlying vault, while recipe markets don't
-   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
-   */
-  underlyingVaultAddress?: string;
-  /**
-   * Lockup Time
-   * The lockup time for the market in seconds. Note: vault markets always have a lockup time of "0"
-   * @example "31536000"
-   */
-  lockupTime: string;
-  /**
-   * Frontend Fee
-   * The frontend fee for the market in basis points in wei: 10^18 = 100%
-   * @example "10000000000000000"
-   */
-  frontendFee: string;
-  /**
-   * Reward Style
-   * The reward distribution style for the market: 0 = Upfront, 1 = Arrear, 2 = Forfeitable
-   * @example 0
-   */
-  rewardStyle: 0 | 1 | 2;
-  /**
-   * TVL USD
-   * The total value locked in the market in USD
-   * @example 1456234.98
-   */
-  tvlUsd: number;
-  /**
-   * Fillable USD
-   * The fillable USD for the market
-   * @example 1456234.98
-   */
-  fillableUsd: number;
-  /**
-   * Capacity Ratio
-   * The remaining capacity ratio for the market
-   * @example 0.5
-   */
-  capacityRatio: number;
-  /**
-   * Incentives USD
-   * The total value of incentives in the market in USD
-   * @example 15689.23
-   */
-  incentivesUsd: number;
-  /**
-   * Yield Rate
-   * Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.
-   * @example "0.1"
-   */
-  yieldRate: number;
-  /**
-   * Input Token ID
-   * The ID of the input token for the market
-   */
-  inputTokenId: string;
-  /**
-   * Incentive Token IDs
-   * The IDs of the incentive tokens for the market
-   */
-  incentiveTokenIds: string[];
-  /**
-   * Input Token Data
-   * Token data for the market input token
-   */
-  inputToken: BaseEnrichedTokenData;
-  /**
-   * Incentive Tokens
-   * Incentive tokens
-   */
-  incentiveTokens: TokenQuote[];
-  /**
-   * Active Incentives
-   * Active incentive tokens
-   */
-  activeIncentives: MarketActiveIncentiveDetailed[];
-  /**
-   * Underlying Incentives
-   * Underlying incentive tokens
-   */
-  underlyingIncentives?: MarketUnderlyingIncentive[];
-  /**
-   * Native Incentives
-   * Native incentive tokens
-   */
-  nativeIncentives?: MarketNativeIncentive[];
-  /**
-   * External Incentives
-   * External incentive tokens
-   */
-  externalIncentives?: MarketExternalIncentive[];
-  /**
-   * Recipe Metadata
-   * The metadata for the recipe
-   */
-  recipeMetadata?: MarketRecipeMetadata;
-  /**
-   * Vault Metadata
-   * The metadata for the vault
-   */
-  vaultMetadata?: MarketVaultMetadata;
-  /**
-   * Market Metadata
-   * The metadata for the market
-   */
-  marketMetadata?: MarketMetadata;
-  /**
-   * Is Verified
-   * Whether the market is verified
-   */
-  isVerified: boolean;
-  /**
-   * Is Active
-   * Whether the market is active
-   */
-  isActive: boolean;
-  /**
-   * Block Number
-   * Block number associated with the entity
-   * @example "21910786"
-   */
-  blockNumber: string;
-  /**
-   * Block Timestamp
-   * Block timestamp associated with the entity
-   * @example "1743357424"
-   */
-  blockTimestamp: string;
-  /**
    * Transaction Hash
    * Transaction hash associated with the entity
    * @example "0xbd48c4956ca72ebca29e517f556676170f78914b786518854c3c57be933af461"
    */
   transactionHash: string;
-  /**
-   * Log Index
-   * Log index associated with the entity
-   * @example "12"
-   */
-  logIndex: string;
-  /**
-   * Last Updated
-   * The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format
-   * @example "2025-03-17 17:52:10"
-   */
-  lastUpdated: string;
 }
 
-export interface ExploreMarketResponse {
+export interface CreateMarketResponse {
   /**
-   * Response Page Object
-   * Object type to respond with a page of results
-   * @example {"index":1,"size":3,"total":10}
+   * Status
+   * The status of the created market
+   * @example true
    */
-  page: ResponsePage;
+  status: boolean;
   /**
-   * Row Count
-   * Total number of rows in the results
-   * @example 234
+   * Message
+   * The message for the created market
+   * @example "success"
    */
-  count: number;
-  data: EnrichedMarket[];
+  message: string;
 }
-
-export interface ExploreSettingsMarketBody {
-  /**
-   * Custom Token Data
-   * Array of custom token assumptions --  if not provided, the default quote data will be used.
-   */
-  customTokenData?: CustomTokenDataElement[];
-}
-
-export type ExploreSettingsMarketResponse = object;
 
 export interface VaultInfoRequestBody {
   /**
@@ -1623,7 +1538,14 @@ export interface VaultDepositToken {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -1736,7 +1658,14 @@ export interface VaultIncentiveToken {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -1900,7 +1829,14 @@ export interface VaultAllocationDepositToken {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -2156,6 +2092,33 @@ export interface BaseRequestBody {
   customTokenData?: CustomTokenDataElement[];
 }
 
+export interface ResponsePage {
+  /**
+   * Filters Array
+   * Array of filter objects to apply to the results
+   * @example [{"id":"chainId","value":1},{"id":"tvlUsd","value":1000000,"condition":"gte"}]
+   */
+  filters?: Filter[];
+  /**
+   * Sorting Object
+   * Object type to sort results with
+   * @example {"id":"tvlUsd","desc":true}
+   */
+  sorting?: Sorting[];
+  /**
+   * Request Page Object
+   * Object type to request a page of results
+   * @default {"index":1,"size":10}
+   * @example {"index":1,"size":3}
+   */
+  page?: RequestPage;
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+}
+
 export interface BaseEnrichedTokenDataWithWithdrawStatus {
   /**
    * Raw Metadata
@@ -2209,7 +2172,14 @@ export interface BaseEnrichedTokenDataWithWithdrawStatus {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -2345,7 +2315,14 @@ export interface MarketActiveIncentiveWithClaimStatus {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -2637,7 +2614,14 @@ export interface LockedInputTokenSpecificRecipePosition {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -2789,7 +2773,14 @@ export interface UnclaimedIncentiveTokenSpecificRecipePosition {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -2941,7 +2932,14 @@ export interface ClaimedIncentiveTokenSpecificRecipePosition {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -3283,7 +3281,14 @@ export interface LockedInputTokenSpecificVaultPosition {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -3420,7 +3425,14 @@ export interface UnclaimedIncentiveTokenSpecificVaultPosition {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -3663,7 +3675,14 @@ export interface BoycoUnderlyingIncentive {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -3786,7 +3805,14 @@ export interface BoycoNativeIncentive {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -4146,7 +4172,14 @@ export interface VaultPositionUnclaimedRewardToken {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
@@ -4283,7 +4316,14 @@ export interface VaultPositionClaimedRewardToken {
    * The source for the price feed of the token
    * @example "coinmarketcap"
    */
-  source: "coinmarketcap" | "coingecko" | "lp" | "enso" | "pendle" | "plume" | "external";
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
   /**
    * Search ID
    * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
