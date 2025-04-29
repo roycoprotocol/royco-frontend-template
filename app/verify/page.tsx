@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { LoadingIndicator } from "../_components/common/connect-wallet-button/loading-indicator";
 
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -37,5 +38,19 @@ export default function VerifyPage() {
         onSuccess={handleAuthentication}
       />
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <LoadingIndicator />
+        </div>
+      }
+    >
+      <VerifyContent />
+    </Suspense>
   );
 }
