@@ -390,7 +390,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-40 w-52",
+      meta: "min-w-40 w-40",
       cell: ({ row }) => {
         const lockupType =
           row.original.marketType === MarketType.vault.value
