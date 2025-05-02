@@ -11,6 +11,7 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { formatDate } from "date-fns";
+import { TriangleAlertIcon } from "lucide-react";
 
 export const withdrawalsColumns: ColumnDef<any>[] = [
   {
@@ -34,7 +35,16 @@ export const withdrawalsColumns: ColumnDef<any>[] = [
             </PrimaryLabel>
 
             <SecondaryLabel className="mt-1 text-xs font-normal text-_secondary_">
-              {formatDate(row.original.createdAt, "MMM d")}
+              <div className="flex items-center gap-3">
+                {formatDate(row.original.createdAt, "MMM d")}
+
+                {row.original.status === "expired" && (
+                  <div className="flex items-center gap-1 rounded-full border border-amber-500 px-1 py-px text-xs font-medium text-amber-500">
+                    <TriangleAlertIcon className="h-3 w-3" />
+                    <span>Recover vault shares to prevent loss.</span>
+                  </div>
+                )}
+              </div>
             </SecondaryLabel>
           </div>
         </div>

@@ -15,7 +15,6 @@ import {
   SparklesIcon,
 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownUpIcon } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,

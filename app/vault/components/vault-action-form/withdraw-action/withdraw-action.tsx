@@ -13,7 +13,10 @@ import { useAtomValue } from "jotai";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
@@ -67,7 +70,7 @@ export const WithdrawAction = React.forwardRef<
 
     if (withdrawTransactions && withdrawTransactions.steps.length > 0) {
       const transactions = {
-        type: "withdraw" as const,
+        type: VaultTransactionType.Withdraw,
         title: "Request Withdrawal",
         successTitle: "Withdrawal Requested",
         description: withdrawTransactions.description,
@@ -102,7 +105,7 @@ export const WithdrawAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="bg-_highlight_ h-10 w-full rounded-sm"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Connect Wallet
               </Button>
@@ -126,7 +129,7 @@ export const WithdrawAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="bg-_highlight_ h-10 w-full rounded-sm"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Switch Chain
               </Button>
@@ -143,7 +146,7 @@ export const WithdrawAction = React.forwardRef<
                 }
               }}
               size="sm"
-              className="bg-_highlight_ h-10 w-full rounded-sm"
+              className="h-10 w-full rounded-sm bg-_highlight_"
             >
               Withdraw
             </Button>

@@ -21,7 +21,10 @@ import { InfoSquareIcon } from "../../../assets/info-square";
 import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contracts";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { Button } from "@/components/ui/button";
 import { InfoTip } from "@/app/_components/common/info-tip";
@@ -71,7 +74,7 @@ export const Rewards = React.forwardRef<
       claimIncentiveTransactions.steps.length > 0
     ) {
       const transactions = {
-        type: "claimIncentives" as const,
+        type: VaultTransactionType.ClaimIncentives,
         title: "Claim Incentive",
         successTitle: "Incentive Claimed",
         description: claimIncentiveTransactions.description,

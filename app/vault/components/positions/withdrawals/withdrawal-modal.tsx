@@ -16,7 +16,10 @@ import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id
 import { Calendar, CircleCheckBig, CircleX, Clock } from "lucide-react";
 import { formatDate } from "date-fns";
 import { capitalize } from "lodash";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 
 export const WithdrawalModal = React.forwardRef<
@@ -35,7 +38,8 @@ export const WithdrawalModal = React.forwardRef<
 >(({ className, isOpen, onOpenModal, withdrawal, ...props }, ref) => {
   const { setTransactions } = useVaultManager();
 
-  const { getCancelWithdrawalTransaction } = useBoringVaultActions();
+  const { getCancelWithdrawalTransaction, getRecoverWithdrawalTransaction } =
+    useBoringVaultActions();
 
   const handleCancelWithdrawal = async () => {
     if (!withdrawal.token || !withdrawal.metadata) {
@@ -51,12 +55,43 @@ export const WithdrawalModal = React.forwardRef<
       cancelWithdrawalTransactions.steps.length > 0
     ) {
       const transactions = {
-        type: "cancelWithdraw" as const,
+        type: VaultTransactionType.CancelWithdraw,
         title: "Cancel Withdrawal",
         successTitle: "Withdrawal Cancelled",
         description: cancelWithdrawalTransactions.description,
         steps: cancelWithdrawalTransactions.steps || [],
         metadata: cancelWithdrawalTransactions.metadata,
+        token: {
+          data: withdrawal.token,
+          amount: withdrawal.amountInBaseAsset,
+        },
+      };
+
+      setTransactions(transactions);
+      onOpenModal(false);
+    }
+  };
+
+  const handleRecoverWithdrawal = async () => {
+    if (!withdrawal.token || !withdrawal.metadata) {
+      return;
+    }
+
+    const recoverWithdrawalTransactions = await getRecoverWithdrawalTransaction(
+      withdrawal.metadata
+    );
+
+    if (
+      recoverWithdrawalTransactions &&
+      recoverWithdrawalTransactions.steps.length > 0
+    ) {
+      const transactions = {
+        type: VaultTransactionType.RecoverWithdraw,
+        title: "Recover Withdrawal",
+        successTitle: "Withdrawal Recovered",
+        description: recoverWithdrawalTransactions.description,
+        steps: recoverWithdrawalTransactions.steps || [],
+        metadata: recoverWithdrawalTransactions.metadata,
         token: {
           data: withdrawal.token,
           amount: withdrawal.amountInBaseAsset,
@@ -143,6 +178,16 @@ export const WithdrawalModal = React.forwardRef<
                 onClick={handleCancelWithdrawal}
               >
                 Cancel
+              </Button>
+            )}
+
+            {withdrawal.status === "expired" && (
+              <Button
+                size="sm"
+                className="mt-2 h-10 rounded-sm bg-error"
+                onClick={handleRecoverWithdrawal}
+              >
+                Recover
               </Button>
             )}
 

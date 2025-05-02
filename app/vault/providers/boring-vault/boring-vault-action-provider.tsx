@@ -15,6 +15,7 @@ import {
 } from "../../constants/abi";
 import { formatDate } from "date-fns";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
+import { VaultTransactionType } from "@/store/vault/use-vault-manager";
 
 export function BoringVaultActionProvider({
   children,
@@ -56,13 +57,13 @@ export function BoringVaultActionProvider({
 
       if (new BigNumber(allowance.toString()).gte(rawAmount)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${boringVault.baseAsset.symbol}`,
           txStatus: "success",
         });
       } else if (new BigNumber(allowance.toString()).lt(rawAmount)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${boringVault.baseAsset.symbol}`,
           data: {
             address: boringVault.baseAsset.contractAddress,
@@ -74,7 +75,7 @@ export function BoringVaultActionProvider({
       }
 
       transactions.push({
-        type: "deposit",
+        type: VaultTransactionType.Deposit,
         label: `Deposit ${boringVault.baseAsset.symbol}`,
         data: {
           address: boringVault.contracts.teller,
@@ -195,13 +196,13 @@ export function BoringVaultActionProvider({
 
       if (new BigNumber(allowance.toString()).gte(shares)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${data.name}`,
           txStatus: "success",
         });
       } else if (new BigNumber(allowance.toString()).lt(shares)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${data.name}`,
           data: {
             address: boringVault.contracts.vault,
@@ -213,7 +214,7 @@ export function BoringVaultActionProvider({
       }
 
       transactions.push({
-        type: "withdraw",
+        type: VaultTransactionType.Withdraw,
         label: `Create ${boringVault.baseAsset.symbol} Withdraw Request`,
         data: {
           address: boringVault.contracts.boringQueue,
@@ -294,7 +295,7 @@ export function BoringVaultActionProvider({
       const transactions = [];
 
       transactions.push({
-        type: "cancelWithdraw",
+        type: VaultTransactionType.CancelWithdraw,
         label: `Cancel ${boringVault.baseAsset.symbol} Withdraw Request`,
         data: {
           address: boringVault.contracts.boringQueue,
@@ -327,6 +328,36 @@ export function BoringVaultActionProvider({
     }
   };
 
+  const getRecoverWithdrawalTransaction = async (metadata: any) => {
+    try {
+      if (!boringVault) {
+        toast.custom(<ErrorAlert message="Vault data not available." />);
+        return;
+      }
+
+      const transactionData = await getCancelWithdrawalTransaction(metadata);
+
+      if (!transactionData || transactionData.steps.length === 0) {
+        throw new Error();
+      }
+
+      const transactions = [
+        {
+          ...transactionData.steps[0],
+          type: VaultTransactionType.RecoverWithdraw,
+          label: `Recover ${boringVault.baseAsset.symbol} Withdraw Request`,
+        },
+      ];
+
+      return {
+        description: `The funds will return to your wallet.`,
+        steps: transactions,
+      };
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Failed to recover withdrawal." />);
+      return { steps: [] };
+    }
+  };
   const getClaimIncentiveTransaction = async (rewardIds: string[]) => {
     try {
       if (!address) {
@@ -344,7 +375,7 @@ export function BoringVaultActionProvider({
       const transactions = [];
 
       transactions.push({
-        type: "claimIncentive",
+        type: VaultTransactionType.ClaimIncentives,
         label: `Claim ${boringVault.baseAsset.symbol} Incentive`,
         data: {
           address: boringVault.contracts.vault,
@@ -378,6 +409,7 @@ export function BoringVaultActionProvider({
         getDepositTransaction,
         getWithdrawalTransaction,
         getCancelWithdrawalTransaction,
+        getRecoverWithdrawalTransaction,
         getClaimIncentiveTransaction,
       }}
     >
@@ -403,6 +435,9 @@ interface BoringVaultActions {
     amount: number
   ) => Promise<TypeVaultTransactionReturn | undefined>;
   getCancelWithdrawalTransaction: (
+    metadata: any
+  ) => Promise<TypeVaultTransactionReturn | undefined>;
+  getRecoverWithdrawalTransaction: (
     metadata: any
   ) => Promise<TypeVaultTransactionReturn | undefined>;
   getClaimIncentiveTransaction: (
