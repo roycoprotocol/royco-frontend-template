@@ -32,8 +32,17 @@ export const VaultManagerActionMap = {
   },
 };
 
+export enum VaultTransactionType {
+  Deposit = "deposit",
+  Withdraw = "withdraw",
+  CancelWithdraw = "cancelWithdraw",
+  ClaimIncentives = "claimIncentives",
+  RecoverWithdraw = "recoverWithdraw",
+  Approve = "approve",
+}
+
 export type TypeVaultTransaction = {
-  type: "deposit" | "withdraw" | "cancelWithdraw" | "claimIncentives";
+  type: VaultTransactionType;
   title: string;
   successTitle?: string;
   description?: string;

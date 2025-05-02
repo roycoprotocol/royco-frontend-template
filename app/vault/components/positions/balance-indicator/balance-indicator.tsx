@@ -16,7 +16,10 @@ import {
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contracts";
 import { useBoringVaultActions } from "../../../providers/boring-vault/boring-vault-action-provider";
 import toast from "react-hot-toast";
@@ -128,7 +131,7 @@ export const BalanceIndicator = React.forwardRef<
       claimIncentiveTransactions.steps.length > 0
     ) {
       const transactions = {
-        type: "claimIncentives" as const,
+        type: VaultTransactionType.ClaimIncentives,
         title: "Claim Incentive",
         description: claimIncentiveTransactions.description,
         steps: claimIncentiveTransactions.steps || [],
