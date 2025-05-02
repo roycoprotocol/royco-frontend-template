@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { produce } from "immer";
 import { isEqual } from "lodash";
 import { useImmer } from "use-immer";
-import { LoadingCircle } from "@/components/animations/loading-circle";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAtom, useAtomValue } from "jotai";
 import {
