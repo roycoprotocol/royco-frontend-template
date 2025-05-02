@@ -27,6 +27,7 @@ import { api } from "@/app/api/royco";
 import { vaultContractProviderMap } from "royco/vault";
 import BigNumber from "bignumber.js";
 import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
+import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -217,11 +218,16 @@ export const BoringVaultWrapper = React.forwardRef<
   };
 
   const initializeBoringVault = async () => {
-    if (!isBoringV1ContextReady || !vault || !data || !address) {
+    if (!isBoringV1ContextReady || !vault || !data) {
       return;
     }
 
-    const token = data.depositTokens[0];
+    if (!address) {
+      setBoringVault(null);
+      return;
+    }
+
+    const token = (data as unknown as VaultInfoResponse)?.depositTokens?.[0];
     if (!token) {
       return;
     }
@@ -233,8 +239,8 @@ export const BoringVaultWrapper = React.forwardRef<
       const sharePriceInBaseAsset = (await fetchShareValue()) || 0;
 
       const account = await getAccount({
-        chainId: data.chainId,
-        vaultAddress: data.vaultAddress,
+        chainId: (data as unknown as VaultInfoResponse).chainId,
+        vaultAddress: (data as unknown as VaultInfoResponse).vaultAddress,
         address,
         sharePrice: sharePriceInBaseAsset,
         token,
@@ -242,7 +248,7 @@ export const BoringVaultWrapper = React.forwardRef<
 
       setBoringVault({
         baseAsset: token,
-        chainId: data.chainId,
+        chainId: (data as unknown as VaultInfoResponse).chainId,
         contracts: {
           vault: vault.contracts.vault,
           teller: vault.contracts.teller,

@@ -16,7 +16,6 @@ export const PaginationButtonMotionWrapper = React.forwardRef<
 >(({ children, ...props }, ref) => {
   return (
     <motion.div
-      layout="position"
       initial={{
         opacity: 0,
         scale: 0,
@@ -54,7 +53,7 @@ const PaginationButton = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-        "hover:bg-_surface_tertiary flex h-8 w-fit flex-row items-center justify-center gap-1 rounded-sm border-none bg-transparent px-2 text-sm font-medium text-_secondary_ shadow-none",
+        "flex h-8 w-fit flex-row items-center justify-center gap-1 rounded-sm border-none bg-transparent px-2 text-sm font-medium text-_secondary_ shadow-none hover:bg-_surface_tertiary",
         disabled && "opacity-50",
         className
       )}
@@ -107,12 +106,9 @@ export const WithdrawalPagination = React.forwardRef<
 
       <div className="flex h-fit flex-row items-center gap-3">
         <AnimatePresence mode="popLayout" initial={false}>
-          <PaginationButtonMotionWrapper
-            key={`pagination-button:prev`}
-            layoutId={`pagination-button:prev:${page - 1}`}
-          >
+          <PaginationButtonMotionWrapper key={`pagination-button:prev`}>
             <PaginationButton
-              className="hover:bg-_surface_tertiary border-none"
+              className="border-none hover:bg-_surface_tertiary"
               onClick={(e) => {
                 handlePrevPage();
                 e.preventDefault();
@@ -125,19 +121,13 @@ export const WithdrawalPagination = React.forwardRef<
           </PaginationButtonMotionWrapper>
 
           {canPrevPage && page - 1 > 0 && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:prev:dots`}
-              layoutId={`pagination-button:prev:dots`}
-            >
+            <PaginationButtonMotionWrapper key={`pagination-button:prev:dots`}>
               ...
             </PaginationButtonMotionWrapper>
           )}
 
           {canPrevPage && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:${page}`}
-              layoutId={`pagination-button:${page}`}
-            >
+            <PaginationButtonMotionWrapper key={`pagination-button:${page}`}>
               <PaginationButton
                 onClick={(e) => {
                   handlePrevPage();
@@ -150,11 +140,8 @@ export const WithdrawalPagination = React.forwardRef<
             </PaginationButtonMotionWrapper>
           )}
 
-          <PaginationButtonMotionWrapper
-            key={`pagination-button:${page + 1}`}
-            layoutId={`pagination-button:${page + 1}`}
-          >
-            <PaginationButton className="bg-_surface_tertiary h-8 w-8">
+          <PaginationButtonMotionWrapper key={`pagination-button:${page + 1}`}>
+            <PaginationButton className="h-8 w-8 bg-_surface_tertiary">
               {page + 1}
             </PaginationButton>
           </PaginationButtonMotionWrapper>
@@ -162,7 +149,6 @@ export const WithdrawalPagination = React.forwardRef<
           {canNextPage && (
             <PaginationButtonMotionWrapper
               key={`pagination-button:${page + 2}`}
-              layoutId={`pagination-button:${page + 2}`}
             >
               <PaginationButton
                 onClick={(e) => {
@@ -177,20 +163,14 @@ export const WithdrawalPagination = React.forwardRef<
           )}
 
           {canNextPage && page + 2 < total_pages && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:next:dots`}
-              layoutId={`pagination-button:next:dots`}
-            >
+            <PaginationButtonMotionWrapper key={`pagination-button:next:dots`}>
               ...
             </PaginationButtonMotionWrapper>
           )}
 
-          <PaginationButtonMotionWrapper
-            key={`pagination-button:next`}
-            layoutId={`pagination-button:next:${page + 1}`}
-          >
+          <PaginationButtonMotionWrapper key={`pagination-button:next`}>
             <PaginationButton
-              className="hover:bg-_surface_tertiary border-none"
+              className="border-none hover:bg-_surface_tertiary"
               onClick={(e) => {
                 handleNextPage();
                 e.preventDefault();

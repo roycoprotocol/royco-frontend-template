@@ -49,7 +49,7 @@ export const WithdrawalsTable = React.forwardRef<
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 border-l border-r border-t border-_divider_ text-center"
                 >
                   <AlertIndicator className="py-10">
                     <span className="text-base">No withdrawals available</span>

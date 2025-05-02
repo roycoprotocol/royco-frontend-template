@@ -24,6 +24,8 @@ import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contract
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { Button } from "@/components/ui/button";
+import { AnnualYieldAssumption } from "../../common/annual-yield-assumption";
+import { InfoTip } from "@/app/_components/common/info-tip";
 
 export const Rewards = React.forwardRef<
   HTMLDivElement,
@@ -36,10 +38,20 @@ export const Rewards = React.forwardRef<
 
   const { getClaimIncentiveTransaction } = useBoringVaultActions();
 
-  const incentives = useMemo(() => {
+  const tokenIncentives = useMemo(() => {
     return {
       data: vault?.account?.rewards?.unclaimedRewardTokens || [],
     };
+  }, [vault]);
+
+  const pointIncentives = useMemo(() => {
+    return {
+      data: vault?.account?.rewards?.pointRewardTokens || [],
+    };
+  }, [vault]);
+
+  const principle = useMemo(() => {
+    return vault?.account.sharesInBaseAsset || 0;
   }, [vault]);
 
   const handleClaimIncentive = async (
@@ -77,7 +89,7 @@ export const Rewards = React.forwardRef<
 
   return (
     <div ref={ref} {...props} className={cn(className)}>
-      <PrimaryLabel className="text-2xl font-medium text-_primary_">
+      <PrimaryLabel className="text-2xl font-medium  text-_primary_">
         Rewards
       </PrimaryLabel>
 
@@ -91,9 +103,11 @@ export const Rewards = React.forwardRef<
 
         <PrimaryLabel className="mt-2 text-2xl font-normal">
           <GradientText>
-            {formatNumber(data.yieldRate, {
-              type: "percent",
-            })}
+            {principle > 0
+              ? formatNumber(data.yieldRate, {
+                  type: "percent",
+                })
+              : "0%"}
           </GradientText>
         </PrimaryLabel>
 
@@ -106,58 +120,131 @@ export const Rewards = React.forwardRef<
               </span>
               Assumptions
             </span>
-            <InfoSquareIcon />
+
+            {(() => {
+              if (data.incentiveTokens && data.incentiveTokens.length > 0) {
+                const incentives = data.incentiveTokens.filter((item) => {
+                  return item.yieldRate && item.yieldRate > 0;
+                });
+
+                if (incentives.length > 0) {
+                  return (
+                    <InfoTip
+                      contentClassName="w-[400px]"
+                      className="divide-y divide-_divider_"
+                    >
+                      <AnnualYieldAssumption incentives={incentives} />
+                    </InfoTip>
+                  );
+                }
+              }
+              return null;
+            })()}
           </div>
         </SecondaryLabel>
       </div>
 
       {/**
-       * Rewards
+       * Token Rewards
        */}
-      <div className="mt-4 grid grid-cols-1 gap-x-6 sm:grid-cols-2">
-        {incentives.data && incentives.data.length > 0 ? (
-          incentives.data.map((incentive, index) => (
-            <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
-              <div className="flex items-center justify-between border-b border-_divider_ py-4">
-                <PrimaryLabel className="text-base font-normal text-_primary_">
-                  <div className="flex items-center gap-3 ">
-                    <TokenDisplayer
-                      size={6}
-                      tokens={[incentive]}
-                      symbols={false}
-                    />
 
-                    <span>
-                      {formatNumber(
-                        incentive.tokenAmount,
-                        { type: "number" },
-                        {
-                          average: false,
-                        }
-                      )}
-                    </span>
+      {tokenIncentives.data.length || pointIncentives.data.length ? (
+        <div>
+          {tokenIncentives.data.length > 0 && (
+            <div className="mt-4">
+              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                TOKENS
+              </SecondaryLabel>
 
-                    <span>{incentive.symbol}</span>
+              {tokenIncentives.data.map((incentive, index) => (
+                <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
+                  <div className="flex items-center justify-between border-b border-_divider_ py-4">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      <div className="flex items-center gap-3 ">
+                        <TokenDisplayer
+                          size={6}
+                          tokens={[incentive]}
+                          symbols={false}
+                        />
+
+                        <span>
+                          {formatNumber(
+                            incentive.tokenAmount,
+                            { type: "number" },
+                            {
+                              average: false,
+                            }
+                          )}
+                        </span>
+
+                        <span>{incentive.symbol}</span>
+                      </div>
+                    </PrimaryLabel>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-sm font-semibold hover:bg-success/10 hover:text-primary"
+                      onClick={() => handleClaimIncentive(incentive)}
+                    >
+                      <GradientText>Claim</GradientText>
+                    </Button>
                   </div>
-                </PrimaryLabel>
+                </SlideUpWrapper>
+              ))}
+            </div>
+          )}
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-sm font-semibold hover:bg-success/10 hover:text-primary"
-                  onClick={() => handleClaimIncentive(incentive)}
-                >
-                  <GradientText>Claim</GradientText>
-                </Button>
-              </div>
-            </SlideUpWrapper>
-          ))
-        ) : (
-          <AlertIndicator className="col-span-full rounded-sm border border-_divider_ py-10">
-            <span className="text-base">No rewards available</span>
-          </AlertIndicator>
-        )}
-      </div>
+          {pointIncentives.data.length > 0 && (
+            <div className="mt-4">
+              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                POINTS
+              </SecondaryLabel>
+
+              {pointIncentives.data.map((incentive, index) => (
+                <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
+                  <div className="flex items-center justify-between border-b border-_divider_ py-4">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      <div className="flex items-center gap-3 ">
+                        <TokenDisplayer
+                          size={6}
+                          tokens={[incentive]}
+                          symbols={false}
+                        />
+
+                        <span>
+                          {formatNumber(
+                            incentive.tokenAmount,
+                            { type: "number" },
+                            {
+                              average: false,
+                            }
+                          )}
+                        </span>
+
+                        <span>{incentive.symbol}</span>
+                      </div>
+                    </PrimaryLabel>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-sm font-semibold hover:bg-success/10 hover:text-primary disabled:opacity-50"
+                      disabled={true}
+                    >
+                      Claim
+                    </Button>
+                  </div>
+                </SlideUpWrapper>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <AlertIndicator className="mt-4 rounded-sm border border-_divider_ py-10">
+          <span className="text-base">No rewards available</span>
+        </AlertIndicator>
+      )}
     </div>
   );
 });

@@ -179,7 +179,8 @@ export function BoringVaultActionProvider({
 
       const daysValid = new BigNumber(assetParams.minimumSecondsToDeadline)
         .div(86400)
-        .ceil();
+        .ceil()
+        .add(1);
 
       const minDiscount = new BigNumber(assetParams.minDiscount).div(100);
       const maxDiscount = new BigNumber(assetParams.maxDiscount).div(100);

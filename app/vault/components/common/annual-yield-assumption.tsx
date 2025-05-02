@@ -1,0 +1,60 @@
+import {
+  PrimaryLabel,
+  SecondaryLabel,
+} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { cn } from "@/lib/utils";
+import { GradientText } from "../../common/gradient-text";
+import React from "react";
+import { TokenDisplayer } from "@/components/common/token-displayer";
+import formatNumber from "@/utils/numbers";
+
+interface AnnualYieldAssumptionProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  incentives: any[];
+}
+
+export const AnnualYieldAssumption = React.forwardRef<
+  HTMLDivElement,
+  AnnualYieldAssumptionProps
+>(({ className, incentives, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      {...props}
+      className={cn("divide-y divide-_divider_", className)}
+    >
+      {incentives.map((item) => {
+        return (
+          <div
+            key={item.id}
+            className="flex w-full items-start justify-between py-2"
+          >
+            <div className="flex items-start gap-3">
+              <TokenDisplayer size={6} tokens={[item]} symbols={false} />
+
+              <div>
+                <PrimaryLabel className="text-base font-normal text-_primary_">
+                  {item.name}
+                </PrimaryLabel>
+
+                <SecondaryLabel className="mt-1 text-sm font-normal text-_secondary_">
+                  {formatNumber(item.fdv, {
+                    type: "currency",
+                  }) + " FDV"}
+                </SecondaryLabel>
+              </div>
+            </div>
+
+            <PrimaryLabel className="text-base font-normal">
+              <GradientText>
+                {formatNumber(item.yieldRate, {
+                  type: "percent",
+                })}
+              </GradientText>
+            </PrimaryLabel>
+          </div>
+        );
+      })}
+    </div>
+  );
+});
