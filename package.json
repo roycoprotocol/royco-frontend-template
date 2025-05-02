@@ -93,6 +93,7 @@
     "esbuild-wasm": "^0.24.0",
     "ethers": "^6.13.5",
     "framer-motion": "^11.2.10",
+    "fuse.js": "^7.1.0",
     "graphql-request": "^7.1.2",
     "immer": "^10.1.1",
     "input-otp": "^1.2.4",

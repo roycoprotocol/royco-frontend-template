@@ -28,15 +28,19 @@ export const VaultDetails = React.forwardRef<
       {/**
        * Header
        */}
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <UsdcCoinIcon className="h-24 w-24" />
 
-        <div className="flex flex-col gap-4">
+        <div>
           <PrimaryLabel className="font-shippori text-[40px] font-normal text-_primary_">
             {data.name}
           </PrimaryLabel>
 
-          <div className="flex items-center divide-x divide-_divider_">
+          <SecondaryLabel className="mt-1 text-sm font-normal text-_secondary_">
+            {data.description}
+          </SecondaryLabel>
+
+          <div className="mt-4 flex items-center divide-x divide-_divider_">
             {data.managers &&
               data.managers.length > 0 &&
               data.managers.map((manager, index) => {

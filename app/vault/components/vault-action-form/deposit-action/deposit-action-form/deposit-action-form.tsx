@@ -21,6 +21,8 @@ import formatNumber from "@/utils/numbers";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
 import { InfoTip } from "@/app/_components/common/info-tip";
+import { InfoCard } from "@/app/_components/common/info-card";
+import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,
@@ -81,7 +83,7 @@ export const DepositActionForm = React.forwardRef<
               depositForm.setValue("amount", balance?.toString() ?? "");
             }}
             className={cn(
-              "text-_tertiary_ flex cursor-pointer items-center justify-center text-xs font-normal underline decoration-_divider_ underline-offset-2",
+              "flex cursor-pointer items-center justify-center text-xs font-normal text-_tertiary_ underline decoration-_divider_ underline-offset-2",
               "transition-all duration-200 ease-in-out hover:opacity-80"
             )}
           >
@@ -172,8 +174,42 @@ export const DepositActionForm = React.forwardRef<
               </span>
               Assumptions
             </span>
+
+            {(() => {
+              if (data.incentiveTokens && data.incentiveTokens.length > 0) {
+                const incentives = data.incentiveTokens.filter((item) => {
+                  return item.yieldRate && item.yieldRate > 0;
+                });
+
+                if (incentives.length > 0) {
+                  return (
+                    <InfoTip
+                      contentClassName="w-[400px]"
+                      className="divide-y divide-_divider_"
+                    >
+                      <AnnualYieldAssumption incentives={incentives} />
+                    </InfoTip>
+                  );
+                }
+              }
+              return null;
+            })()}
           </div>
         </SecondaryLabel>
+      </SlideUpWrapper>
+
+      <SlideUpWrapper delay={0.3} className="mt-6">
+        <InfoCard>
+          Incentives start after next rebalance. APY shown reflects projected
+          returns that will apply after rebalancing.
+        </InfoCard>
+      </SlideUpWrapper>
+
+      <SlideUpWrapper delay={0.4} className="mt-2">
+        <InfoCard>
+          Depositing funds resets a 24-hour lockup on your entire balance,
+          delaying withdrawals until the period ends.
+        </InfoCard>
       </SlideUpWrapper>
     </div>
   );

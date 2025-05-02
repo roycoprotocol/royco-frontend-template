@@ -10,6 +10,7 @@ import { InfoSquareIcon } from "@/app/vault/assets/info-square";
 interface InfoTipProps {
   triggerClassName?: string;
   contentClassName?: string;
+  iconClassName?: string;
 }
 
 export const InfoTip = React.forwardRef<
@@ -17,14 +18,23 @@ export const InfoTip = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & InfoTipProps
 >(
   (
-    { className, children, contentClassName, triggerClassName, ...props },
+    {
+      className,
+      children,
+      contentClassName,
+      triggerClassName,
+      iconClassName,
+      ...props
+    },
     ref
   ) => {
     return (
       <div ref={ref} {...props} className={cn("")}>
         <Tooltip>
-          <TooltipTrigger className={cn("cursor-pointer", triggerClassName)}>
-            <InfoSquareIcon />
+          <TooltipTrigger
+            className={cn("flex cursor-pointer items-center", triggerClassName)}
+          >
+            <InfoSquareIcon className={cn(iconClassName)} />
           </TooltipTrigger>
 
           <TooltipContent
@@ -36,7 +46,10 @@ export const InfoTip = React.forwardRef<
             )}
           >
             <div
-              className={cn("text-sm font-normal text-_secondary_", className)}
+              className={cn(
+                "break-normal text-sm font-normal text-_secondary_",
+                className
+              )}
             >
               {children}
             </div>

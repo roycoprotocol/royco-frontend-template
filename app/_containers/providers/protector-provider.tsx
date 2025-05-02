@@ -2,7 +2,7 @@
 
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
-import { protectorAtom } from "@/store/protector";
+import { protectorAtom } from "@/store/protector/protector";
 import toast from "react-hot-toast";
 import { checkPassword } from "@/utils/check-password";
 import { InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";

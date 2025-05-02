@@ -15,6 +15,7 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
 import { GradientText } from "../../../common/gradient-text";
 import { InfoTip } from "@/app/_components/common/info-tip";
+import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const Rewards = React.forwardRef<
   HTMLDivElement,
@@ -66,42 +67,7 @@ export const Rewards = React.forwardRef<
                       contentClassName="w-[400px]"
                       className="divide-y divide-_divider_"
                     >
-                      {incentives.map((item) => {
-                        return (
-                          <div
-                            key={item.id}
-                            className="flex w-full items-start justify-between py-2"
-                          >
-                            <div className="flex items-start gap-3">
-                              <TokenDisplayer
-                                size={6}
-                                tokens={[item]}
-                                symbols={false}
-                              />
-
-                              <div>
-                                <PrimaryLabel className="text-base font-normal text-_primary_">
-                                  {item.name}
-                                </PrimaryLabel>
-
-                                <SecondaryLabel className="mt-1 text-sm font-normal text-_secondary_">
-                                  {formatNumber(item.fdv, {
-                                    type: "currency",
-                                  }) + " FDV"}
-                                </SecondaryLabel>
-                              </div>
-                            </div>
-
-                            <PrimaryLabel className="text-base font-normal text-_primary_">
-                              <GradientText>
-                                {formatNumber(item.yieldRate, {
-                                  type: "percent",
-                                })}
-                              </GradientText>
-                            </PrimaryLabel>
-                          </div>
-                        );
-                      })}
+                      <AnnualYieldAssumption incentives={incentives} />
                     </InfoTip>
                   );
                 }
@@ -125,7 +91,7 @@ export const Rewards = React.forwardRef<
 
                   <div>
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      {reward.name}
+                      {reward.label || reward.name}
                     </PrimaryLabel>
                     <SecondaryLabel className="mt-1 text-xs font-normal text-_secondary_">
                       {reward.unlockTimestamp

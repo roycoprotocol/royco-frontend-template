@@ -74,7 +74,7 @@ export const VaultManager = React.forwardRef<
         {/**
          * Vault Action Form
          */}
-        <div className="mt-8 w-full lg:mt-0 lg:w-1/3">
+        <div className="mt-8 w-full lg:sticky lg:top-20 lg:mt-0 lg:w-1/3 lg:self-start">
           <SlideUpWrapper>
             <VaultActionForm />
           </SlideUpWrapper>

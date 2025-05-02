@@ -31,10 +31,6 @@ export const Withdrawals = React.forwardRef<
 
   const count = vault?.account?.withdrawals?.length || 0;
 
-  if (count === 0) {
-    return null;
-  }
-
   return (
     <div
       ref={ref}
