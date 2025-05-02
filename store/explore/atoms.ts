@@ -7,8 +7,6 @@ import {
 import { atom } from "jotai";
 import { atomWithQuery } from "jotai-tanstack-query";
 import { api } from "@/app/api/royco";
-import { atomWithStorage } from "jotai/utils";
-import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArbitrumOne,
   Base,

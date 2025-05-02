@@ -3,10 +3,10 @@ import {
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { cn } from "@/lib/utils";
-import { GradientText } from "../../common/gradient-text";
 import React from "react";
 import { TokenDisplayer } from "@/components/common/token-displayer";
 import formatNumber from "@/utils/numbers";
+import { GradientText } from "./gradient-text";
 
 interface AnnualYieldAssumptionProps
   extends React.HTMLAttributes<HTMLDivElement> {

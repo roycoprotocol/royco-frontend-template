@@ -15,7 +15,7 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { formatDate } from "date-fns";
 import { GradientText } from "../../../common/gradient-text";
 import { InfoTip } from "@/app/_components/common/info-tip";
-import { AnnualYieldAssumption } from "../../common/annual-yield-assumption";
+import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const Rewards = React.forwardRef<
   HTMLDivElement,

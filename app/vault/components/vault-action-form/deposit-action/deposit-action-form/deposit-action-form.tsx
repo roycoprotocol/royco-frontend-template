@@ -22,7 +22,7 @@ import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { TokenDisplayer } from "@/components/common";
 import { InfoTip } from "@/app/_components/common/info-tip";
 import { InfoCard } from "@/app/_components/common/info-card";
-import { AnnualYieldAssumption } from "../../../common/annual-yield-assumption";
+import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,

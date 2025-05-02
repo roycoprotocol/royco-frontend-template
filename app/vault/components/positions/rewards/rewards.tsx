@@ -24,8 +24,8 @@ import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contract
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { Button } from "@/components/ui/button";
-import { AnnualYieldAssumption } from "../../common/annual-yield-assumption";
 import { InfoTip } from "@/app/_components/common/info-tip";
+import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const Rewards = React.forwardRef<
   HTMLDivElement,
