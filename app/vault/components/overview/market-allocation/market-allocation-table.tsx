@@ -80,7 +80,7 @@ export const MarketAllocationTable = React.forwardRef<
                 <TableRow
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "group cursor-pointer border-b hover:bg-focus hover:bg-transparent data-[state=selected]:bg-focus",
+                    "group cursor-pointer border-b hover:bg-transparent data-[state=selected]:bg-gray-50",
                     index !== table.getRowModel().rows.length - 1
                   )}
                 >

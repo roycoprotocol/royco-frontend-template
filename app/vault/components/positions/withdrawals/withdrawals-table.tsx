@@ -63,7 +63,7 @@ export const WithdrawalsTable = React.forwardRef<
                     <TableRow
                       data-state={row.getIsSelected() && "selected"}
                       className={cn(
-                        "group cursor-pointer hover:bg-focus  hover:bg-transparent data-[state=selected]:bg-focus",
+                        "group cursor-pointer hover:bg-gray-50 data-[state=selected]:bg-gray-50",
                         index !== table.getRowModel().rows.length - 1
                       )}
                       onClick={() =>
