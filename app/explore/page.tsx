@@ -26,7 +26,7 @@ const Page = () => {
         {/**
          * Hero Section
          */}
-        <MaxWidthProvider className="relative z-10">
+        <MaxWidthProvider className="relative z-10 mb-5">
           <div className="pt-16">
             <HeroSection />
           </div>

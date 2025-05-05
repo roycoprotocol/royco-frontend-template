@@ -21,7 +21,7 @@ import { isTestnetAtom, tagAtom } from "../protector/protector";
 
 export const EXPLORE_PAGE_SIZE = 20;
 
-const baseFilter = atom<Filter[]>((get) => {
+export const baseFilter = atom<Filter[]>((get) => {
   const filters: Filter[] = [];
 
   filters.push({
@@ -49,7 +49,7 @@ const baseFilter = atom<Filter[]>((get) => {
   return filters;
 });
 
-const baseChainFilter = atom<Filter[]>((get) => {
+export const baseChainFilter = atom<Filter[]>((get) => {
   const tag = get(tagAtom);
 
   const filters: Filter[] = [];

@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-
+import React from "react";
 import { cn } from "@/lib/utils";
 import {
   flexRender,
@@ -10,23 +8,22 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { WithdrawalModal } from "./withdrawal-modal";
 import { AlertIndicator } from "@/components/common";
 
-export const WithdrawalsTable = React.forwardRef<
+export const PointRewardsTable = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & {
     data: any[];
     columns: any[];
   }
 >(({ className, data, columns, ...props }, ref) => {
-  const [opened, setOpened] = useState<Record<number, boolean>>({});
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  console.log({ data });
 
   return (
     <div className="w-full">
@@ -55,12 +52,6 @@ export const WithdrawalsTable = React.forwardRef<
                       "group cursor-pointer hover:bg-gray-50 data-[state=selected]:bg-gray-50",
                       index !== table.getRowModel().rows.length - 1
                     )}
-                    onClick={() =>
-                      setOpened((prev) => ({
-                        ...prev,
-                        [index]: true,
-                      }))
-                    }
                   >
                     {row.getVisibleCells().map((cell, cellIndex) => {
                       return (
@@ -92,17 +83,6 @@ export const WithdrawalsTable = React.forwardRef<
                       );
                     })}
                   </TableRow>
-
-                  <WithdrawalModal
-                    isOpen={opened[index]}
-                    onOpenModal={(value) =>
-                      setOpened((prev) => ({
-                        ...prev,
-                        [index]: value,
-                      }))
-                    }
-                    withdrawal={row.original}
-                  />
                 </React.Fragment>
               );
             })

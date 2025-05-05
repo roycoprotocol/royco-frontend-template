@@ -1,27 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-
+import React from "react";
 import { cn } from "@/lib/utils";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { WithdrawalModal } from "./withdrawal-modal";
-import { AlertIndicator } from "@/components/common";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { AlertIndicator } from "@/components/common/alert-indicator";
 
-export const WithdrawalsTable = React.forwardRef<
+export const DepositTable = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & {
     data: any[];
     columns: any[];
   }
 >(({ className, data, columns, ...props }, ref) => {
-  const [opened, setOpened] = useState<Record<number, boolean>>({});
-
   const table = useReactTable({
     data,
     columns,
@@ -31,8 +33,38 @@ export const WithdrawalsTable = React.forwardRef<
   return (
     <div className="w-full">
       <Table ref={ref} className={cn(className)} {...props}>
+        <TableHeader className={cn("sticky top-0 z-10 [&_tr]:border-b-0")}>
+          {table.getHeaderGroups().map((item) => (
+            <TableRow
+              key={item.id}
+              className={cn("w-full hover:bg-transparent")}
+            >
+              {item.headers.map((header, index) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      "px-0 py-3 pr-8 text-xs font-medium text-_secondary_",
+                      (header.column.columnDef.meta as any).className
+                    )}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+
         <TableBody
-          className={cn("min-h-80 overflow-y-scroll [&_tr]:border-b-_divider_")}
+          className={cn(
+            "overflow-y-scroll [&_tr:last-child]:border-b [&_tr]:border-b [&_tr]:border-b-_divider_"
+          )}
         >
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
@@ -41,7 +73,7 @@ export const WithdrawalsTable = React.forwardRef<
                 className="h-24 border-l border-r border-t border-_divider_ text-center"
               >
                 <AlertIndicator className="py-10">
-                  <span className="text-base">No withdrawals available</span>
+                  <span className="text-base">No allocations available</span>
                 </AlertIndicator>
               </TableCell>
             </TableRow>
@@ -52,15 +84,9 @@ export const WithdrawalsTable = React.forwardRef<
                   <TableRow
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
-                      "group cursor-pointer hover:bg-gray-50 data-[state=selected]:bg-gray-50",
+                      "group cursor-pointer border-b hover:bg-transparent data-[state=selected]:bg-gray-50",
                       index !== table.getRowModel().rows.length - 1
                     )}
-                    onClick={() =>
-                      setOpened((prev) => ({
-                        ...prev,
-                        [index]: true,
-                      }))
-                    }
                   >
                     {row.getVisibleCells().map((cell, cellIndex) => {
                       return (
@@ -68,7 +94,7 @@ export const WithdrawalsTable = React.forwardRef<
                           <TableCell
                             key={`row:cell:${cell.id}`}
                             className={cn(
-                              "min-w-fit whitespace-nowrap px-0 py-4 text-base font-normal text-primary",
+                              "min-w-fit whitespace-nowrap px-0 py-4 pr-8 text-base font-normal text-primary",
                               (cell.column.columnDef.meta as any).className
                             )}
                           >
@@ -92,17 +118,6 @@ export const WithdrawalsTable = React.forwardRef<
                       );
                     })}
                   </TableRow>
-
-                  <WithdrawalModal
-                    isOpen={opened[index]}
-                    onOpenModal={(value) =>
-                      setOpened((prev) => ({
-                        ...prev,
-                        [index]: value,
-                      }))
-                    }
-                    withdrawal={row.original}
-                  />
                 </React.Fragment>
               );
             })

@@ -84,7 +84,7 @@ export const MarketTable = React.forwardRef<
       </ScrollArea>
 
       <ExploreMarketPagination
-        className="mb-5 mt-2"
+        className="mt-2"
         pageIndex={page}
         totalPages={placeholderData[1]?.page?.total || 1}
         setPageIndex={setPage}
