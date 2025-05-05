@@ -21,7 +21,8 @@ import {
   TypedRoycoMarketVaultIncentiveAction,
 } from "royco/market";
 import { ScrollTextIcon, VaultIcon } from "lucide-react";
-
+import { EnrichedTxOption } from "royco/transaction";
+import { ModalTxOption } from "@/types";
 /**
  * @info Market View Type
  */
@@ -327,8 +328,8 @@ export type MarketManagerState = {
   marketStep: TypedMarketStep;
   setMarketStep: (marketStep: TypedMarketStep) => void;
 
-  transactions: any[];
-  setTransactions: (transactions: any[]) => void;
+  transactions: ModalTxOption[];
+  setTransactions: (transactions: ModalTxOption[]) => void;
 
   balanceIncentiveType: TypedRoycoMarketIncentiveType;
   setBalanceIncentiveType: (

@@ -8,8 +8,8 @@ import { InputExpirySelector } from "../../../composables";
 import { IncentivesAmountSelector } from "../../../composables";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
-import { useMarketManager } from "@/store/use-market-manager";
-import { useActiveMarket } from "../../../../../../hooks";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const IPLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -17,8 +17,7 @@ export const IPLimitActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { viewType } = useMarketManager();
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
@@ -41,7 +40,7 @@ export const IPLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      {currentMarketData.category !== "boyco" && (
+      {enrichedMarket?.category !== "boyco" && (
         <div className="mt-5">
           <SlideUpWrapper delay={0.4}>
             <InputExpirySelector marketActionForm={marketActionForm} />

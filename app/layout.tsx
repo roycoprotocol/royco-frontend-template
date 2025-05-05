@@ -24,6 +24,7 @@ import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 import { UserInfoSetter } from "@/components/user/hooks";
 import { RoycoAnalytics } from "./royco-analytics";
 import { Analytics } from "@vercel/analytics/next";
+import { AtomProvider } from "./atom-provider";
 
 /**
  * @description Inter Font
@@ -134,6 +135,7 @@ export default function RootLayout({
               {/* <UserInfoSetter /> */}
 
               <GeoDetector />
+              <AtomProvider />
               <ToasterSonner richColors={true} position="top-center" />
 
               {/* <TurnstileWrapper> */}

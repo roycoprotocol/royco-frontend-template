@@ -17,7 +17,7 @@ export const LoadingCircle = React.forwardRef<
       ringClassName,
       dashClassName,
       className,
-      size = 24,
+      size = 20,
       strokeWidth = 4,
       ...props
     },

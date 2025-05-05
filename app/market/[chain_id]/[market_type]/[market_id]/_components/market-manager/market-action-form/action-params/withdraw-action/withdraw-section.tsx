@@ -23,6 +23,8 @@ import { SlideUpWrapper } from "@/components/animations";
 import { RoycoMarketUserType } from "royco/market";
 import { WithdrawTypeSelector } from "./withdraw-type-selector";
 import { VaultWithdrawModal } from "./vault-withdraw-modal";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const WithdrawIncentiveTokenRow = React.forwardRef<
   HTMLDivElement,
@@ -31,7 +33,7 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
     disabled: boolean;
   }
 >(({ className, token, disabled, ...props }, ref) => {
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div
@@ -57,11 +59,11 @@ export const WithdrawIncentiveTokenRow = React.forwardRef<
       </div>
       <div className="w-24">
         <Button
-          disabled={disabled || currentMarketData?.category === "boyco"}
+          disabled={disabled || enrichedMarket?.category === "boyco"}
           onClick={(e) => props.onClick?.(e as any)}
           className="py-1 text-sm"
         >
-          {currentMarketData?.category === "boyco" ? "Locked" : "Withdraw"}
+          {enrichedMarket?.category === "boyco" ? "Locked" : "Withdraw"}
         </Button>
       </div>
     </div>
@@ -97,6 +99,8 @@ export const WithdrawSection = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+
   const { marketMetadata, currentMarketData } = useActiveMarket();
   const { address, isConnected } = useAccount();
 

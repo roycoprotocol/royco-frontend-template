@@ -7,7 +7,6 @@ import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { IPQuantityIndicator } from "../../../composables";
 import { IncentiveAssetsSelector } from "../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
-import { useMarketManager } from "@/store/use-market-manager";
 
 export const IPMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -15,8 +14,6 @@ export const IPMarketActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { viewType } = useMarketManager();
-
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <div ref={ref} className={cn(className)} {...props}>

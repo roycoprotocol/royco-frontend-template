@@ -30,6 +30,8 @@ import { useAccount } from "wagmi";
 import { WarningAlert } from "../../composables/warning-alert";
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const InputAmountWrapper = React.forwardRef<
   HTMLDivElement,
@@ -40,21 +42,22 @@ export const InputAmountWrapper = React.forwardRef<
 >(({ className, marketActionForm, onAmountChange, ...props }, ref) => {
   const { address } = useAccount();
 
-  const { currentMarketData, marketMetadata } = useActiveMarket();
-  const { offerType, userType, viewType, fundingType } = useMarketManager();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+
+  const { offerType, userType, fundingType } = useMarketManager();
 
   const { isLoading: isLoadingWalletBalance, data: walletBalanceData } =
     useAccountBalance({
-      chain_id: marketMetadata.chain_id,
+      chain_id: enrichedMarket?.chainId ?? 1,
       account: address || "",
-      tokens: currentMarketData
-        ? [currentMarketData.input_token_data.contract_address]
+      tokens: enrichedMarket?.inputToken
+        ? [enrichedMarket.inputToken.contractAddress]
         : [],
     });
 
   const { isLoading: isLoadingVaultBalance, data: vaultBalanceData } =
     useVaultBalance({
-      chain_id: marketMetadata.chain_id,
+      chain_id: enrichedMarket?.chainId ?? 1,
       account: address || "",
       vault_address: isSolidityAddressValid(
         "address",
@@ -75,18 +78,16 @@ export const InputAmountWrapper = React.forwardRef<
 
     if (fundingType === RoycoMarketFundingType.vault.id) {
       if (
-        marketMetadata.market_type === MarketType.recipe.id ||
-        (marketMetadata.market_type === MarketType.vault.id &&
+        enrichedMarket?.marketType === 0 ||
+        (enrichedMarket?.marketType === 1 &&
           userType === MarketUserType.ap.id &&
           offerType === MarketOfferType.limit.id)
       ) {
-        if (!vaultBalanceData || !currentMarketData) {
+        if (!vaultBalanceData || !enrichedMarket) {
           return;
         }
 
-        if (
-          vaultBalanceData.token_id !== currentMarketData.input_token_data.id
-        ) {
+        if (vaultBalanceData.token_id !== enrichedMarket.inputToken?.id) {
           return;
         }
 
@@ -104,17 +105,17 @@ export const InputAmountWrapper = React.forwardRef<
 
     return parseRawAmountToTokenAmount(
       rawUserBalance,
-      currentMarketData?.input_token_data.decimals ?? 0
+      enrichedMarket?.inputToken?.decimals ?? 0
     );
-  }, [rawUserBalance]);
+  }, [rawUserBalance, enrichedMarket]);
 
   const usdUserBalance = useMemo(() => {
-    if (!userBalance || !currentMarketData) {
+    if (!userBalance || !enrichedMarket) {
       return;
     }
 
-    return userBalance * currentMarketData.input_token_data.price;
-  }, [userBalance, currentMarketData]);
+    return userBalance * enrichedMarket.inputToken?.price;
+  }, [userBalance, enrichedMarket]);
 
   const hasSufficientBalance = useMemo(() => {
     if (isLoadingWalletBalance || isLoadingVaultBalance) {
@@ -155,36 +156,33 @@ export const InputAmountWrapper = React.forwardRef<
   ]);
 
   const fillableBalance = useMemo(() => {
-    if (!currentMarketData) {
+    if (!enrichedMarket) {
       return;
     }
 
-    return parseRawAmountToTokenAmount(
-      currentMarketData?.quantity_ip ?? "0",
-      currentMarketData?.input_token_data.decimals ?? 0
-    );
-  }, [currentMarketData]);
+    return enrichedMarket?.inputToken?.totalFillableForAP ?? 0;
+  }, [enrichedMarket]);
 
   const usdFillableBalance = useMemo(() => {
-    if (!fillableBalance || !currentMarketData) {
+    if (!fillableBalance || !enrichedMarket) {
       return;
     }
 
-    return fillableBalance * currentMarketData.input_token_data.price;
-  }, [fillableBalance, currentMarketData]);
+    return fillableBalance * enrichedMarket.inputToken?.price;
+  }, [fillableBalance, enrichedMarket]);
 
   const userInputAmountUsd = useMemo(() => {
-    if (!currentMarketData) {
+    if (!enrichedMarket) {
       return;
     }
 
-    const inputTokenPrice = currentMarketData.input_token_data.price;
+    const inputTokenPrice = enrichedMarket.inputToken?.price;
     const userInputAmount = parseFloat(
       marketActionForm.watch("quantity.amount") || "0"
     );
 
     return userInputAmount * inputTokenPrice;
-  }, [marketActionForm.watch("quantity.amount")]);
+  }, [marketActionForm.watch("quantity.amount"), enrichedMarket]);
 
   const isLoadingBalance = isLoadingWalletBalance || isLoadingVaultBalance;
 
@@ -200,7 +198,7 @@ export const InputAmountWrapper = React.forwardRef<
         {/**
          * Balance indicator
          */}
-        {marketMetadata.market_type === MarketType.recipe.id &&
+        {enrichedMarket?.marketType === 0 &&
           userType === MarketUserType.ap.id && (
             <TertiaryLabel className="justify-end space-x-1">
               <span>Balance:</span>
@@ -212,7 +210,7 @@ export const InputAmountWrapper = React.forwardRef<
                   <span>{formatNumber(userBalance || 0)}</span>
                 )}
                 <span className="ml-1">
-                  {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                  {enrichedMarket?.inputToken?.symbol?.toUpperCase()}
                 </span>
               </span>
 
@@ -233,7 +231,7 @@ export const InputAmountWrapper = React.forwardRef<
           const amount = value;
           const rawAmount = parseTokenAmountToRawAmount(
             amount,
-            currentMarketData?.input_token_data.decimals ?? 0
+            enrichedMarket?.inputToken?.decimals ?? 0
           );
 
           marketActionForm.setValue("quantity.amount", amount);
@@ -275,9 +273,7 @@ export const InputAmountWrapper = React.forwardRef<
             <TokenDisplayer
               size={4}
               tokens={
-                currentMarketData?.input_token_data
-                  ? ([currentMarketData.input_token_data] as any)
-                  : []
+                enrichedMarket?.inputToken ? [enrichedMarket.inputToken] : []
               }
               symbols={true}
             />
@@ -305,7 +301,7 @@ export const InputAmountWrapper = React.forwardRef<
          * Fillable balance indicator
          */}
         <div>
-          {marketMetadata.market_type === MarketType.recipe.id &&
+          {enrichedMarket?.marketType === 0 &&
             userType === MarketUserType.ap.id && (
               <TertiaryLabel className="justify-end space-x-1">
                 <span>Fillable:</span>
@@ -313,7 +309,7 @@ export const InputAmountWrapper = React.forwardRef<
                 <span className="flex items-center justify-center">
                   <span>{formatNumber(fillableBalance || 0)}</span>
                   <span className="ml-1">
-                    {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                    {enrichedMarket?.inputToken?.symbol?.toUpperCase()}
                   </span>
                 </span>
 
@@ -326,7 +322,7 @@ export const InputAmountWrapper = React.forwardRef<
           {/**
            * Balance indicator
            */}
-          {marketMetadata.market_type === MarketType.vault.id &&
+          {enrichedMarket?.marketType === 1 &&
             userType === MarketUserType.ap.id && (
               <TertiaryLabel className="justify-end space-x-1">
                 <span>Balance:</span>
@@ -338,7 +334,7 @@ export const InputAmountWrapper = React.forwardRef<
                     <span>{formatNumber(userBalance || 0)}</span>
                   )}
                   <span className="ml-1">
-                    {currentMarketData?.input_token_data.symbol.toUpperCase()}
+                    {enrichedMarket?.inputToken?.symbol?.toUpperCase()}
                   </span>
                 </span>
 

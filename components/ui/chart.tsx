@@ -257,7 +257,7 @@ const ChartTooltipContent = React.forwardRef<
                             {item.payload.offer_side === 0 ? (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
                                 {formatNumber(
-                                  item.payload.input_token_data.token_amount
+                                  item.payload.input_token_data.tokenAmount
                                 ) +
                                   " " +
                                   item.payload.input_token_data.symbol}
@@ -269,7 +269,7 @@ const ChartTooltipContent = React.forwardRef<
                                     return (
                                       <>
                                         <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                          {formatNumber(item.token_amount) +
+                                          {formatNumber(item.tokenAmount) +
                                             " " +
                                             item.symbol}
                                         </div>
@@ -301,7 +301,7 @@ const ChartTooltipContent = React.forwardRef<
                                 {item.payload.tokens_data.map((item: any) => {
                                   return (
                                     <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
-                                      {formatNumber(item.token_amount) +
+                                      {formatNumber(item.tokenAmount) +
                                         " " +
                                         item.symbol}
                                     </div>
@@ -312,7 +312,7 @@ const ChartTooltipContent = React.forwardRef<
                               MarketType.recipe.value ? (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
                                 {formatNumber(
-                                  item.payload.input_token_data.token_amount
+                                  item.payload.input_token_data.tokenAmount
                                 ) +
                                   " " +
                                   item.payload.input_token_data.symbol}
@@ -320,8 +320,7 @@ const ChartTooltipContent = React.forwardRef<
                             ) : (
                               <div className="flex justify-end font-mono font-medium tabular-nums text-secondary">
                                 {formatNumber(
-                                  item.payload.input_token_data
-                                    .locked_token_amount
+                                  item.payload.input_token_data.tokenAmount
                                 ) +
                                   " " +
                                   item.payload.input_token_data.symbol}

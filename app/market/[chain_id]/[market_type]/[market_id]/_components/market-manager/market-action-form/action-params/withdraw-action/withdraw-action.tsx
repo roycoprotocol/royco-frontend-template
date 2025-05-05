@@ -9,6 +9,8 @@ import { WithdrawSection } from "./withdraw-section";
 import { SlideUpWrapper } from "@/components/animations";
 import { BoycoWithdrawSection } from "./boyco-withdraw-section";
 import { useActiveMarket } from "../../../../hooks";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const WithdrawAction = React.forwardRef<
   HTMLDivElement,
@@ -16,7 +18,7 @@ export const WithdrawAction = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div
@@ -27,7 +29,7 @@ export const WithdrawAction = React.forwardRef<
       <SlideUpWrapper className="mt-5 flex flex-1 grow flex-col overflow-y-scroll">
         {/* <WithdrawSection /> */}
 
-        {currentMarketData?.category === "boyco" ? (
+        {enrichedMarket?.category === "boyco" ? (
           <BoycoWithdrawSection />
         ) : (
           <WithdrawSection />

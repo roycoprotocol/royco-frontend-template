@@ -2,14 +2,11 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -18,23 +15,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { OffersColumnDataElement, offersColumns } from "./offers-columns";
-
-import { motion, AnimatePresence } from "framer-motion";
-import { FallMotion } from "@/components/animations";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  RecipeOffersColumnDataElement,
+  recipeOffersColumns,
+} from "./recipe-offers-columns";
+import { motion } from "framer-motion";
 import { AlertIndicator } from "@/components/common";
 
-export const OffersTable = React.forwardRef<
+export const RecipeOffersTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    data: OffersColumnDataElement[];
-    columns: typeof offersColumns;
+    data: RecipeOffersColumnDataElement[];
+    isLoading: boolean;
+    isRefetching: boolean;
   }
->(({ className, data, columns, ...props }, ref) => {
+>(({ className, data, isLoading, isRefetching, ...props }, ref) => {
   const table = useReactTable({
     data,
-    columns,
+    columns: recipeOffersColumns,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -94,23 +92,20 @@ export const OffersTable = React.forwardRef<
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
-                className="h-24 grow text-center"
+                colSpan={recipeOffersColumns.length}
+                className="h-24 text-center"
               >
-                No offers found
+                <AlertIndicator>No offers found.</AlertIndicator>
               </TableCell>
             </TableRow>
           ) : (
             table.getRowModel().rows.map((row, index) => {
-              const rowIndex = row.index;
-
               return (
                 <TableRow
                   key={`list:row:${index}`}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "hover:bg-focus data-[state=selected]:bg-focus",
-                    rowIndex !== 20 - 1
+                    "hover:bg-focus data-[state=selected]:bg-focus"
                   )}
                 >
                   {row.getVisibleCells().map((cell, index) => (

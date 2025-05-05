@@ -30,13 +30,19 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
 import { TypedRoycoTransactionType } from "royco/market";
-import { TransactionOptionsType } from "royco/types";
 import { BoycoWithdrawalModal } from "./boyco-withdrawal-modal";
+import { ModalTxOption } from "@/types";
+import { lastRefreshTimestampAtom } from "@/store/global";
+import { useAtom } from "jotai";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
+  const [lastRefreshTimestamp, setLastRefreshTimestamp] = useAtom(
+    lastRefreshTimestampAtom
+  );
+
   const { chain } = useAccount();
   const chainId = chain?.id;
 
@@ -59,7 +65,7 @@ export const TransactionModal = React.forwardRef<
     useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
-    React.useState<TransactionOptionsType | null>(null);
+    React.useState<ModalTxOption | null>(null);
 
   const {
     status: txStatus,
@@ -223,6 +229,7 @@ export const TransactionModal = React.forwardRef<
     if (allTransactionsExecuted && isOpen) {
       setTimeout(() => {
         queryClient.invalidateQueries();
+        setLastRefreshTimestamp(Date.now());
         setIsTransactionTimeout(false);
       }, 5 * 1000); // 5 seconds
     }
@@ -280,7 +287,11 @@ export const TransactionModal = React.forwardRef<
       action: "Confirm Transaction",
     };
 
-    if (!!currentTransaction && currentTransaction.id === "forfeit") {
+    if (
+      !!currentTransaction &&
+      currentTransaction.id &&
+      currentTransaction.id.includes("forfeit")
+    ) {
       content = {
         title: "Transaction Complete",
         description:

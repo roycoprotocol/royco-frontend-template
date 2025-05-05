@@ -3,7 +3,7 @@ import {
   ExploreMarketResponse,
   Filter,
   Sorting,
-} from "@/app/api/royco/data-contracts";
+} from "royco/api";
 import { atom } from "jotai";
 import { atomWithQuery } from "jotai-tanstack-query";
 import { api } from "@/app/api/royco";

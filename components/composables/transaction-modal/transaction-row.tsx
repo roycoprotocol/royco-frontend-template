@@ -2,17 +2,17 @@ import { cn } from "@/lib/utils";
 import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
 import React, { Fragment } from "react";
 import { LoadingSpinner } from "../loading-spinner";
-import { TransactionOptionsType } from "@/sdk/types";
 import { BadgeLink, ContentBadge, TokenDisplayer } from "@/components/common";
 import { getExplorerUrl } from "royco/utils";
 import formatNumber from "@/utils/numbers";
+import { ModalTxOption } from "@/types";
 
 export const TransactionRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     transactionIndex: number;
     txStatus: string;
-    transaction: TransactionOptionsType;
+    transaction: ModalTxOption;
   }
 >(({ className, transaction, transactionIndex, txStatus, ...props }, ref) => {
   return (
@@ -49,7 +49,7 @@ export const TransactionRow = React.forwardRef<
             </div>
           </div>
 
-          {(!!transaction.tokensOut || !!transaction.tokensIn) && (
+          {/* {(!!transaction.tokensOut || !!transaction.tokensIn) && (
             <div className="mt-2 flex w-full flex-row flex-wrap gap-2">
               {transaction.tokensOut &&
                 transaction.tokensOut.map((token, tokenIndex) => {
@@ -77,7 +77,7 @@ export const TransactionRow = React.forwardRef<
                   );
                 })}
             </div>
-          )}
+          )} */}
 
           {/* <div className="flex hidden w-full flex-col font-gt text-sm font-300 text-error">
           {!!transaction.tokensOut &&

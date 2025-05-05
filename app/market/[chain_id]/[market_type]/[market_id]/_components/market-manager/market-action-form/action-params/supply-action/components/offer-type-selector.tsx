@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useActiveMarket } from "../../../../../hooks";
 import { SecondaryLabel, TertiaryLabel } from "../../../../../composables";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const OfferTypeSelector = React.forwardRef<
   HTMLDivElement,
@@ -15,19 +17,20 @@ export const OfferTypeSelector = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { offerType, setOfferType, userType } = useMarketManager();
 
-  const { currentMarketData, marketMetadata } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+
   const { address } = useAccount();
 
   useEffect(() => {
     if (
-      marketMetadata.market_type === MarketType.vault.id &&
+      enrichedMarket?.marketType === 1 &&
       userType === MarketUserType.ip.id &&
-      address?.toLowerCase() !== currentMarketData.owner?.toLowerCase() &&
+      address?.toLowerCase() !== enrichedMarket?.owner?.toLowerCase() &&
       offerType === MarketOfferType.limit.id
     ) {
       setOfferType(MarketOfferType.market.id);
     }
-  }, [marketMetadata, userType, address, currentMarketData]);
+  }, [userType, address, enrichedMarket]);
 
   const offerTypeOptions = useMemo(() => {
     const options = Object.values(MarketOfferType).map((item) => {
@@ -49,12 +52,10 @@ export const OfferTypeSelector = React.forwardRef<
     label: string;
     id: TypedRoycoMarketOfferType;
   }) => {
-    if (marketMetadata.market_type === MarketType.vault.id) {
+    if (enrichedMarket?.marketType === 1) {
       if (userType === MarketUserType.ip.id) {
         if (option.id === MarketOfferType.limit.id) {
-          if (
-            address?.toLowerCase() !== currentMarketData.owner?.toLowerCase()
-          ) {
+          if (address?.toLowerCase() !== enrichedMarket?.owner?.toLowerCase()) {
             return true;
           }
         }
@@ -62,9 +63,9 @@ export const OfferTypeSelector = React.forwardRef<
         // user type is AP
         if (option.id === MarketOfferType.limit.id) {
           if (
-            !!currentMarketData &&
-            currentMarketData.base_incentive_ids &&
-            currentMarketData.base_incentive_ids.length < 1
+            enrichedMarket &&
+            enrichedMarket.vaultMetadata?.baseIncentives &&
+            enrichedMarket.vaultMetadata?.baseIncentives.length < 1
           ) {
             return true;
           }
