@@ -14,7 +14,7 @@ import { getSupportedToken } from "royco/constants";
 import { BERA_TOKEN_ID } from "royco/boyco";
 import { getBoycoReceiptTokenWithdrawalTransactionOptions } from "royco/hooks";
 import { useMarketManager } from "@/store/use-market-manager";
-import { InfoIcon } from "lucide-react";
+import { ExternalLinkIcon, InfoIcon } from "lucide-react";
 
 export const BoycoWithdrawSectionRow = React.forwardRef<
   HTMLDivElement,
@@ -59,7 +59,7 @@ export const BoycoWithdrawSection = React.forwardRef<
   const propsPositionsBoyco = useEnrichedPositionsBoyco({
     account_address: address?.toLowerCase() ?? "",
     market_id: currentMarketData?.market_id ?? undefined,
-    // account_address: "0x6a0e42510bc58e5e65edb219f4f9ca7cca2ed918",
+    // account_address: "0xa1c3ba712fcf2bb8a22f8b9f9d5b6ab4c4cade61",
     // market_id:
     //   "0x6262ac035c2284f5b5249a690a6fd81c35f1ecef501da089f25741a4492cf5f3",
     page_index: page,
@@ -102,6 +102,37 @@ export const BoycoWithdrawSection = React.forwardRef<
       <AlertIndicator className="w-full rounded-md">
         No withdrawable positions found
       </AlertIndicator>
+    );
+  }
+
+  if (currentMarketData?.lockup_time !== "2592000") {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex h-fit flex-1 grow flex-col items-center gap-2",
+          className
+        )}
+        {...props}
+      >
+        <BoycoWithdrawSectionRowContainer className="flex flex-col">
+          <div>Withdrawal is available from boyco.berachain.com</div>
+          <Button
+            size="sm"
+            className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
+            onClick={() => {
+              const redirect_link = `https://boyco.berachain.com/rollover/`;
+
+              window.open(redirect_link, "_blank", "noopener,noreferrer");
+            }}
+          >
+            <div className="flex flex-row items-center gap-2">
+              Go to boyco.berachain.com
+              <ExternalLinkIcon className="h-4 w-4" />
+            </div>
+          </Button>
+        </BoycoWithdrawSectionRowContainer>
+      </div>
     );
   }
 
@@ -208,9 +239,7 @@ export const BoycoWithdrawSection = React.forwardRef<
         <>
           <div className="my-2 h-px w-full rounded-full bg-divider" />
 
-          <div className="text-sm font-normal text-secondary">
-            Underlying Incentives
-          </div>
+          <div className="text-sm font-normal text-secondary">Incentives</div>
 
           <BoycoWithdrawSectionRowContainer>
             <TokenDisplayer
@@ -224,15 +253,11 @@ export const BoycoWithdrawSection = React.forwardRef<
 
                 window.open(redirect_link, "_blank", "noopener,noreferrer");
               }}
-              disabled={
-                !isUnlocked && !!currentMarketData.boyco?.bera_merkle_id
-              }
+              disabled={!isUnlocked}
               className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
               size="sm"
             >
-              {isUnlocked && !!currentMarketData.boyco?.bera_merkle_id
-                ? "Claim"
-                : "Locked"}
+              {isUnlocked ? "Claim" : "Locked"}
             </Button>
           </BoycoWithdrawSectionRowContainer>
 
