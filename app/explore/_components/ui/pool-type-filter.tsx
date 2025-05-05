@@ -3,7 +3,10 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
-import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import {
+  marketFiltersAtom,
+  marketPageAtom,
+} from "@/store/explore/explore-market";
 import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 import { ToggleBadge } from "@/components/common/toggle-badge";
 
@@ -11,8 +14,8 @@ export const PoolTypeFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [filters, setFilters] = useAtom(exploreFiltersAtom);
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [filters, setFilters] = useAtom(marketFiltersAtom);
+  const [page, setPage] = useAtom(marketPageAtom);
 
   const handlePoolTypeToggle = (poolType: MULTIPLIER_ASSET_TYPE) => {
     const poolTypeFilterIndex = filters.findIndex(

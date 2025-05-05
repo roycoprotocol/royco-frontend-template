@@ -9,9 +9,9 @@ import { LoadingCircle } from "@/components/animations/loading-circle";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAtom, useAtomValue } from "jotai";
 import {
-  explorePageAtom,
+  marketPageAtom,
   loadableExploreMarketAtom,
-} from "@/store/explore/atoms";
+} from "@/store/explore/explore-market";
 import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
@@ -22,7 +22,7 @@ export const ExploreMarketManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [page, setPage] = useAtom(marketPageAtom);
 
   const {
     data: propsData,

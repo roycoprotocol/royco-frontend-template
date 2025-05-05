@@ -30,7 +30,7 @@ import { SONIC_APP_TYPE } from "royco/sonic";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
-import { exploreSortingAtom } from "@/store/explore/atoms";
+import { marketSortAtom } from "@/store/explore/explore-market";
 import { EnrichedMarket } from "royco/api";
 import { SupportedChainMap } from "royco/constants";
 import NumberFlow from "@number-flow/react";
@@ -53,7 +53,7 @@ export const exploreColumnNames = {
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
-    const [exploreSort, setExploreSort] = useAtom(exploreSortingAtom);
+    const [exploreSort, setExploreSort] = useAtom(marketSortAtom);
 
     const name = (exploreColumnNames as any)[column.id];
     const enableSort = name === "TVL" && column.getCanSort();

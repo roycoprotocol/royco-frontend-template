@@ -8,6 +8,7 @@ import { WithdrawalsTable } from "./withdrawals-table";
 import { withdrawalsColumns } from "./withdrawals-column";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { WithdrawalPagination } from "./withdrawal-pagination";
 
 export const DEFAULT_PAGE_SIZE = 5;
 
@@ -21,7 +22,7 @@ export const Withdrawals = React.forwardRef<
 
   const data = useMemo(() => {
     if (vault?.account?.withdrawals) {
-      return vault?.account?.withdrawals.slice(
+      return vault.account.withdrawals.slice(
         page * DEFAULT_PAGE_SIZE,
         (page + 1) * DEFAULT_PAGE_SIZE
       );
@@ -42,14 +43,18 @@ export const Withdrawals = React.forwardRef<
       </PrimaryLabel>
 
       <div className="mt-6">
-        <WithdrawalsTable
-          data={data}
-          columns={withdrawalsColumns}
-          page={page}
-          pageSize={DEFAULT_PAGE_SIZE}
-          count={count}
-          setPage={setPage}
-        />
+        <div className="hide-scrollbar overflow-x-auto">
+          <WithdrawalsTable data={data} columns={withdrawalsColumns} />
+
+          <hr className="border-_divider_" />
+
+          <WithdrawalPagination
+            page={page}
+            pageSize={DEFAULT_PAGE_SIZE}
+            count={count}
+            setPage={setPage}
+          />
+        </div>
       </div>
     </div>
   );

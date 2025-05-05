@@ -3,10 +3,10 @@
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
 import { useAtom } from "jotai";
-import { exploreSearchKeyAtom } from "@/store/explore/atoms";
+import { marketSearchAtom } from "@/store/explore/explore-market";
 
 export const SearchBar = () => {
-  const [exploreSearchKey, setExploreSearchKey] = useAtom(exploreSearchKeyAtom);
+  const [marketSearch, setMarketSearch] = useAtom(marketSearchAtom);
 
   return (
     <div className="h-[2.875rem] w-full pr-1 md:min-w-40 lg:w-1/3 lg:min-w-40">
@@ -15,9 +15,9 @@ export const SearchBar = () => {
         <Input
           containerClassName="border-none text-black p-0 h-5 grow"
           className="body-2 placeholder:text-secondary"
-          value={exploreSearchKey}
+          value={marketSearch}
           onChange={(e) => {
-            setExploreSearchKey(e.target.value);
+            setMarketSearch(e.target.value);
           }}
           placeholder="Search"
         />

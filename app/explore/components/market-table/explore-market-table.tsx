@@ -24,6 +24,7 @@ import {
   exploreMarketColumns,
   sonicColumns,
 } from "./columns/explore-market-columns";
+import { AlertIndicator } from "@/components/common/alert-indicator";
 
 export const ExploreMarketTable = React.forwardRef<
   HTMLDivElement,
@@ -33,7 +34,7 @@ export const ExploreMarketTable = React.forwardRef<
     isRefetching: boolean;
   }
 >(({ className, data, isLoading, isRefetching, ...props }, ref) => {
-  const exploreColumns = useMemo(() => {
+  const columns = useMemo(() => {
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
       return boycoColumns;
     }
@@ -47,11 +48,8 @@ export const ExploreMarketTable = React.forwardRef<
 
   const table = useReactTable({
     data,
-    columns: exploreColumns,
-    enableSorting: true,
-    manualSorting: true,
+    columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
   });
 
@@ -69,13 +67,13 @@ export const ExploreMarketTable = React.forwardRef<
       <Table>
         <TableHeader
           className={cn(
-            "[&_tr]:border-b-1 sticky top-0 z-10 [&_tr]:border-_divider_"
+            "sticky top-0 z-10 [&_tr]:border-b [&_tr]:border-_divider_"
           )}
         >
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
               key={headerGroup.id}
-              className={cn("bg-white hover:bg-white")}
+              className={cn("bg-_surface_ hover:bg-transparent")}
             >
               {headerGroup.headers.map((header, index) => {
                 return (
@@ -99,18 +97,13 @@ export const ExploreMarketTable = React.forwardRef<
           ))}
         </TableHeader>
 
-        <TableBody
-          className={cn(
-            "bg-white [&_tr:last-child]:border-b [&_tr]:border-b-_divider_"
-          )}
-        >
+        <TableBody className={cn("bg-_surface_")}>
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
-              <TableCell
-                colSpan={exploreColumns.length}
-                className="h-24 text-center"
-              >
-                No results.
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                <AlertIndicator className="py-10">
+                  No markets found.
+                </AlertIndicator>
               </TableCell>
             </TableRow>
           ) : (
@@ -136,19 +129,12 @@ export const ExploreMarketTable = React.forwardRef<
                       <TableCell
                         key={`row:cell:${cell.id}`}
                         className={cn(
-                          "min-w-fit whitespace-nowrap px-4 py-0 text-sm font-normal text-black",
-                          "h-[3rem]",
-                          index === 0 && "pl-5",
-                          index !== 0 &&
-                            index === row.getVisibleCells().length - 1 &&
-                            "pr-5"
+                          "min-w-fit whitespace-nowrap p-4 pr-8 text-base font-normal text-_primary_"
                         )}
                       >
-                        <div className="flex flex-col items-start justify-center">
-                          {flexRender(cell.column.columnDef.cell, {
-                            ...cell.getContext(),
-                          })}
-                        </div>
+                        {flexRender(cell.column.columnDef.cell, {
+                          ...cell.getContext(),
+                        })}
                       </TableCell>
                     ))}
                   </TableRow>

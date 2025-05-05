@@ -3,7 +3,10 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
-import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import {
+  marketFiltersAtom,
+  marketPageAtom,
+} from "@/store/explore/explore-market";
 import {
   ArbitrumOne,
   Base,
@@ -20,8 +23,8 @@ export const ChainFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [filters, setFilters] = useAtom(exploreFiltersAtom);
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [filters, setFilters] = useAtom(marketFiltersAtom);
+  const [page, setPage] = useAtom(marketPageAtom);
 
   const chains = [
     ArbitrumOne,

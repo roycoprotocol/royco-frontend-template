@@ -3,7 +3,7 @@ import { atomWithQuery } from "jotai-tanstack-query";
 
 import { api } from "@/app/api/royco";
 import { BoringVault, boringVaultAtom } from "./atom/boring-vault";
-import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
+import { VaultInfoResponse } from "royco/api";
 
 export enum Vaults {
   BoringVault = "boring",
@@ -28,7 +28,7 @@ export const vaultManagerAtom = atom<BoringVault | null>((get) => {
 
 export const loadableVaultMetadataAtom = atomWithQuery<VaultInfoResponse>(
   (get) => ({
-    queryKey: ["vaults", get(vaultParamsAtom)],
+    queryKey: ["vault-metadata", get(vaultParamsAtom)],
     queryFn: async ({ queryKey: [, params] }) => {
       const response = await api.vaultControllerGetVaultInfo(
         `${(params as any)?.chainId}_${(params as any)?.vaultId}`

@@ -358,6 +358,7 @@ export function BoringVaultActionProvider({
       return { steps: [] };
     }
   };
+
   const getClaimIncentiveTransaction = async (rewardIds: string[]) => {
     try {
       if (!address) {

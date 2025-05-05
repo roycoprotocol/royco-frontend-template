@@ -3,7 +3,10 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
-import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import {
+  marketFiltersAtom,
+  marketPageAtom,
+} from "@/store/explore/explore-market";
 import { SONIC_APP_TYPE } from "royco/sonic";
 import { ToggleBadge } from "@/components/common/toggle-badge";
 
@@ -11,8 +14,8 @@ export const AppTypeFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [filters, setFilters] = useAtom(exploreFiltersAtom);
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [filters, setFilters] = useAtom(marketFiltersAtom);
+  const [page, setPage] = useAtom(marketPageAtom);
 
   const handleAppTypeToggle = (appType: SONIC_APP_TYPE) => {
     const appTypeFilterIndex = filters.findIndex(

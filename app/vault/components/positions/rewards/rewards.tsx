@@ -187,7 +187,7 @@ export const Rewards = React.forwardRef<
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-sm font-semibold hover:bg-success/10 hover:text-primary"
+                      className="text-sm font-medium hover:bg-success/10 hover:text-primary"
                       onClick={() => handleClaimIncentive(incentive)}
                     >
                       <GradientText>Claim</GradientText>
@@ -232,7 +232,7 @@ export const Rewards = React.forwardRef<
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-sm font-semibold hover:bg-success/10 hover:text-primary disabled:opacity-50"
+                      className="text-sm font-medium hover:bg-success/10 hover:text-primary disabled:opacity-50"
                       disabled={true}
                     >
                       Claim
