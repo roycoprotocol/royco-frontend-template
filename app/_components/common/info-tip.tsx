@@ -41,7 +41,7 @@ export const InfoTip = React.forwardRef<
             side="bottom"
             align="start"
             className={cn(
-              "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_",
+              "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none",
               contentClassName
             )}
           >

@@ -17,11 +17,11 @@ import { PoolTypeFilter } from "./ui/pool-type-filter";
 import { AppTypeFilter } from "./ui/app-type-filter";
 import { ChainFilter } from "./ui/chain-filter";
 import {
-  exploreFiltersAtom,
+  marketFiltersAtom,
   loadableExploreMarketAtom,
-} from "@/store/explore/atoms";
+} from "@/store/explore/explore-market";
 import { useAtom, useAtomValue } from "jotai";
-import { explorePageAtom } from "@/store/explore/atoms";
+import { marketPageAtom } from "@/store/explore/explore-market";
 import NumberFlow from "@number-flow/react";
 import { LoadingCircle } from "@/components/animations/loading-circle";
 import { ExploreMarketResponse } from "royco/api";
@@ -40,8 +40,8 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
       [pathname]
     );
 
-    const [filters, setFilters] = useAtom(exploreFiltersAtom);
-    const [page, setPage] = useAtom(explorePageAtom);
+    const [filters, setFilters] = useAtom(marketFiltersAtom);
+    const [page, setPage] = useAtom(marketPageAtom);
 
     const exploreIsVerified = useMemo(() => {
       return (

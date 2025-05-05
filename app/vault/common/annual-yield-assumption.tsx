@@ -23,11 +23,15 @@ export const AnnualYieldAssumption = React.forwardRef<
       {...props}
       className={cn("divide-y divide-_divider_", className)}
     >
-      {incentives.map((item) => {
+      {incentives.map((item, index) => {
         return (
           <div
             key={item.id}
-            className="flex w-full items-start justify-between py-2"
+            className={cn(
+              "flex w-full items-start justify-between py-2",
+              index === 0 && "pt-0",
+              index === incentives.length - 1 && "pb-0"
+            )}
           >
             <div className="flex items-start gap-3">
               <TokenDisplayer size={6} tokens={[item]} symbols={false} />

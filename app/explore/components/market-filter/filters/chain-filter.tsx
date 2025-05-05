@@ -2,8 +2,11 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { useAtom } from "jotai";
-import { exploreFiltersAtom, explorePageAtom } from "@/store/explore/atoms";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  marketFiltersAtom,
+  marketPageAtom,
+} from "@/store/explore/explore-market";
 import {
   ArbitrumOne,
   Base,
@@ -22,8 +25,9 @@ export const ChainFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [filters, setFilters] = useAtom(exploreFiltersAtom);
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [filters, setFilters] = useAtom(marketFiltersAtom);
+
+  const setExploreMarketPage = useSetAtom(marketPageAtom);
 
   const chainOptions = useMemo(() => {
     return [
@@ -79,7 +83,7 @@ export const ChainFilter = React.forwardRef<
           ];
 
     setFilters(newFilters);
-    setPage(1);
+    setExploreMarketPage(1);
   };
 
   const isChainSelected = (chainId: number) => {
@@ -93,7 +97,7 @@ export const ChainFilter = React.forwardRef<
 
   const onClearFilter = () => {
     setFilters(filters.filter((filter) => filter.id !== "chainId"));
-    setPage(1);
+    setExploreMarketPage(1);
   };
 
   return (

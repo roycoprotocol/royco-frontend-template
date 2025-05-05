@@ -37,8 +37,10 @@ import { ContentFlow } from "@/components/animations/content-flow";
 import { ContentFade } from "@/components/animations/content-fade";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 import { CustomProgress } from "@/app/vault/common/custom-progress";
+import { useAtomValue } from "jotai";
+import { tagAtom } from "@/store/protector/protector";
 
-export const exploreColumnNames = {
+export const columnNames = {
   name: { label: "Market" },
   fillable: {
     label: "Fillable",
@@ -60,14 +62,14 @@ export const exploreColumnNames = {
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
-    const name = (exploreColumnNames as any)[column.id];
+    const columnName = (columnNames as any)[column.id];
 
     return (
       <div className={cn("flex items-center gap-1", className)} {...props}>
-        {name.icon}
+        {columnName.icon}
 
         <SecondaryLabel className="text-xs font-medium text-_secondary_">
-          {name.label.toUpperCase()}
+          {columnName.label.toUpperCase()}
         </SecondaryLabel>
       </div>
     );
@@ -76,15 +78,11 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
 
 export type ExploreMarketColumnDataElement = EnrichedMarket;
 
-/**
- * @description Column definitions for the table
- * @note For cell formatting @see {@link https://tanstack.com/table/v8/docs/guide/column-defs}
- */
 export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
   [
     {
       accessorKey: "name",
-      enableResizing: false,
+      enableResizing: true,
       enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
@@ -92,34 +90,19 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       meta: "min-w-60 w-[600px]",
       cell: ({ row }) => {
         return (
-          <div
-            className={cn(
-              "body-2 text-black",
-              "flex flex-row items-center justify-between"
-            )}
-          >
-            <ContentFlow
-              customKey={row.original.id}
-              className="w-80"
-              motionProps={{
-                transition: {
-                  delay: 0.04 * row.index,
-                },
-              }}
-            >
-              <div className="flex w-full flex-row items-center">
-                <TokenDisplayer
-                  tokens={[row.original.inputToken]}
-                  symbols={false}
-                  className={cn("mr-1 flex items-center")}
-                />
+          <ContentFlow customKey={row.original.id}>
+            <div className="flex items-center gap-3">
+              <TokenDisplayer
+                size={6}
+                tokens={[row.original.inputToken]}
+                symbols={false}
+              />
 
-                <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                  {validator.unescape(row.original.name.trim())}
-                </div>
+              <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                {validator.unescape(row.original.name.trim())}
               </div>
-            </ContentFlow>
-          </div>
+            </div>
+          </ContentFlow>
         );
       },
     },
@@ -131,35 +114,115 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
         const incentives = row.original.activeIncentives || [];
-
         const totalYieldRate = incentives.reduce(
           (acc, curr) => acc + curr.yieldRate,
           0
         );
 
         return (
-          <div
-            key={`market:incentiveTokens`}
-            className={cn("flex flex-row items-center gap-2 tabular-nums")}
-          >
-            <ContentFade
-              customKey={row.original.id}
-              motionProps={{
-                transition: {
-                  delay: 0.04 * row.index,
-                },
-              }}
-            >
+          <ContentFlow customKey={row.original.id}>
+            {incentives.length > 0 ? (
               <HoverCard openDelay={200} closeDelay={200}>
                 <HoverCardTrigger
-                  className={cn("flex cursor-pointer items-end")}
+                  className={cn("flex cursor-pointer items-center")}
                 >
-                  {incentives.length > 0 ? (
-                    <div className="flex flex-row items-center gap-1">
+                  <div className="flex items-center gap-1">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      <NumberFlow
+                        value={totalYieldRate}
+                        format={{
+                          style: "percent",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+                    </PrimaryLabel>
+
+                    <TokenDisplayer
+                      size={4}
+                      tokens={incentives}
+                      symbols={false}
+                    />
+                  </div>
+                </HoverCardTrigger>
+
+                {incentives.length > 0 &&
+                  typeof window !== "undefined" &&
+                  createPortal(
+                    <HoverCardContent
+                      className={cn(
+                        "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <AnnualYieldAssumption incentives={incentives} />
+                    </HoverCardContent>,
+                    document.body
+                  )}
+              </HoverCard>
+            ) : (
+              <span>-</span>
+            )}
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "variableYield",
+      enableResizing: true,
+      enableSorting: true,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+
+      meta: "min-w-52 w-60",
+      cell: ({ row }) => {
+        const tag = useAtomValue(tagAtom);
+
+        const underlyingIncentives = row.original.underlyingIncentives || [];
+        const nativeIncentives = row.original.nativeIncentives || [];
+
+        const incentives = [...underlyingIncentives, ...nativeIncentives];
+        const totalYieldRate = incentives.reduce(
+          (acc, curr) => acc + curr.yieldRate,
+          0
+        );
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            {incentives.length > 0 ? (
+              tag === "sonic" ? (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  className="shrink-0"
+                >
+                  <TokenEstimator marketCategory="sonic">
+                    <Button
+                      variant="link"
+                      className="flex w-full items-center gap-1 py-0 outline-none"
+                    >
+                      <span className="text-sm font-medium underline">
+                        Estimate S1 Airdrop
+                      </span>
+                    </Button>
+                  </TokenEstimator>
+                </div>
+              ) : (
+                <HoverCard openDelay={200} closeDelay={200}>
+                  <HoverCardTrigger
+                    className={cn("flex cursor-pointer items-center")}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>+</span>
+
                       <PrimaryLabel className="text-base font-normal text-_primary_">
                         <NumberFlow
                           value={totalYieldRate}
@@ -174,172 +237,31 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       </PrimaryLabel>
 
                       <TokenDisplayer
-                        bounce
-                        className="gap-0"
-                        symbolClassName="gap-0"
+                        size={4}
                         tokens={incentives}
                         symbols={false}
-                        size={4}
                       />
                     </div>
-                  ) : (
-                    <div className="flex flex-row items-center gap-1">
-                      <span className="font-gt text-base font-300">-</span>
-                    </div>
-                  )}
-                </HoverCardTrigger>
+                  </HoverCardTrigger>
 
-                {typeof window !== "undefined" &&
-                  incentives.length > 0 &&
-                  createPortal(
-                    <HoverCardContent
-                      className={cn(
-                        "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_"
-                      )}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div
+                  {typeof window !== "undefined" &&
+                    createPortal(
+                      <HoverCardContent
                         className={cn(
-                          "break-normal text-sm font-normal text-_secondary_"
+                          "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
                         )}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <AnnualYieldAssumption incentives={incentives} />
-                      </div>
-                    </HoverCardContent>,
-                    document.body
-                  )}
-              </HoverCard>
-            </ContentFade>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "variableYield",
-      enableResizing: true,
-      enableSorting: true,
-      header: ({ column }: { column: any }) => {
-        return <HeaderWrapper column={column} />;
-      },
-
-      meta: "min-w-52 w-60",
-      cell: ({ row }) => {
-        const incentives = [
-          ...(row.original.underlyingIncentives || []),
-          ...(row.original.nativeIncentives || []),
-        ];
-
-        const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + curr.yieldRate,
-          0
-        );
-
-        return (
-          <div
-            key={`market:yieldRate`}
-            className={cn(
-              "flex h-5 flex-row items-center tabular-nums",
-              "group"
+                      </HoverCardContent>,
+                      document.body
+                    )}
+                </HoverCard>
+              )
+            ) : (
+              <span>-</span>
             )}
-          >
-            {(() => {
-              if (
-                process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" &&
-                row.original.incentiveTokens.length > 0
-              ) {
-                return (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
-                    className="shrink-0"
-                  >
-                    <TokenEstimator marketCategory="sonic">
-                      <Button
-                        variant="link"
-                        className="flex w-full items-center gap-1 py-0 outline-none"
-                      >
-                        <span className="text-sm font-medium underline">
-                          Estimate S1 Airdrop
-                        </span>
-                      </Button>
-                    </TokenEstimator>
-                  </div>
-                );
-              } else {
-                return (
-                  <ContentFade
-                    customKey={row.original.id}
-                    motionProps={{
-                      transition: {
-                        delay: 0.04 * row.index,
-                      },
-                    }}
-                  >
-                    <HoverCard openDelay={200} closeDelay={200}>
-                      <HoverCardTrigger
-                        className={cn("flex cursor-pointer items-end")}
-                      >
-                        {incentives.length > 0 ? (
-                          <div className="flex flex-row items-center gap-1">
-                            <PrimaryLabel className="text-base font-normal text-_primary_">
-                              +
-                              <NumberFlow
-                                value={totalYieldRate}
-                                format={{
-                                  style: "percent",
-                                  notation: "compact",
-                                  useGrouping: true,
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                }}
-                              />
-                            </PrimaryLabel>
-
-                            <TokenDisplayer
-                              bounce
-                              className="gap-0"
-                              symbolClassName="gap-0"
-                              tokens={incentives}
-                              symbols={false}
-                              size={4}
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex flex-row items-center gap-1">
-                            <span className="font-gt text-base font-300">
-                              -
-                            </span>
-                          </div>
-                        )}
-                      </HoverCardTrigger>
-
-                      {typeof window !== "undefined" &&
-                        incentives.length > 0 &&
-                        createPortal(
-                          <HoverCardContent
-                            className={cn(
-                              "w-fit min-w-[320px] rounded-sm border border-_divider_ bg-_surface_"
-                            )}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div
-                              className={cn(
-                                "break-normal text-sm font-normal text-_secondary_"
-                              )}
-                            >
-                              <AnnualYieldAssumption incentives={incentives} />
-                            </div>
-                          </HoverCardContent>,
-                          document.body
-                        )}
-                    </HoverCard>
-                  </ContentFade>
-                );
-              }
-            })()}
-          </div>
+          </ContentFlow>
         );
       },
     },
@@ -353,32 +275,34 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
         return (
-          <div key={`market:fillableUsd`} className={cn("tabular-nums")}>
+          <ContentFlow customKey={row.original.id}>
             {row.original.marketType === 0 ? (
-              <div className={cn("flex cursor-pointer gap-2 font-light")}>
-                <div className="w-7">
-                  <CustomProgress
-                    value={(1 - row.original.capacityRatio) * 100}
-                  />
-                </div>
-
-                <NumberFlow
-                  value={row.original.fillableUsd}
-                  format={{
-                    style: "currency",
-                    currency: "USD",
-                    notation: "compact",
-                    useGrouping: true,
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }}
-                  className={cn("h-5")}
+              <div className={cn("flex cursor-pointer items-center gap-2")}>
+                <CustomProgress
+                  className="h-3 w-7"
+                  segmentWidth={1.2}
+                  value={(1 - row.original.capacityRatio) * 100}
                 />
+
+                <PrimaryLabel className="text-base font-normal text-_primary_">
+                  <NumberFlow
+                    value={row.original.fillableUsd}
+                    format={{
+                      style: "currency",
+                      currency: "USD",
+                      notation: "compact",
+                      useGrouping: true,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }}
+                    className={cn("h-5")}
+                  />
+                </PrimaryLabel>
               </div>
             ) : (
-              <div className="font-light">No Limit</div>
+              <span>No Limit</span>
             )}
-          </div>
+          </ContentFlow>
         );
       },
     },
@@ -391,55 +315,59 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-40 w-40",
       cell: ({ row }) => {
+        if (row.original.marketType === MarketType.vault.value) {
+          return (
+            <ContentFlow customKey={`${row.original.id}`}>
+              <span>-</span>
+            </ContentFlow>
+          );
+        }
+
         const lockupType =
-          row.original.marketType === MarketType.vault.value
-            ? "-"
-            : row.original.rewardStyle !== 2
-              ? "Hard Lock"
-              : "Soft Lock";
+          row.original.rewardStyle !== 2 ? "Hard Lock" : "Soft Lock";
 
-        const value = row.original.lockupTime;
+        if (!row.original.lockupTime) {
+          return (
+            <ContentFlow customKey={`${row.original.id}`}>
+              <span>-</span>
+            </ContentFlow>
+          );
+        }
+
         let formattedValue = "-";
+        const seconds = parseInt(row.original.lockupTime);
+        const hours = seconds / 3600;
+        if (hours < 24) {
+          formattedValue = `${Math.round(hours)}H`;
+        } else {
+          formattedValue = `${Math.round(hours / 24)}D`;
+        }
 
-        if (value && row.original.marketType !== MarketType.vault.value) {
-          const seconds = parseInt(value);
-          const hours = seconds / 3600;
-          if (hours < 24) {
-            formattedValue = `${Math.round(hours)}H`;
-          } else {
-            formattedValue = `${Math.round(hours / 24)}D`;
-          }
+        let tooltipContent = "";
+
+        if (lockupType === "Hard Lock") {
+          tooltipContent = `You may not withdraw your funds for ${formattedValue} after depositing.`;
+        } else {
+          tooltipContent = `If you withdraw before ${formattedValue}, you'll forfeit the rewards you earned during that period.`;
         }
 
         return (
           <div key={`market:rewardStyle`} className={cn("flex h-fit w-fit")}>
-            <ContentFlow
-              customKey={`${formattedValue}`}
-              motionProps={{
-                transition: {
-                  delay: 0.04 * row.index,
-                },
-              }}
-              className="w-44 text-start"
-            >
+            <ContentFlow customKey={row.original.id}>
               <Tooltip>
                 <TooltipTrigger
                   className={cn("flex cursor-pointer items-center")}
                 >
-                  <div className={cn("body-2 text-black")}>
-                    <span className="leading-5">
-                      {formattedValue + " " + lockupType}
-                    </span>
-                  </div>
+                  {formattedValue + " " + lockupType}
                 </TooltipTrigger>
 
-                {row.original.marketType !== MarketType.vault.value &&
+                {typeof window !== "undefined" &&
                   createPortal(
                     <TooltipContent
                       side="bottom"
                       align="start"
                       className={cn(
-                        "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_"
+                        "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
                       )}
                     >
                       <div
@@ -447,9 +375,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                           "break-normal text-sm font-normal text-_secondary_"
                         )}
                       >
-                        {lockupType === "Hard Lock"
-                          ? `You may not withdraw your funds for ${formattedValue} after depositing.`
-                          : `If you withdraw before ${formattedValue}, you'll forfeit the rewards you earned during that period.`}
+                        {tooltipContent}
                       </div>
                     </TooltipContent>,
                     document.body

@@ -48,8 +48,6 @@ export const FilterSelector = React.forwardRef<
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    console.log({ selected });
-
     const fuse = useMemo(() => {
       return new Fuse(data, {
         keys: ["label"],
@@ -85,7 +83,7 @@ export const FilterSelector = React.forwardRef<
               side="bottom"
               align="end"
               className={cn(
-                "mx-3 flex h-72 flex-col rounded-sm border border-_divider_ p-0 shadow-none",
+                "mx-3 flex h-72 flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
                 containerClassName
               )}
             >

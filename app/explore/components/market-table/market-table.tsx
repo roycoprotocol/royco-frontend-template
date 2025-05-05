@@ -10,9 +10,9 @@ import { useImmer } from "use-immer";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAtom, useAtomValue } from "jotai";
 import {
-  explorePageAtom,
+  marketPageAtom,
   loadableExploreMarketAtom,
-} from "@/store/explore/atoms";
+} from "@/store/explore/explore-market";
 import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
 import { MarketNotFound } from "./market-not-found";
 import { ExploreMarketTable } from "./explore-market-table";
@@ -23,7 +23,7 @@ export const MarketTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [page, setPage] = useAtom(explorePageAtom);
+  const [page, setPage] = useAtom(marketPageAtom);
 
   const {
     data: propsData,
@@ -68,13 +68,11 @@ export const MarketTable = React.forwardRef<
 
   const data = placeholderData[1]?.data ? placeholderData[1].data : [];
 
-  console.log({ data });
-
   return (
     <div ref={ref} {...props} className={cn("w-full ", className)}>
       <ScrollArea
         className={cn(
-          "w-full overflow-hidden rounded-sm border border-_divider_ bg-white"
+          "w-full overflow-hidden rounded-sm border border-_divider_ bg-_surface_"
         )}
       >
         <ExploreMarketTable

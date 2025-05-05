@@ -28,7 +28,7 @@ export const vaultManagerAtom = atom<BoringVault | null>((get) => {
 
 export const loadableVaultMetadataAtom = atomWithQuery<VaultInfoResponse>(
   (get) => ({
-    queryKey: ["vaults", get(vaultParamsAtom)],
+    queryKey: ["vault-metadata", get(vaultParamsAtom)],
     queryFn: async ({ queryKey: [, params] }) => {
       const response = await api.vaultControllerGetVaultInfo(
         `${(params as any)?.chainId}_${(params as any)?.vaultId}`

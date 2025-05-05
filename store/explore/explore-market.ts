@@ -101,16 +101,7 @@ const baseChainFilter = atom<Filter[]>((get) => {
   return filters;
 });
 
-export const marketFiltersAtom = atom<Filter[], [Filter[]], void>(
-  (get) => [...get(baseFilter), ...get(baseChainFilter)],
-  (get, set, update) => {
-    set(marketFiltersAtom, [
-      ...get(marketFiltersAtom),
-      ...get(baseChainFilter),
-      ...update,
-    ]);
-  }
-);
+export const marketFiltersAtom = atom<Filter[]>([]);
 
 export const marketSortAtom = atom<Sorting[]>([
   {
@@ -119,10 +110,11 @@ export const marketSortAtom = atom<Sorting[]>([
   },
 ]);
 
+const _marketSearchAtom = atom<string>("");
 export const marketSearchAtom = atom<string, [string], void>(
-  "",
+  (get) => get(_marketSearchAtom),
   (get, set, update) => {
-    set(marketSearchAtom, update.trim());
+    set(_marketSearchAtom, update.trim());
   }
 );
 
@@ -135,7 +127,11 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
     queryKey: [
       "explore-market",
       {
-        filters: get(marketFiltersAtom),
+        filters: [
+          ...get(baseFilter),
+          ...get(baseChainFilter),
+          ...get(marketFiltersAtom),
+        ],
         sorting: get(marketSortAtom),
         page: get(marketPageAtom),
         searchKey: get(marketSearchAtom),

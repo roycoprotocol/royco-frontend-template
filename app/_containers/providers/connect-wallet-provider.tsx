@@ -11,6 +11,8 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { SANCTIONED_ADDRESSES } from "@celo/compliance";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/common/connect-wallet-button/connect-wallet-alert-modal";
+import { userAddressAtom } from "@/store/portfolio/portfolio";
+import { useSetAtom } from "jotai";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -28,6 +30,7 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const setUserAddress = useSetAtom(userAddressAtom);
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
@@ -78,6 +81,10 @@ export const ConnectWalletProvider = ({
   useEffect(() => {
     disconnectWalletIfSanctioned();
   }, [isConnected, address]);
+
+  useEffect(() => {
+    setUserAddress(address || null);
+  }, [address]);
 
   return (
     <ConnectWalletContext.Provider
