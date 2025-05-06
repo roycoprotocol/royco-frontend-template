@@ -1,3 +1,5 @@
-import { Api } from "./Api";
+import { Api } from "royco/api";
 
-export const api = new Api();
+export const api = new Api({
+  baseURL: "/",
+});
