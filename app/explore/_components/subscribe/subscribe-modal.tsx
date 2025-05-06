@@ -185,7 +185,7 @@ export function SubscribeModal() {
                     </Button>
 
                     <a
-                      href="https://boyco.berachain.com/rollover/"
+                      href="https://boyco.berachain.com/"
                       target="_blank"
                       className="w-full"
                     >
