@@ -142,8 +142,7 @@ export function SubscribeModal() {
                     </PrimaryLabel>
 
                     <SecondaryLabel className="mt-2 break-normal text-base font-normal">
-                      Earn higher yields by getting access to the best
-                      opportunities on Royco.
+                      Recieve emails about the latest updates and features on Royco. 
                     </SecondaryLabel>
                   </div>
 
