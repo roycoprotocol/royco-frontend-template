@@ -357,7 +357,7 @@ export const ActualNavbar = React.forwardRef<
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
-            href="https://boyco.berachain.com/rollover/"
+            href="https://boyco.berachain.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
