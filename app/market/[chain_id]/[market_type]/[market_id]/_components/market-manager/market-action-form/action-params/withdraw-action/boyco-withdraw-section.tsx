@@ -121,7 +121,7 @@ export const BoycoWithdrawSection = React.forwardRef<
             size="sm"
             className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
             onClick={() => {
-              const redirect_link = `https://boyco.berachain.com/rollover/`;
+              const redirect_link = `https://boyco.berachain.com/`;
 
               window.open(redirect_link, "_blank", "noopener,noreferrer");
             }}
