@@ -357,21 +357,15 @@ export const ActualNavbar = React.forwardRef<
       {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && (
         <div className="flex w-full justify-center border-b border-divider bg-black py-2 text-sm text-white">
           <a
-            href="https://berachain.royco.org/portfolio"
+            href="https://boyco.berachain.com/rollover/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
             <div className="flex flex-wrap items-center justify-center gap-1 text-center">
+              <span>Withdraw from Boyco</span>
               <span className="font-semibold underline underline-offset-2">
-                BOYCO
-              </span>
-              <span>
-                Depositors into the Dolomite & D2 30 Day Markets can withdraw
-                Boyco Assets & Incentives starting March 6.
-              </span>
-              <span className="font-semibold underline underline-offset-2">
-                View Portfolio to Withdraw
+                here.
               </span>
             </div>
           </a>
