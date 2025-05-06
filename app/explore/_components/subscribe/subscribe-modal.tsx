@@ -87,7 +87,7 @@ export function SubscribeModal() {
       setIsSuccess(true);
 
       setTimeout(() => {
-        window.location.href = "https://boyco.berachain.com/rollover/";
+        window.location.href = "https://boyco.berachain.com/";
       }, 5000);
     } catch (error) {
       const message =
