@@ -19,15 +19,12 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { cn } from "@/lib/utils";
 
-interface RateItem {
-  name: string;
-  type: string;
-  rate: string;
-  label: string;
+interface RoycoRoyaltyProps {
+  open?: boolean;
 }
 
-export function RoycoRoyalty() {
-  const [isOpen, setIsOpen] = useState(true);
+export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
+  const [isOpen, setIsOpen] = useState(open);
 
   return (
     <div className="fixed bottom-4 right-4 z-50 hidden rounded-xl md:block">

@@ -151,7 +151,9 @@ const Page = () => {
           </div>
         </div>
 
-        <RoycoRoyalty />
+        <RoycoRoyalty
+          open={process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? false : true}
+        />
 
         {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
       </div>
