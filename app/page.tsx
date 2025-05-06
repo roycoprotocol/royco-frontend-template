@@ -18,6 +18,7 @@ import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator
 import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { PlumeBlackLogo } from "./_components/assets/plume/plume-black";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
+import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 
 const Page = () => {
   const Content = () => {
@@ -155,6 +156,8 @@ const Page = () => {
         </div>
 
         <RoycoRoyalty />
+
+        {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
       </div>
     );
   };
