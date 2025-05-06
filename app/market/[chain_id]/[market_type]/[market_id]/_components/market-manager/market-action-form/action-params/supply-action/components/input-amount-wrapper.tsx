@@ -12,7 +12,6 @@ import { SecondaryLabel } from "../../../../../composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { InputAmountSelector } from "../../composables";
 import { MarketActionFormSchema } from "../../../market-action-form-schema";
-import { useActiveMarket } from "../../../../../hooks";
 import {
   MarketOfferType,
   MarketType,

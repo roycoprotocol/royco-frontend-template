@@ -6,7 +6,6 @@ import { TypedRoycoMarketOfferType } from "royco/market";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useActiveMarket } from "../../../../../hooks";
 import { SecondaryLabel, TertiaryLabel } from "../../../../../composables";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";

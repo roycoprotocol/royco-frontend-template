@@ -1,4 +1,3 @@
-import { useActiveMarket } from "../../hooks";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "./market-action-form-schema";
@@ -14,18 +13,24 @@ import { NULL_ADDRESS } from "royco/constants";
 import { usePrepareMarketActionApi } from "../../hooks/use-prepare-market-action-api";
 import { useAtom } from "jotai";
 import { customTokenDataAtom } from "@/store/global";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const useMarketFormDetailsApi = (
   marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>
 ) => {
-  const { currentMarketData, marketMetadata } = useActiveMarket();
   const { userType, offerType, vaultIncentiveActionType, fundingType } =
     useMarketManager();
 
-  const [customTokenData] = useAtom(customTokenDataAtom);
+  const [customTokenData, setCustomTokenData] = useAtom(customTokenDataAtom);
+
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return usePrepareMarketActionApi({
-    market_type: marketMetadata.market_type,
+    market_type:
+      enrichedMarket?.marketType === 0
+        ? MarketType.recipe.id
+        : MarketType.vault.id,
     user_type: userType,
     offer_type: offerType,
 
@@ -44,7 +49,7 @@ export const useMarketFormDetailsApi = (
     }),
 
     expiry:
-      currentMarketData?.category === "boyco"
+      enrichedMarket?.category === "boyco"
         ? "1738540800"
         : marketActionForm.watch("no_expiry")
           ? "0"
@@ -68,8 +73,7 @@ export const useMarketFormDetailsApi = (
             ) *
               BigInt(10) ** BigInt(18) * // Scale up to 18 decimals
               BigInt(10) ** BigInt(incentiveData.decimals)) / // Multiply by incentive token decimals
-            BigInt(10) **
-              BigInt(currentMarketData?.input_token_data.decimals ?? 0) / // Divide by input token decimals
+            BigInt(10) ** BigInt(enrichedMarket?.inputToken.decimals ?? 0) / // Divide by input token decimals
             BigInt(365 * 24 * 60 * 60); // Divide by seconds in a year
 
           const rateInWei = distributionInWei.toString();
@@ -81,7 +85,7 @@ export const useMarketFormDetailsApi = (
       }),
 
     customTokenData:
-      marketMetadata.market_type === MarketType.vault.id &&
+      enrichedMarket?.marketType === MarketType.vault.value &&
       offerType === RoycoMarketOfferType.limit.id
         ? marketActionForm
             .watch("incentive_tokens")

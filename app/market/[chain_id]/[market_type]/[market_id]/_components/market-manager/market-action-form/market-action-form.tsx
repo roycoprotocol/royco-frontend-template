@@ -10,8 +10,7 @@ import {
   MarketViewType,
   useMarketManager,
 } from "@/store";
-import { useActiveMarket } from "../../hooks";
-import { MarketActionType, MarketOfferType, MarketType } from "@/store";
+import { MarketActionType, MarketOfferType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MarketActionFormSchema } from "./market-action-form-schema";
 import { ActionParams } from "./action-params";

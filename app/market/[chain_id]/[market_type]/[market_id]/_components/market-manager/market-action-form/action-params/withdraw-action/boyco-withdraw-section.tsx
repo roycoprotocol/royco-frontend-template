@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useActiveMarket } from "../../../../hooks";
 import { useEnrichedPositionsBoyco } from "royco/hooks";
 import { useAccount } from "wagmi";
 import { LoadingSpinner } from "@/components/composables";
@@ -15,6 +14,8 @@ import { BERA_TOKEN_ID } from "royco/boyco";
 import { getBoycoReceiptTokenWithdrawalTransactionOptions } from "royco/hooks";
 import { useMarketManager } from "@/store/use-market-manager";
 import { InfoIcon } from "lucide-react";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market";
 
 export const BoycoWithdrawSectionRow = React.forwardRef<
   HTMLDivElement,
@@ -51,14 +52,16 @@ export const BoycoWithdrawSection = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const page_size = 100;
   const [page, setPage] = useState(0);
-  const { currentMarketData } = useActiveMarket();
+
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+
   const { address } = useAccount();
 
   const { transactions, setTransactions } = useMarketManager();
 
   const propsPositionsBoyco = useEnrichedPositionsBoyco({
     account_address: address?.toLowerCase() ?? "",
-    market_id: currentMarketData?.market_id ?? undefined,
+    market_id: enrichedMarket?.marketId ?? undefined,
     // account_address: "0x6a0e42510bc58e5e65edb219f4f9ca7cca2ed918",
     // market_id:
     //   "0x6262ac035c2284f5b5249a690a6fd81c35f1ecef501da089f25741a4492cf5f3",
@@ -187,11 +190,14 @@ export const BoycoWithdrawSection = React.forwardRef<
         <div className="flex-1 text-sm font-light leading-tight text-secondary">
           You can redeem your receipt tokens for underlying tokens from Dapp's
           page.{" "}
-          {currentMarketData.boyco?.native_incentive_link && (
+          {/**
+           * @TODO Fix this
+           */}
+          {enrichedMarket?.boyco?.nativeIncentiveLink && (
             <>
               Click{" "}
               <a
-                href={currentMarketData.boyco?.native_incentive_link ?? ""}
+                href={enrichedMarket?.boyco?.nativeIncentiveLink ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
                 className=" text-black underline decoration-secondary decoration-dotted decoration-2 underline-offset-2 duration-200 ease-in-out hover:opacity-80"

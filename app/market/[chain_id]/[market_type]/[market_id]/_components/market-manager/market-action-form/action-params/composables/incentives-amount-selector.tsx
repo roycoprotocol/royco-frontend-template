@@ -10,11 +10,6 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "royco/utils";
-import { useMarketManager } from "@/store";
-import { RoycoMarketType } from "royco/market";
-import { useActiveMarket } from "../../../../hooks";
-import { useMarketFormDetails } from "../../use-market-form-details";
-import { WarningAlert } from "./warning-alert";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { useAtomValue } from "jotai";
 

@@ -11,8 +11,9 @@ import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
 import { useMarketManager } from "@/store";
 import { SecondaryLabel, TertiaryLabel } from "../../../../composables";
-import { useActiveMarket } from "../../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market";
 
 export const IncentivesRateSelector = React.forwardRef<
   HTMLDivElement,
@@ -27,13 +28,13 @@ export const IncentivesRateSelector = React.forwardRef<
     ref
   ) => {
     const { userType } = useMarketManager();
-    const { currentMarketData } = useActiveMarket();
+    const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
     const [isExpanded, setIsExpanded] = useState(false);
 
     const inputTokenSupplyInUSD =
       (Number(marketActionForm.watch("quantity.amount")) || 0) *
-      (currentMarketData.input_token_price || 0);
+      (enrichedMarket?.inputToken.price || 0);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -218,8 +219,7 @@ export const IncentivesRateSelector = React.forwardRef<
                                         ) ?? "0"
                                       );
                                       let input_token_price =
-                                        currentMarketData?.input_token_price ??
-                                        0;
+                                        enrichedMarket?.inputToken.price ?? 0;
                                       let incentive_token_total_supply =
                                         parseFloat(token.total_supply ?? "0");
 
@@ -327,8 +327,7 @@ export const IncentivesRateSelector = React.forwardRef<
                                         ) ?? "0"
                                       );
                                       let input_token_price =
-                                        currentMarketData?.input_token_price ??
-                                        0;
+                                        enrichedMarket?.inputToken.price ?? 0;
                                       let incentive_token_total_supply =
                                         parseFloat(token.total_supply ?? "0");
 
@@ -412,7 +411,7 @@ export const IncentivesRateSelector = React.forwardRef<
                                       ) ?? "0"
                                     );
                                     let input_token_price =
-                                      currentMarketData?.input_token_price ?? 0;
+                                      enrichedMarket?.inputToken.price ?? 0;
                                     let incentive_token_total_supply =
                                       parseFloat(token.total_supply ?? "0");
 
@@ -462,7 +461,7 @@ export const IncentivesRateSelector = React.forwardRef<
 
                     <div className="p-4">
                       <TertiaryLabel className="mb-1 font-medium text-secondary">
-                        {`Incentive Token per ${currentMarketData?.input_token_data.symbol}`}
+                        {`Incentive Token per ${enrichedMarket?.inputToken.symbol}`}
                       </TertiaryLabel>
 
                       {/**
@@ -502,7 +501,7 @@ export const IncentivesRateSelector = React.forwardRef<
                               marketActionForm.watch("quantity.amount") ?? "0"
                             );
                             let input_token_price =
-                              currentMarketData?.input_token_price ?? 0;
+                              enrichedMarket?.inputToken.price ?? 0;
                             let incentive_token_total_supply = parseFloat(
                               token.total_supply ?? "0"
                             );
@@ -575,7 +574,7 @@ export const IncentivesRateSelector = React.forwardRef<
                       />
 
                       <TertiaryLabel className="mt-2 text-secondary">
-                        {`The position will be deposited when there are ${token.distribution || 0} ${token.symbol.toUpperCase()} / YEAR being streamed per ${currentMarketData?.input_token_data.symbol}`}
+                        {`The position will be deposited when there are ${token.distribution || 0} ${token.symbol.toUpperCase()} / YEAR being streamed per ${enrichedMarket?.inputToken.symbol}`}
                       </TertiaryLabel>
                     </div>
                   </div>

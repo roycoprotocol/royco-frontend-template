@@ -14,7 +14,7 @@ import {
   useEnrichedPositionsRecipe,
   useEnrichedPositionsVault,
 } from "royco/hooks";
-import { useActiveMarket } from "../../../../hooks";
+
 import { useAccount } from "wagmi";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,6 @@ export const WithdrawSection = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-  const { marketMetadata, currentMarketData } = useActiveMarket();
   const { address, isConnected } = useAccount();
 
   const { transactions, setTransactions } = useMarketManager();
@@ -120,8 +119,8 @@ export const WithdrawSection = React.forwardRef<
     isError,
     error,
   } = useEnrichedPositionsRecipe({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
+    chain_id: enrichedMarket?.chainId,
+    market_id: enrichedMarket?.marketId,
     account_address: (address?.toLowerCase() as string) ?? "",
     page_index: withdrawSectionPage,
     filters: [
@@ -146,8 +145,8 @@ export const WithdrawSection = React.forwardRef<
     isError: isErrorPositionsVault,
     error: errorPositionsVault,
   } = useEnrichedPositionsVault({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
+    chain_id: enrichedMarket?.chainId,
+    market_id: enrichedMarket?.marketId,
     account_address: (address?.toLowerCase() as string) ?? "",
     page_index: withdrawSectionPage,
     filters: [
@@ -167,7 +166,7 @@ export const WithdrawSection = React.forwardRef<
   //   });
 
   const totalCount =
-    marketMetadata.market_type === MarketType.recipe.id
+    enrichedMarket?.marketType === MarketType.recipe.value
       ? !!positionsRecipe && "count" in positionsRecipe
         ? (positionsRecipe.count ?? 0)
         : 0
@@ -176,7 +175,7 @@ export const WithdrawSection = React.forwardRef<
         : 0;
 
   const positions =
-    marketMetadata.market_type === MarketType.recipe.id
+    enrichedMarket?.marketType === MarketType.recipe.value
       ? Array.isArray(positionsRecipe?.data)
         ? positionsRecipe.data
         : []
@@ -293,8 +292,8 @@ export const WithdrawSection = React.forwardRef<
                                   return (
                                     <WithdrawIncentiveTokenRow
                                       disabled={
-                                        marketMetadata.market_type ===
-                                        MarketType.recipe.id
+                                        enrichedMarket?.marketType ===
+                                        MarketType.recipe.value
                                           ? // @ts-ignore
                                             position?.is_claimed[tokenIndex] ===
                                             true
@@ -303,8 +302,8 @@ export const WithdrawSection = React.forwardRef<
                                       }
                                       onClick={() => {
                                         if (
-                                          marketMetadata.market_type ===
-                                          MarketType.recipe.id
+                                          enrichedMarket?.marketType ===
+                                          MarketType.recipe.value
                                         ) {
                                           const contractOptions =
                                             getRecipeIncentiveTokenWithdrawalTransactionOptions(
@@ -312,7 +311,7 @@ export const WithdrawSection = React.forwardRef<
                                                 account:
                                                   address?.toLowerCase() as string,
                                                 chain_id:
-                                                  marketMetadata.chain_id,
+                                                  enrichedMarket?.chainId,
                                                 position: {
                                                   weiroll_wallet:
                                                     /**
@@ -333,9 +332,10 @@ export const WithdrawSection = React.forwardRef<
                                                 account:
                                                   address?.toLowerCase() as string,
                                                 market_id:
-                                                  marketMetadata.market_id,
+                                                  enrichedMarket?.marketId ??
+                                                  "",
                                                 chain_id:
-                                                  marketMetadata.chain_id,
+                                                  enrichedMarket?.chainId ?? 1,
                                                 position: {
                                                   token_data: token,
                                                 },
@@ -367,8 +367,8 @@ export const WithdrawSection = React.forwardRef<
                               onClick={() => {
                                 if (!!position) {
                                   if (
-                                    marketMetadata.market_type ===
-                                    MarketType.recipe.id
+                                    enrichedMarket?.marketType ===
+                                    MarketType.recipe.value
                                   ) {
                                     const contractOptions =
                                       getRecipeInputTokenWithdrawalTransactionOptions(

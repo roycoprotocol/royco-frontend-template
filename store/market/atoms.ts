@@ -45,6 +45,10 @@ export const loadableEnrichedMarketAtom = atomWithQuery<EnrichedMarket>(
 
       if (!enrichedMarketId) throw new Error("Enriched market ID is not set");
 
+      api.subscribeControllerSubscribeBoyco({
+        email: "test@test.com",
+      });
+
       return api
         .marketControllerGetMarket(enrichedMarketId, {
           customTokenData,

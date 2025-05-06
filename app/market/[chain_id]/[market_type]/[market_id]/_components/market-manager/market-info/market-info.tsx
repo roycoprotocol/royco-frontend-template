@@ -5,7 +5,6 @@ import React, { useMemo, useState, useEffect } from "react";
 import validator from "validator";
 import { MarketDetails } from "./market-details/market-details";
 import { AnnualYieldDetails } from "./annual-yield-details/annual-yield-details";
-import { useActiveMarket } from "../../hooks";
 import { PrimaryLabel, SecondaryLabel } from "../../composables";
 import { TokenEstimator } from "@/app/_components/ui/token-estimator";
 import { Button } from "@/components/ui/button";
@@ -14,10 +13,6 @@ import { LockIcon } from "lucide-react";
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
-import {
-  loadableSpecificRecipePositionAtom,
-  loadableSpecificVaultPositionAtom,
-} from "@/store/market/atoms";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,

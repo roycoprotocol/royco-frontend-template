@@ -8,7 +8,6 @@ import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { WithdrawSection } from "./withdraw-section";
 import { SlideUpWrapper } from "@/components/animations";
 import { BoycoWithdrawSection } from "./boyco-withdraw-section";
-import { useActiveMarket } from "../../../../hooks";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
 
@@ -27,8 +26,6 @@ export const WithdrawAction = React.forwardRef<
       {...props}
     >
       <SlideUpWrapper className="mt-5 flex flex-1 grow flex-col overflow-y-scroll">
-        {/* <WithdrawSection /> */}
-
         {enrichedMarket?.category === "boyco" ? (
           <BoycoWithdrawSection />
         ) : (
