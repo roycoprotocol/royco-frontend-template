@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { marketSearchAtom } from "@/store/explore/explore-market";
 import { useAtom } from "jotai";
 import { motion, AnimatePresence } from "framer-motion";
+import { InputAssetFilter } from "./filters/input-asset-filter";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
@@ -42,7 +43,13 @@ export const MarketFilter = React.forwardRef<
       </div>
 
       <div className="relative flex w-full flex-1 items-center justify-between gap-2 md:justify-end">
-        <ChainFilter />
+        <div className="flex flex-wrap items-center gap-2">
+          <ChainFilter />
+
+          <InputAssetFilter />
+        </div>
+
+        {/* <IncentiveAssetFilter /> */}
 
         <div className={cn("flex items-center self-end")}>
           <AnimatePresence>

@@ -1,6 +1,7 @@
 import {
   CustomTokenDataElement,
   ExploreMarketResponse,
+  ExploreSettingsMarketResponse,
   Filter,
   Sorting,
 } from "royco/api";
@@ -122,6 +123,16 @@ export const customTokenDataAtom = atom<CustomTokenDataElement[]>([]);
 
 export const marketPageAtom = atom<number>(1);
 
+export const loadableExploreAssetFilterOptionsAtom =
+  atomWithQuery<ExploreSettingsMarketResponse>((get) => ({
+    queryKey: ["explore-asset-filter-options"],
+    queryFn: async ({ queryKey: [, params] }) => {
+      const response = await api.marketControllerGetMarketSettings();
+
+      return response.data;
+    },
+  }));
+
 export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
   (get) => ({
     queryKey: [
@@ -147,7 +158,16 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
         body.searchKey = _params.searchKey;
       }
       if (_params.filters.length > 0) {
-        body.filters = _params.filters;
+        body.filters = _params.filters.filter((filter: Filter) => {
+          if (
+            filter.condition === "inArray" &&
+            Array.isArray(filter.value) &&
+            filter.value.length === 0
+          ) {
+            return false;
+          }
+          return true;
+        });
       }
       if (_params.sorting.length > 0) {
         body.sorting = _params.sorting;

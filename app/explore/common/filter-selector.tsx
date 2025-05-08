@@ -18,9 +18,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export const FilterSelector = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
+    staticData?: {
+      label: string;
+      value: any;
+      icon?: React.ReactNode;
+    }[];
     data: {
       label: string;
       value: any;
+      icon?: React.ReactNode;
     }[];
     selected?: any[];
     onSelect?: (id: string) => void;
@@ -40,6 +46,7 @@ export const FilterSelector = React.forwardRef<
       onClear,
       containerClassName,
       inputPlaceholder = "Search",
+      staticData,
       disabled = false,
       ...props
     },
@@ -58,14 +65,22 @@ export const FilterSelector = React.forwardRef<
 
     const searchData = useMemo(() => {
       if (!search) {
-        return data;
+        return data.sort((a, b) =>
+          selected?.includes(a.value) ? -1 : selected?.includes(b.value) ? 1 : 0
+        );
       }
       return fuse.search(search).map((result) => result.item);
     }, [search, data, fuse]);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover
+          open={open}
+          onOpenChange={() => {
+            setSearch("");
+            setOpen(!open);
+          }}
+        >
           <PopoverTrigger asChild>
             <div
               className={cn(
@@ -83,7 +98,7 @@ export const FilterSelector = React.forwardRef<
               side="bottom"
               align="end"
               className={cn(
-                "mx-3 flex h-72 flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
+                "mx-3 flex h-80 flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
                 containerClassName
               )}
             >
@@ -103,6 +118,40 @@ export const FilterSelector = React.forwardRef<
                 containerClassName="h-10 font-normal text-sm text-_primary_ p-3 border-none"
                 placeholder={inputPlaceholder}
               />
+
+              <hr className="my-0 border-_divider_" />
+
+              <div className="flex flex-wrap gap-1 p-3">
+                {staticData?.map((item, index) => {
+                  const isSelected = selected?.some(
+                    (value) => value === item.value
+                  );
+
+                  return (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        onSelect?.(item.value);
+                      }}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-1 rounded-sm bg-_surface_tertiary px-2 py-1 hover:bg-_surface_secondary",
+                        isSelected && "border border-_primary_"
+                      )}
+                    >
+                      <SecondaryLabel
+                        className={cn(
+                          "text-xs font-normal text-_secondary_",
+                          isSelected && "font-medium text-_primary_"
+                        )}
+                      >
+                        {item.label}
+                      </SecondaryLabel>
+                    </Button>
+                  );
+                })}
+              </div>
 
               <hr className="my-0 border-_divider_" />
 
@@ -153,14 +202,18 @@ export const FilterSelector = React.forwardRef<
                             )}
                           </div>
 
-                          <PrimaryLabel
-                            className={cn(
-                              "text-base font-normal text-_secondary_",
-                              isSelected && "text-_primary_"
-                            )}
-                          >
-                            {item.label}
-                          </PrimaryLabel>
+                          <div className="flex items-center gap-1">
+                            {item.icon}
+
+                            <PrimaryLabel
+                              className={cn(
+                                "text-base font-normal text-_secondary_",
+                                isSelected && "text-_primary_"
+                              )}
+                            >
+                              {item.label}
+                            </PrimaryLabel>
+                          </div>
                         </div>
                       </div>
                     );
