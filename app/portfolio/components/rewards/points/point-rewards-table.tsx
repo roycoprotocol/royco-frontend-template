@@ -23,8 +23,6 @@ export const PointRewardsTable = React.forwardRef<
     getCoreRowModel: getCoreRowModel(),
   });
 
-  console.log({ data });
-
   return (
     <div className="w-full">
       <Table ref={ref} className={cn(className)} {...props}>

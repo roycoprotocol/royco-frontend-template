@@ -1,5 +1,4 @@
 import React from "react";
-import { capitalize } from "lodash";
 
 import { ColumnDef } from "@tanstack/react-table";
 
