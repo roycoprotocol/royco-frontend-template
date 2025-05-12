@@ -2,14 +2,11 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -22,21 +19,20 @@ import {
   PositionsVaultColumnDataElement,
   positionsVaultColumns,
 } from "./positions-vault-columns";
-
-import { motion, AnimatePresence } from "framer-motion";
-import { FallMotion } from "@/components/animations";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { AlertIndicator } from "@/components/common";
 
 export const PositionsVaultTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     data: PositionsVaultColumnDataElement[];
-    columns: typeof positionsVaultColumns;
+    isLoading: boolean;
+    isRefetching: boolean;
   }
->(({ className, data, columns, ...props }, ref) => {
+>(({ className, data, isLoading, isRefetching, ...props }, ref) => {
   const table = useReactTable({
     data,
-    columns,
+    columns: positionsVaultColumns,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -95,21 +91,21 @@ export const PositionsVaultTable = React.forwardRef<
         <TableBody className={cn("overflow-y-scroll bg-white")}>
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No positions found.
+              <TableCell
+                colSpan={positionsVaultColumns.length}
+                className="h-24 text-center"
+              >
+                <AlertIndicator>No positions found.</AlertIndicator>
               </TableCell>
             </TableRow>
           ) : (
             table.getRowModel().rows.map((row, index) => {
-              const rowIndex = row.index;
-
               return (
                 <TableRow
-                  key={`list:row:${index}`}
+                  key={`row:${row.index}`}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "hover:bg-focus data-[state=selected]:bg-focus",
-                    rowIndex !== 20 - 1
+                    "hover:bg-focus data-[state=selected]:bg-focus"
                   )}
                 >
                   {row.getVisibleCells().map((cell, index) => (

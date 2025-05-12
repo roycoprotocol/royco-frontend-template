@@ -1,159 +1,88 @@
 "use client";
 
-import React, { Fragment, useEffect, useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import {
-  useEnrichedAccountBalancesRecipeInMarket,
-  useEnrichedAccountBalancesVaultInMarket,
-} from "royco/hooks";
 import { useAccount } from "wagmi";
-import { isEqual, set } from "lodash";
-import { produce } from "immer";
-import { MarketType, MarketUserType, useMarketManager } from "@/store";
-import { SpringNumber } from "@/components/composables";
 import { AlertIndicator, InfoCard, TokenDisplayer } from "@/components/common";
-import { useActiveMarket } from "../../hooks";
 import {
   INFO_ROW_CLASSES,
   PrimaryLabel,
   TertiaryLabel,
 } from "../../composables";
 import { SlideUpWrapper } from "@/components/animations";
+import { useAtomValue } from "jotai";
+import {
+  loadableSpecificRecipePositionAtom,
+  loadableSpecificVaultPositionAtom,
+  loadableEnrichedMarketAtom,
+  loadableSpecificBoycoPositionAtom,
+} from "@/store/market";
+import NumberFlow from "@number-flow/react";
 
 export const BalanceIndicator = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
 
-  const { marketMetadata, currentMarketData } = useActiveMarket();
-  const { userType } = useMarketManager();
-
-  /**
-   * Recipe balances for AP & IP
-   */
-  const {
-    isLoading: isLoadingRecipe,
-    isRefetching: isRefetchingRecipe,
-    data: dataRecipe,
-  } = useEnrichedAccountBalancesRecipeInMarket({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
-    account_address: address ? address.toLowerCase() : "",
-    custom_token_data: undefined,
-  });
-
-  /**
-   * Vault balances for IP
-   */
-  const {
-    isLoading: isLoadingVault,
-    isRefetching: isRefetchingVault,
-    data: dataVault,
-  } = useEnrichedAccountBalancesVaultInMarket({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
-    account_address: address ? address.toLowerCase() : "",
-    custom_token_data: undefined,
-  });
-
-  /**
-   * Placeholder data
-   */
-  const [placeholderData, setPlaceholderData] = React.useState<
-    Array<typeof dataRecipe | typeof dataVault | undefined>
-  >([undefined, undefined]);
-
-  /**
-   * @effect Update placeholder data for recipe
-   */
-  useEffect(() => {
-    if (
-      marketMetadata.market_type === MarketType.recipe.id &&
-      isLoadingRecipe === false &&
-      isRefetchingRecipe === false &&
-      !isEqual(dataRecipe, placeholderData[1])
-    ) {
-      setPlaceholderData((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          if (!isEqual(draft[1], dataRecipe)) {
-            draft[0] = draft[1] as typeof dataRecipe;
-            draft[1] = dataRecipe as typeof dataRecipe;
-          }
-        });
-      });
-    }
-  }, [isLoadingRecipe, isRefetchingRecipe, dataRecipe]);
-
-  /**
-   * @effect Update placeholder data for vault
-   */
-  useEffect(() => {
-    if (
-      marketMetadata.market_type === MarketType.vault.id &&
-      isLoadingVault === false &&
-      isRefetchingVault === false &&
-      !isEqual(dataVault, placeholderData[1])
-    ) {
-      setPlaceholderData((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          if (!isEqual(draft[1], dataVault)) {
-            draft[0] = draft[1] as typeof dataVault;
-            draft[1] = dataVault as typeof dataVault;
-          }
-        });
-      });
-    }
-  }, [isLoadingVault, isRefetchingVault, dataVault]);
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+  const { data: specificRecipePosition, isLoading: isLoadingRecipePosition } =
+    useAtomValue(loadableSpecificRecipePositionAtom);
+  const { data: specificVaultPosition, isLoading: isLoadingVaultPosition } =
+    useAtomValue(loadableSpecificVaultPositionAtom);
+  const { data: specificBoycoPosition, isLoading: isLoadingBoycoPosition } =
+    useAtomValue(loadableSpecificBoycoPositionAtom);
 
   const isLoading = useMemo(
-    () => isLoadingRecipe || isLoadingVault,
-    [isLoadingRecipe, isLoadingVault]
+    () => isLoadingRecipePosition || isLoadingVaultPosition,
+    [isLoadingRecipePosition, isLoadingVaultPosition]
   );
 
   const totalBalance = useMemo(() => {
-    let previousValue = 0;
-    if (placeholderData[0]) {
-      if (userType === MarketUserType.ap.id) {
-        previousValue = placeholderData[0].balance_usd_ap;
-      } else {
-        previousValue = placeholderData[0].balance_usd_ip;
+    if (!!enrichedMarket) {
+      if (enrichedMarket.marketType === 0) {
+        if (enrichedMarket.category === "boyco") {
+          return specificBoycoPosition?.balanceUsd ?? 0;
+        } else {
+          return specificRecipePosition?.balanceUsd ?? 0;
+        }
+      } else if (enrichedMarket.marketType === 1) {
+        return specificVaultPosition?.balanceUsd ?? 0;
       }
     }
 
-    let currentValue = 0;
-    if (placeholderData[1]) {
-      if (userType === MarketUserType.ap.id) {
-        currentValue = placeholderData[1].balance_usd_ap;
-      } else {
-        currentValue = placeholderData[1].balance_usd_ip;
-      }
-    }
-
-    return [previousValue, currentValue];
-  }, [userType, placeholderData]);
+    return 0;
+  }, [enrichedMarket, specificRecipePosition, specificVaultPosition]);
 
   const inputTokenData = useMemo(() => {
-    if (userType === MarketUserType.ap.id) {
-      return placeholderData[1]?.input_token_data_ap;
+    if (!!enrichedMarket) {
+      if (enrichedMarket.marketType === 0) {
+        return specificRecipePosition?.inputToken ?? null;
+      } else if (enrichedMarket.marketType === 1) {
+        return specificVaultPosition?.inputToken ?? null;
+      }
     }
 
-    if (userType === MarketUserType.ip.id) {
-      return placeholderData[1]?.input_token_data_ip;
-    }
-  }, [userType, placeholderData]);
+    return null;
+  }, [enrichedMarket, specificRecipePosition, specificVaultPosition]);
 
   const incentivesTokenData = useMemo(() => {
-    if (userType === MarketUserType.ap.id) {
-      return placeholderData[1]?.incentives_ap_data;
+    if (!!enrichedMarket) {
+      if (enrichedMarket.marketType === 0) {
+        if (enrichedMarket.category === "boyco") {
+          return specificBoycoPosition?.incentiveTokens ?? [];
+        } else {
+          return specificRecipePosition?.incentiveTokens ?? [];
+        }
+      } else if (enrichedMarket.marketType === 1) {
+        return specificVaultPosition?.incentiveTokens ?? [];
+      }
     }
 
-    if (userType === MarketUserType.ip.id) {
-      return placeholderData[1]?.incentives_ip_data;
-    }
-  }, [userType, placeholderData]);
+    return [];
+  }, [enrichedMarket, specificRecipePosition, specificVaultPosition]);
 
-  if (!currentMarketData) return null;
+  if (!enrichedMarket) return null;
 
   if (!isConnected) {
     return (
@@ -172,7 +101,13 @@ export const BalanceIndicator = React.forwardRef<
     );
   }
 
-  if (isConnected && !isLoading && !placeholderData[1]) {
+  if (
+    isConnected &&
+    !isLoading &&
+    !specificRecipePosition &&
+    !specificVaultPosition &&
+    !specificBoycoPosition
+  ) {
     return (
       <div
         ref={ref}
@@ -198,15 +133,14 @@ export const BalanceIndicator = React.forwardRef<
        */}
       <div>
         <TertiaryLabel className="text-sm">
-          {currentMarketData?.category === "boyco"
-            ? "Balance Supplied"
+          {enrichedMarket?.category === "boyco"
+            ? "Receipt Token Balance"
             : "Your Balance"}
         </TertiaryLabel>
         <PrimaryLabel className="mt-1 text-2xl font-medium">
-          <SpringNumber
-            previousValue={totalBalance[0]}
-            currentValue={totalBalance[1]}
-            numberFormatOptions={{
+          <NumberFlow
+            value={totalBalance}
+            format={{
               style: "currency",
               currency: "USD",
               notation: "standard",
@@ -224,7 +158,41 @@ export const BalanceIndicator = React.forwardRef<
       <div className={cn("mt-5")}>
         <TertiaryLabel className="mb-3 text-sm">Tokens Supplied</TertiaryLabel>
 
-        {inputTokenData ? (
+        {enrichedMarket.category === "boyco" &&
+        specificBoycoPosition?.receiptTokensBreakdown
+          ? specificBoycoPosition.receiptTokensBreakdown.map((token) => (
+              <InfoCard key={token.id}>
+                <SlideUpWrapper delay={0.1}>
+                  <InfoCard.Row className={INFO_ROW_CLASSES}>
+                    <InfoCard.Row.Key>
+                      <TokenDisplayer
+                        tokens={[token]}
+                        imageClassName="hidden"
+                        symbols={true}
+                        symbolClassName="text-sm font-medium"
+                      />
+                    </InfoCard.Row.Key>
+
+                    <InfoCard.Row.Value className="gap-0">
+                      <NumberFlow
+                        className="text-sm font-medium"
+                        value={token.tokenAmount}
+                        format={{
+                          style: "decimal",
+                          notation: "standard",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 8,
+                        }}
+                      />
+                    </InfoCard.Row.Value>
+                  </InfoCard.Row>
+                </SlideUpWrapper>
+              </InfoCard>
+            ))
+          : null}
+
+        {enrichedMarket.category !== "boyco" && inputTokenData && (
           <InfoCard>
             <SlideUpWrapper delay={0.1}>
               <InfoCard.Row className={INFO_ROW_CLASSES}>
@@ -237,11 +205,10 @@ export const BalanceIndicator = React.forwardRef<
                 </InfoCard.Row.Key>
 
                 <InfoCard.Row.Value className="gap-0">
-                  <SpringNumber
+                  <NumberFlow
                     className="text-sm font-medium"
-                    previousValue={0}
-                    currentValue={inputTokenData?.token_amount ?? 0}
-                    numberFormatOptions={{
+                    value={inputTokenData?.tokenAmount}
+                    format={{
                       style: "decimal",
                       notation: "standard",
                       useGrouping: true,
@@ -253,61 +220,56 @@ export const BalanceIndicator = React.forwardRef<
               </InfoCard.Row>
             </SlideUpWrapper>
           </InfoCard>
-        ) : (
-          <span>--</span>
         )}
       </div>
 
-      {currentMarketData?.category !== "boyco" && (
-        <Fragment>
-          <hr className="my-3" />
-          {/**
-           * Incentives Tokens
-           */}
-          <div>
-            <TertiaryLabel className="mb-3 text-sm">
-              Incentives Accumulated
-            </TertiaryLabel>
+      <Fragment>
+        <hr className="my-3" />
+        {/**
+         * Incentives Tokens
+         */}
+        <div>
+          <TertiaryLabel className="mb-3 text-sm">
+            Incentives Accumulated
+          </TertiaryLabel>
 
-            {incentivesTokenData && incentivesTokenData.length > 0 ? (
-              <InfoCard className="flex flex-col gap-2">
-                {incentivesTokenData.map((incentive, index) => {
-                  return (
-                    <SlideUpWrapper delay={0.1 + index * 0.1}>
-                      <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
-                        <InfoCard.Row.Key>
-                          <TokenDisplayer
-                            tokens={[incentive] as any}
-                            symbols={true}
-                            symbolClassName="text-sm font-medium"
-                          />
-                        </InfoCard.Row.Key>
+          {incentivesTokenData && incentivesTokenData.length > 0 ? (
+            <InfoCard className="flex flex-col gap-2">
+              {incentivesTokenData.map((incentive, index) => {
+                return (
+                  <SlideUpWrapper delay={0.1 + index * 0.1}>
+                    <InfoCard.Row className={cn(INFO_ROW_CLASSES)}>
+                      <InfoCard.Row.Key>
+                        <TokenDisplayer
+                          tokens={[incentive] as any}
+                          symbols={true}
+                          symbolClassName="text-sm font-medium"
+                        />
+                      </InfoCard.Row.Key>
 
-                        <InfoCard.Row.Value className="gap-0">
-                          <SpringNumber
-                            className="text-sm font-medium"
-                            previousValue={0}
-                            currentValue={incentive.token_amount ?? 0}
-                            numberFormatOptions={{
-                              style: "decimal",
-                              notation: "standard",
-                              useGrouping: true,
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 8,
-                            }}
-                          />
-                        </InfoCard.Row.Value>
-                      </InfoCard.Row>
-                    </SlideUpWrapper>
-                  );
-                })}
-              </InfoCard>
-            ) : (
-              <span>--</span>
-            )}
-          </div>{" "}
-        </Fragment>
-      )}
+                      <InfoCard.Row.Value className="gap-0">
+                        <NumberFlow
+                          className="text-sm font-medium"
+                          value={incentive.tokenAmount}
+                          format={{
+                            style: "decimal",
+                            notation: "standard",
+                            useGrouping: true,
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 8,
+                          }}
+                        />
+                      </InfoCard.Row.Value>
+                    </InfoCard.Row>
+                  </SlideUpWrapper>
+                );
+              })}
+            </InfoCard>
+          ) : (
+            <span>--</span>
+          )}
+        </div>{" "}
+      </Fragment>
     </div>
   );
 });

@@ -12,7 +12,6 @@ import {
 } from "royco/utils";
 import { MarketVaultIncentiveAction, useMarketManager } from "@/store";
 import { MarketActionFormSchema } from "../../..";
-import { useActiveMarket } from "../../../../../hooks";
 import {
   DeleteTokenButton,
   IncentiveTokenSelector,
@@ -20,6 +19,8 @@ import {
   TimestampLabel,
   TimestampSelector,
 } from "../../composables";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market";
 
 export const IPLimitOfferIncentivesUI = React.forwardRef<
   HTMLDivElement,
@@ -29,7 +30,7 @@ export const IPLimitOfferIncentivesUI = React.forwardRef<
 >(({ className, marketActionForm, ...props }, ref) => {
   const { vaultIncentiveActionType } = useMarketManager();
 
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>

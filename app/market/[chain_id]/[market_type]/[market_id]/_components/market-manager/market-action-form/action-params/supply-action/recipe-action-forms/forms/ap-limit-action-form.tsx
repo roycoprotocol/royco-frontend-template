@@ -3,22 +3,17 @@ import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
-import {
-  IncentiveTokenSelector,
-  InputExpirySelector,
-} from "../../../composables";
+import { InputExpirySelector } from "../../../composables";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { FundingSourceSelector } from "../../components/funding-source-selector";
-import { RoycoMarketType } from "royco/market";
-import { useActiveMarket } from "../../../../../../hooks";
 import { SlideUpWrapper } from "@/components/animations";
-import { FormInputLabel } from "@/components/composables";
 import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrapper";
 import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper";
 import { parseTokenAmountToRawAmount } from "royco/utils";
-import { useMarketManager } from "@/store/use-market-manager";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const APR_LOCKUP_CONSTANT = 365 * 24 * 60 * 60;
 
@@ -28,32 +23,27 @@ export const APLimitActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { currentMarketData, marketMetadata, currentHighestOffers } =
-    useActiveMarket();
-
-  const { viewType } = useMarketManager();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const highestIncentiveData = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
-      if (
-        !currentHighestOffers ||
-        currentHighestOffers.ip_offers.length === 0 ||
-        currentHighestOffers.ip_offers[0].tokens_data.length === 0
-      ) {
+    if (enrichedMarket && enrichedMarket?.marketType === 0) {
+      if (enrichedMarket.activeIncentives.length === 0) {
         return null;
       }
 
-      return currentHighestOffers.ip_offers[0].tokens_data[0];
+      return enrichedMarket.activeIncentives[0];
     }
-  }, [currentMarketData, currentHighestOffers]);
+  }, [enrichedMarket]);
 
   useEffect(() => {
     if (highestIncentiveData) {
       const token = {
         ...highestIncentiveData,
-        total_supply: highestIncentiveData.total_supply?.toString() || "0",
+        total_supply: highestIncentiveData.totalSupply?.toString() || "0",
         fdv: highestIncentiveData.fdv?.toString() || "0",
         token_id: highestIncentiveData.id,
+        chain_id: highestIncentiveData.chainId,
+        contract_address: highestIncentiveData.contractAddress,
       };
 
       delete (token as any).annual_change_ratio;
@@ -66,9 +56,7 @@ export const APLimitActionForm = React.forwardRef<
       marketActionForm.setValue(
         "annual_change_ratio",
         (
-          parseFloat(
-            highestIncentiveData.annual_change_ratio?.toString() || "0"
-          ) * 100
+          parseFloat(highestIncentiveData.yieldRate?.toString() || "0") * 100
         ).toString()
       );
       marketActionForm.setValue("incentive_tokens", [token]);
@@ -76,11 +64,11 @@ export const APLimitActionForm = React.forwardRef<
   }, [highestIncentiveData]);
 
   const selectedInputToken = useMemo(() => {
-    if (!currentMarketData?.input_token_data) {
+    if (!enrichedMarket?.inputToken) {
       return;
     }
-    return currentMarketData.input_token_data;
-  }, [currentMarketData]);
+    return enrichedMarket.inputToken;
+  }, [enrichedMarket]);
   const selectedIncentiveTokens = marketActionForm.watch("incentive_tokens");
 
   const updateIncentiveTokenAmount = (
@@ -92,7 +80,7 @@ export const APLimitActionForm = React.forwardRef<
     const apr = parseFloat(incentiveApr || "0") / 100;
     const inputAmountUsd = inputTokenAmount * inputToken.price;
 
-    const lockupTime = parseInt(currentMarketData?.lockup_time || "0");
+    const lockupTime = parseInt(enrichedMarket?.lockupTime || "0");
 
     let incentiveAmount = "0";
     if (incentiveToken.price) {
@@ -130,7 +118,7 @@ export const APLimitActionForm = React.forwardRef<
     const inputAmountUsd = inputTokenAmount * inputToken.price;
     const incentiveAmountUsd = incentiveToken.amount * incentiveToken.price;
 
-    const lockupTime = parseInt(currentMarketData?.lockup_time || "0");
+    const lockupTime = parseInt(enrichedMarket?.lockupTime || "0");
 
     let apr = 0;
     if (inputAmountUsd > 0 && lockupTime > 0) {
@@ -159,12 +147,12 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Enso Shortcuts Widget
        */}
-      {currentMarketData?.chain_id !== SONIC_CHAIN_ID && (
+      {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
         <div className="mt-2">
           <EnsoShortcutsWidget
-            token={currentMarketData?.input_token_data.contract_address!}
-            symbol={currentMarketData?.input_token_data.symbol}
-            chainId={currentMarketData?.chain_id!}
+            token={enrichedMarket?.inputToken?.contractAddress!}
+            symbol={enrichedMarket?.inputToken?.symbol ?? ""}
+            chainId={enrichedMarket?.chainId!}
           />
         </div>
       )}
@@ -287,7 +275,7 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Input Expiry
        */}
-      {currentMarketData.category !== "boyco" && (
+      {enrichedMarket?.category !== "boyco" && (
         <div className="mt-5">
           <SlideUpWrapper delay={0.5}>
             <InputExpirySelector marketActionForm={marketActionForm} />

@@ -1,10 +1,8 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { isSolidityAddressValid, parseFormattedValueToText } from "royco/utils";
-import { parseTextToFormattedValue } from "royco/utils";
+import { isSolidityAddressValid } from "royco/utils";
 import { Input } from "@/components/ui/input";
 import { useErc4626VaultChecker } from "royco/hooks";
-import { useActiveMarket } from "../../../../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { BadgeAlertIcon } from "lucide-react";
 import {
@@ -13,6 +11,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { BadgeCheckIcon } from "lucide-react";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market";
 
 export const InputVaultSelector = React.forwardRef<
   HTMLInputElement,
@@ -27,10 +27,10 @@ export const InputVaultSelector = React.forwardRef<
     { className, currentValue, setCurrentValue, containerClassName, ...props },
     ref
   ) => {
-    const { marketMetadata } = useActiveMarket();
+    const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
     const { data, isLoading } = useErc4626VaultChecker({
-      chain_id: marketMetadata.chain_id,
+      chain_id: enrichedMarket?.chainId ?? 1,
       contract_address: currentValue,
     });
 

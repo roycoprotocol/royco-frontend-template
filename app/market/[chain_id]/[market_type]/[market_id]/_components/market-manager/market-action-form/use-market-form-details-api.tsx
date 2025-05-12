@@ -1,104 +1,38 @@
-import {
-  getTokenQuote,
-  usePrepareMarketAction,
-  useTokenQuotes,
-} from "royco/hooks";
-import { useActiveMarket } from "../../hooks";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "./market-action-form-schema";
 import {
   MarketFundingType,
-  MarketSteps,
   MarketType,
   MarketUserType,
-  MarketVaultIncentiveAction,
-  useGlobalStates,
   useMarketManager,
 } from "@/store";
-import { useAccount } from "wagmi";
 import { RoycoMarketOfferType } from "royco/market";
 import { parseRawAmount, parseTokenAmountToRawAmount } from "royco/utils";
 import { NULL_ADDRESS } from "royco/constants";
+import { usePrepareMarketActionApi } from "../../hooks/use-prepare-market-action-api";
+import { useAtom } from "jotai";
+import { customTokenDataAtom } from "@/store/global";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
-export const useMarketFormDetails = (
+export const useMarketFormDetailsApi = (
   marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>
 ) => {
-  const { currentMarketData, marketMetadata } = useActiveMarket();
-  const {
-    marketStep,
-    setMarketStep,
-    transactions,
-    setTransactions,
-    actionType,
-    setActionType,
-    userType,
-    offerType,
-    setUserType,
-    viewType,
-    vaultIncentiveActionType,
-    setVaultIncentiveActionType,
-    fundingType,
-  } = useMarketManager();
+  const { userType, offerType, vaultIncentiveActionType, fundingType } =
+    useMarketManager();
 
-  const propsTokenQuotes = useTokenQuotes({
-    token_ids: [
-      currentMarketData?.input_token_id ?? "",
-      ...marketActionForm.watch("incentive_tokens").map((token) => token.id),
-    ].filter(Boolean),
-    custom_token_data:
-      marketMetadata.market_type === MarketType.vault.id &&
-      offerType === RoycoMarketOfferType.limit.id
-        ? marketActionForm
-            .watch("incentive_tokens")
-            .map((incentive) => {
-              const total_supply = parseFloat(incentive.total_supply ?? "0");
-              const fdv = parseFloat(incentive.fdv ?? "0");
-              const price = fdv / total_supply;
+  const [customTokenData, setCustomTokenData] = useAtom(customTokenDataAtom);
 
-              return {
-                token_id: incentive.id,
-                ...(isFinite(price) && { price: price.toString() }),
-                ...(isFinite(total_supply) && {
-                  total_supply: total_supply.toString(),
-                }),
-                ...(isFinite(fdv) && { fdv: fdv.toString() }),
-              };
-            })
-            .filter(
-              (
-                data
-              ): data is {
-                token_id: string;
-                price?: string;
-                total_supply?: string;
-                fdv?: string;
-              } => Object.keys(data).length > 1
-            )
-        : undefined,
-  });
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-  const { address, isConnected } = useAccount();
-
-  const { customTokenData } = useGlobalStates();
-
-  const {
-    isValid,
-    isLoading,
-    // @ts-ignore
-    isReady,
-    writeContractOptions,
-    canBePerformedCompletely,
-    canBePerformedPartially,
-    incentiveData,
-  } = usePrepareMarketAction({
-    chain_id: marketMetadata.chain_id,
-    market_id: marketMetadata.market_id,
-    market_type: marketMetadata.market_type,
+  return usePrepareMarketActionApi({
+    market_type:
+      enrichedMarket?.marketType === 0
+        ? MarketType.recipe.id
+        : MarketType.vault.id,
     user_type: userType,
     offer_type: offerType,
-
-    account: address,
 
     quantity: parseRawAmount(marketActionForm.watch("quantity")?.raw_amount),
     funding_vault:
@@ -115,7 +49,7 @@ export const useMarketFormDetails = (
     }),
 
     expiry:
-      currentMarketData?.category === "boyco"
+      enrichedMarket?.category === "boyco"
         ? "1738540800"
         : marketActionForm.watch("no_expiry")
           ? "0"
@@ -139,8 +73,7 @@ export const useMarketFormDetails = (
             ) *
               BigInt(10) ** BigInt(18) * // Scale up to 18 decimals
               BigInt(10) ** BigInt(incentiveData.decimals)) / // Multiply by incentive token decimals
-            BigInt(10) **
-              BigInt(currentMarketData?.input_token_data.decimals ?? 0) / // Divide by input token decimals
+            BigInt(10) ** BigInt(enrichedMarket?.inputToken.decimals ?? 0) / // Divide by input token decimals
             BigInt(365 * 24 * 60 * 60); // Divide by seconds in a year
 
           const rateInWei = distributionInWei.toString();
@@ -151,33 +84,31 @@ export const useMarketFormDetails = (
         }
       }),
 
-    custom_token_data:
-      marketMetadata.market_type === MarketType.vault.id &&
+    customTokenData:
+      enrichedMarket?.marketType === MarketType.vault.value &&
       offerType === RoycoMarketOfferType.limit.id
         ? marketActionForm
             .watch("incentive_tokens")
             .map((incentive) => {
-              const total_supply = parseFloat(incentive.total_supply ?? "0");
+              const totalSupply = parseFloat(incentive.total_supply ?? "0");
               const fdv = parseFloat(incentive.fdv ?? "0");
-              const price = fdv / total_supply;
+              const price = fdv / totalSupply;
 
               return {
-                token_id: incentive.id,
-                ...(isFinite(price) && { price: price.toString() }),
-                ...(isFinite(total_supply) && {
-                  total_supply: total_supply.toString(),
-                }),
-                ...(isFinite(fdv) && { fdv: fdv.toString() }),
+                id: incentive.id,
+                ...(isFinite(price) && { price }),
+                ...(isFinite(totalSupply) && { totalSupply }),
+                ...(isFinite(fdv) && { fdv }),
               };
             })
             .filter(
               (
                 data
               ): data is {
-                token_id: string;
-                price?: string;
-                total_supply?: string;
-                fdv?: string;
+                id: string;
+                price?: number;
+                totalSupply?: number;
+                fdv?: number;
               } => Object.keys(data).length > 1
             )
         : customTokenData,
@@ -225,21 +156,8 @@ export const useMarketFormDetails = (
       }),
 
     vault_incentive_action: vaultIncentiveActionType,
-    offer_validation_url: `/api/validate`,
-    frontend_fee_recipient: process.env.NEXT_PUBLIC_FRONTEND_FEE_RECIPIENT,
-
     incentive_asset_ids: marketActionForm
       .watch("incentive_assets")
       ?.map((incentive) => incentive.id),
   });
-
-  return {
-    isValid,
-    isLoading,
-    isReady,
-    writeContractOptions,
-    canBePerformedCompletely,
-    canBePerformedPartially,
-    incentiveData,
-  };
 };

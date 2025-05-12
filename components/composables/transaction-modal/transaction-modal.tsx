@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertIndicator } from "@/components/common";
+import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,19 +24,33 @@ import { ErrorAlert } from "../alerts";
 import toast from "react-hot-toast";
 import { isEqual } from "lodash";
 import { TransactionRow } from "./transaction-row";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TransactionConfirmationModal } from "./transaction-confirmation-modal";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import confetti from "canvas-confetti";
 import { TypedRoycoTransactionType } from "royco/market";
-import { TransactionOptionsType } from "royco/types";
 import { BoycoWithdrawalModal } from "./boyco-withdrawal-modal";
+import { ModalTxOption } from "@/types";
+import { lastRefreshTimestampAtom } from "@/store/global";
+import { useAtom } from "jotai";
+import { api } from "@/app/api/royco";
+import formatNumber from "@/utils/numbers";
+import {
+  PrimaryLabel,
+  SecondaryLabel,
+} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { LoadingCircle } from "@/components/animations/loading-circle";
+import { SlideUpWrapper } from "@/components/animations";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
+  const [lastRefreshTimestamp, setLastRefreshTimestamp] = useAtom(
+    lastRefreshTimestampAtom
+  );
+
   const { chain } = useAccount();
   const chainId = chain?.id;
 
@@ -53,13 +67,15 @@ export const TransactionModal = React.forwardRef<
 
   const queryClient = useQueryClient();
 
+  const { address } = useAccount();
+
   const [isTransactionTimeout, setIsTransactionTimeout] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isBoycoWithdrawalModalOpen, setIsBoycoWithdrawalModalOpen] =
     useState(false);
 
   const [currentTransaction, setCurrentTransaction] =
-    React.useState<TransactionOptionsType | null>(null);
+    React.useState<ModalTxOption | null>(null);
 
   const {
     status: txStatus,
@@ -205,6 +221,45 @@ export const TransactionModal = React.forwardRef<
     }
   };
 
+  const showSimulation = useMemo(() => {
+    if (transactions.length !== 0) {
+      if (
+        transactions.some(
+          (tx) =>
+            tx.functionName === "fillIPOffers" ||
+            tx.functionName === "executeWithdrawalScript"
+        )
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [transactions]);
+
+  const propsSimulation = useQuery({
+    queryKey: [
+      "simulation",
+      {
+        rawTxns: transactions.map((tx) => {
+          return {
+            ...tx,
+          };
+        }),
+      },
+    ],
+    queryFn: async () => {
+      return api.simulateControllerSimulateTransactions(address ?? "", {
+        rawTxns: transactions.map((tx) => {
+          return {
+            ...tx,
+          };
+        }),
+      });
+    },
+    enabled: showSimulation,
+  });
+
   useEffect(() => {
     updateTransactions();
   }, [txStatus, txHash, isTxConfirming, isTxConfirmError, isTxConfirmed]);
@@ -223,6 +278,10 @@ export const TransactionModal = React.forwardRef<
     if (allTransactionsExecuted && isOpen) {
       setTimeout(() => {
         queryClient.invalidateQueries();
+        setLastRefreshTimestamp(Date.now());
+
+        console.log("lastRefreshTimestamp", lastRefreshTimestamp);
+
         setIsTransactionTimeout(false);
       }, 5 * 1000); // 5 seconds
     }
@@ -280,7 +339,11 @@ export const TransactionModal = React.forwardRef<
       action: "Confirm Transaction",
     };
 
-    if (!!currentTransaction && currentTransaction.id === "forfeit") {
+    if (
+      !!currentTransaction &&
+      currentTransaction.id &&
+      currentTransaction.id.includes("forfeit")
+    ) {
       content = {
         title: "Transaction Complete",
         description:
@@ -303,6 +366,40 @@ export const TransactionModal = React.forwardRef<
       document.body.style.overflow = "auto";
     }, 100);
   };
+
+  const tokensInSimulation = useMemo(() => {
+    if (propsSimulation.isSuccess) {
+      return propsSimulation.data?.data.simulatedTxns
+        .flatMap((tx) => {
+          const tokensIn = tx.tokensIn.map((token) => {
+            return {
+              ...token,
+              type: "in",
+            };
+          });
+
+          const tokensOut = tx.tokensOut.map((token) => {
+            return {
+              ...token,
+              type: "out",
+            };
+          });
+
+          return [...tokensIn, ...tokensOut];
+        })
+        .flat()
+        .sort((a, b) => {
+          // First sort by type (in before out)
+          if (a.type !== b.type) {
+            return a.type === "in" ? -1 : 1;
+          }
+          // Then sort by tokenAmountUsd in descending order
+          return (b.tokenAmountUsd || 0) - (a.tokenAmountUsd || 0);
+        });
+    }
+
+    return [];
+  }, [propsSimulation.data]);
 
   return (
     <Dialog
@@ -337,6 +434,63 @@ export const TransactionModal = React.forwardRef<
             <DialogTitle>{modalContent.title}</DialogTitle>
             <DialogDescription>{modalContent.description}</DialogDescription>
           </DialogHeader>
+
+          {showSimulation && (
+            <div className="mt-2 flex h-20 w-full flex-row gap-2 rounded-2xl border border-divider bg-white p-2">
+              {propsSimulation.isLoading ? (
+                <div className="flex h-full w-full items-center justify-center gap-2">
+                  <LoadingCircle />
+                  <SecondaryLabel>Simulating...</SecondaryLabel>
+                </div>
+              ) : tokensInSimulation.length > 0 ? (
+                <div className="flex flex-row gap-2">
+                  {tokensInSimulation.map((token, index) => (
+                    <SlideUpWrapper
+                      delay={index * 0.05}
+                      key={`simulation-token:${token.id}-${index}`}
+                      className={cn(
+                        "flex h-16 flex-col justify-between gap-2 rounded-xl bg-z2 p-2 pr-5"
+                      )}
+                    >
+                      <TokenDisplayer
+                        tokens={[
+                          {
+                            ...token,
+                            type: "token",
+                          },
+                        ]}
+                        size={6}
+                        symbols={false}
+                      />
+
+                      <SecondaryLabel>
+                        {token.type === "in" ? (
+                          <div className="">
+                            +{" "}
+                            {formatNumber(token.tokenAmount, {
+                              type: "number",
+                            })}{" "}
+                            {token.symbol}
+                          </div>
+                        ) : (
+                          <div className="">
+                            -{" "}
+                            {formatNumber(token.tokenAmount, {
+                              type: "number",
+                            })}{" "}
+                            {token.symbol}
+                          </div>
+                        )}
+                      </SecondaryLabel>
+                    </SlideUpWrapper>
+                  ))}
+                </div>
+              ) : (
+                <AlertIndicator>No asset changes detected</AlertIndicator>
+              )}
+            </div>
+          )}
+
           <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-scroll py-3">
             <div className={cn("flex flex-col gap-2")}>
               {!!transactions &&

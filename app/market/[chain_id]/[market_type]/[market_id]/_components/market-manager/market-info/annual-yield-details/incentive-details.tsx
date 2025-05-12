@@ -1,23 +1,10 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MarketType, useGlobalStates, useMarketManager } from "@/store";
-import {
-  AlertIndicator,
-  InfoCard,
-  InfoTip,
-  TokenDisplayer,
-} from "@/components/common";
+import { useMarketManager } from "@/store";
+import { InfoCard, InfoTip, TokenDisplayer } from "@/components/common";
 import { format } from "date-fns";
-import { RoycoMarketType } from "royco/market";
 import { Button } from "@/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { LoadingSpinner, TokenEditor } from "@/components/composables";
 import { SlideUpWrapper } from "@/components/animations";
-import { useActiveMarket } from "../../../hooks";
 import {
   BASE_MARGIN_TOP,
   INFO_ROW_CLASSES,
@@ -34,67 +21,19 @@ import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
 import { SONIC_CHAIN_ID, SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { LoadingCircle } from "@/components/animations/loading-circle";
+import { TokenQuote } from "royco/api";
+
 export const DEFAULT_TOKEN_COLOR = "#bdc5d1";
 
 export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
 
-export const TokenEstimatePopover = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    token_data: any;
-  }
->(({ className, token_data, children, ...props }, ref) => {
-  const triggerRef = useRef<HTMLDivElement>(null);
-
-  const [open, setOpen] = useState(false);
-
-  return (
-    <HoverCard
-      openDelay={200}
-      closeDelay={200}
-      open={open}
-      onOpenChange={setOpen}
-    >
-      <HoverCardTrigger
-        asChild
-        onClick={() => {
-          if (open === false) {
-            setOpen(true);
-          }
-        }}
-      >
-        {children}
-      </HoverCardTrigger>
-      <HoverCardContent className="w-96 overflow-hidden p-0">
-        <TokenEditor
-          closeHoverCard={() => {
-            setOpen(false);
-            triggerRef.current?.blur();
-          }}
-          token_data={{
-            ...token_data,
-            fdv: token_data.fdv ?? 0,
-            total_supply: token_data.total_supply
-              ? token_data.total_supply === 0
-                ? 1
-                : token_data.total_supply
-              : 0,
-            price: token_data.price ?? 0,
-            allocation: token_data.allocation
-              ? token_data.allocation * 100
-              : 100,
-            token_amount: token_data.token_amount ?? 0,
-          }}
-        />
-      </HoverCardContent>
-    </HoverCard>
-  );
-});
-
 export const IncentiveToken = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    token_data: any;
+    token_data: TokenQuote;
     symbolClassName?: string;
     category?: string;
   }
@@ -135,13 +74,16 @@ export const IncentiveToken = React.forwardRef<
 export const IncentiveTokenDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    token_data: any;
+    token_data: TokenQuote & {
+      yieldRate: number;
+      tokens?: TokenQuote[];
+      perInputToken?: number;
+    };
     category: string;
     labelClassName?: string;
   }
 >(({ className, token_data, category, labelClassName, ...props }, ref) => {
-  const { currentMarketData } = useActiveMarket();
-  const { customTokenData } = useGlobalStates();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
@@ -179,9 +121,9 @@ export const IncentiveTokenDetails = React.forwardRef<
       (token_data.type === "point" ||
         (token_data.tokens &&
           token_data.tokens.find(
-            (token: any) => token.id === SONIC_ROYCO_GEM_BOOST_ID
+            (token) => token.id === SONIC_ROYCO_GEM_BOOST_ID
           ))) &&
-      token_data.annual_change_ratio === 0
+      token_data.yieldRate === 0
     ) {
       return true;
     }
@@ -191,7 +133,7 @@ export const IncentiveTokenDetails = React.forwardRef<
   const beraToken = useMemo(() => {
     if (token_data && token_data.tokens && token_data.tokens.length > 0) {
       const token = token_data.tokens.find(
-        (token: any) => token.id === BERA_TOKEN_ID
+        (token) => token.id === BERA_TOKEN_ID
       );
       if (token) {
         return token;
@@ -213,7 +155,7 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenEstimator
             defaultTokenId={[token_data.id]}
             marketCategory={
-              currentMarketData && currentMarketData.chain_id === SONIC_CHAIN_ID
+              enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
                 ? "sonic"
                 : undefined
             }
@@ -234,10 +176,9 @@ export const IncentiveTokenDetails = React.forwardRef<
                   <TooltipTrigger className={cn("cursor-pointer")}>
                     {(() => {
                       if (
-                        currentMarketData.market_type ===
-                          MarketType.vault.value ||
-                        currentMarketData?.category === "boyco" ||
-                        currentMarketData?.chain_id === SONIC_CHAIN_ID
+                        enrichedMarket?.marketType === 1 ||
+                        enrichedMarket?.category === "boyco" ||
+                        enrichedMarket?.chainId === SONIC_CHAIN_ID
                       ) {
                         return (
                           <SparkleIcon
@@ -260,13 +201,12 @@ export const IncentiveTokenDetails = React.forwardRef<
                       className={cn("bg-white text-sm", "max-w-80")}
                     >
                       {(() => {
-                        if (currentMarketData?.category === "boyco") {
+                        if (enrichedMarket?.category === "boyco") {
                           return "Variable Rate, will change based on # of deposits";
                         }
                         if (
-                          currentMarketData.market_type ===
-                            MarketType.vault.value ||
-                          currentMarketData?.chain_id === SONIC_CHAIN_ID
+                          enrichedMarket?.marketType === 1 ||
+                          enrichedMarket?.chainId === SONIC_CHAIN_ID
                         ) {
                           return "Variable Incentive Rate, based on # of participants";
                         }
@@ -281,8 +221,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                   className="flex h-5 items-center font-medium"
                   style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
                 >
-                  {token_data.annual_change_ratio >= 0 ? "+" : "-"}
-                  {formatNumber(Math.abs(token_data.annual_change_ratio), {
+                  {token_data.yieldRate >= 0 ? "+" : "-"}
+                  {formatNumber(Math.abs(token_data.yieldRate), {
                     type: "percent",
                   })}
                 </span>
@@ -306,7 +246,7 @@ export const IncentiveTokenDetails = React.forwardRef<
                 )}
 
                 <span className="flex h-5 items-center font-medium">
-                  {formatNumber(token_data.annual_change_ratio, {
+                  {formatNumber(token_data.yieldRate, {
                     type: "percent",
                   })}
                 </span>
@@ -323,12 +263,12 @@ export const IncentiveTokenDetails = React.forwardRef<
         )}
       </SecondaryLabel>
 
-      {!!token_data.per_input_token && (
+      {!!token_data.perInputToken && (
         <TertiaryLabel
           className={cn("mt-1 flex items-center justify-end gap-1", className)}
         >
           <span className="text-right">
-            {formatNumber(token_data.per_input_token)}{" "}
+            {formatNumber(token_data.perInputToken)}{" "}
           </span>
           <TokenDisplayer
             className="h-4 w-4"
@@ -340,7 +280,9 @@ export const IncentiveTokenDetails = React.forwardRef<
           <TokenDisplayer
             className="h-4 w-4"
             size={4}
-            tokens={[currentMarketData.input_token_data] as any}
+            tokens={
+              enrichedMarket?.inputToken ? [enrichedMarket?.inputToken] : []
+            }
             symbols={false}
           />
         </TertiaryLabel>
@@ -364,70 +306,43 @@ export const IncentiveDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { marketMetadata, currentMarketData, currentHighestOffers, isLoading } =
-    useActiveMarket();
+  const { data: enrichedMarket, isLoading } = useAtomValue(
+    loadableEnrichedMarketAtom
+  );
 
-  const { incentiveType, viewType } = useMarketManager();
-
-  const highestIncentives = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
-      if (
-        !currentHighestOffers ||
-        currentHighestOffers.ip_offers.length === 0 ||
-        currentHighestOffers.ip_offers[0].tokens_data.length === 0
-      ) {
-        return [];
-      }
-
-      return currentHighestOffers.ip_offers[0].tokens_data;
-    }
-
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
-      if (
-        !currentMarketData ||
-        currentMarketData.incentive_tokens_data.length === 0
-      ) {
-        return [];
-      }
-
-      return currentMarketData.incentive_tokens_data.filter((token_data) => {
-        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
-      });
-    }
-  }, [currentMarketData, currentHighestOffers, marketMetadata]);
+  const { incentiveType } = useMarketManager();
 
   const currentNativeIncentives = useMemo(() => {
-    const tokens = currentMarketData.yield_breakdown.filter(
-      (yield_breakdown) => yield_breakdown.category !== "base"
-    );
-    const annual_change_ratio = tokens.reduce(
-      (acc, curr) => acc + curr.annual_change_ratio,
-      0
-    );
+    const tokens = [
+      ...(enrichedMarket?.underlyingIncentives ?? []),
+      ...(enrichedMarket?.nativeIncentives ?? []),
+    ];
+
+    const yieldRate = tokens.reduce((acc, curr) => acc + curr.yieldRate, 0);
     return {
       tokens,
-      annual_change_ratio,
+      yieldRate,
     };
-  }, [currentMarketData]);
+  }, [enrichedMarket]);
 
   if (isLoading) {
     return (
       <div className="flex w-full shrink-0 flex-col items-center justify-center py-3">
-        <LoadingSpinner className="h-5 w-5" />
+        <LoadingCircle />
       </div>
     );
   }
 
-  if (!!currentMarketData && !!marketMetadata) {
+  if (!!enrichedMarket) {
     return (
       <div
         ref={ref}
         className={cn(
           "flex h-fit w-full shrink-0 flex-col",
           className,
-          currentMarketData.incentive_tokens_data.length === 0 &&
-            currentMarketData.yield_breakdown.length === 0 &&
-            currentMarketData.external_incentives.length === 0
+          enrichedMarket.activeIncentives.length === 0 &&
+            enrichedMarket?.underlyingIncentives?.length === 0 &&
+            enrichedMarket?.nativeIncentives?.length === 0
             ? "mt-0"
             : "mt-4"
         )}
@@ -440,64 +355,52 @@ export const IncentiveDetails = React.forwardRef<
         {/**
          * Market Incentives
          */}
-        {highestIncentives && highestIncentives.length !== 0 && (
+        {enrichedMarket && enrichedMarket.activeIncentives.length !== 0 && (
           <InfoCard
             className={cn(
               "-mx-4 flex h-fit max-h-32 flex-col gap-3 overflow-y-scroll border-t border-divider px-4 py-2"
             )}
           >
-            {highestIncentives.map((token_data, token_data_index) => {
-              const BASE_KEY = `market:incentive-info:${incentiveType}:${token_data.id}`;
+            {enrichedMarket.activeIncentives.map(
+              (token_data, token_data_index) => {
+                const BASE_KEY = `market:incentive-info:${incentiveType}:${token_data.id}`;
 
-              const start_date = Number(
-                currentMarketData.base_start_timestamps?.[token_data_index]
-              );
-              const end_date = Number(
-                currentMarketData.base_end_timestamps?.[token_data_index]
-              );
+                return (
+                  <SlideUpWrapper delay={0.1 + token_data_index * 0.1}>
+                    <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
+                      <InfoCard.Row.Key>
+                        <IncentiveToken
+                          className="mb-1"
+                          token_data={{
+                            ...token_data,
+                          }}
+                        />
 
-              const base_breakdown = currentMarketData.yield_breakdown.find(
-                (breakdown: any) =>
-                  breakdown.category === "base" &&
-                  breakdown.id === token_data.id
-              );
-
-              return (
-                <SlideUpWrapper delay={0.1 + token_data_index * 0.1}>
-                  <InfoCard.Row key={BASE_KEY} className={INFO_ROW_CLASSES}>
-                    <InfoCard.Row.Key>
-                      <IncentiveToken
-                        className="mb-1"
-                        token_data={{
-                          ...token_data,
-                          ...base_breakdown,
-                        }}
-                      />
-
-                      <TertiaryLabel className="ml-5">
-                        Negotiable Rate
-                      </TertiaryLabel>
-
-                      {start_date && end_date ? (
-                        <TertiaryLabel className={cn("ml-5")}>
-                          {`${format(start_date * 1000, "dd MMM yyyy")} - ${format(end_date * 1000, "dd MMM yyyy")}`}
+                        <TertiaryLabel className="ml-5">
+                          Negotiable Rate
                         </TertiaryLabel>
-                      ) : null}
-                    </InfoCard.Row.Key>
 
-                    <InfoCard.Row.Value>
-                      <IncentiveTokenDetails
-                        token_data={{
-                          ...token_data,
-                          ...base_breakdown,
-                        }}
-                        category={"base"}
-                      />
-                    </InfoCard.Row.Value>
-                  </InfoCard.Row>
-                </SlideUpWrapper>
-              );
-            })}
+                        {token_data.startTimestamp &&
+                        token_data.endTimestamp ? (
+                          <TertiaryLabel className={cn("ml-5")}>
+                            {`${format(Number(token_data.startTimestamp) * 1000, "dd MMM yyyy")} - ${format(Number(token_data.endTimestamp) * 1000, "dd MMM yyyy")}`}
+                          </TertiaryLabel>
+                        ) : null}
+                      </InfoCard.Row.Key>
+
+                      <InfoCard.Row.Value>
+                        <IncentiveTokenDetails
+                          token_data={{
+                            ...token_data,
+                          }}
+                          category={"base"}
+                        />
+                      </InfoCard.Row.Value>
+                    </InfoCard.Row>
+                  </SlideUpWrapper>
+                );
+              }
+            )}
           </InfoCard>
         )}
 

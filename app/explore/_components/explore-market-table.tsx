@@ -29,7 +29,6 @@ export const ExploreMarketTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     data: ExploreMarketColumnDataElement[];
-
     isLoading: boolean;
     isRefetching: boolean;
   }
@@ -105,15 +104,6 @@ export const ExploreMarketTable = React.forwardRef<
 
         <TableBody className={cn("bg-white")}>
           {table.getRowModel().rows?.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={exploreColumns.length}
-                className="h-24 text-center"
-              >
-                No results.
-              </TableCell>
-            </TableRow>
-          ) : table.getRowModel().rows?.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={exploreColumns.length}

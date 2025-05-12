@@ -4,18 +4,20 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketActionFormSchema } from "../market-action-form-schema";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
-import { SecondaryLabel, TertiaryLabel } from "../../../composables";
+import { SecondaryLabel } from "../../../composables";
 import { MarketSteps, useMarketManager } from "@/store";
 import { BASE_UNDERLINE } from "../../../composables";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { ErrorAlert } from "@/components/composables";
 import { useAccount, useChainId } from "wagmi";
-import { useMarketFormDetails } from "../use-market-form-details";
+import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { Button } from "@/components/ui/button";
-import { useActiveMarket } from "../../../hooks";
 import toast from "react-hot-toast";
 import { PreviewStep } from "./preview-step";
-import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useMarketFormDetailsApi } from "../use-market-form-details-api";
+import { enrichTxOptions } from "royco/transaction";
 
 export const ActionPreview = React.forwardRef<
   HTMLDivElement,
@@ -27,12 +29,10 @@ export const ActionPreview = React.forwardRef<
   const chainId = useChainId();
 
   const { connectWalletModal } = useConnectWallet();
+  const { setMarketStep, setTransactions } = useMarketManager();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-  const { marketStep, setMarketStep, setTransactions } = useMarketManager();
-  const { marketMetadata } = useActiveMarket();
-
-  const { writeContractOptions, canBePerformedPartially } =
-    useMarketFormDetails(marketActionForm);
+  const propsAction = useMarketFormDetailsApi(marketActionForm);
 
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>
@@ -80,14 +80,14 @@ export const ActionPreview = React.forwardRef<
             );
           }
 
-          if (chainId !== marketMetadata.chain_id) {
+          if (chainId !== enrichedMarket?.chainId) {
             return (
               <Button
                 onClick={async () => {
                   try {
                     // @ts-ignore
                     await switchChain(config, {
-                      chainId: marketMetadata.chain_id,
+                      chainId: enrichedMarket?.chainId,
                     });
                   } catch (error) {
                     toast.custom(
@@ -108,8 +108,15 @@ export const ActionPreview = React.forwardRef<
             <Button
               onClick={() => {
                 try {
-                  if (canBePerformedPartially) {
-                    setTransactions(writeContractOptions);
+                  if (
+                    propsAction.data?.fillStatus === "partial" ||
+                    propsAction.data?.fillStatus === "full"
+                  ) {
+                    const enrichedTxOptions = enrichTxOptions({
+                      txOptions: propsAction.data.rawTxOptions,
+                    });
+
+                    setTransactions(enrichedTxOptions);
                   }
                 } catch (error) {
                   toast.custom(<ErrorAlert message="Error submitting offer" />);
@@ -117,6 +124,7 @@ export const ActionPreview = React.forwardRef<
               }}
               size="sm"
               className="w-full"
+              disabled={propsAction.isLoading}
             >
               <span>Confirm offer</span>
             </Button>
