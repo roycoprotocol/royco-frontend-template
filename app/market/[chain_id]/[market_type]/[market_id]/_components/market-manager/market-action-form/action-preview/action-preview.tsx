@@ -10,7 +10,7 @@ import { BASE_UNDERLINE } from "../../../composables";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { ErrorAlert } from "@/components/composables";
 import { useAccount, useChainId } from "wagmi";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { PreviewStep } from "./preview-step";

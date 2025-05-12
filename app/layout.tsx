@@ -13,6 +13,9 @@ import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 
 import { Analytics } from "@vercel/analytics/next";
 import { AtomProvider } from "./atom-provider";
+import { BrowserDetector } from "@/store/use-general-stats";
+import { GeoDetector } from "@/store/use-general-stats";
+import { Navbar } from "./_components";
 
 /**
  * Inter Font

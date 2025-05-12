@@ -31,6 +31,7 @@ import { useMarketFormDetailsApi } from "../../use-market-form-details-api";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
 import { AxiosError } from "axios";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,

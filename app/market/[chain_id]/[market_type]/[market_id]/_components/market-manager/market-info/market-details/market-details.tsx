@@ -4,7 +4,7 @@ import { InfoCard } from "@/components/common";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { TokenDisplayer } from "@/components/common";
-import { CopyWrapper } from "@/app/_components/ui/composables/copy-wrapper";
+import { CopyWrapper } from "@/app/_containers/wrappers/copy-wrapper";
 import { AnimatePresence, motion } from "framer-motion";
 import validator from "validator";
 import { shortAddress, getExplorerUrl } from "royco/utils";
