@@ -4,7 +4,10 @@ import { type EnrichedMarket } from "royco/api";
 import { atomWithLocation } from "jotai-location";
 import { customTokenDataAtom, lastRefreshTimestampAtom } from "../global/atoms";
 import { api } from "@/app/api/royco";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 
 export const locationAtom = atomWithLocation();
 
@@ -45,17 +48,13 @@ export const loadableEnrichedMarketAtom = atomWithQuery<EnrichedMarket>(
 
       if (!enrichedMarketId) throw new Error("Enriched market ID is not set");
 
-      api.subscribeControllerSubscribeBoyco({
-        email: "test@test.com",
-      });
-
       return api
         .marketControllerGetMarket(enrichedMarketId, {
           customTokenData,
         })
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(get(enrichedMarketIdAtom)),
   })
 );

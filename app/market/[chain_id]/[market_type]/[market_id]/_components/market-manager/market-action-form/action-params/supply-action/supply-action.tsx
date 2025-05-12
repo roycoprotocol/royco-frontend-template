@@ -31,6 +31,7 @@ import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useMarketFormDetailsApi } from "../../use-market-form-details-api";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
+import { AxiosError } from "axios";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -184,8 +185,15 @@ export const SupplyAction = React.forwardRef<
                       if (propsAction.isSuccess) {
                         setMarketStep(MarketSteps.preview.id);
                       } else if (propsAction.isError) {
+                        const error = propsAction.error as any;
+
                         toast.custom(
-                          <ErrorAlert message={propsAction.error?.message} />
+                          <ErrorAlert
+                            message={
+                              error.response.data.error.message ||
+                              "Error submitting offer"
+                            }
+                          />
                         );
                       } else {
                         throw new Error("Unknown error");

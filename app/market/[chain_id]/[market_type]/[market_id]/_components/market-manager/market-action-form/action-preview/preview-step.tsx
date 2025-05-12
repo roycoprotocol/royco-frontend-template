@@ -273,10 +273,10 @@ export const PreviewStep = React.forwardRef<
                       )}
                   </SecondaryLabel>
 
-                  {/* <div className="flex w-fit flex-col items-end text-right">
+                  <div className="flex w-fit flex-col items-end text-right">
                     <SecondaryLabel className="text-black">
                       +
-                      {marketMetadata.market_type === MarketType.vault.id &&
+                      {enrichedMarket?.marketType === MarketType.vault.value &&
                       userType === MarketUserType.ip.id &&
                       offerType === MarketOfferType.limit.id
                         ? formatNumber(
@@ -289,37 +289,12 @@ export const PreviewStep = React.forwardRef<
                               type: "currency",
                             }
                           )
-                        : propsAction.data.incentiveTokens.reduce(
-                              (acc, incentive) => acc + incentive.yieldRate,
-                              0
-                            ) >= Math.pow(10, 18)
-                          ? "N/D"
-                          : formatNumber(
-                              propsAction.data.incentiveTokens.reduce(
-                                (acc, incentive) => acc + incentive.yieldRate,
-
-                                userType === MarketUserType.ap.id &&
-                                  offerType === MarketOfferType.market.id
-                                  ? currentMarketData.yield_breakdown
-                                      .filter(
-                                        (yield_breakdown) =>
-                                          yield_breakdown.category !== "base"
-                                      )
-                                      .reduce(
-                                        (acc, yield_breakdown) =>
-                                          acc +
-                                          yield_breakdown.annual_change_ratio,
-                                        0
-                                      )
-                                  : 0
-                              ),
-                              {
-                                type: "percent",
-                              }
-                            )}
+                        : formatNumber(propsAction.data.yieldRate, {
+                            type: "percent",
+                          })}
                     </SecondaryLabel>
                     <TertiaryLabel>Estimated (May Change)</TertiaryLabel>
-                  </div> */}
+                  </div>
                 </div>
               )}
             </SlideUpWrapper>

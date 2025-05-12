@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Fragment } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
@@ -10,6 +10,9 @@ import { SlideUpWrapper } from "@/components/animations";
 import { BoycoWithdrawSection } from "./boyco-withdraw-section";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
+import { MarketUserType, useMarketManager } from "@/store";
+import { AlertIndicator } from "@/components/common";
+import { WithdrawTypeSelector } from "./withdraw-type-selector";
 
 export const WithdrawAction = React.forwardRef<
   HTMLDivElement,
@@ -19,6 +22,8 @@ export const WithdrawAction = React.forwardRef<
 >(({ className, marketActionForm, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
+  const { userType } = useMarketManager();
+
   return (
     <div
       ref={ref}
@@ -26,10 +31,22 @@ export const WithdrawAction = React.forwardRef<
       {...props}
     >
       <SlideUpWrapper className="mt-5 flex flex-1 grow flex-col overflow-y-scroll">
-        {enrichedMarket?.category === "boyco" ? (
-          <BoycoWithdrawSection />
+        {userType === MarketUserType.ap.id ? (
+          enrichedMarket?.category === "boyco" ? (
+            <BoycoWithdrawSection />
+          ) : (
+            <Fragment>
+              <WithdrawTypeSelector />
+
+              <WithdrawSection />
+            </Fragment>
+          )
         ) : (
-          <WithdrawSection />
+          <Fragment>
+            <div className="flex grow flex-col place-content-center items-center">
+              <AlertIndicator>Only AP can withdraw</AlertIndicator>
+            </div>
+          </Fragment>
         )}
       </SlideUpWrapper>
     </div>

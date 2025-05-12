@@ -10,7 +10,10 @@ import {
   SpecificBoycoPositionResponse,
   BoycoPositionResponse,
 } from "royco/api";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 import { atom } from "jotai";
 
 export const loadableSpecificBoycoPositionAtom =
@@ -42,7 +45,7 @@ export const loadableSpecificBoycoPositionAtom =
         )
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
         get(accountAddressAtom)
@@ -90,7 +93,7 @@ export const loadableBoycoPositionsAtom = atomWithQuery<BoycoPositionResponse>(
         })
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
         get(accountAddressAtom)

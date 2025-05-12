@@ -3,7 +3,10 @@ import { atomWithQuery } from "jotai-tanstack-query";
 import { enrichedMarketIdAtom } from "./atoms";
 import { lastRefreshTimestampAtom, customTokenDataAtom } from "../global";
 import { ChartResponse } from "royco/api";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 
 export const loadableChartAtom = atomWithQuery<ChartResponse>((get) => ({
   queryKey: [
@@ -26,6 +29,6 @@ export const loadableChartAtom = atomWithQuery<ChartResponse>((get) => ({
       })
       .then((res) => res.data);
   },
-  ...defaultQueryOptions,
+  ...defaultQueryOptionsFastRefresh,
   enabled: Boolean(get(enrichedMarketIdAtom)),
 }));

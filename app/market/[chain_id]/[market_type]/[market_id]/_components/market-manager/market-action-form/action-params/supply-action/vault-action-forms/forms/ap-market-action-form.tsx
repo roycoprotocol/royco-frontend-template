@@ -5,10 +5,10 @@ import { z } from "zod";
 import { MarketActionFormSchema } from "../../../../market-action-form-schema";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
-import { useMarketManager } from "@/store/use-market-manager";
-import { useActiveMarket } from "../../../../../../hooks/use-active-market";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -16,23 +16,23 @@ export const APMarketActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { viewType } = useMarketManager();
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
        * Enso Shortcuts Widget
        */}
-      {currentMarketData?.chain_id !== SONIC_CHAIN_ID && (
-        <div className="mt-2">
-          <EnsoShortcutsWidget
-            token={currentMarketData?.input_token_data.contract_address!}
-            symbol={currentMarketData?.input_token_data.symbol}
-            chainId={currentMarketData?.chain_id!}
-          />
-        </div>
-      )}
+      {enrichedMarket?.chainId !== SONIC_CHAIN_ID &&
+        enrichedMarket?.inputToken && (
+          <div className="mt-2">
+            <EnsoShortcutsWidget
+              token={enrichedMarket?.inputToken.contractAddress!}
+              symbol={enrichedMarket?.inputToken.symbol!}
+              chainId={enrichedMarket?.chainId!}
+            />
+          </div>
+        )}
 
       {/**
        * Input Amount

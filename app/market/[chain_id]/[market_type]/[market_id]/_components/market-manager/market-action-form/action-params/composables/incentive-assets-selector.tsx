@@ -38,6 +38,8 @@ export const IncentiveAssetsSelector = React.forwardRef<
                 ?.map((token) => token.id) ?? []
             }
             onSelect={(token) => {
+              console.log("token", token);
+
               const incentiveAssets =
                 marketActionForm.watch("incentive_assets") ?? [];
 

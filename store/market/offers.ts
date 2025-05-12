@@ -8,7 +8,10 @@ import {
 } from "../global";
 import { RecipeOfferResponse, VaultOfferResponse } from "royco/api";
 import { atom } from "jotai";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 import { userTypeAtom } from "./atoms";
 
 export const recipeOffersPageIndexAtom = atom(1);
@@ -57,7 +60,7 @@ export const loadableRecipeOffersAtom = atomWithQuery<RecipeOfferResponse>(
         })
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
         get(accountAddressAtom)
@@ -106,6 +109,10 @@ export const loadableVaultOffersAtom = atomWithQuery<VaultOfferResponse>(
         })
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
+    enabled: Boolean(
+      get(enrichedMarketIdAtom)?.split("_")[1] === "1" &&
+        get(accountAddressAtom)
+    ),
   })
 );

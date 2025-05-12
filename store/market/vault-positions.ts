@@ -10,7 +10,10 @@ import {
   SpecificVaultPositionResponse,
   VaultPositionResponse,
 } from "royco/api";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 import { atom } from "jotai";
 
 export const loadableSpecificVaultPositionAtom =
@@ -42,7 +45,7 @@ export const loadableSpecificVaultPositionAtom =
         )
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "1" &&
         get(accountAddressAtom)
@@ -90,7 +93,7 @@ export const loadableVaultPositionsAtom = atomWithQuery<VaultPositionResponse>(
         })
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "1" &&
         get(accountAddressAtom)

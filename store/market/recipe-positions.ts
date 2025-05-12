@@ -10,7 +10,10 @@ import {
   SpecificRecipePositionResponse,
   RecipePositionResponse,
 } from "royco/api";
-import { defaultQueryOptions } from "@/utils/query";
+import {
+  defaultQueryOptions,
+  defaultQueryOptionsFastRefresh,
+} from "@/utils/query";
 import { atom } from "jotai";
 
 export const loadableSpecificRecipePositionAtom =
@@ -42,7 +45,7 @@ export const loadableSpecificRecipePositionAtom =
         )
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
         get(accountAddressAtom)
@@ -92,7 +95,7 @@ export const loadableRecipePositionsAtom =
         .positionControllerGetRecipePositions(body)
         .then((res) => res.data);
     },
-    ...defaultQueryOptions,
+    ...defaultQueryOptionsFastRefresh,
     enabled: Boolean(
       get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
         get(accountAddressAtom)
