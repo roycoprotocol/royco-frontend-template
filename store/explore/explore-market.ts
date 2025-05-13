@@ -107,7 +107,7 @@ export const marketFiltersAtom = atom<Filter[]>([]);
 
 export const marketSortAtom = atom<Sorting[]>([
   {
-    id: "fillableUsd",
+    id: "yieldRate",
     desc: true,
   },
 ]);

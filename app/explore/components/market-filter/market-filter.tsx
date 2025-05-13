@@ -55,7 +55,7 @@ export const MarketFilter = React.forwardRef<
 
           <ChainFilter />
 
-          {/* <IncentiveAssetFilter /> */}
+          <IncentiveAssetFilter />
 
           {tag === "boyco" && <PoolTypeFilter />}
 
