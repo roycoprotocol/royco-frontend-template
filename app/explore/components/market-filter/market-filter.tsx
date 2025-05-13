@@ -10,28 +10,29 @@ import { ChainFilter } from "./filters/chain-filter";
 import { SearchIcon, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { marketSearchAtom } from "@/store/explore/explore-market";
-import { useAtom } from "jotai";
+import {
+  loadableExploreMarketAtom,
+  marketSearchAtom,
+} from "@/store/explore/explore-market";
+import { useAtom, useAtomValue } from "jotai";
 import { motion, AnimatePresence } from "framer-motion";
 import { InputAssetFilter } from "./filters/input-asset-filter";
+import { tagAtom } from "@/store/protector/protector";
+import { PoolTypeFilter } from "./filters/pool-type-filter";
+import { AppTypeFilter } from "./filters/app-type-filter";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const tag = useAtomValue(tagAtom);
+  const { data: propsData } = useAtomValue(loadableExploreMarketAtom);
   const [marketSearch, setMarketSearch] = useAtom(marketSearchAtom);
 
   const [openSearch, setOpenSearch] = useState(false);
 
   return (
-    <div
-      ref={ref}
-      {...props}
-      className={cn(
-        "flex flex-col items-start justify-between gap-5 md:flex-row md:items-end",
-        className
-      )}
-    >
+    <div ref={ref} {...props} className={cn("", className)}>
       <div>
         <PrimaryLabel className="text-2xl font-medium text-_primary_">
           Markets
@@ -42,61 +43,60 @@ export const MarketFilter = React.forwardRef<
         </SecondaryLabel>
       </div>
 
-      <div className="relative flex w-full flex-1 items-center justify-between gap-2 md:justify-end">
+      <div className="relative mt-6 flex flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
+        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+          {propsData?.count || 0} MARKETS
+        </SecondaryLabel>
+
         <div className="flex flex-wrap items-center gap-2">
+          <InputAssetFilter />
+
           <ChainFilter />
 
-          <InputAssetFilter />
-        </div>
+          {tag === "boyco" && <PoolTypeFilter />}
 
-        {/* <IncentiveAssetFilter /> */}
+          {tag === "sonic" && <AppTypeFilter />}
 
-        <div className={cn("flex items-center self-end")}>
-          <AnimatePresence>
-            {openSearch && (
-              <motion.div
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.7, opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="absolute bottom-0 right-0 top-0 z-10 flex w-full max-w-[500px] origin-right items-center gap-2"
-              >
-                <Input
-                  placeholder="Search"
-                  value={marketSearch}
-                  onChange={(e) => setMarketSearch(e.target.value)}
-                  className="w-full text-sm font-medium text-_primary_"
-                  containerClassName="w-full px-4 h-10 bg-white border border-_divider_ rounded-full bg-_surface_"
-                />
+          {/* <IncentiveAssetFilter /> */}
 
-                <Button
-                  variant="none"
-                  onClick={() => {
-                    setOpenSearch(false);
-                    setMarketSearch("");
-                  }}
-                  className="flex h-fit cursor-pointer items-center justify-center rounded-full border border-_divider_ bg-_surface_ p-2 transition-all duration-300 hover:border-_secondary_"
+          <div className={cn("flex items-center gap-2")}>
+            <AnimatePresence>
+              {openSearch && (
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "auto", opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="flex items-center gap-2 overflow-hidden"
                 >
-                  <XIcon className="h-5 w-5" />
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <Input
+                    placeholder="Search"
+                    value={marketSearch}
+                    onChange={(e) => setMarketSearch(e.target.value)}
+                    className="text-sm font-medium text-_primary_"
+                    containerClassName="px-4 border border-_secondary_ rounded-sm bg-transparent"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <motion.div
-            initial={false}
-            animate={{ scale: openSearch ? 0.7 : 1 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="origin-right"
-          >
             <Button
               variant="none"
-              onClick={() => setOpenSearch(true)}
-              className="flex h-fit cursor-pointer items-center justify-center rounded-full border border-_divider_ bg-_surface_ p-2 transition-all duration-300 hover:border-_secondary_"
+              onClick={() => {
+                if (openSearch) {
+                  setMarketSearch("");
+                }
+                setOpenSearch(!openSearch);
+              }}
+              className="flex h-fit cursor-pointer items-center justify-center rounded-sm border border-_divider_ bg-_surface_ p-2 transition-all duration-300 hover:border-_secondary_"
             >
-              <SearchIcon className="h-5 w-5" />
+              {openSearch ? (
+                <XIcon className="h-5 w-5" />
+              ) : (
+                <SearchIcon className="h-5 w-5" />
+              )}
             </Button>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

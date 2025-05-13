@@ -19,6 +19,7 @@ import {
   Sonic,
 } from "royco/constants";
 import { isTestnetAtom, tagAtom } from "../protector/protector";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export const EXPLORE_PAGE_SIZE = 20;
 
@@ -187,7 +188,7 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
     },
     refetchOnWindowFocus: false, // Don't refetch on window focus
     refetchIntervalInBackground: true, // Refetch in background
-    keepPreviousData: true, // Keep previous data while fetching new data
+    placeholderData: keepPreviousData, // Keep previous data while fetching new data
     staleTime: 1000 * 60, // Consider data fresh for 1 minute
     cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
   })
