@@ -289,7 +289,7 @@ export const TransactionModalV2 = React.forwardRef<
                   />
 
                   <span className="text-2xl font-medium text-_primary_">
-                    {formatNumber(transactions?.token.tokenAmountUsd, {
+                    {formatNumber(transactions?.token.tokenAmount, {
                       type: "number",
                     })}
                   </span>
