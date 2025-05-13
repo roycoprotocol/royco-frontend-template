@@ -8,7 +8,7 @@ import {
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
-import { portfolioPositionsAtom } from "@/store/portfolio/portfolio";
+import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
 import { ChevronsRight } from "lucide-react";
 import { DepositTable } from "./deposit-table";
 import { depositColumns } from "./deposit-column";
@@ -21,7 +21,7 @@ export const Deposits = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data } = useAtomValue(portfolioPositionsAtom);
+  const { data } = useAtomValue(loadablePortfolioPositionsAtom);
 
   const tableRef = useRef<HTMLDivElement>(null);
   const [tableOverflow, setTableOverflow] = useState(false);
@@ -80,7 +80,7 @@ export const Deposits = React.forwardRef<
         <PrimaryLabel className="mt-2 text-2xl font-normal ">
           <div className="flex items-center gap-2">
             <span>
-              {formatNumber(data.balanceUsd || 0, {
+              {formatNumber(data?.depositBalanceUsd || 0, {
                 type: "currency",
               })}
             </span>

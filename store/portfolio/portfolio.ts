@@ -1,8 +1,11 @@
 import { api } from "@/app/api/royco";
 import { atom } from "jotai";
 import { atomWithQuery } from "jotai-tanstack-query";
-import { GlobalPositionResponse } from "royco/api";
+import { BaseEnrichedTokenData, GlobalPositionResponse } from "royco/api";
 import { baseChainFilter } from "../explore/explore-market";
+import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
+import { ModalTxOption } from "@/types";
+import { defaultQueryOptions } from "@/utils/query";
 
 export const userAddressAtom = atom<string | null>(null);
 
@@ -13,6 +16,7 @@ export const loadablePortfolioPositionsAtom =
       {
         address: get(userAddressAtom),
         filters: get(baseChainFilter),
+        lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
@@ -23,20 +27,22 @@ export const loadablePortfolioPositionsAtom =
         body.filters = _params.filters;
       }
 
-      const response = await api.positionControllerGetGlobalPositions(
-        _params.address,
-        body
-      );
-
-      return response.data;
+      return api
+        .positionControllerGetGlobalPositions(_params.address, body)
+        .then((res) => res.data);
     },
-    enabled: !!get(userAddressAtom),
+    enabled: Boolean(get(accountAddressAtom)),
+    ...defaultQueryOptions,
   }));
 
-export const portfolioPositionsAtom = atom<{ data: GlobalPositionResponse }>(
-  // @ts-ignore
-  (get) => {
-    const { data } = get(loadablePortfolioPositionsAtom);
-    return { data };
-  }
-);
+export const portfolioTransactionsAtom = atom<{
+  title: string;
+  description?: string;
+  successTitle?: string;
+  steps: ModalTxOption[];
+  token: BaseEnrichedTokenData;
+  metadata?: {
+    label: string;
+    value: string;
+  }[];
+} | null>(null);

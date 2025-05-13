@@ -6,6 +6,7 @@ import { HeroSection } from "./components/hero-section/hero-section";
 import { Deposits } from "./components/deposits/deposits";
 import { PortfolioWrapper } from "./provider/portfolio-wrapper";
 import { Rewards } from "./components/rewards/rewards";
+import { TransactionModal } from "./_components/transaction-modal/transaction-modal";
 
 const Page = () => {
   return (
@@ -25,6 +26,8 @@ const Page = () => {
               <Rewards />
             </div>
           </PortfolioWrapper>
+
+          <TransactionModal />
         </MaxWidthProvider>
       </div>
     </ProtectorProvider>
