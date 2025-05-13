@@ -41,11 +41,6 @@ import { marketSortAtom } from "@/store/explore/explore-market";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: "default" },
-  fillable: {
-    label: "Fillable",
-    icon: <DatabaseIcon className="h-3 w-3" />,
-    type: "default",
-  },
   totalYield: {
     label: "Est. Total APY",
     enableSorting: true,
@@ -60,6 +55,12 @@ export const exploreMarketColumnNames = {
   pointsYield: {
     label: "Est. Points APY",
     icon: <SparklesIcon className="h-3 w-3" />,
+    type: "default",
+  },
+  fillable: {
+    label: "Fillable",
+    icon: <DatabaseIcon className="h-3 w-3" />,
+    sortId: "fillableUsd",
     type: "default",
   },
   lockup: {
@@ -450,7 +451,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "fillable",
       enableResizing: true,
-      enableSorting: false,
+      enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
