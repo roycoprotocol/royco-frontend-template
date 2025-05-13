@@ -157,12 +157,19 @@ export const TransactionModalV2 = React.forwardRef<
         hash: txHash,
       });
 
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          setLastRefreshTimestamp(Date.now());
-          resolve(true);
-        }, 5 * 1000)
+      const transactionIndex = transactions.steps.findIndex(
+        (step) => step.id === transaction.id
       );
+
+      // If the transaction is the last step, wait 5 seconds
+      if (transactionIndex === transactions.steps.length - 1) {
+        await new Promise((resolve) =>
+          setTimeout(() => {
+            setLastRefreshTimestamp(Date.now());
+            resolve(true);
+          }, 5 * 1000)
+        );
+      }
 
       setTransactions({
         ...transactions,
