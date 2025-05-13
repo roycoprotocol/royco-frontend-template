@@ -13,7 +13,7 @@ import { ListFilter } from "lucide-react";
 import { FilterSelector } from "@/app/explore/common/filter-selector";
 import { TokenDisplayer } from "@/components/common";
 
-const FILTER_ID = "incentiveTokenId";
+const FILTER_ID = "incentiveTokenIds";
 
 export const IncentiveAssetFilter = React.forwardRef<
   HTMLDivElement,
@@ -135,7 +135,7 @@ export const IncentiveAssetFilter = React.forwardRef<
         onClear={onClearFilter}
       >
         <PrimaryLabel className="text-sm font-medium text-_primary_">
-          Incentive Token
+          Incentive
         </PrimaryLabel>
 
         <ListFilter className="h-5 w-5" />
