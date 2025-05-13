@@ -7,15 +7,13 @@ import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
 import { ModalTxOption } from "@/types";
 import { defaultQueryOptions } from "@/utils/query";
 
-export const userAddressAtom = atom<string | null>(null);
-
 export const loadablePortfolioPositionsAtom =
   atomWithQuery<GlobalPositionResponse>((get) => ({
     queryKey: [
       "portfolio-positions",
       {
-        address: get(userAddressAtom),
-        filters: get(baseChainFilter),
+        address: get(accountAddressAtom),
+        filters: [...get(baseChainFilter)],
         lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       },
     ],
@@ -28,7 +26,23 @@ export const loadablePortfolioPositionsAtom =
       }
 
       return api
-        .positionControllerGetGlobalPositions(_params.address, body)
+        .positionControllerGetGlobalPositions(_params.address, {
+          ...body,
+          sorting: [
+            {
+              id: "yieldRate",
+              desc: true,
+            },
+            {
+              id: "unlockTimestamp",
+              desc: true,
+            },
+            {
+              id: "name",
+              desc: false,
+            },
+          ],
+        })
         .then((res) => res.data);
     },
     enabled: Boolean(get(accountAddressAtom)),
