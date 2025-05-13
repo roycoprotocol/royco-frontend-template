@@ -26,6 +26,7 @@ import {
 import { AlertIndicator } from "@/components/common/alert-indicator";
 import { useAtomValue } from "jotai";
 import { tagAtom } from "@/store/protector/protector";
+import { useExploreMarket } from "@/store/explore/use-explore-market";
 
 export const ExploreMarketTable = React.forwardRef<
   HTMLDivElement,
@@ -35,6 +36,7 @@ export const ExploreMarketTable = React.forwardRef<
   }
 >(({ className, data, isLoading, ...props }, ref) => {
   const tag = useAtomValue(tagAtom);
+  const { hiddenTableColumns } = useExploreMarket();
 
   const columns = useMemo(() => {
     if (tag === "boyco") {
@@ -51,6 +53,15 @@ export const ExploreMarketTable = React.forwardRef<
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    state: {
+      columnVisibility: hiddenTableColumns.reduce(
+        (acc, column) => {
+          acc[column] = false;
+          return acc;
+        },
+        {} as Record<string, boolean>
+      ),
+    },
   });
 
   return (

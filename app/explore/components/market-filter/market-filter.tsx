@@ -20,6 +20,8 @@ import { InputAssetFilter } from "./filters/input-asset-filter";
 import { tagAtom } from "@/store/protector/protector";
 import { PoolTypeFilter } from "./filters/pool-type-filter";
 import { AppTypeFilter } from "./filters/app-type-filter";
+import { HideColumnsSelector } from "./hide-columns-selector";
+import { IncentiveAssetFilter } from "./filters/incentive-asset-filter";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
@@ -53,11 +55,13 @@ export const MarketFilter = React.forwardRef<
 
           <ChainFilter />
 
+          {/* <IncentiveAssetFilter /> */}
+
           {tag === "boyco" && <PoolTypeFilter />}
 
           {tag === "sonic" && <AppTypeFilter />}
 
-          {/* <IncentiveAssetFilter /> */}
+          <HideColumnsSelector />
 
           <div className={cn("flex items-center gap-2")}>
             <AnimatePresence>

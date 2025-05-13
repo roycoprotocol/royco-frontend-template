@@ -39,40 +39,48 @@ import { CustomProgress } from "@/app/vault/common/custom-progress";
 import { useAtom } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
 
-export const columnNames = {
-  name: { label: "Market" },
+export const exploreMarketColumnNames = {
+  name: { label: "Market", type: "default" },
   fillable: {
     label: "Fillable",
     icon: <DatabaseIcon className="h-3 w-3" />,
+    type: "default",
   },
   totalYield: {
-    id: "yieldRate",
     label: "Est. Total APY",
     enableSorting: true,
+    sortId: "yieldRate",
+    type: "default",
   },
   tokenYield: {
     label: "Est. Token APY",
     icon: <CoinsIcon className="h-3 w-3" />,
+    type: "default",
   },
   pointsYield: {
     label: "Est. Points APY",
     icon: <SparklesIcon className="h-3 w-3" />,
+    type: "default",
   },
-  lockup: { label: "Lockup", icon: <ClockIcon className="h-3 w-3" /> },
-  appType: { label: "Gem Allocation" },
-  poolType: { label: "Pool Type" },
+  lockup: {
+    label: "Lockup",
+    icon: <ClockIcon className="h-3 w-3" />,
+    type: "default",
+  },
+  appType: { label: "Gem Allocation", type: "sonic" },
+  poolType: { label: "Pool Type", type: "boyco" },
 };
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
-    const columnName = (columnNames as any)[column.id];
+    const columnName = (exploreMarketColumnNames as any)[column.id];
 
     if (!columnName) {
       return;
     }
 
     const [marketSort, setMarketSort] = useAtom(marketSortAtom);
-    const isSorted = marketSort.find((item) => item.id === columnName.id);
+    const isSorted = marketSort.find((item) => item.id === columnName.sortId);
     const isDesc = isSorted?.desc;
 
     return (
@@ -92,7 +100,7 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
                   onClick={() => {
                     setMarketSort([
                       {
-                        id: columnName.id,
+                        id: columnName.sortId,
                         desc: true,
                       },
                     ]);
@@ -112,7 +120,7 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
                     onClick={() => {
                       setMarketSort([
                         {
-                          id: columnName.id,
+                          id: columnName.sortId,
                           desc: false,
                         },
                       ]);
@@ -129,7 +137,7 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
                     onClick={() => {
                       setMarketSort([
                         {
-                          id: columnName.id,
+                          id: columnName.sortId,
                           desc: true,
                         },
                       ]);
