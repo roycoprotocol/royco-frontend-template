@@ -185,7 +185,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-40 w-52",
+      meta: "min-w-52 w-60",
       cell: ({ row }) => {
         const activeIncentives = row.original.activeIncentives || [];
         const underlyingIncentives = row.original.underlyingIncentives || [];
