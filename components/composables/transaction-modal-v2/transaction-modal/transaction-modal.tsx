@@ -66,7 +66,7 @@ interface TransactionModalProps extends React.HTMLAttributes<HTMLDivElement> {
   onError?: () => void;
 }
 
-export const TransactionModal = React.forwardRef<
+export const TransactionModalV2 = React.forwardRef<
   HTMLDivElement,
   TransactionModalProps
 >(({ className, onSuccess, onError, ...props }, ref) => {

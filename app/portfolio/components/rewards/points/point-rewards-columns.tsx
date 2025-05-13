@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { TokenDisplayer } from "@/components/common";
@@ -19,6 +19,7 @@ import {
 } from "royco/transaction";
 import { accountAddressAtom } from "@/store/global";
 import { ContentFlow } from "@/components/animations/content-flow";
+import { DotIcon } from "lucide-react";
 
 export type PointRewardsColumnDataElement =
   BaseEnrichedTokenDataWithClaimInfo & {
@@ -32,7 +33,14 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
     enableSorting: false,
     meta: { className: "text-left w-full", align: "left" },
     cell: ({ row }) => {
+      let sourceName = null;
       let description = "";
+
+      if (row.original.claimInfo?.recipe) {
+        sourceName = row.original.claimInfo.recipe.name;
+      } else if (row.original.claimInfo?.vault) {
+        sourceName = row.original.claimInfo.vault.name;
+      }
 
       if (row.original?.isClaimed) {
         description = "Claimed";
@@ -59,8 +67,17 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
                 {`${formatNumber(row.original.tokenAmount, { type: "number" })} ${row.original.symbol}`}
               </PrimaryLabel>
 
-              <SecondaryLabel className="mt-1 text-xs font-normal text-_secondary_">
-                <span>{description}</span>
+              <SecondaryLabel className="mt-1 flex flex-row items-center text-xs font-normal text-_secondary_">
+                <div>{description}</div>
+
+                {sourceName && (
+                  <Fragment>
+                    <DotIcon className="h-5 w-5 text-_secondary_" />
+                    <div className="text-xs font-normal text-_secondary_">
+                      {sourceName}
+                    </div>
+                  </Fragment>
+                )}
               </SecondaryLabel>
             </div>
           </div>
