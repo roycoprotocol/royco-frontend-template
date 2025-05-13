@@ -1,19 +1,13 @@
 "use client";
 
-"use client";
-
-import React, { useEffect } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { produce } from "immer";
-import { isEqual } from "lodash";
-import { useImmer } from "use-immer";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAtom, useAtomValue } from "jotai";
 import {
   marketPageAtom,
   loadableExploreMarketAtom,
 } from "@/store/explore/explore-market";
-import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
 import { MarketNotFound } from "./market-not-found";
 import { ExploreMarketTable } from "./explore-market-table";
 import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
@@ -28,29 +22,10 @@ export const MarketTable = React.forwardRef<
   const {
     data: propsData,
     isLoading,
-    isRefetching,
     isError,
   } = useAtomValue(loadableExploreMarketAtom);
 
-  const [placeholderData, setPlaceholderData] = useImmer<
-    Array<ExploreMarketResponse | undefined>
-  >([undefined, undefined]);
-
-  useEffect(() => {
-    if (!isEqual(propsData, placeholderData[1]) && !!propsData) {
-      setPlaceholderData((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsData)) {
-            draft[0] = draft[1]; // Set previous data to the current data
-            draft[1] = propsData; // Set current data to the new data
-          }
-        });
-      });
-    }
-  }, [propsData]);
-
-  if (!placeholderData[1]) {
+  if (isLoading && !propsData) {
     return (
       <div className="flex flex-col items-center p-20">
         <LoadingIndicator />
@@ -66,19 +41,16 @@ export const MarketTable = React.forwardRef<
     );
   }
 
-  const data = placeholderData[1]?.data ? placeholderData[1].data : [];
-
   return (
-    <div ref={ref} {...props} className={cn("w-full ", className)}>
+    <div ref={ref} {...props} className={cn("", className)}>
       <ScrollArea
         className={cn(
           "w-full overflow-hidden rounded-sm border border-_divider_ bg-_surface_"
         )}
       >
         <ExploreMarketTable
-          data={placeholderData[1]?.data ? placeholderData[1].data : []}
+          data={propsData?.data || []}
           isLoading={isLoading}
-          isRefetching={isRefetching}
         />
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
@@ -86,7 +58,7 @@ export const MarketTable = React.forwardRef<
       <ExploreMarketPagination
         className="mt-2"
         pageIndex={page}
-        totalPages={placeholderData[1]?.page?.total || 1}
+        totalPages={propsData?.page?.total || 1}
         setPageIndex={setPage}
       />
     </div>

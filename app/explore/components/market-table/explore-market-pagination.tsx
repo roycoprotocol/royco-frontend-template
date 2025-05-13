@@ -37,24 +37,11 @@ export const ExploreMarketPagination = React.forwardRef<
         className
       )}
     >
-      {/**
-       * @position left
-       * @description Current page indicator
-       */}
-      <Button className="h-full w-fit rounded-sm px-3">
-        <span className="text-sm">
-          Page {pageIndex} of {totalPages}
-        </span>
+      <Button className="w-fit rounded-sm px-3 text-sm">
+        Page {pageIndex} of {totalPages}
       </Button>
 
-      {/**
-       * @position right
-       * @description Navigation buttons, left and right
-       */}
       <div className="flex flex-row items-center gap-2">
-        {/**
-         * @description Previous page button
-         */}
         {canPrevPage && (
           <Button
             disabled={!canPrevPage}
@@ -68,9 +55,6 @@ export const ExploreMarketPagination = React.forwardRef<
           </Button>
         )}
 
-        {/**
-         * @description Next page button
-         */}
         <Button
           disabled={!canNextPage}
           onClick={handleNextPage}

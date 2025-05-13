@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { IncentiveBreakdown, YieldBreakdown } from "@/components/composables";
 import { TokenDisplayer } from "@/components/common";
 import {
   Tooltip,
@@ -9,9 +8,12 @@ import {
 import { createPortal } from "react-dom";
 import React from "react";
 import {
+  ArrowUpDownIcon,
   ClockIcon,
+  CoinsIcon,
   DatabaseIcon,
-  ShieldHalfIcon,
+  MoveDownIcon,
+  MoveUpIcon,
   SparklesIcon,
 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -28,17 +30,14 @@ import {
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SONIC_APP_TYPE } from "royco/sonic";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
 import { Button } from "@/components/ui/button";
 import { EnrichedMarket } from "royco/api";
-import { SupportedChainMap } from "royco/constants";
 import NumberFlow from "@number-flow/react";
 import { ContentFlow } from "@/components/animations/content-flow";
-import { ContentFade } from "@/components/animations/content-fade";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 import { CustomProgress } from "@/app/vault/common/custom-progress";
-import { useAtomValue } from "jotai";
-import { tagAtom } from "@/store/protector/protector";
+import { useAtom } from "jotai";
+import { marketSortAtom } from "@/store/explore/explore-market";
 
 export const columnNames = {
   name: { label: "Market" },
@@ -46,16 +45,20 @@ export const columnNames = {
     label: "Fillable",
     icon: <DatabaseIcon className="h-3 w-3" />,
   },
-  fixedYield: {
-    label: "Est. Fixed APY",
-    icon: <ShieldHalfIcon className="h-3 w-3" />,
+  totalYield: {
+    id: "yieldRate",
+    label: "Est. Total APY",
+    enableSorting: true,
   },
-  variableYield: {
-    label: "Est. Variable Bonus",
+  tokenYield: {
+    label: "Est. Token APY",
+    icon: <CoinsIcon className="h-3 w-3" />,
+  },
+  pointsYield: {
+    label: "Est. Points APY",
     icon: <SparklesIcon className="h-3 w-3" />,
   },
   lockup: { label: "Lockup", icon: <ClockIcon className="h-3 w-3" /> },
-
   appType: { label: "Gem Allocation" },
   poolType: { label: "Pool Type" },
 };
@@ -64,41 +67,110 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
     const columnName = (columnNames as any)[column.id];
 
+    if (!columnName) {
+      return;
+    }
+
+    const [marketSort, setMarketSort] = useAtom(marketSortAtom);
+    const isSorted = marketSort.find((item) => item.id === columnName.id);
+    const isDesc = isSorted?.desc;
+
     return (
       <div className={cn("flex items-center gap-1", className)} {...props}>
-        {columnName.icon}
+        {columnName?.icon}
 
         <SecondaryLabel className="text-xs font-medium text-_secondary_">
           {columnName.label.toUpperCase()}
         </SecondaryLabel>
+
+        {column.getCanSort() &&
+          (() => {
+            if (!isSorted) {
+              return (
+                <Button
+                  variant="none"
+                  onClick={() => {
+                    setMarketSort([
+                      {
+                        id: columnName.id,
+                        desc: true,
+                      },
+                    ]);
+                  }}
+                  className="place-content-center p-1 outline-none hover:text-_primary_"
+                >
+                  <ArrowUpDownIcon className="h-4 w-4" />
+                </Button>
+              );
+            }
+
+            if (isSorted) {
+              if (isDesc) {
+                return (
+                  <Button
+                    variant="none"
+                    onClick={() => {
+                      setMarketSort([
+                        {
+                          id: columnName.id,
+                          desc: false,
+                        },
+                      ]);
+                    }}
+                    className="place-content-center p-1 outline-none hover:text-_primary_"
+                  >
+                    <MoveUpIcon className="h-4 w-4" />
+                  </Button>
+                );
+              } else {
+                return (
+                  <Button
+                    variant="none"
+                    onClick={() => {
+                      setMarketSort([
+                        {
+                          id: columnName.id,
+                          desc: true,
+                        },
+                      ]);
+                    }}
+                    className="place-content-center p-1 outline-none hover:text-_primary_"
+                  >
+                    <MoveDownIcon className="h-4 w-4" />
+                  </Button>
+                );
+              }
+            }
+          })()}
       </div>
     );
   }
 );
 
 export type ExploreMarketColumnDataElement = EnrichedMarket;
-
 export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
   [
     {
       accessorKey: "name",
       enableResizing: true,
-      enableSorting: true,
+      enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-60 w-[600px]",
-      cell: ({ row }) => {
+      meta: "w-[500px] min-w-60",
+      cell: ({ row, column }: { row: any; column: any }) => {
         return (
           <ContentFlow customKey={row.original.id}>
-            <div className="flex items-center gap-3">
+            <div
+              className={cn("flex items-center gap-3", column.columnDef.meta)}
+            >
               <TokenDisplayer
                 size={6}
                 tokens={[row.original.inputToken]}
                 symbols={false}
               />
 
-              <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="truncate">
                 {validator.unescape(row.original.name.trim())}
               </div>
             </div>
@@ -106,19 +178,27 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
         );
       },
     },
-
     {
-      accessorKey: "fixedYield",
+      accessorKey: "totalYield",
       enableResizing: true,
       enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-40 w-52",
+      meta: "min-w-52 w-60",
       cell: ({ row }) => {
-        const incentives = row.original.activeIncentives || [];
+        const activeIncentives = row.original.activeIncentives || [];
+        const underlyingIncentives = row.original.underlyingIncentives || [];
+        const nativeIncentives = row.original.nativeIncentives || [];
+
+        const fixedIncentives = activeIncentives;
+        const variableIncentives = [
+          ...underlyingIncentives,
+          ...nativeIncentives,
+        ];
+        const incentives = [...fixedIncentives, ...variableIncentives];
         const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + curr.yieldRate,
+          (acc, curr) => acc + (curr?.yieldRate || 0),
           0
         );
 
@@ -160,7 +240,37 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       )}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <AnnualYieldAssumption incentives={incentives} />
+                      <div className="flex flex-col gap-4">
+                        {fixedIncentives.length > 0 && (
+                          <>
+                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                              <div className="flex w-full items-center justify-between gap-2">
+                                <div>FIXED RATE</div>
+                                <div>EST. APY</div>
+                              </div>
+                            </SecondaryLabel>
+                            <AnnualYieldAssumption
+                              incentives={fixedIncentives}
+                              className="divide-y-0"
+                            />
+                          </>
+                        )}
+
+                        {variableIncentives.length > 0 && (
+                          <>
+                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                              <div className="flex w-full items-center justify-between gap-2">
+                                <div>VARIABLE RATE</div>
+                                <div>EST. APY</div>
+                              </div>
+                            </SecondaryLabel>
+                            <AnnualYieldAssumption
+                              incentives={variableIncentives}
+                              className="divide-y-0"
+                            />
+                          </>
+                        )}
+                      </div>
                     </HoverCardContent>,
                     document.body
                   )}
@@ -173,91 +283,155 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
     },
     {
-      accessorKey: "variableYield",
+      accessorKey: "tokenYield",
       enableResizing: true,
-      enableSorting: true,
+      enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-
       meta: "min-w-52 w-60",
       cell: ({ row }) => {
-        const tag = useAtomValue(tagAtom);
-
+        const activeIncentives = row.original.activeIncentives || [];
         const underlyingIncentives = row.original.underlyingIncentives || [];
         const nativeIncentives = row.original.nativeIncentives || [];
 
-        const incentives = [...underlyingIncentives, ...nativeIncentives];
+        const incentives = [
+          ...activeIncentives,
+          ...underlyingIncentives,
+          ...nativeIncentives,
+        ].filter((item) => item.type === "token");
         const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + curr.yieldRate,
+          (acc, curr) => acc + (curr?.yieldRate || 0),
           0
         );
 
         return (
           <ContentFlow customKey={row.original.id}>
             {incentives.length > 0 ? (
-              tag === "sonic" ? (
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                  className="shrink-0"
+              <HoverCard openDelay={200} closeDelay={200}>
+                <HoverCardTrigger
+                  className={cn("flex cursor-pointer items-center")}
                 >
-                  <TokenEstimator marketCategory="sonic">
-                    <Button
-                      variant="link"
-                      className="flex w-full items-center gap-1 py-0 outline-none"
-                    >
-                      <span className="text-sm font-medium underline">
-                        Estimate S1 Airdrop
-                      </span>
-                    </Button>
-                  </TokenEstimator>
-                </div>
-              ) : (
-                <HoverCard openDelay={200} closeDelay={200}>
-                  <HoverCardTrigger
-                    className={cn("flex cursor-pointer items-center")}
-                  >
-                    <div className="flex items-center gap-1">
-                      <span>+</span>
-
-                      <PrimaryLabel className="text-base font-normal text-_primary_">
-                        <NumberFlow
-                          value={totalYieldRate}
-                          format={{
-                            style: "percent",
-                            notation: "compact",
-                            useGrouping: true,
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }}
-                        />
-                      </PrimaryLabel>
-
-                      <TokenDisplayer
-                        size={4}
-                        tokens={incentives}
-                        symbols={false}
+                  <div className="flex items-center gap-1">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      <NumberFlow
+                        value={totalYieldRate}
+                        format={{
+                          style: "percent",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
                       />
-                    </div>
-                  </HoverCardTrigger>
+                    </PrimaryLabel>
 
-                  {typeof window !== "undefined" &&
-                    createPortal(
-                      <HoverCardContent
-                        className={cn(
-                          "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <AnnualYieldAssumption incentives={incentives} />
-                      </HoverCardContent>,
-                      document.body
-                    )}
-                </HoverCard>
-              )
+                    <TokenDisplayer
+                      size={4}
+                      tokens={incentives}
+                      symbols={false}
+                    />
+                  </div>
+                </HoverCardTrigger>
+
+                {incentives.length > 0 &&
+                  typeof window !== "undefined" &&
+                  createPortal(
+                    <HoverCardContent
+                      className={cn(
+                        "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-col gap-4">
+                        <AnnualYieldAssumption
+                          incentives={incentives}
+                          className="divide-y-0"
+                        />
+                      </div>
+                    </HoverCardContent>,
+                    document.body
+                  )}
+              </HoverCard>
+            ) : (
+              <span>-</span>
+            )}
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "pointsYield",
+      enableResizing: true,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+
+      meta: "min-w-52 w-60",
+      cell: ({ row }) => {
+        const activeIncentives = row.original.activeIncentives || [];
+        const underlyingIncentives = row.original.underlyingIncentives || [];
+        const nativeIncentives = row.original.nativeIncentives || [];
+
+        const incentives = [
+          ...activeIncentives,
+          ...underlyingIncentives,
+          ...nativeIncentives,
+        ].filter((item) => item.type === "point");
+        const totalYieldRate = incentives.reduce(
+          (acc, curr) => acc + (curr?.yieldRate || 0),
+          0
+        );
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            {incentives.length > 0 ? (
+              <HoverCard openDelay={200} closeDelay={200}>
+                <HoverCardTrigger
+                  className={cn("flex cursor-pointer items-center")}
+                >
+                  <div className="flex items-center gap-1">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      <NumberFlow
+                        value={totalYieldRate}
+                        format={{
+                          style: "percent",
+                          notation: "compact",
+                          useGrouping: true,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+                    </PrimaryLabel>
+
+                    <TokenDisplayer
+                      size={4}
+                      tokens={incentives}
+                      symbols={false}
+                    />
+                  </div>
+                </HoverCardTrigger>
+
+                {incentives.length > 0 &&
+                  typeof window !== "undefined" &&
+                  createPortal(
+                    <HoverCardContent
+                      className={cn(
+                        "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-col gap-4">
+                        <AnnualYieldAssumption
+                          incentives={incentives}
+                          className="divide-y-0"
+                        />
+                      </div>
+                    </HoverCardContent>,
+                    document.body
+                  )}
+              </HoverCard>
             ) : (
               <span>-</span>
             )}
@@ -268,7 +442,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "fillable",
       enableResizing: true,
-      enableSorting: true,
+      enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
@@ -309,7 +483,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "lockup",
       enableResizing: true,
-      enableSorting: true,
+      enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
@@ -344,7 +518,6 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
         }
 
         let tooltipContent = "";
-
         if (lockupType === "Hard Lock") {
           tooltipContent = `You may not withdraw your funds for ${formattedValue} after depositing.`;
         } else {
@@ -388,137 +561,118 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
   ];
 
-export const boycoColumns: ColumnDef<ExploreMarketColumnDataElement>[] = [
-  ...(exploreMarketColumns as any).filter(
-    (column: any) => column.accessorKey !== "market_type"
-  ),
-  {
-    accessorKey: "poolType",
-    enableResizing: true,
-    // header: exploreColumnNames.action,
-    enableSorting: true,
-    header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
-    },
-    meta: "min-w-44 w-44",
-    cell: ({ row }) => {
-      const poolType = row.original.marketMetadata?.boyco?.assetType;
-      const marketMultiplier = row.original.marketMetadata?.boyco?.multiplier;
+export const boycoExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
+  [
+    ...exploreMarketColumns,
+    {
+      accessorKey: "poolType",
+      enableResizing: true,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const poolType = row.original.marketMetadata?.boyco?.assetType;
+        const marketMultiplier = row.original.marketMetadata?.boyco?.multiplier;
 
-      return (
-        <div key={`market:pool-type`} className={cn("flex h-fit w-fit")}>
-          <ContentFlow
-            className="flex w-44 flex-row items-center justify-center text-center"
-            customKey={`pool-type:${poolType}`}
-            motionProps={{
-              transition: {
-                delay: 0.04 * row.index,
-              },
-            }}
-          >
-            <div
-              className={cn(
-                "body-2 flex flex-row items-center gap-2 text-black"
-              )}
-            >
-              <span className="leading-5">
-                {(() => {
-                  if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
-                    return "Major";
-                  } else if (
-                    poolType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY
-                  ) {
-                    return "Third-Party";
-                  } else if (poolType === MULTIPLIER_ASSET_TYPE.HYBRID) {
-                    return "Hybrid";
-                  } else {
-                    return "Unknown";
-                  }
-                })()}
-              </span>
+        let formattedPoolType = "-";
+
+        if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
+          formattedPoolType = "Major";
+        } else if (poolType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY) {
+          formattedPoolType = "Third-Party";
+        } else if (poolType === MULTIPLIER_ASSET_TYPE.HYBRID) {
+          formattedPoolType = "Hybrid";
+        }
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            <div className={cn("flex flex-row items-center gap-2")}>
+              <span className="leading-5">{formattedPoolType}</span>
+
               {marketMultiplier && (
-                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
+                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-medium text-success">
                   {marketMultiplier}x
                 </SecondaryLabel>
               )}
             </div>
           </ContentFlow>
-        </div>
-      );
+        );
+      },
     },
-  },
-];
+  ];
 
-export const sonicColumns: ColumnDef<ExploreMarketColumnDataElement>[] = [
-  ...(exploreMarketColumns as any).filter(
-    (column: any) => column.accessorKey !== "market_type"
-  ),
-  {
-    accessorKey: "appType",
-    enableResizing: true,
-    // header: exploreColumnNames.action,
-    enableSorting: true,
-    header: ({ column }: { column: any }) => {
-      return <HeaderWrapper column={column} />;
-    },
-    meta: "min-w-44 w-44",
-    cell: ({ row }) => {
-      const appType = row.original.marketMetadata?.sonic?.appType ?? "unknown";
+export const sonicExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
+  [
+    ...exploreMarketColumns,
+    {
+      accessorKey: "appType",
+      enableResizing: true,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const appType =
+          row.original.marketMetadata?.sonic?.appType ?? "unknown";
 
-      return (
-        <div key={`market:app-type`} className={cn("flex h-fit w-fit")}>
-          <ContentFlow
-            customKey={`app-type:${appType}`}
-            motionProps={{
-              transition: {
-                delay: 0.04 * row.index,
-              },
-            }}
-            className="w-44 text-center"
-          >
+        if (appType === "unknown") {
+          return <span>-</span>;
+        }
+
+        let formattedAppType = "-";
+        if (appType === SONIC_APP_TYPE.EMERALD) {
+          formattedAppType = "Emerald";
+        } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+          formattedAppType = "Sapphire";
+        } else if (appType === SONIC_APP_TYPE.RUBY) {
+          formattedAppType = "Ruby";
+        }
+
+        let tooltipContent = "";
+        if (appType === SONIC_APP_TYPE.EMERALD) {
+          tooltipContent = `13,125 Gems allocated to App`;
+        } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
+          tooltipContent = `8,750 Gems allocated to App`;
+        } else if (appType === SONIC_APP_TYPE.RUBY) {
+          tooltipContent = `4,375 Gems allocated to App`;
+        }
+
+        return (
+          <ContentFlow customKey={row.original.id}>
             <Tooltip>
-              <TooltipTrigger>
-                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-semibold text-success">
-                  <div
-                    className={cn("body-2 flex flex-row items-center gap-2")}
-                  >
-                    <span className="leading-5">
-                      {(() => {
-                        if (appType === SONIC_APP_TYPE.EMERALD) {
-                          return "Emerald";
-                        } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
-                          return "Sapphire";
-                        } else if (appType === SONIC_APP_TYPE.RUBY) {
-                          return "Ruby";
-                        } else {
-                          return "Unknown";
-                        }
-                      })()}
-                    </span>
-                  </div>
+              <TooltipTrigger
+                className={cn("flex cursor-pointer items-center")}
+              >
+                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-sm font-normal text-success">
+                  {formattedAppType}
                 </SecondaryLabel>
               </TooltipTrigger>
+
               {typeof window !== "undefined" &&
                 createPortal(
-                  <TooltipContent>
-                    <span className="leading-5">
-                      {(() => {
-                        if (appType === SONIC_APP_TYPE.EMERALD) {
-                          return "13,125 Gems allocated to App";
-                        } else if (appType === SONIC_APP_TYPE.SAPPHIRE) {
-                          return "8,750 Gems allocated to App";
-                        } else if (appType === SONIC_APP_TYPE.RUBY) {
-                          return "4,375 Gems allocated to App";
-                        }
-                      })()}
-                    </span>
+                  <TooltipContent
+                    side="bottom"
+                    align="start"
+                    className={cn(
+                      "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "break-normal text-sm font-normal text-_secondary_"
+                      )}
+                    >
+                      {tooltipContent}
+                    </div>
                   </TooltipContent>,
                   document.body
                 )}
             </Tooltip>
           </ContentFlow>
-        </div>
-      );
+        );
+      },
     },
-  },
-];
+  ];

@@ -58,6 +58,15 @@ export const ChainFilter = React.forwardRef<
       .map((chain) => ({
         label: chain.name,
         value: chain.id,
+        icon: (
+          <img
+            src={chain.image}
+            alt={chain.name}
+            width={20}
+            height={20}
+            className="mr-1 rounded-full"
+          />
+        ),
       }));
   }, []);
 

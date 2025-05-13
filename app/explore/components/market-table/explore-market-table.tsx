@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -19,32 +18,33 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  boycoColumns,
+  boycoExploreMarketColumns,
   ExploreMarketColumnDataElement,
   exploreMarketColumns,
-  sonicColumns,
+  sonicExploreMarketColumns,
 } from "./columns/explore-market-columns";
 import { AlertIndicator } from "@/components/common/alert-indicator";
+import { useAtomValue } from "jotai";
+import { tagAtom } from "@/store/protector/protector";
 
 export const ExploreMarketTable = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     data: ExploreMarketColumnDataElement[];
     isLoading: boolean;
-    isRefetching: boolean;
   }
->(({ className, data, isLoading, isRefetching, ...props }, ref) => {
+>(({ className, data, isLoading, ...props }, ref) => {
+  const tag = useAtomValue(tagAtom);
+
   const columns = useMemo(() => {
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-      return boycoColumns;
+    if (tag === "boyco") {
+      return boycoExploreMarketColumns;
     }
-
-    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
-      return sonicColumns;
+    if (tag === "sonic") {
+      return sonicExploreMarketColumns;
     }
-
     return exploreMarketColumns;
-  }, [exploreMarketColumns]);
+  }, [tag]);
 
   const table = useReactTable({
     data,
@@ -129,7 +129,8 @@ export const ExploreMarketTable = React.forwardRef<
                       <TableCell
                         key={`row:cell:${cell.id}`}
                         className={cn(
-                          "min-w-fit whitespace-nowrap p-4 pr-8 text-base font-normal text-_primary_"
+                          "whitespace-nowrap p-4 pr-8 text-base font-normal text-_primary_",
+                          cell.column.columnDef.meta
                         )}
                       >
                         {flexRender(cell.column.columnDef.cell, {

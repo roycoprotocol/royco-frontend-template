@@ -70,7 +70,7 @@ export const FilterSelector = React.forwardRef<
         );
       }
       return fuse.search(search).map((result) => result.item);
-    }, [search, data, fuse]);
+    }, [search, data, fuse, open]);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -84,7 +84,7 @@ export const FilterSelector = React.forwardRef<
           <PopoverTrigger asChild>
             <div
               className={cn(
-                "flex h-fit cursor-pointer items-center gap-1 rounded-full border border-_divider_ bg-_surface_ px-3 py-2 transition-all duration-300 hover:border-_secondary_",
+                "flex h-fit cursor-pointer items-center gap-1 rounded-sm border border-_divider_ bg-_surface_ px-3 py-2 transition-all duration-300 hover:border-_secondary_",
                 disabled && "opacity-60 hover:border-_divider_"
               )}
             >
@@ -98,7 +98,7 @@ export const FilterSelector = React.forwardRef<
               side="bottom"
               align="end"
               className={cn(
-                "mx-3 flex h-80 flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
+                "mx-3 flex flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
                 containerClassName
               )}
             >
@@ -121,39 +121,43 @@ export const FilterSelector = React.forwardRef<
 
               <hr className="my-0 border-_divider_" />
 
-              <div className="flex flex-wrap gap-1 p-3">
-                {staticData?.map((item, index) => {
-                  const isSelected = selected?.some(
-                    (value) => value === item.value
-                  );
+              {staticData && (
+                <>
+                  <div className="flex flex-wrap gap-1 p-3">
+                    {staticData?.map((item, index) => {
+                      const isSelected = selected?.some(
+                        (value) => value === item.value
+                      );
 
-                  return (
-                    <Button
-                      key={index}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        onSelect?.(item.value);
-                      }}
-                      className={cn(
-                        "flex cursor-pointer items-center gap-1 rounded-sm bg-_surface_tertiary px-2 py-1 hover:bg-_surface_secondary",
-                        isSelected && "border border-_primary_"
-                      )}
-                    >
-                      <SecondaryLabel
-                        className={cn(
-                          "text-xs font-normal text-_secondary_",
-                          isSelected && "font-medium text-_primary_"
-                        )}
-                      >
-                        {item.label}
-                      </SecondaryLabel>
-                    </Button>
-                  );
-                })}
-              </div>
+                      return (
+                        <Button
+                          key={index}
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            onSelect?.(item.value);
+                          }}
+                          className={cn(
+                            "flex cursor-pointer items-center gap-1 rounded-sm bg-_surface_tertiary px-2 py-1 hover:bg-_surface_secondary",
+                            isSelected && "border border-_primary_"
+                          )}
+                        >
+                          <SecondaryLabel
+                            className={cn(
+                              "text-xs font-normal text-_secondary_",
+                              isSelected && "font-medium text-_primary_"
+                            )}
+                          >
+                            {item.label}
+                          </SecondaryLabel>
+                        </Button>
+                      );
+                    })}
+                  </div>
 
-              <hr className="my-0 border-_divider_" />
+                  <hr className="my-0 border-_divider_" />
+                </>
+              )}
 
               <div className="flex items-center justify-between p-3">
                 <SecondaryLabel className="text-sm font-normal text-_secondary_">
@@ -172,8 +176,8 @@ export const FilterSelector = React.forwardRef<
                 )}
               </div>
 
-              <ul className="flex flex-col gap-0 overflow-x-hidden overflow-y-scroll">
-                <ScrollArea className="h-full">
+              <ScrollArea>
+                <div className="flex h-fit max-h-32 flex-col gap-0">
                   {searchData.map((item, index) => {
                     const isSelected = selected?.some(
                       (value) => value === item.value
@@ -218,8 +222,8 @@ export const FilterSelector = React.forwardRef<
                       </div>
                     );
                   })}
-                </ScrollArea>
-              </ul>
+                </div>
+              </ScrollArea>
             </PopoverContent>
           )}
         </Popover>
