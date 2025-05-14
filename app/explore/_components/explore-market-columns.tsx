@@ -27,7 +27,7 @@ import validator from "validator";
 import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SONIC_APP_TYPE } from "royco/sonic";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator/token-estimator";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";

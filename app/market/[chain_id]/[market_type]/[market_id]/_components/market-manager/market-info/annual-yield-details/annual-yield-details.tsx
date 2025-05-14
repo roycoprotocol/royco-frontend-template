@@ -7,7 +7,7 @@ import LightningIcon from "../../../icons/lightning";
 import { PrimaryLabel, SecondaryLabel } from "../../../composables";
 import { TertiaryLabel } from "../../../composables";
 import { IncentiveDetails } from "./incentive-details";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import { InfoTip } from "@/components/common";
 import { SONIC_CHAIN_ID, sonicMarketMap } from "royco/sonic";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";

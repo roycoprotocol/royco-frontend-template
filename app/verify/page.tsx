@@ -4,7 +4,7 @@ import { Suspense, useMemo } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { LoadingIndicator } from "../_components/common/connect-wallet-button/loading-indicator";
+import { LoadingIndicator } from "../_components/common/loading-indicator";
 
 function VerifyContent() {
   const router = useRouter();

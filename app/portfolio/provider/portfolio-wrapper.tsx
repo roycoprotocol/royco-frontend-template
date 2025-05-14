@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SlideUpWrapper } from "@/components/animations";
 import { AlertIndicator } from "@/components/common";
-import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { useAtomValue } from "jotai";
 import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
 import { useAccount } from "wagmi";

@@ -10,7 +10,7 @@ import {
 } from "@/store/explore/explore-market";
 import { MarketNotFound } from "./market-not-found";
 import { ExploreMarketTable } from "./explore-market-table";
-import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { ExploreMarketPagination } from "./explore-market-pagination";
 
 export const MarketTable = React.forwardRef<

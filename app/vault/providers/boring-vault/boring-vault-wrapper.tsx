@@ -26,7 +26,7 @@ import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { api } from "@/app/api/royco";
 import { vaultContractProviderMap } from "royco/vault";
 import BigNumber from "bignumber.js";
-import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
 
 const DEFAULT_WITHDRAWALS_API_URL =

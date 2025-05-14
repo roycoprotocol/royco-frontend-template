@@ -6,7 +6,7 @@ import validator from "validator";
 import { MarketDetails } from "./market-details/market-details";
 import { AnnualYieldDetails } from "./annual-yield-details/annual-yield-details";
 import { PrimaryLabel, SecondaryLabel } from "../../composables";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import { Button } from "@/components/ui/button";
 import { ExternalIncentiveDetails } from "./external-incentive-details.tsx/external-incentive-detail";
 import { LockIcon } from "lucide-react";

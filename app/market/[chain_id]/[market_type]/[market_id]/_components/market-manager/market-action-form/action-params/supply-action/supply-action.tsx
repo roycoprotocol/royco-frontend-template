@@ -24,7 +24,7 @@ import { TokenDisplayer } from "@/components/common";
 import { VaultActionForms } from "./vault-action-forms";
 import { OfferTypeSelector } from "./components/offer-type-selector";
 import LightningIcon from "../../../../icons/lightning";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import formatNumber from "@/utils/numbers";
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useMarketFormDetailsApi } from "../../use-market-form-details-api";

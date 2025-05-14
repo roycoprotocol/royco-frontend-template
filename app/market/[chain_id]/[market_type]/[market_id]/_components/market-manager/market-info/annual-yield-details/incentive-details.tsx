@@ -15,7 +15,7 @@ import LightningIcon from "../../../icons/lightning";
 import { Vibrant } from "node-vibrant/browser";
 import ShieldIcon from "../../../icons/shield";
 import SparkleIcon from "../../../icons/sparkle";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
