@@ -10,6 +10,9 @@ import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx"
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { InfoIcon } from "lucide-react";
+import { SecondaryLabel } from "../../../../../../composables";
+import formatNumber from "@/utils/numbers";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -54,6 +57,41 @@ export const APMarketActionForm = React.forwardRef<
           <InputAmountWrapper marketActionForm={marketActionForm} />
         </SlideUpWrapper>
       </div>
+
+      {/**
+       * Min Deposit Indicator
+       */}
+      {enrichedMarket?.marketMetadata?.minDepositToken && (
+        <div className="mt-3">
+          <SlideUpWrapper delay={0.3}>
+            <div className="rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">
+              <div className="flex flex-row items-center gap-2">
+                <InfoIcon className="h-4 w-4 text-secondary" />
+                <div className="text-sm font-semibold text-secondary">INFO</div>
+              </div>
+
+              <SecondaryLabel className="mt-1 text-xs">
+                Min. Deposit:{" "}
+                {formatNumber(
+                  enrichedMarket?.marketMetadata?.minDepositToken.tokenAmount,
+                  {
+                    type: "number",
+                  }
+                )}{" "}
+                {enrichedMarket?.marketMetadata?.minDepositToken.symbol} (
+                {formatNumber(
+                  enrichedMarket?.marketMetadata?.minDepositToken
+                    .tokenAmountUsd,
+                  {
+                    type: "currency",
+                  }
+                )}
+                )
+              </SecondaryLabel>
+            </div>
+          </SlideUpWrapper>
+        </div>
+      )}
     </div>
   );
 });
