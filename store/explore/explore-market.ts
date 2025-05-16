@@ -199,7 +199,12 @@ export const loadableExploreVaultAtom = atomWithQuery<ExploreVaultResponse>(
     queryKey: [
       "explore-vault",
       {
-        filters: [...get(baseChainFilter)],
+        filters: [
+          {
+            id: "chainId",
+            value: EthereumMainnet.id,
+          },
+        ],
         page: get(vaultPageAtom),
       },
     ],
