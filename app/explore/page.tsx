@@ -5,7 +5,7 @@ import { ProtectorProvider } from "@/app/_containers/providers/protector-provide
 import { HeroSection } from "./components/hero-section/hero-section";
 import { MarketFilter } from "./components/market-filter/market-filter";
 import { MarketTable } from "./components/market-table/market-table";
-import { VaultsTable } from "./vaults-table/vaults-table";
+import { VaultsTable } from "./components/vaults-table/vaults-table";
 
 const Page = () => {
   return (

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { loadableExploreVaultAtom } from "@/store/explore/explore-market";
 import { useAtomValue } from "jotai";
 import React from "react";
-import { NotFoundWarning } from "../common/not-found-warning";
+import { NotFoundWarning } from "../../common/not-found-warning";
 import { EnrichedVault } from "royco/api";
 import { UsdcCoinIcon } from "@/app/vault/assets/usdc";
 import { Button } from "@/components/ui/button";
