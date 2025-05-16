@@ -19,7 +19,7 @@ import { MarketBuilderFormSchema } from "../market-builder-form";
 import { useFunctionForm } from "@/store/use-function-form";
 import { ContractRow } from "./contract-row";
 import { PinnedContracts } from "./pinned-contracts";
-import { useContract, useSearchContracts } from "royco/hooks";
+import { useContract } from "royco/hooks";
 import { ContractMap } from "royco/contracts";
 import { AlertIndicator } from "../../../../components/common";
 
@@ -66,6 +66,15 @@ export const ContractList = React.forwardRef<
     chain_id: marketBuilderForm.watch("chain").id,
     contract_address: marketBuilderForm.watch("asset").contract_address,
   });
+
+  // const { data: tokenContract } = useQuery({
+  //   queryKey: ["token-contract", marketBuilderForm.watch("chain").id, marketBuilderForm.watch("asset").contract_address],
+  //   queryFn: () =>
+  //     api.contractControllerGetContract({
+  //       chain_id: marketBuilderForm.watch("chain").id,
+  //       contract_address: marketBuilderForm.watch("asset").contract_address,
+  //     }),
+  // });
 
   const { data: weirollContract } = useContract({
     chain_id: marketBuilderForm.watch("chain").id,

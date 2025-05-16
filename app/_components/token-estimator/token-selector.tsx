@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SearchIcon } from "lucide-react";
-import { SupportedToken, SupportedTokenList } from "royco/constants";
 import { EstimatorCustomTokenDataSchema } from "./token-estimator";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
-import { CustomTokenDataElementType } from "royco/types";
-import { useTokenQuotes } from "royco/hooks";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/app/api/royco";
+import { CustomTokenDataElement } from "@/store/global";
+import { TokenQuote } from "royco/api";
 
 export const TokenSelector = React.forwardRef<
   HTMLDivElement,
@@ -20,24 +21,31 @@ export const TokenSelector = React.forwardRef<
     customTokenForm: UseFormReturn<
       z.infer<typeof EstimatorCustomTokenDataSchema>
     >;
-    onTokenSelect: (token: CustomTokenDataElementType) => void;
+    onTokenSelect: (token: CustomTokenDataElement) => void;
   }
 >(({ className, customTokenForm, onTokenSelect, ...props }, ref) => {
   const [search, setSearch] = useState("");
 
-  const [selectedToken, setSelectedToken] = useState<SupportedToken>();
+  const [selectedToken, setSelectedToken] = useState<TokenQuote>();
 
-  const { data: tokenQuotes } = useTokenQuotes({
-    token_ids: [selectedToken?.id || ""],
+  const { data: tokenQuotes } = useQuery({
+    queryKey: ["token-quotes-token-selector", selectedToken?.id],
+    queryFn: () =>
+      api
+        .tokenControllerGetTokenDirectory({
+          filters: [{ id: "id", value: selectedToken?.id || "" }],
+        })
+        .then((res) => res.data.data),
+    enabled: Boolean(selectedToken?.id && selectedToken?.id.length > 0),
   });
 
   useEffect(() => {
     if (selectedToken && tokenQuotes && tokenQuotes.length > 0) {
-      const token = {
-        token_id: selectedToken?.id,
-        fdv: tokenQuotes[0].fdv.toString(),
-        total_supply: tokenQuotes[0].total_supply.toString(),
-        price: tokenQuotes[0].price.toString(),
+      const token: CustomTokenDataElement = {
+        id: selectedToken?.id,
+        fdv: tokenQuotes[0].fdv,
+        totalSupply: tokenQuotes[0].totalSupply,
+        price: tokenQuotes[0].price,
       };
       onTokenSelect(token);
     }
@@ -45,29 +53,23 @@ export const TokenSelector = React.forwardRef<
 
   const estimatorCustomTokenData = customTokenForm.watch("customTokenData");
 
-  const tokenData = useMemo(() => {
-    let tokens = SupportedTokenList;
-
-    if (search && search.trim().length > 0) {
-      tokens = SupportedTokenList.filter((token) => {
-        const searchTerm = search.toLowerCase();
-        return (
-          token.symbol.toLowerCase().startsWith(searchTerm) ||
-          token.name.toLowerCase().includes(searchTerm) ||
-          token.contract_address.toLowerCase().includes(searchTerm)
-        );
-      });
-    }
-
-    const excludedTokenIds = estimatorCustomTokenData.map(
-      (token) => token.token_id
-    );
-    tokens = tokens.filter((token) => {
-      return !excludedTokenIds.includes(token.id);
-    });
-
-    return tokens;
-  }, [search, estimatorCustomTokenData]);
+  const { data: tokenData } = useQuery({
+    queryKey: ["token-data-token-selector", search, estimatorCustomTokenData],
+    queryFn: () =>
+      api
+        .tokenControllerGetTokenDirectory({
+          searchKey: search.trim().length > 0 ? search : undefined,
+          filters: [
+            // exclude tokens that are already in the estimator
+            {
+              id: "id",
+              value: estimatorCustomTokenData.map((token) => token.id),
+              condition: "notInArray",
+            },
+          ],
+        })
+        .then((res) => res.data.data),
+  });
 
   return (
     <div
@@ -117,7 +119,7 @@ export const TokenSelector = React.forwardRef<
                 }}
               >
                 <TokenDisplayer
-                  tokens={[token] as any}
+                  tokens={[token]}
                   size={4}
                   symbols={true}
                   symbolClassName="font-medium"

@@ -14,10 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import {
-  CustomTokenDataElement,
-  useGlobalStates,
-} from "@/store/use-global-states";
+import { CustomTokenDataElement } from "@/store/global";
 import { SONIC_CHAIN_ID, TokenEditor } from "./token-editor";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -26,17 +23,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import LightningIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
 import { LoadingSpinner } from "@/components/composables";
-import { useTokenQuotes } from "royco/hooks";
 import { AlertIndicator } from "@/components/common";
-import { SupportedTokenList } from "royco/constants";
 import { sonicPointsMap } from "royco/sonic";
+import { useAtom } from "jotai";
+import { customTokenDataAtom } from "@/store/global";
+import { api } from "@/app/api/royco";
+import { useQuery } from "@tanstack/react-query";
 
 export const EstimatorCustomTokenDataSchema = z.object({
   customTokenData: z.array(
     z.object({
-      token_id: z.string(),
+      id: z.string(),
       fdv: z.string(),
-      total_supply: z.string(),
+      totalSupply: z.string(),
       price: z.string(),
       allocation: z.string(),
     })
@@ -53,7 +52,7 @@ export const TokenEstimator = React.forwardRef<
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { customTokenData, setCustomTokenData } = useGlobalStates();
+  const [customTokenData, setCustomTokenData] = useAtom(customTokenDataAtom);
 
   const form = useForm<z.infer<typeof EstimatorCustomTokenDataSchema>>({
     resolver: zodResolver(EstimatorCustomTokenDataSchema),
@@ -64,11 +63,11 @@ export const TokenEstimator = React.forwardRef<
 
   useEffect(() => {
     const tokens = customTokenData.map((token) => ({
-      token_id: token.token_id,
-      fdv: token.fdv || "0",
-      total_supply: token.total_supply || "0",
-      price: token.price || "0",
-      allocation: token.allocation || "100",
+      id: token.id,
+      fdv: (token.fdv || 0).toString(),
+      totalSupply: (token.totalSupply || 0).toString(),
+      price: (token.price || 0).toString(),
+      allocation: (token.allocation || 100).toString(),
     }));
 
     form.setValue("customTokenData", tokens);
@@ -84,16 +83,33 @@ export const TokenEstimator = React.forwardRef<
 
   const handleTokenSelect = (token: CustomTokenDataElement) => {
     const currentTokens = form.getValues("customTokenData");
-    const hasToken = currentTokens.some((t) => t.token_id === token.token_id);
+    const hasToken = currentTokens.some((t) => t.id === token.id);
 
     if (!hasToken) {
-      const formToken = [token, ...currentTokens] as any;
+      const formToken = [token, ...currentTokens];
+
+      // @ts-ignore
       form.setValue("customTokenData", formToken);
     }
   };
 
-  const { data: tokenQuotes } = useTokenQuotes({
-    token_ids: tokenIds || [],
+  const {
+    data: tokenQuotes,
+    isLoading: tokenQuotesLoading,
+    isError: tokenQuotesError,
+  } = useQuery({
+    queryKey: [
+      "token-quotes-token-estimator-quotes",
+      {
+        tokenIds,
+      },
+    ],
+    queryFn: () =>
+      api
+        .tokenControllerGetTokenDirectory({
+          filters: [{ id: "id", value: tokenIds || [], condition: "inArray" }],
+        })
+        .then((res) => res.data.data),
   });
 
   useEffect(() => {
@@ -106,24 +122,22 @@ export const TokenEstimator = React.forwardRef<
     ) {
       for (const index in tokenIds) {
         let token = {
-          token_id: tokenIds[index],
-          fdv: tokenQuotes[index].fdv.toString(),
-          total_supply: tokenQuotes[index].total_supply.toString(),
-          price: tokenQuotes[index].price.toString(),
-          allocation: "100",
+          id: tokenIds[index],
+          fdv: tokenQuotes[index].fdv,
+          totalSupply: tokenQuotes[index].totalSupply,
+          price: tokenQuotes[index].price,
+          allocation: 100,
         };
 
-        const tokenData = SupportedTokenList.find(
-          (t) => t.id === tokenIds[index]
-        );
+        const tokenData = tokenQuotes?.find((t) => t.id === tokenIds[index]);
         if (
           tokenData &&
-          tokenData.chain_id === SONIC_CHAIN_ID &&
+          tokenData.chainId === SONIC_CHAIN_ID &&
           tokenData.type === "point"
         ) {
           token = {
             ...token,
-            allocation: "",
+            allocation: 100,
           };
         }
 
@@ -195,7 +209,13 @@ export const TokenEstimator = React.forwardRef<
                       <SlideUpWrapper className="flex flex-col">
                         <TokenEditor
                           index={0}
-                          tokens={estimatorCustomTokenData}
+                          tokens={estimatorCustomTokenData.map((token) => ({
+                            ...token,
+                            price: parseFloat(token.price),
+                            fdv: parseFloat(token.fdv),
+                            totalSupply: parseFloat(token.totalSupply),
+                            allocation: parseFloat(token.allocation),
+                          }))}
                           customTokenForm={form}
                           onRemove={() => form.setValue("customTokenData", [])}
                           marketCategory={marketCategory}
@@ -205,9 +225,17 @@ export const TokenEstimator = React.forwardRef<
                       estimatorCustomTokenData.map((token, index) => (
                         <SlideUpWrapper className="flex flex-col">
                           <TokenEditor
-                            key={token.token_id}
+                            key={token.id}
                             index={index}
-                            tokens={[token]}
+                            tokens={[
+                              {
+                                id: token.id,
+                                fdv: parseFloat(token.fdv),
+                                totalSupply: parseFloat(token.totalSupply),
+                                price: parseFloat(token.price),
+                                allocation: parseFloat(token.allocation),
+                              },
+                            ]}
                             customTokenForm={form}
                             onRemove={() => handleRemoveToken(index)}
                           />
@@ -230,7 +258,15 @@ export const TokenEstimator = React.forwardRef<
                   className="flex w-full items-center justify-center gap-2"
                   disabled={loading}
                   onClick={() => {
-                    setCustomTokenData(form.getValues().customTokenData);
+                    setCustomTokenData(
+                      form.getValues().customTokenData.map((token) => ({
+                        ...token,
+                        price: parseFloat(token.price),
+                        fdv: parseFloat(token.fdv),
+                        totalSupply: parseFloat(token.totalSupply),
+                        allocation: parseFloat(token.allocation),
+                      }))
+                    );
                     setLoading(true);
 
                     setTimeout(() => {
