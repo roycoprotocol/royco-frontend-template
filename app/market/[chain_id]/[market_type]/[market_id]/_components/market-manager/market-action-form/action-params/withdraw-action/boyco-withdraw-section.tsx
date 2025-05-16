@@ -122,6 +122,37 @@ export const BoycoWithdrawSection = React.forwardRef<
     );
   }
 
+  if (enrichedMarket?.lockupTime !== "2592000") {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex h-fit flex-1 grow flex-col items-center gap-2",
+          className
+        )}
+        {...props}
+      >
+        <BoycoWithdrawSectionRowContainer className="flex flex-col">
+          <div>Withdrawal is available from boyco.berachain.com</div>
+          <Button
+            size="sm"
+            className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
+            onClick={() => {
+              const redirect_link = `https://boyco.berachain.com/`;
+
+              window.open(redirect_link, "_blank", "noopener,noreferrer");
+            }}
+          >
+            <div className="flex flex-row items-center gap-2">
+              Go to boyco.berachain.com
+              <ExternalLinkIcon className="h-4 w-4" />
+            </div>
+          </Button>
+        </BoycoWithdrawSectionRowContainer>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={ref}

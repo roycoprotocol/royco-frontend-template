@@ -7,8 +7,6 @@ import { usePathname } from "next/navigation";
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
 
-  if (pathname === "/verify") return null;
-
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";

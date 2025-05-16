@@ -5,6 +5,7 @@ import { ProtectorProvider } from "@/app/_containers/providers/protector-provide
 import { HeroSection } from "./components/hero-section/hero-section";
 import { MarketFilter } from "./components/market-filter/market-filter";
 import { MarketTable } from "./components/market-table/market-table";
+import { VaultsTable } from "./components/vaults-table/vaults-table";
 
 const Page = () => {
   return (
@@ -29,6 +30,10 @@ const Page = () => {
         <MaxWidthProvider className="relative z-10 mb-5">
           <div className="pt-16">
             <HeroSection />
+          </div>
+
+          <div className="mt-12">
+            <VaultsTable />
           </div>
 
           <div className="mt-12">

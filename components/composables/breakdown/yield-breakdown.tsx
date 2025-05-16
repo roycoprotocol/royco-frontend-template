@@ -12,7 +12,7 @@ import { TokenDisplayer } from "@/components/common";
 import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import { MarketType } from "@/store";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator/token-estimator";
 import {
   BERA_TOKEN_ID,
   DEFAULT_TOKEN_COLOR,

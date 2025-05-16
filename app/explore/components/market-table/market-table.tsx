@@ -8,9 +8,9 @@ import {
   marketPageAtom,
   loadableExploreMarketAtom,
 } from "@/store/explore/explore-market";
-import { MarketNotFound } from "./market-not-found";
+import { NotFoundWarning } from "../../common/not-found-warning";
 import { ExploreMarketTable } from "./explore-market-table";
-import { LoadingIndicator } from "@/app/_components/common/connect-wallet-button/loading-indicator";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { ExploreMarketPagination } from "./explore-market-pagination";
 
 export const MarketTable = React.forwardRef<
@@ -36,7 +36,7 @@ export const MarketTable = React.forwardRef<
   if (isError || propsData?.count === 0) {
     return (
       <div className="w-full">
-        <MarketNotFound />
+        <NotFoundWarning title="No Markets Found." />
       </div>
     );
   }

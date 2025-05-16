@@ -73,7 +73,7 @@ export const DepositTable = React.forwardRef<
                 className="h-24 border-l border-r border-t border-_divider_ text-center"
               >
                 <AlertIndicator className="py-10">
-                  <span className="text-base">No allocations available</span>
+                  <span className="text-base">No deposits available</span>
                 </AlertIndicator>
               </TableCell>
             </TableRow>

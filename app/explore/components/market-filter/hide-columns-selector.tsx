@@ -76,8 +76,6 @@ export const HideColumnsSelector = React.forwardRef<
     }
   };
 
-  console.log({ hiddenTableColumns });
-
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       <Popover

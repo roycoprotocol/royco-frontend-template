@@ -1,165 +1,60 @@
-import "./explore/local.css";
+"use client";
 
-import { cn } from "@/lib/utils";
-import { MAX_SCREEN_WIDTH } from "@/components/constants";
-import {
-  MobileMenu,
-  RoycoStats,
-  SearchBar,
-  TableMenu,
-} from "./explore/_components";
-import { ColumnToggler } from "./explore/_components/ui";
-import { Protector } from "./_components/common/protector";
-import { BoycoStats } from "./explore/_components/boyco-stats";
-import { Button } from "@/components/ui/button";
-import { TokenEstimator } from "./_components/ui/token-estimator/token-estimator";
-import LightningIcon from "./market/[chain_id]/[market_type]/[market_id]/_components/icons/lightning";
-import { PlumeBlackLogo } from "../assets/logo/plume/plume-black";
+import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
+import { ProtectorProvider } from "@/app/_containers/providers/protector-provider";
+import { VaultsTable } from "./explore/components/vaults-table/vaults-table";
+import { HeroSection } from "./explore/components/hero-section/hero-section";
+import { MarketFilter } from "./explore/components/market-filter/market-filter";
+import { MarketTable } from "./explore/components/market-table/market-table";
 import { RoycoRoyalty } from "./explore/_components/royco-royalty";
-import { ExploreMarketManager } from "./explore/_components/explore-market-manager";
+import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 
 const Page = () => {
-  const Content = () => {
-    return (
-      <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
+  return (
+    <ProtectorProvider>
+      <div className="hide-scrollbar relative min-h-screen bg-_surface_">
         {/**
-         * @title Header Bar
-         * @description Header Tilte + Tagline + Stats
+         * Background
          */}
-        <div
-          className={cn(
-            "mt-9 flex w-full shrink-0 flex-col items-start justify-center px-3 pt-3 md:mt-12 md:px-12 lg:flex-row lg:items-center lg:justify-between",
-            "gap-7 md:gap-3 xl:gap-12",
-            MAX_SCREEN_WIDTH,
-            "px-0 md:px-0"
-          )}
-        >
-          <div className="flex flex-col items-start justify-start">
-            {(() => {
-              if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-                return (
-                  <>
-                    <h2 className="heading-2 text-black">Explore Boyco</h2>
-                    <div className="body-1 mt-2 text-secondary">
-                      Pre-deposit to Berachain to earn incentives.
-                    </div>
-                  </>
-                );
-              } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
-                return (
-                  <>
-                    <h2 className="heading-2 text-black">Explore Sonic</h2>
-                    <div className="body-1 mt-2 text-secondary">
-                      Explore Sonic Gems & Points Programs
-                    </div>
-                  </>
-                );
-              } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
-                return (
-                  <>
-                    <h2 className="heading-2 flex flex-row items-center gap-3 text-black">
-                      <div>Explore Plume</div>
-                      <PlumeBlackLogo className="h-8 w-8" />
-                    </h2>
-                    <div className="body-1 mt-2 text-secondary">
-                      Earn $PLUME and other incentives in addition to the base
-                      APY.
-                    </div>
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <h2 className="heading-2 text-black">Explore</h2>
-                    <div className="body-1 mt-2 text-secondary">
-                      Explore Royco Markets & bid for more incentives today.
-                    </div>
-                  </>
-                );
-              }
-            })()}
-          </div>
+        <div className="fixed left-0 right-0 top-0">
+          <img
+            src="/images/explore/explore-bg.png"
+            alt="explore-bg"
+            className="opacity-80"
+          />
 
-          {(() => {
-            if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco") {
-              return <BoycoStats className="flex-1" />;
-            } else if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
-              return null;
-            } else {
-              return <RoycoStats className="flex-1" />;
-            }
-          })()}
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-_surface_ via-_surface_ to-transparent" />
         </div>
 
-        <div
-          className={cn(
-            "hide-scrollbar flex w-full flex-row items-start space-x-0 p-3 pb-12 md:p-12 lg:space-x-3",
-            "mb-14 mt-7 md:mt-0",
-            MAX_SCREEN_WIDTH,
-            "px-0 md:px-0"
-          )}
-        >
-          <div
-            style={{
-              height: "fit-content",
-              maxHeight: "80vh",
-            }}
-            className="hidden w-3/12 md:max-h-[80vh] lg:block"
-          >
-            <TableMenu />
+        {/**
+         * Hero Section
+         */}
+        <MaxWidthProvider className="relative z-10 mb-5">
+          <div className="pt-16">
+            <HeroSection />
           </div>
 
-          <div className="flex w-full shrink-0 flex-col gap-3 lg:w-9/12">
-            <div className="flex w-full flex-col items-center justify-between md:flex-row">
-              <div className="mr-3 hidden md:flex lg:hidden">
-                <MobileMenu />
-              </div>
-
-              <SearchBar />
-
-              <div className="hidden h-[2.875rem] w-fit flex-row items-center space-x-3 md:flex">
-                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic" && (
-                  <TokenEstimator className="h-full" marketCategory="sonic">
-                    <Button
-                      size="sm"
-                      className="flex h-full w-full items-center justify-center gap-2 rounded-xl"
-                    >
-                      <LightningIcon className="h-5 w-5 fill-black" />
-                      <span className="text-sm">Estimate Sonic Airdrop</span>
-                    </Button>
-                  </TokenEstimator>
-                )}
-              </div>
-
-              <div className="mt-3 flex w-full flex-row items-center justify-between space-x-2 md:hidden">
-                <div className="flex h-full flex-row space-x-2">
-                  <MobileMenu />
-                </div>
-
-                <div className="flex w-fit flex-row items-center space-x-3"></div>
-              </div>
-            </div>
-
-            <ExploreMarketManager />
+          <div className="mt-12">
+            <VaultsTable />
           </div>
-        </div>
 
-        <RoycoRoyalty />
+          <div className="mt-12">
+            <MarketFilter />
+          </div>
+
+          <div className="mt-6">
+            <MarketTable />
+          </div>
+        </MaxWidthProvider>
+
+        <RoycoRoyalty
+          open={process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? false : true}
+        />
+
+        {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
       </div>
-    );
-  };
-
-  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
-
-  if (
-    frontendTag === "internal" ||
-    frontendTag === "testnet" ||
-    frontendTag === "plume"
-  ) {
-    return <Protector children={<Content />} />;
-  } else {
-    return <Content />;
-  }
+    </ProtectorProvider>
+  );
 };
 
 export default Page;

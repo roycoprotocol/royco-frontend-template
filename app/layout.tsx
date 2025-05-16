@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { Toaster } from "react-hot-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { RoycoClientProvider } from "./royco-client-provider";
+import { RoycoClientProvider } from "./_containers/providers/royco-client-provider";
 import WalletProvider from "@/components/rainbow-modal/context-provider";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 
@@ -15,7 +15,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { AtomProvider } from "./atom-provider";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
-import { Navbar } from "./_components";
+import { NavigationWrapper } from "./_components/header/navigation-wrapper";
 
 /**
  * Inter Font
@@ -98,7 +98,7 @@ export default function RootLayout({
               <AtomProvider />
               <ToasterSonner richColors={true} position="top-center" />
 
-              <Navbar />
+              <NavigationWrapper />
 
               {children}
             </WalletProvider>
