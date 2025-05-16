@@ -6,6 +6,8 @@ import { VaultsTable } from "./explore/components/vaults-table/vaults-table";
 import { HeroSection } from "./explore/components/hero-section/hero-section";
 import { MarketFilter } from "./explore/components/market-filter/market-filter";
 import { MarketTable } from "./explore/components/market-table/market-table";
+import { RoycoRoyalty } from "./explore/_components/royco-royalty";
+import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 
 const Page = () => {
   return (
@@ -21,7 +23,7 @@ const Page = () => {
             className="opacity-80"
           />
 
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-_surface_ via-_surface_ to-transparent"></div>
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-_surface_ via-_surface_ to-transparent" />
         </div>
 
         {/**
@@ -44,6 +46,12 @@ const Page = () => {
             <MarketTable />
           </div>
         </MaxWidthProvider>
+
+        <RoycoRoyalty
+          open={process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? false : true}
+        />
+
+        {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
       </div>
     </ProtectorProvider>
   );

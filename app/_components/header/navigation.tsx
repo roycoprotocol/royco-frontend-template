@@ -9,6 +9,9 @@ import { RoycoLogoIcon } from "@/assets/logo/royco-logo";
 import { CrownIcon } from "@/assets/icons/crown";
 import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
 import { ConnectWalletButton } from "./connect-wallet-button/connect-wallet-button";
+import { tagAtom } from "@/store/protector/protector";
+import { useAtomValue } from "jotai";
+import { PlumeLogo } from "@/assets/logo/plume/plume";
 
 const Links = [
   {
@@ -36,18 +39,20 @@ interface NavigationProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
   ({ className, ...props }, ref) => {
+    const tag = useAtomValue(tagAtom);
+
     const [open, setOpen] = React.useState(false);
 
     return (
       <div
         ref={ref}
         className={cn(
-          "sticky left-0 right-0 top-0 z-50 flex h-16 flex-col justify-center border-b border-divider bg-_surface_/80",
+          "sticky left-0 right-0 top-0 z-50  border-b border-divider bg-_surface_/80",
           className
         )}
         {...props}
       >
-        <MaxWidthProvider>
+        <MaxWidthProvider className="flex h-16 items-center">
           <div className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-10">
               <a target="_self" href="/" className="shrink-0 cursor-pointer">
@@ -150,6 +155,74 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
             </motion.div>
           )}
         </AnimatePresence>
+
+        {tag === "boyco" && (
+          <div className="flex w-full justify-center bg-_primary_/80 py-2">
+            <a
+              href="https://boyco.berachain.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="text-center text-xs text-_surface_">
+                <span>
+                  <span>Withdraw from Boyco </span>
+                  <span className="font-semibold underline underline-offset-2">
+                    here.
+                  </span>
+                </span>
+              </div>
+            </a>
+          </div>
+        )}
+
+        {tag === "plume" && (
+          <div className="flex w-full justify-center bg-_primary_/80 py-2">
+            <div className="text-center text-xs text-_surface_">
+              <span>
+                <span>
+                  <PlumeLogo className="inline-block h-4 w-4" />{" "}
+                </span>
+                <span className="font-semibold">Plume X Royco: </span>
+                <span className="text-center">
+                  Access incentives from Plume and our ecosystem dapps by
+                  helping seed liquidity and bootstrap TVL.{" "}
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
+
+        {tag === "sonic" && (
+          <div className="flex w-full justify-center bg-_primary_/80 py-2">
+            <a
+              href="https://paragraph.xyz/@royco/sonic-is-partnering-with-royco-to-help-distribute-200,000,000-dollars-to-boost-its-thriving-defi-ecosystem-1"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="text-center text-xs text-_surface_">
+                <span>
+                  <span className="font-semibold underline underline-offset-2">
+                    SONIC GEMS Program{" "}
+                  </span>
+                  <span>
+                    Sonic is partnering with Royco to help distribute
+                    ~200,000,000 $S{" "}
+                  </span>
+                  <span>
+                    <img
+                      src="/sonic-token.png"
+                      alt="Sonic Logo"
+                      className="inline-block h-4 w-4"
+                    />{" "}
+                  </span>
+                  <span className="font-semibold underline underline-offset-2">
+                    Learn more.
+                  </span>
+                </span>
+              </div>
+            </a>
+          </div>
+        )}
       </div>
     );
   }
