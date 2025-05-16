@@ -9,7 +9,7 @@ export const MaxWidthProvider = React.forwardRef<
 >(({ children, className, ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={cn("px-3 md:px-12", className)}>
-      <div className="mx-auto max-w-[1600px]">{children}</div>
+      <div className="mx-auto w-full max-w-[1600px]">{children}</div>
     </div>
   );
 });

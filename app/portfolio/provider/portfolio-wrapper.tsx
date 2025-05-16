@@ -8,7 +8,7 @@ import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { useAtomValue } from "jotai";
 import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
 import { useAccount } from "wagmi";
-import { ConnectWalletButton } from "@/app/_components/common/connect-wallet-button/connect-wallet-button";
+import { ConnectWalletButton } from "@/app/_components/header/connect-wallet-button/connect-wallet-button";
 
 export const PortfolioWrapper = React.forwardRef<
   HTMLDivElement,

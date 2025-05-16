@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { ActualNavbar } from "../ui/actual-navbar";
 import { usePathname } from "next/navigation";
+import { Navigation } from "./navigation";
 
-export const Navbar: React.FC = () => {
+export const NavigationWrapper: React.FC = () => {
   const pathname = usePathname();
-
   if (pathname === "/verify") return null;
 
   useEffect(() => {
@@ -16,5 +15,5 @@ export const Navbar: React.FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  return <ActualNavbar />;
+  return <Navigation />;
 };

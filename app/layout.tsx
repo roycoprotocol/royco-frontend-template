@@ -15,7 +15,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { AtomProvider } from "./atom-provider";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
-import { Navbar } from "./_components/Navbar";
+import { NavigationWrapper } from "./_components/header/navigation-wrapper";
 
 /**
  * Inter Font
@@ -98,7 +98,7 @@ export default function RootLayout({
               <AtomProvider />
               <ToasterSonner richColors={true} position="top-center" />
 
-              <Navbar />
+              <NavigationWrapper />
 
               {children}
             </WalletProvider>

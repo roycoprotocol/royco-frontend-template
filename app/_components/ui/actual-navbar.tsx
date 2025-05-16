@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import React, { useMemo } from "react";
-import { RoycoLogo } from "../assets";
 import "./navbar.css";
 import {
   AlignJustifyIcon,
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { ConnectWalletButton } from "../common/connect-wallet-button/connect-wallet-button";
+import { ConnectWalletButton } from "../header/connect-wallet-button/connect-wallet-button";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
