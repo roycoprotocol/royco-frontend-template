@@ -16,7 +16,7 @@ export const SecondaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit items-center break-all font-gt text-sm font-normal leading-tight text-secondary",
+        "flex h-fit items-center font-gt text-sm font-normal leading-tight text-secondary",
         className
       )}
       {...props}

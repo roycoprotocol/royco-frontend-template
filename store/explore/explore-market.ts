@@ -2,6 +2,7 @@ import {
   CustomTokenDataElement,
   ExploreMarketResponse,
   ExploreSettingsMarketResponse,
+  ExploreVaultResponse,
   Filter,
   Sorting,
 } from "royco/api";
@@ -183,6 +184,52 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
       };
 
       const response = await api.marketControllerGetMarkets(body);
+
+      return response.data;
+    },
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchIntervalInBackground: true, // Refetch in background
+    placeholderData: keepPreviousData, // Keep previous data while fetching new data
+    staleTime: 1000 * 60, // Consider data fresh for 1 minute
+    cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
+  })
+);
+
+export const vaultPageAtom = atom<number>(1);
+
+export const loadableExploreVaultAtom = atomWithQuery<ExploreVaultResponse>(
+  (get) => ({
+    queryKey: [
+      "explore-vault",
+      {
+        filters: [...get(baseChainFilter)],
+        page: get(vaultPageAtom),
+      },
+    ],
+    queryFn: async ({ queryKey: [, params] }) => {
+      const _params = params as any;
+
+      const body: any = {};
+
+      if (_params.filters.length > 0) {
+        body.filters = _params.filters.filter((filter: Filter) => {
+          if (
+            filter.condition === "inArray" &&
+            Array.isArray(filter.value) &&
+            filter.value.length === 0
+          ) {
+            return false;
+          }
+          return true;
+        });
+      }
+
+      body.page = {
+        index: _params.page,
+        size: EXPLORE_PAGE_SIZE,
+      };
+
+      const response = await api.vaultControllerGetVaults(body);
 
       return response.data;
     },

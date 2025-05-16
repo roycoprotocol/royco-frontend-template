@@ -18,10 +18,14 @@ const pathAnimation = {
   transition: { duration: 1, ease: "easeInOut" },
 };
 
-export const MarketNotFound = React.forwardRef<
+interface NotFoundWarningProps extends React.HTMLAttributes<HTMLDivElement> {
+  title: string;
+}
+
+export const NotFoundWarning = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+  NotFoundWarningProps
+>(({ className, title, ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={cn("", className)}>
       <AnimatePresence mode="sync">
@@ -64,7 +68,7 @@ export const MarketNotFound = React.forwardRef<
             transition={{ duration: 1, ease: "easeInOut" }}
             className="mt-2 text-center font-ortica text-2xl text-_secondary_"
           >
-            No Markets Found.
+            {title}
           </motion.div>
         </motion.div>
       </AnimatePresence>
