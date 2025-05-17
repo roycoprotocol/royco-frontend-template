@@ -14,7 +14,7 @@ import {
   vaultMetadataAtom,
 } from "@/store/vault/vault-manager";
 
-export const Deposits = React.forwardRef<
+export const Balance = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -26,27 +26,26 @@ export const Deposits = React.forwardRef<
   }, [data]);
 
   const principle = useMemo(() => {
-    return vault?.account.sharesInBaseAsset || 0;
+    return {
+      tokenAmount: vault?.account.sharesInBaseAsset || 0,
+      tokenAmountUsd: vault?.account.sharesInUsd || 0,
+    };
   }, [vault]);
 
   return (
     <div ref={ref} {...props} className={cn(className)}>
-      <PrimaryLabel className="text-2xl font-medium text-_primary_">
-        Deposits
-      </PrimaryLabel>
-
-      {/**
+      {/**t
        * Total Deposits
        */}
-      <div className="mt-4">
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
-          TOTAL DEPOSITS
-        </SecondaryLabel>
+      <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        YOUR POSITION
+      </SecondaryLabel>
 
-        <PrimaryLabel className="mt-2 text-2xl font-normal ">
+      <div className="flex items-end gap-2">
+        <PrimaryLabel className="font mt-2 font-fragmentMono text-2xl font-normal">
           <div className="flex items-center gap-2">
             <span>
-              {formatNumber(principle, {
+              {formatNumber(principle.tokenAmount, {
                 type: "number",
               })}
             </span>
@@ -54,6 +53,14 @@ export const Deposits = React.forwardRef<
             <span>{token?.symbol}</span>
           </div>
         </PrimaryLabel>
+
+        <SecondaryLabel className="mb-px text-sm font-normal text-_secondary_">
+          <span>
+            {formatNumber(principle.tokenAmountUsd, {
+              type: "currency",
+            })}
+          </span>
+        </SecondaryLabel>
       </div>
     </div>
   );

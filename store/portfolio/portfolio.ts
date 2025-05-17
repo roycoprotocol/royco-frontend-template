@@ -35,7 +35,7 @@ export const loadablePortfolioPositionsAtom =
             },
             {
               id: "unlockTimestamp",
-              desc: true,
+              desc: false,
             },
             {
               id: "name",
@@ -46,7 +46,11 @@ export const loadablePortfolioPositionsAtom =
         .then((res) => res.data);
     },
     enabled: Boolean(get(accountAddressAtom)),
-    ...defaultQueryOptions,
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchIntervalInBackground: true, // Refetch in background
+    refetchInterval: 1000 * 60, // Check for updates every 1 minute
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
   }));
 
 export const portfolioTransactionsAtom = atom<{

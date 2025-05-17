@@ -121,7 +121,15 @@ export const DepositActionForm = React.forwardRef<
             {isLoadingWalletBalance ? (
               <LoadingSpinner className="ml-1 h-4 w-4" />
             ) : (
-              <span>{formatNumber(balance || 0)}</span>
+              <span>
+                {formatNumber(
+                  balance || 0,
+                  { type: "number" },
+                  {
+                    mantissa: 6,
+                  }
+                )}
+              </span>
             )}
             <span className="ml-1">{token.symbol}</span>
           </span>

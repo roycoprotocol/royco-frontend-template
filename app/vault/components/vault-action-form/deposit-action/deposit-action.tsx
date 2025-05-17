@@ -36,6 +36,8 @@ export const DepositAction = React.forwardRef<
     return data?.depositTokens[0];
   }, [data]);
 
+  console.log({ data });
+
   const { setTransactions, reload } = useVaultManager();
 
   const { getDepositTransaction } = useBoringVaultActions();
@@ -146,6 +148,7 @@ export const DepositAction = React.forwardRef<
               }}
               size="sm"
               className="h-10 w-full rounded-sm bg-_highlight_"
+              disabled={data.capacity.ratio >= 1}
             >
               Deposit
             </Button>
