@@ -19,6 +19,12 @@ export const HeroSection = React.forwardRef<
       className={cn("flex flex-col items-center", className)}
     >
       <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-_surface_tertiary">
+        <img
+          src={`https://effigy.im/a/${address}.svg`}
+          alt="profile image"
+          className="h-full w-full rounded-full object-cover"
+        />
+
         <div className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-_surface_">
           <CrownIcon className="h-6 w-6" />
         </div>

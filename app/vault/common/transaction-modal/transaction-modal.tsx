@@ -424,9 +424,11 @@ export const TransactionModal = React.forwardRef<
           {/**
            * Transaction Keep Window Open
            */}
-          <SecondaryLabel className="justify-center text-xs font-normal">
-            Keep window open until complete.
-          </SecondaryLabel>
+          {!isTxSuccess && (
+            <SecondaryLabel className="justify-center text-xs font-normal">
+              Keep window open until complete.
+            </SecondaryLabel>
+          )}
         </DialogContent>
       )}
     </Dialog>

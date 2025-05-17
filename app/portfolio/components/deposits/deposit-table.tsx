@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AlertIndicator } from "@/components/common/alert-indicator";
+import Link from "next/link";
 
 export const DepositTable = React.forwardRef<
   HTMLTableElement,
@@ -81,43 +82,51 @@ export const DepositTable = React.forwardRef<
             table.getRowModel().rows.map((row, index) => {
               return (
                 <React.Fragment key={`list:row:${index}`}>
-                  <TableRow
-                    data-state={row.getIsSelected() && "selected"}
-                    className={cn(
-                      "group cursor-pointer border-b hover:bg-transparent data-[state=selected]:bg-gray-50",
-                      index !== table.getRowModel().rows.length - 1
-                    )}
+                  <Link
+                    key={`row:${row.index}`}
+                    target="_self"
+                    rel="noopener noreferrer"
+                    href={row.original.marketLink}
+                    className="contents"
                   >
-                    {row.getVisibleCells().map((cell, cellIndex) => {
-                      return (
-                        <>
-                          <TableCell
-                            key={`row:cell:${cell.id}`}
-                            className={cn(
-                              "min-w-fit whitespace-nowrap px-0 py-4 pr-8 text-base font-normal text-primary",
-                              (cell.column.columnDef.meta as any).className
-                            )}
-                          >
-                            <div
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      className={cn(
+                        "group cursor-pointer border-b hover:bg-gray-50 data-[state=selected]:bg-gray-50",
+                        index !== table.getRowModel().rows.length - 1
+                      )}
+                    >
+                      {row.getVisibleCells().map((cell, cellIndex) => {
+                        return (
+                          <>
+                            <TableCell
+                              key={`row:cell:${cell.id}`}
                               className={cn(
-                                "flex items-center gap-1",
-                                (cell.column.columnDef.meta as any).align ===
-                                  "right" && "justify-end",
-                                (cell.column.columnDef.meta as any).align ===
-                                  "left" && "justify-start",
-                                (cell.column.columnDef.meta as any).align ===
-                                  "center" && "justify-center"
+                                "min-w-fit whitespace-nowrap px-0 py-4 pr-8 text-base font-normal text-primary",
+                                (cell.column.columnDef.meta as any).className
                               )}
                             >
-                              {flexRender(cell.column.columnDef.cell, {
-                                ...cell.getContext(),
-                              })}
-                            </div>
-                          </TableCell>
-                        </>
-                      );
-                    })}
-                  </TableRow>
+                              <div
+                                className={cn(
+                                  "flex items-center gap-1",
+                                  (cell.column.columnDef.meta as any).align ===
+                                    "right" && "justify-end",
+                                  (cell.column.columnDef.meta as any).align ===
+                                    "left" && "justify-start",
+                                  (cell.column.columnDef.meta as any).align ===
+                                    "center" && "justify-center"
+                                )}
+                              >
+                                {flexRender(cell.column.columnDef.cell, {
+                                  ...cell.getContext(),
+                                })}
+                              </div>
+                            </TableCell>
+                          </>
+                        );
+                      })}
+                    </TableRow>
+                  </Link>
                 </React.Fragment>
               );
             })

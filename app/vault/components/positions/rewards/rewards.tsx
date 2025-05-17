@@ -160,7 +160,7 @@ export const Rewards = React.forwardRef<
               </SecondaryLabel>
 
               {tokenIncentives.data.map((incentive, index) => (
-                <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
+                <SlideUpWrapper key={index} delay={0.2 + index * 0.1}>
                   <div className="flex items-center justify-between border-b border-_divider_ py-4">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       <div className="flex items-center gap-3 ">
@@ -205,7 +205,7 @@ export const Rewards = React.forwardRef<
               </SecondaryLabel>
 
               {pointIncentives.data.map((incentive, index) => (
-                <SlideUpWrapper key={index} delay={0.3 + index * 0.1}>
+                <SlideUpWrapper key={index} delay={0.2 + index * 0.1}>
                   <div className="flex items-center justify-between border-b border-_divider_ py-4">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       <div className="flex items-center gap-3 ">
@@ -245,7 +245,7 @@ export const Rewards = React.forwardRef<
         </div>
       ) : (
         <AlertIndicator className="mt-4 rounded-sm border border-_divider_ py-10">
-          <span className="text-base">No rewards available</span>
+          <span className="text-base">No reward distributions yet.</span>
         </AlertIndicator>
       )}
     </div>
