@@ -11,41 +11,16 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { ChevronRight, ChevronsRight, ChevronsUpDown } from "lucide-react";
+import { ChevronRight, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const MarketAllocation = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { data } = useAtomValue(vaultMetadataAtom);
-
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tableOverflow, setTableOverflow] = useState(false);
-
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (tableRef.current) {
-        const { scrollWidth, clientWidth } = tableRef.current;
-        setTableOverflow(scrollWidth > clientWidth);
-      }
-    };
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    return () => {
-      window.removeEventListener("resize", checkOverflow);
-    };
-  }, []);
-
-  const onScrollRight = () => {
-    if (tableRef.current) {
-      tableRef.current.scrollTo({
-        left: tableRef.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }
-  };
 
   const [showWhitelistedMarkets, setShowWhitelistedMarkets] = useState(false);
 
@@ -104,31 +79,14 @@ export const MarketAllocation = React.forwardRef<
           })}
       </SecondaryLabel>
 
-      <div className="relative mt-6">
-        <div ref={tableRef} className="hide-scrollbar overflow-x-auto">
-          <MarketAllocationTable
-            data={allocations}
-            columns={marketAllocationColumns}
-          />
-        </div>
+      <ScrollArea className={cn("mt-6 w-full overflow-hidden")}>
+        <MarketAllocationTable
+          data={allocations}
+          columns={marketAllocationColumns}
+        />
 
-        {tableOverflow && (
-          <motion.div
-            className="absolute -right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-_surface_tertiary p-2"
-            animate={{
-              x: [0, 5, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            onClick={onScrollRight}
-          >
-            <ChevronsRight className="h-4 w-4" />
-          </motion.div>
-        )}
-      </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       {whitelistedMarkets.length > 0 && (
         <Button
