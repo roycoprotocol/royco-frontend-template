@@ -18,13 +18,15 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "ACTIVE MARKETS",
-    meta: { className: "text-left w-full", align: "left" },
+    meta: { className: "text-left max-w-60", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id} className="group/link">
           <a href={row.original.link} target="_blank" rel="noreferrer">
-            <div className="relative flex w-fit items-center pr-5">
-              <div className="z-10 bg-_surface_">{row.original.name}</div>
+            <div className="relative flex items-center pr-5">
+              <div className="max-w- z-10 flex-1 overflow-hidden truncate bg-_surface_">
+                {row.original.name}
+              </div>
 
               {row.original.link && (
                 <ExternalLink className="absolute right-5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-0 transition-transform duration-300 ease-in-out group-hover/link:translate-x-5 group-hover/link:opacity-100" />
@@ -40,7 +42,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "CHAIN",
-    meta: { className: "text-left min-w-28", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       const chainId = row.original?.depositToken?.chainId;
       const chain = SupportedChainMap[chainId];
@@ -54,7 +56,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
                 alt={chain.name}
                 className="h-4 w-4 rounded-full"
               />
-              <span>{chain.name}</span>
+              <span className="overflow-hidden truncate">{chain.name}</span>
             </div>
           ) : (
             "-"
@@ -68,7 +70,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "ALLOCATION",
-    meta: { className: "text-left min-w-32", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
@@ -96,7 +98,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "CURRENT SUPPLY",
-    meta: { className: "text-left min-w-40", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
@@ -112,7 +114,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "FUNDS AVAILABLE",
-    meta: { className: "text-left min-w-40", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
@@ -131,7 +133,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "EST APY",
-    meta: { className: "text-left min-w-24", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
