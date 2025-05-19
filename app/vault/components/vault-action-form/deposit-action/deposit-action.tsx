@@ -36,8 +36,6 @@ export const DepositAction = React.forwardRef<
     return data?.depositTokens[0];
   }, [data]);
 
-  console.log({ data });
-
   const { setTransactions, reload } = useVaultManager();
 
   const { getDepositTransaction } = useBoringVaultActions();

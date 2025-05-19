@@ -65,6 +65,8 @@ export const MarketAllocation = React.forwardRef<
     return allocatedMarkets;
   }, [showWhitelistedMarkets, allocatedMarkets, whitelistedMarkets]);
 
+  console.log({ whitelistedMarkets });
+
   return (
     <div ref={ref} {...props} className={cn("", className)}>
       <PrimaryLabel className="text-2xl font-medium text-_primary_">
@@ -130,26 +132,28 @@ export const MarketAllocation = React.forwardRef<
         )}
       </div>
 
-      <Button
-        variant="link"
-        className={cn(
-          "mt-6 cursor-pointer text-sm font-medium text-_secondary_ outline-none disabled:opacity-50",
-          whitelistedMarkets.length === 0 && "opacity-50 hover:no-underline"
-        )}
-        disabled={whitelistedMarkets.length === 0}
-        onClick={() => setShowWhitelistedMarkets(!showWhitelistedMarkets)}
-      >
-        <div className="flex items-center gap-2">
-          <span>Show Whitelisted Markets</span>
+      {whitelistedMarkets.length > 0 && (
+        <Button
+          variant="link"
+          className={cn(
+            "mt-6 cursor-pointer text-sm font-medium text-_secondary_ outline-none disabled:opacity-50",
+            whitelistedMarkets.length === 0 && "opacity-50 hover:no-underline"
+          )}
+          disabled={whitelistedMarkets.length === 0}
+          onClick={() => setShowWhitelistedMarkets(!showWhitelistedMarkets)}
+        >
+          <div className="flex items-center gap-2">
+            <span>Show Whitelisted Markets</span>
 
-          <ChevronsUpDown
-            className={cn(
-              "h-4 w-4 transition-transform duration-200",
-              showWhitelistedMarkets ? "rotate-180" : "rotate-0"
-            )}
-          />
-        </div>
-      </Button>
+            <ChevronsUpDown
+              className={cn(
+                "h-4 w-4 transition-transform duration-200",
+                showWhitelistedMarkets ? "rotate-180" : "rotate-0"
+              )}
+            />
+          </div>
+        </Button>
+      )}
     </div>
   );
 });
