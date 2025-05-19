@@ -20,7 +20,7 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left w-full", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id} className="group/link w-full">
+        <ContentFlow customKey={row.original.id} className="group/link">
           <a href={row.original.link} target="_blank" rel="noreferrer">
             <div className="relative flex w-fit items-center pr-5">
               <div className="z-10 bg-_surface_">{row.original.name}</div>

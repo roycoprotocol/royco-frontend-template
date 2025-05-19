@@ -23,6 +23,7 @@ import { TokenDisplayer } from "@/components/common";
 import { InfoTip } from "@/app/_components/common/info-tip";
 import { InfoCard } from "@/app/_components/common/info-card";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
+import { EnsoShortcutsWidget } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/supply-action/components/enso-shortcuts-widget.tsx/enso-shortcuts-widget";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,
@@ -136,11 +137,21 @@ export const DepositActionForm = React.forwardRef<
         </SecondaryLabel>
       </SlideUpWrapper>
 
+      {token && (
+        <div className="mt-1">
+          <EnsoShortcutsWidget
+            token={token.contractAddress}
+            symbol={token.symbol}
+            chainId={data.chainId}
+          />
+        </div>
+      )}
+
       {/**
        * Insufficient balance indicator
        */}
       {!hasSufficientBalance && (
-        <SlideUpWrapper className="mt-3" delay={0.4}>
+        <SlideUpWrapper className="mt-3">
           <WarningAlert className="min-h-10 place-content-center rounded-sm">
             WARNING: You don't have sufficient balance.
           </WarningAlert>
