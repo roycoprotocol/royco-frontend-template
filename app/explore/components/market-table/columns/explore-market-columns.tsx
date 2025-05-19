@@ -161,25 +161,23 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
   [
     {
       accessorKey: "name",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "w-[500px] min-w-60",
+      meta: "max-w-96",
       cell: ({ row, column }: { row: any; column: any }) => {
         return (
           <ContentFlow customKey={row.original.id}>
-            <div
-              className={cn("flex items-center gap-3", column.columnDef.meta)}
-            >
+            <div className={cn("flex items-center gap-3")}>
               <TokenDisplayer
                 size={6}
                 tokens={[row.original.inputToken]}
                 symbols={false}
               />
 
-              <div className="truncate">
+              <div className="overflow-hidden truncate">
                 {validator.unescape(row.original.name.trim())}
               </div>
             </div>
@@ -189,12 +187,12 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
     {
       accessorKey: "totalYield",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-52 w-60",
+      meta: "min-w-40 w-52",
       cell: ({ row }) => {
         const activeIncentives = row.original.activeIncentives || [];
         const underlyingIncentives = row.original.underlyingIncentives || [];
@@ -293,12 +291,12 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
     {
       accessorKey: "tokenYield",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-52 w-60",
+      meta: "min-w-40 w-52",
       cell: ({ row }) => {
         const activeIncentives = row.original.activeIncentives || [];
         const underlyingIncentives = row.original.underlyingIncentives || [];
@@ -371,13 +369,12 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
     {
       accessorKey: "pointsYield",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-
-      meta: "min-w-52 w-60",
+      meta: "min-w-40 w-52",
       cell: ({ row }) => {
         const activeIncentives = row.original.activeIncentives || [];
         const underlyingIncentives = row.original.underlyingIncentives || [];
@@ -450,7 +447,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
     {
       accessorKey: "fillable",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
@@ -491,12 +488,12 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
     {
       accessorKey: "lockup",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-40 w-40",
+      meta: "min-w-40 w-52",
       cell: ({ row }) => {
         if (row.original.marketType === MarketType.vault.value) {
           return (
@@ -534,37 +531,35 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
         }
 
         return (
-          <div key={`market:rewardStyle`} className={cn("flex h-fit w-fit")}>
-            <ContentFlow customKey={row.original.id}>
-              <Tooltip>
-                <TooltipTrigger
-                  className={cn("flex cursor-pointer items-center")}
-                >
-                  {formattedValue + " " + lockupType}
-                </TooltipTrigger>
+          <ContentFlow customKey={row.original.id}>
+            <Tooltip>
+              <TooltipTrigger
+                className={cn("flex cursor-pointer items-center")}
+              >
+                {formattedValue + " " + lockupType}
+              </TooltipTrigger>
 
-                {typeof window !== "undefined" &&
-                  createPortal(
-                    <TooltipContent
-                      side="bottom"
-                      align="start"
+              {typeof window !== "undefined" &&
+                createPortal(
+                  <TooltipContent
+                    side="bottom"
+                    align="start"
+                    className={cn(
+                      "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                    )}
+                  >
+                    <div
                       className={cn(
-                        "max-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                        "break-normal text-sm font-normal text-_secondary_"
                       )}
                     >
-                      <div
-                        className={cn(
-                          "break-normal text-sm font-normal text-_secondary_"
-                        )}
-                      >
-                        {tooltipContent}
-                      </div>
-                    </TooltipContent>,
-                    document.body
-                  )}
-              </Tooltip>
-            </ContentFlow>
-          </div>
+                      {tooltipContent}
+                    </div>
+                  </TooltipContent>,
+                  document.body
+                )}
+            </Tooltip>
+          </ContentFlow>
         );
       },
     },
@@ -575,7 +570,7 @@ export const boycoExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement
     ...exploreMarketColumns,
     {
       accessorKey: "poolType",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
@@ -617,7 +612,7 @@ export const sonicExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement
     ...exploreMarketColumns,
     {
       accessorKey: "appType",
-      enableResizing: true,
+      enableResizing: false,
       enableSorting: false,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;

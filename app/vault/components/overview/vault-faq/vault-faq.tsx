@@ -46,7 +46,7 @@ const vault_faq = [
             funds not being optimized perfectly.
           </li>
           <li>
-            Market risk: one of the strategists’ markets gets exploited.
+            Market risk: one of the strategists' markets gets exploited.
             Strategists employ risk mitigation techniques to minimize this risk.
             In the worst case, this would be a partial loss of funds.
           </li>
@@ -57,7 +57,7 @@ const vault_faq = [
   {
     question: "How can I claim my incentives?",
     answer:
-      "Once your wallet has been connected, you can view and claim your incentives from the “Incentives” tab within the Vault page.",
+      "Once your wallet has been connected, you can view and claim your incentives from the 'Incentives' tab within the Vault page.",
   },
   {
     question: "What do I need to do to start earning rewards?",
@@ -101,7 +101,36 @@ const vault_faq = [
   {
     question: "How are points handled?",
     answer:
-      "For markets by points issuers who do not redirect points from the vault to the vault depositors, points will be held and only converted to liquid tokens for distribution to depositors after the dapp’s airdrop. Please return to this page to claim tokens after an airdrop.",
+      "For markets by points issuers who do not redirect points from the vault to the vault depositors, points will be held and only converted to liquid tokens for distribution to depositors after the dapp's airdrop. Please return to this page to claim tokens after an airdrop.",
+  },
+  {
+    question: "What happens if I withdraw before 90 days?",
+    answer: (
+      <div className="space-y-4">
+        <p>
+          To ensure long-term stability and fair distribution of rewards, the
+          Vault implements a 90-day minimum holding period. If you withdraw your
+          funds before completing the 90-day period:
+        </p>
+        <ul className="list-disc space-y-2 pl-6">
+          <li>
+            You will forfeit all rewards earned during your holding period
+          </li>
+          <li>
+            The forfeited rewards will be redistributed to remaining vault
+            participants
+          </li>
+          <li>
+            This policy helps maintain the stability of the vault and encourages
+            long-term participation
+          </li>
+        </ul>
+        <p>
+          We recommend carefully considering your investment timeline before
+          depositing funds into the vault.
+        </p>
+      </div>
+    ),
   },
 ];
 
