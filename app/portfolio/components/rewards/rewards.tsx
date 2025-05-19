@@ -41,28 +41,30 @@ export const Rewards = React.forwardRef<
             </div>
           )}
 
-          {(data?.unclaimedPointTokens || data?.claimedPointTokens) && (
-            <div>
-              <SecondaryLabel className="text-xs font-medium text-_secondary_">
-                POINTS
-              </SecondaryLabel>
+          {(data?.unclaimedPointTokens || data?.claimedPointTokens) &&
+            (data?.unclaimedPointTokens?.length > 0 ||
+              data?.claimedPointTokens?.length > 0) && (
+              <div>
+                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                  POINTS
+                </SecondaryLabel>
 
-              <PointRewardsManager
-                data={[
-                  ...(data?.unclaimedPointTokens?.map((token) => ({
-                    ...token,
-                    isClaimed: false,
-                  })) ?? []),
-                  ...(data?.claimedPointTokens?.map((token) => ({
-                    ...token,
-                    isClaimed: true,
-                    claimInfo: {},
-                    isUnlocked: true,
-                  })) ?? []),
-                ]}
-              />
-            </div>
-          )}
+                <PointRewardsManager
+                  data={[
+                    ...(data?.unclaimedPointTokens?.map((token) => ({
+                      ...token,
+                      isClaimed: false,
+                    })) ?? []),
+                    ...(data?.claimedPointTokens?.map((token) => ({
+                      ...token,
+                      isClaimed: true,
+                      claimInfo: {},
+                      isUnlocked: true,
+                    })) ?? []),
+                  ]}
+                />
+              </div>
+            )}
         </div>
       ) : (
         <AlertIndicator className="mt-8 rounded-sm border border-_divider_ py-10">

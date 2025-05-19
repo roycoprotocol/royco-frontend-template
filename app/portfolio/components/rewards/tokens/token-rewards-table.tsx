@@ -34,7 +34,7 @@ export const TokenRewardsTable = React.forwardRef<
                 className="h-24 border-l border-r border-t border-_divider_ text-center"
               >
                 <AlertIndicator className="py-10">
-                  <span className="text-base">No withdrawals available</span>
+                  <span className="text-base">No rewards found</span>
                 </AlertIndicator>
               </TableCell>
             </TableRow>

@@ -104,7 +104,7 @@ export const PointRewardsPagination = React.forwardRef<
         {`${page * pageSize + 1} - ${Math.min(
           (page + 1) * pageSize,
           count
-        )} of ${count} Rewards`}
+        )} of ${count}`}
       </SecondaryLabel>
 
       <div className="flex h-fit flex-row items-center gap-3">
