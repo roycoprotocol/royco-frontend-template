@@ -65,8 +65,6 @@ export const MarketAllocation = React.forwardRef<
     return allocatedMarkets;
   }, [showWhitelistedMarkets, allocatedMarkets, whitelistedMarkets]);
 
-  console.log({ whitelistedMarkets });
-
   return (
     <div ref={ref} {...props} className={cn("", className)}>
       <PrimaryLabel className="text-2xl font-medium text-_primary_">
