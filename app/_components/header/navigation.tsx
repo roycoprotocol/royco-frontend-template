@@ -31,7 +31,7 @@ const Links = [
     link: "/royalty",
     label: "Join Royalty",
     target: "_self",
-    icon: <CrownIcon className="h-5 w-5" />,
+    icon: <CrownIcon className="h-7 w-7 lg:h-5 lg:w-5" />,
   },
 ];
 
