@@ -74,10 +74,11 @@ export const EnsoShortcutsWidget = React.forwardRef<
         <div className={"mt-2"}>
           <EnsoWidget
             obligateSelection
-            apiKey={ENSO_KEY}
-            tokenOut={token}
-            chainId={chainId}
             themeConfig={themeConfig}
+            apiKey={ENSO_KEY}
+            chainId={chainId}
+            outChainId={chainId}
+            tokenOut={token}
           />
         </div>
       )}
