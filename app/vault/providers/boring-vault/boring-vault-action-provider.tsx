@@ -103,6 +103,7 @@ export function BoringVaultActionProvider({
       const warnings = [
         "Incentives start after next rebalance. APY shown reflects projected returns that will apply after rebalancing.",
         "Depositing funds resets a 24-hour lockup on your entire balance, delaying withdrawals until the period ends.",
+        "Withdrawing funds before 90 days will result in forfeiture of all rewards earned during that period.",
       ];
 
       return { steps: transactions, metadata, warnings };
