@@ -30,6 +30,8 @@ export const MarketAllocationTable = React.forwardRef<
     getCoreRowModel: getCoreRowModel(),
   });
 
+  console.log({ data });
+
   return (
     <Table ref={ref} className={cn(className)} {...props}>
       <TableHeader className={cn("sticky top-0 z-10 [&_tr]:border-b-0")}>

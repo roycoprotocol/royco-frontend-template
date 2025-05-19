@@ -10,6 +10,7 @@ import { CustomCircleProgress } from "@/app/vault/common/custom-circle-progress"
 import { GradientText } from "@/app/vault/common/gradient-text";
 import { ContentFlow } from "@/components/animations/content-flow";
 import { ExternalLink } from "lucide-react";
+import { SupportedChainMap } from "royco/constants";
 
 export const marketAllocationColumns: ColumnDef<any>[] = [
   {
@@ -30,6 +31,34 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
               )}
             </div>
           </a>
+        </ContentFlow>
+      );
+    },
+  },
+  {
+    accessorKey: "chain",
+    enableResizing: true,
+    enableSorting: false,
+    header: "CHAIN",
+    meta: { className: "text-left min-w-28", align: "left" },
+    cell: ({ row }) => {
+      const chainId = row.original?.depositToken?.chainId;
+      const chain = SupportedChainMap[chainId];
+
+      return (
+        <ContentFlow customKey={row.original.id}>
+          {chain ? (
+            <div className={cn("flex items-center gap-2")}>
+              <img
+                src={chain.image}
+                alt={chain.name}
+                className="h-4 w-4 rounded-full"
+              />
+              <span>{chain.name}</span>
+            </div>
+          ) : (
+            "-"
+          )}
         </ContentFlow>
       );
     },

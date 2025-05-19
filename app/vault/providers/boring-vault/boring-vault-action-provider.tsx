@@ -330,24 +330,60 @@ export function BoringVaultActionProvider({
 
   const getRecoverWithdrawalTransaction = async (metadata: any) => {
     try {
+      if (!address) {
+        toast.custom(
+          <ErrorAlert message="No account found. Please connect your wallet and try again." />
+        );
+        return;
+      }
+
       if (!boringVault) {
         toast.custom(<ErrorAlert message="Vault data not available." />);
         return;
       }
 
-      const transactionData = await getCancelWithdrawalTransaction(metadata);
+      const withdrawal = boringVault.account.withdrawals.find(
+        (withdrawal: any) =>
+          withdrawal.metadata.assetOut === metadata.assetOut &&
+          withdrawal.metadata.creationTime === metadata.creationTime &&
+          withdrawal.metadata.nonce === metadata.nonce
+      );
 
-      if (!transactionData || transactionData.steps.length === 0) {
-        throw new Error();
+      if (!withdrawal) {
+        toast.custom(<ErrorAlert message="Withdrawal request not found." />);
+        return;
       }
 
-      const transactions = [
-        {
-          ...transactionData.steps[0],
-          type: VaultTransactionType.RecoverWithdraw,
-          label: `Recover ${boringVault.baseAsset.symbol} Withdraw Request`,
+      if (withdrawal.status !== "expired") {
+        toast.custom(
+          <ErrorAlert message={`Withdrawal request is ${withdrawal.status}.`} />
+        );
+        return;
+      }
+
+      const transactions = [];
+
+      transactions.push({
+        type: VaultTransactionType.RecoverWithdraw,
+        label: `Recover ${boringVault.baseAsset.symbol} Withdraw Request`,
+        data: {
+          address: boringVault.contracts.boringQueue,
+          abi: BoringQueueABI,
+          functionName: "cancelOnChainWithdraw",
+          args: [
+            [
+              withdrawal.metadata.nonce,
+              withdrawal.metadata.user,
+              withdrawal.metadata.assetOut,
+              withdrawal.metadata.amountOfShares,
+              withdrawal.metadata.amountOfAssets,
+              withdrawal.metadata.creationTime,
+              withdrawal.metadata.secondsToMaturity,
+              withdrawal.metadata.secondsToDeadline,
+            ],
+          ],
         },
-      ];
+      });
 
       return {
         description: `The funds will return to your wallet.`,
