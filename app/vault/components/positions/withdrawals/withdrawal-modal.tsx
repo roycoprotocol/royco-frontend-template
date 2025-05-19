@@ -61,6 +61,7 @@ export const WithdrawalModal = React.forwardRef<
         description: cancelWithdrawalTransactions.description,
         steps: cancelWithdrawalTransactions.steps || [],
         metadata: cancelWithdrawalTransactions.metadata,
+        warnings: cancelWithdrawalTransactions.warnings || [],
         token: {
           data: withdrawal.token,
           amount: withdrawal.amountInBaseAsset,
@@ -92,6 +93,7 @@ export const WithdrawalModal = React.forwardRef<
         description: recoverWithdrawalTransactions.description,
         steps: recoverWithdrawalTransactions.steps || [],
         metadata: recoverWithdrawalTransactions.metadata,
+        warnings: recoverWithdrawalTransactions.warnings || [],
         token: {
           data: withdrawal.token,
           amount: withdrawal.amountInBaseAsset,

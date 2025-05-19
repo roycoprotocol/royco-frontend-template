@@ -135,9 +135,7 @@ export const DepositActionForm = React.forwardRef<
             <span className="ml-1">{token.symbol}</span>
           </span>
         </SecondaryLabel>
-      </SlideUpWrapper>
 
-      {token && (
         <div className="mt-1">
           <EnsoShortcutsWidget
             token={token.contractAddress}
@@ -145,7 +143,7 @@ export const DepositActionForm = React.forwardRef<
             chainId={data.chainId}
           />
         </div>
-      )}
+      </SlideUpWrapper>
 
       {/**
        * Insufficient balance indicator
@@ -215,20 +213,6 @@ export const DepositActionForm = React.forwardRef<
             })()}
           </div>
         </SecondaryLabel>
-      </SlideUpWrapper>
-
-      <SlideUpWrapper delay={0.3} className="mt-6">
-        <InfoCard>
-          Incentives start after next rebalance. APY shown reflects projected
-          returns that will apply after rebalancing.
-        </InfoCard>
-      </SlideUpWrapper>
-
-      <SlideUpWrapper delay={0.4} className="mt-2">
-        <InfoCard>
-          Depositing funds resets a 24-hour lockup on your entire balance,
-          delaying withdrawals until the period ends.
-        </InfoCard>
       </SlideUpWrapper>
     </div>
   );

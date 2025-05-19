@@ -100,7 +100,12 @@ export function BoringVaultActionProvider({
         },
       ];
 
-      return { steps: transactions, metadata };
+      const warnings = [
+        "Incentives start after next rebalance. APY shown reflects projected returns that will apply after rebalancing.",
+        "Depositing funds resets a 24-hour lockup on your entire balance, delaying withdrawals until the period ends.",
+      ];
+
+      return { steps: transactions, metadata, warnings };
     } catch (error) {
       toast.custom(
         <ErrorAlert message="Failed to create deposit transaction." />
@@ -462,6 +467,7 @@ type TypeVaultTransactionReturn = {
     label: string;
     value: string;
   }[];
+  warnings?: string[];
 };
 
 interface BoringVaultActions {

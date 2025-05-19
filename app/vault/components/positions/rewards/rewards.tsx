@@ -80,6 +80,7 @@ export const Rewards = React.forwardRef<
         description: claimIncentiveTransactions.description,
         steps: claimIncentiveTransactions.steps || [],
         metadata: claimIncentiveTransactions.metadata,
+        warnings: claimIncentiveTransactions.warnings || [],
         token: {
           data: incentive,
           amount: incentive.tokenAmount,
