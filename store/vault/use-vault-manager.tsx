@@ -51,6 +51,7 @@ export type TypeVaultTransaction = {
     value: string;
   }[];
   steps: any[];
+  warnings?: string[];
   token: {
     amount: number;
     data: any;

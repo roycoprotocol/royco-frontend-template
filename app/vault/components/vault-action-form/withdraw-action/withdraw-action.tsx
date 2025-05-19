@@ -76,6 +76,7 @@ export const WithdrawAction = React.forwardRef<
         description: withdrawTransactions.description,
         steps: withdrawTransactions.steps || [],
         metadata: withdrawTransactions.metadata,
+        warnings: withdrawTransactions.warnings || [],
         token: {
           data: token,
           amount: amount,

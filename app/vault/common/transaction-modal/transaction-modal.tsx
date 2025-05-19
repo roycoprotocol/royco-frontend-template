@@ -35,6 +35,7 @@ import { LoadingSpinner } from "@/components/composables";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 import { SuccessIcon } from "@/assets/icons/success";
+import { InfoCard } from "@/app/_components/common/info-card";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -327,6 +328,16 @@ export const TransactionModal = React.forwardRef<
                     </div>
                   </div>
                 </DropdownAnimationWrapper>
+              </div>
+            )}
+
+          {transactions &&
+            transactions.warnings &&
+            transactions.warnings.length > 0 && (
+              <div className="mt-3 flex flex-col gap-2">
+                {transactions.warnings.map((warning: string, index: number) => (
+                  <InfoCard key={index}>{warning}</InfoCard>
+                ))}
               </div>
             )}
 
