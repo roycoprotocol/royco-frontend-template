@@ -9,11 +9,11 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
-import { ChevronsRight } from "lucide-react";
 import { DepositTable } from "./deposit-table";
 import { depositColumns } from "./deposit-column";
-import { motion } from "framer-motion";
 import { DepositPagination } from "./deposit-pagination";
+import { ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const DEFAULT_PAGE_SIZE = 5;
 
@@ -22,32 +22,6 @@ export const Deposits = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { data } = useAtomValue(loadablePortfolioPositionsAtom);
-
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [tableOverflow, setTableOverflow] = useState(false);
-
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (tableRef.current) {
-        const { scrollWidth, clientWidth } = tableRef.current;
-        setTableOverflow(scrollWidth > clientWidth);
-      }
-    };
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    return () => {
-      window.removeEventListener("resize", checkOverflow);
-    };
-  }, []);
-
-  const onScrollRight = () => {
-    if (tableRef.current) {
-      tableRef.current.scrollTo({
-        left: tableRef.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }
-  };
 
   const [page, setPage] = useState(0);
 
@@ -72,12 +46,12 @@ export const Deposits = React.forwardRef<
       {/**
        * Total Deposits
        */}
-      <div className="mt-4">
+      <div className="mt-6">
         <SecondaryLabel className="text-xs font-medium text-_secondary_">
           TOTAL DEPOSITS
         </SecondaryLabel>
 
-        <PrimaryLabel className="mt-2 text-2xl font-normal ">
+        <PrimaryLabel className="mt-2 font-fragmentMono text-2xl font-normal">
           <div className="flex items-center gap-2">
             <span>
               {formatNumber(data?.depositBalanceUsd || 0, {
@@ -88,27 +62,12 @@ export const Deposits = React.forwardRef<
         </PrimaryLabel>
       </div>
 
-      <div className="relative mt-6">
-        <div ref={tableRef} className="hide-scrollbar overflow-x-auto">
+      <div className="mt-6">
+        <ScrollArea className={cn("mt-6 w-full overflow-hidden")}>
           <DepositTable data={depositPositions} columns={depositColumns} />
 
-          {tableOverflow && (
-            <motion.div
-              className="absolute -right-4 top-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-_surface_tertiary p-2"
-              animate={{
-                x: [0, 5, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              onClick={onScrollRight}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </motion.div>
-          )}
-        </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <DepositPagination
           page={page}
