@@ -10,6 +10,7 @@ import { GradientText } from "@/app/vault/common/gradient-text";
 import { ContentFlow } from "@/components/animations/content-flow";
 import { ExternalLink } from "lucide-react";
 import { TokenDisplayer } from "@/components/common";
+import validator from "validator";
 
 export const depositColumns: ColumnDef<any>[] = [
   {
@@ -17,7 +18,7 @@ export const depositColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "MARKET",
-    meta: { className: "text-left w-full", align: "left" },
+    meta: { className: "text-left max-w-96", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id} className="group/link w-full">
@@ -36,7 +37,7 @@ export const depositColumns: ColumnDef<any>[] = [
             >
               <div className="flex items-center pr-5">
                 <div className="z-10 overflow-hidden text-ellipsis whitespace-nowrap bg-_surface_">
-                  {row.original.name}
+                  {validator.unescape(row.original.name)}
                 </div>
 
                 {row.original.marketLink && (
@@ -54,7 +55,7 @@ export const depositColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "POSITION",
-    meta: { className: "text-left min-w-32", align: "left" },
+    meta: { className: "text-left w-full", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
@@ -76,7 +77,7 @@ export const depositColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "AVAILABILITY",
-    meta: { className: "text-left min-w-40", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       if (row.original.isUnlocked) {
         return (
@@ -101,7 +102,7 @@ export const depositColumns: ColumnDef<any>[] = [
     enableResizing: true,
     enableSorting: false,
     header: "APY",
-    meta: { className: "text-left min-w-24", align: "left" },
+    meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
         <ContentFlow customKey={row.original.id}>
