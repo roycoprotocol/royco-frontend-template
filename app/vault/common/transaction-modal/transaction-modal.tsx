@@ -36,6 +36,7 @@ import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 import { SuccessIcon } from "@/assets/icons/success";
 import { InfoCard } from "@/app/_components/common/info-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const DropdownAnimationWrapper = React.forwardRef<
   HTMLDivElement,
@@ -202,7 +203,7 @@ export const TransactionModal = React.forwardRef<
     >
       {isOpen && (
         <DialogContent
-          className={cn("p-6 sm:max-w-[500px]", className)}
+          className={cn("p-2 sm:max-w-[500px]", className)}
           ref={ref}
           {...props}
           onInteractOutside={(e) => {
@@ -216,230 +217,234 @@ export const TransactionModal = React.forwardRef<
             }
           }}
         >
-          {/**
-           * Transaction Header
-           */}
-          <DialogHeader>
-            <div className={cn("flex flex-col items-start gap-2")}>
-              {isTxSuccess && (
+          <ScrollArea className="max-h-[90vh] p-4">
+            {/**
+             * Transaction Header
+             */}
+            <DialogHeader>
+              <div className={cn("flex flex-col items-start gap-2")}>
+                {isTxSuccess && (
+                  <SlideUpWrapper
+                    layoutId={`transaction-modal-success-icon-${isTxSuccess}`}
+                  >
+                    <SuccessIcon className="mb-4 h-10 w-10" />
+                  </SlideUpWrapper>
+                )}
+
                 <SlideUpWrapper
-                  layoutId={`transaction-modal-success-icon-${isTxSuccess}`}
+                  layoutId={`transaction-modal-title-${isTxSuccess}`}
                 >
-                  <SuccessIcon className="mb-4 h-10 w-10" />
+                  <DialogTitle className="text-2xl font-medium">
+                    {isTxSuccess
+                      ? transactions?.successTitle
+                      : transactions?.title}
+                  </DialogTitle>
                 </SlideUpWrapper>
+
+                <SlideUpWrapper
+                  layoutId={`transaction-modal-token-displayer-${isTxSuccess}`}
+                >
+                  <div className="flex items-center gap-1">
+                    <TokenDisplayer
+                      size={6}
+                      tokens={[transactions?.token.data]}
+                      symbols={false}
+                    />
+
+                    <span className="text-2xl font-medium text-_primary_">
+                      {formatNumber(transactions?.token.amount, {
+                        type: "number",
+                      })}
+                    </span>
+
+                    <span className="text-2xl font-medium text-_primary_">
+                      {transactions?.token.data.symbol}
+                    </span>
+                  </div>
+                </SlideUpWrapper>
+              </div>
+            </DialogHeader>
+
+            {/**
+             * Transaction Description
+             */}
+            {transactions?.description && (
+              <SecondaryLabel className="break-normal text-base font-normal text-_secondary_">
+                {transactions?.description}
+              </SecondaryLabel>
+            )}
+
+            {/**
+             * Transaction Metadata
+             */}
+            {!isTxSuccess &&
+              transactions?.metadata &&
+              transactions?.metadata.length > 0 && (
+                <div className="mt-6">
+                  <SecondaryLabel className="text-xs font-medium">
+                    DETAILS
+                  </SecondaryLabel>
+
+                  <div className="mt-3 flex flex-col gap-4">
+                    {transactions?.metadata?.map((item: any) => (
+                      <div className="flex justify-between gap-1">
+                        <SecondaryLabel className="text-base font-normal text-_secondary_">
+                          {item.label}
+                        </SecondaryLabel>
+
+                        <PrimaryLabel className="text-base font-normal text-_primary_">
+                          {item.value}
+                        </PrimaryLabel>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
-              <SlideUpWrapper
-                layoutId={`transaction-modal-title-${isTxSuccess}`}
-              >
-                <DialogTitle className="text-2xl font-medium">
-                  {isTxSuccess
-                    ? transactions?.successTitle
-                    : transactions?.title}
-                </DialogTitle>
-              </SlideUpWrapper>
+            {/**
+             * Transaction Breakdown
+             */}
+            {transactions &&
+              transactions.steps &&
+              transactions.steps.length > 0 && (
+                <div className="mt-4">
+                  <SecondaryLabel className="text-xs font-medium">
+                    TRANSACTION STEPS
+                  </SecondaryLabel>
 
-              <SlideUpWrapper
-                layoutId={`transaction-modal-token-displayer-${isTxSuccess}`}
-              >
-                <div className="flex items-center gap-1">
-                  <TokenDisplayer
-                    size={6}
-                    tokens={[transactions?.token.data]}
-                    symbols={false}
-                  />
-
-                  <span className="text-2xl font-medium text-_primary_">
-                    {formatNumber(transactions?.token.amount, {
-                      type: "number",
-                    })}
-                  </span>
-
-                  <span className="text-2xl font-medium text-_primary_">
-                    {transactions?.token.data.symbol}
-                  </span>
-                </div>
-              </SlideUpWrapper>
-            </div>
-          </DialogHeader>
-
-          {/**
-           * Transaction Description
-           */}
-          {transactions?.description && (
-            <SecondaryLabel className="break-normal text-base font-normal text-_secondary_">
-              {transactions?.description}
-            </SecondaryLabel>
-          )}
-
-          {/**
-           * Transaction Metadata
-           */}
-          {!isTxSuccess &&
-            transactions?.metadata &&
-            transactions?.metadata.length > 0 && (
-              <div className="mt-6">
-                <SecondaryLabel className="text-xs font-medium">
-                  DETAILS
-                </SecondaryLabel>
-
-                <div className="mt-3 flex flex-col gap-4">
-                  {transactions?.metadata?.map((item: any) => (
-                    <div className="flex justify-between gap-1">
-                      <SecondaryLabel className="text-base font-normal text-_secondary_">
-                        {item.label}
-                      </SecondaryLabel>
-
-                      <PrimaryLabel className="text-base font-normal text-_primary_">
-                        {item.value}
-                      </PrimaryLabel>
+                  <DropdownAnimationWrapper>
+                    <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
+                      <div className={cn("flex flex-col gap-2")}>
+                        {transactions.steps.map(
+                          (txOptions: any, txIndex: any) => {
+                            const key = `transaction:${txOptions.id}`;
+                            return (
+                              <TransactionRow
+                                key={key}
+                                transactionIndex={txIndex + 1}
+                                transaction={txOptions}
+                              />
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
-                  ))}
+                  </DropdownAnimationWrapper>
                 </div>
+              )}
+
+            {transactions &&
+              transactions.warnings &&
+              transactions.warnings.length > 0 && (
+                <div className="mt-3 flex flex-col gap-2">
+                  {transactions.warnings.map(
+                    (warning: string, index: number) => (
+                      <InfoCard key={index}>{warning}</InfoCard>
+                    )
+                  )}
+                </div>
+              )}
+
+            {/**
+             * Transaction Action Button
+             */}
+            {!isTxSuccess && (
+              <div className="mt-3">
+                {(() => {
+                  if (!address) {
+                    return (
+                      <Button
+                        onClick={() => {
+                          try {
+                            connectWalletModal();
+                          } catch (error) {
+                            toast.custom(
+                              <ErrorAlert message="Error connecting wallet" />
+                            );
+                          }
+                        }}
+                        size="sm"
+                        className={cn("h-10 w-full rounded-sm")}
+                      >
+                        Connect Wallet
+                      </Button>
+                    );
+                  }
+
+                  if (chainId !== data.chainId) {
+                    return (
+                      <Button
+                        onClick={async () => {
+                          try {
+                            // @ts-ignore
+                            await switchChain(config, {
+                              chainId: data.chainId,
+                            });
+                          } catch (error) {
+                            toast.custom(
+                              <ErrorAlert message="Error switching chain" />
+                            );
+                            console.log("Failed:", error);
+                          }
+                        }}
+                        size="sm"
+                        className={cn("h-10 w-full rounded-sm")}
+                      >
+                        Switch Chain
+                      </Button>
+                    );
+                  }
+
+                  if (!isTxSuccess) {
+                    return (
+                      <Button
+                        onClick={handleAction}
+                        size="sm"
+                        className={cn("h-10 w-full rounded-sm")}
+                        disabled={isTxLoading}
+                      >
+                        {isTxLoading ? (
+                          <LoadingSpinner className="h-5 w-5" />
+                        ) : (
+                          "Confirm Transaction"
+                        )}
+                      </Button>
+                    );
+                  }
+                })()}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClose}
+                  className="mt-2 h-10 w-full justify-center rounded-sm"
+                  disabled={isTxLoading}
+                >
+                  <div className="text-error">Cancel</div>
+                </Button>
               </div>
             )}
 
-          {/**
-           * Transaction Breakdown
-           */}
-          {transactions &&
-            transactions.steps &&
-            transactions.steps.length > 0 && (
-              <div className="mt-4">
-                <SecondaryLabel className="text-xs font-medium">
-                  TRANSACTION STEPS
-                </SecondaryLabel>
-
-                <DropdownAnimationWrapper>
-                  <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
-                    <div className={cn("flex flex-col gap-2")}>
-                      {transactions.steps.map(
-                        (txOptions: any, txIndex: any) => {
-                          const key = `transaction:${txOptions.id}`;
-                          return (
-                            <TransactionRow
-                              key={key}
-                              transactionIndex={txIndex + 1}
-                              transaction={txOptions}
-                            />
-                          );
-                        }
-                      )}
-                    </div>
-                  </div>
-                </DropdownAnimationWrapper>
-              </div>
-            )}
-
-          {transactions &&
-            transactions.warnings &&
-            transactions.warnings.length > 0 && (
-              <div className="mt-3 flex flex-col gap-2">
-                {transactions.warnings.map((warning: string, index: number) => (
-                  <InfoCard key={index}>{warning}</InfoCard>
-                ))}
-              </div>
-            )}
-
-          {/**
-           * Transaction Action Button
-           */}
-          {!isTxSuccess && (
-            <div className="mt-3">
-              {(() => {
-                if (!address) {
-                  return (
-                    <Button
-                      onClick={() => {
-                        try {
-                          connectWalletModal();
-                        } catch (error) {
-                          toast.custom(
-                            <ErrorAlert message="Error connecting wallet" />
-                          );
-                        }
-                      }}
-                      size="sm"
-                      className={cn("h-10 w-full rounded-sm")}
-                    >
-                      Connect Wallet
-                    </Button>
-                  );
-                }
-
-                if (chainId !== data.chainId) {
-                  return (
-                    <Button
-                      onClick={async () => {
-                        try {
-                          // @ts-ignore
-                          await switchChain(config, {
-                            chainId: data.chainId,
-                          });
-                        } catch (error) {
-                          toast.custom(
-                            <ErrorAlert message="Error switching chain" />
-                          );
-                          console.log("Failed:", error);
-                        }
-                      }}
-                      size="sm"
-                      className={cn("h-10 w-full rounded-sm")}
-                    >
-                      Switch Chain
-                    </Button>
-                  );
-                }
-
-                if (!isTxSuccess) {
-                  return (
-                    <Button
-                      onClick={handleAction}
-                      size="sm"
-                      className={cn("h-10 w-full rounded-sm")}
-                      disabled={isTxLoading}
-                    >
-                      {isTxLoading ? (
-                        <LoadingSpinner className="h-5 w-5" />
-                      ) : (
-                        "Confirm Transaction"
-                      )}
-                    </Button>
-                  );
-                }
-              })()}
-
+            {isTxSuccess && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleClose}
-                className="mt-2 h-10 w-full justify-center rounded-sm"
-                disabled={isTxLoading}
+                className="mt-3 h-10 w-full justify-center rounded-sm"
               >
-                <div className="text-error">Cancel</div>
+                Close
               </Button>
-            </div>
-          )}
+            )}
 
-          {isTxSuccess && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClose}
-              className="mt-3 h-10 w-full justify-center rounded-sm"
-            >
-              Close
-            </Button>
-          )}
-
-          {/**
-           * Transaction Keep Window Open
-           */}
-          {!isTxSuccess && (
-            <SecondaryLabel className="justify-center text-xs font-normal">
-              Keep window open until complete.
-            </SecondaryLabel>
-          )}
+            {/**
+             * Transaction Keep Window Open
+             */}
+            {!isTxSuccess && (
+              <SecondaryLabel className="justify-center text-xs font-normal">
+                Keep window open until complete.
+              </SecondaryLabel>
+            )}
+          </ScrollArea>
         </DialogContent>
       )}
     </Dialog>
