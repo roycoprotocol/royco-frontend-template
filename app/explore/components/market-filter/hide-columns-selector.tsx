@@ -100,7 +100,7 @@ export const HideColumnsSelector = React.forwardRef<
           side="bottom"
           align="end"
           className={cn(
-            "mx-3 flex flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
+            "mx-3 flex h-fit max-h-[300px] flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
             containerClassName
           )}
         >
@@ -140,42 +140,38 @@ export const HideColumnsSelector = React.forwardRef<
             </Button>
           </div>
 
-          <ScrollArea>
-            <div className="flex h-fit max-h-32 flex-col gap-0">
-              {searchData.map((item, index) => {
-                const isHidden = hiddenTableColumns.includes(item.value);
+          <ScrollArea className="flex flex-1 flex-col gap-0">
+            {searchData.map((item, index) => {
+              const isHidden = hiddenTableColumns.includes(item.value);
 
-                return (
-                  <div key={index}>
+              return (
+                <div key={index}>
+                  <div
+                    onClick={() => {
+                      onSelect(item.value);
+                    }}
+                    tabIndex={0}
+                    className="flex cursor-pointer items-center gap-4 rounded-sm p-2 transition-all duration-200 ease-in-out hover:bg-focus"
+                  >
                     <div
-                      onClick={() => {
-                        onSelect(item.value);
-                      }}
-                      tabIndex={0}
-                      className="flex cursor-pointer items-center gap-4 rounded-sm p-2 transition-all duration-200 ease-in-out hover:bg-focus"
+                      className={cn("flex h-4 w-5 items-center justify-center")}
                     >
-                      <div
-                        className={cn(
-                          "flex h-4 w-5 items-center justify-center"
-                        )}
-                      >
-                        {isHidden ? (
-                          <EyeOffIcon className="h-4 w-4 text-_secondary_ opacity-50" />
-                        ) : (
-                          <EyeIcon className="h-4 w-4 text-_secondary_" />
-                        )}
-                      </div>
-
-                      <PrimaryLabel
-                        className={cn("text-base font-normal text-_secondary_")}
-                      >
-                        {item.label}
-                      </PrimaryLabel>
+                      {isHidden ? (
+                        <EyeOffIcon className="h-4 w-4 text-_secondary_ opacity-50" />
+                      ) : (
+                        <EyeIcon className="h-4 w-4 text-_secondary_" />
+                      )}
                     </div>
+
+                    <PrimaryLabel
+                      className={cn("text-base font-normal text-_secondary_")}
+                    >
+                      {item.label}
+                    </PrimaryLabel>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </ScrollArea>
         </PopoverContent>
       </Popover>

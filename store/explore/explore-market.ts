@@ -114,13 +114,7 @@ export const marketSortAtom = atom<Sorting[]>([
   },
 ]);
 
-const _marketSearchAtom = atom<string>("");
-export const marketSearchAtom = atom<string, [string], void>(
-  (get) => get(_marketSearchAtom),
-  (get, set, update) => {
-    set(_marketSearchAtom, update.trim());
-  }
-);
+export const marketSearchAtom = atom<string>("");
 
 export const customTokenDataAtom = atom<CustomTokenDataElement[]>([]);
 
@@ -148,7 +142,7 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
         ],
         sorting: get(marketSortAtom),
         page: get(marketPageAtom),
-        searchKey: get(marketSearchAtom),
+        searchKey: get(marketSearchAtom).trim(),
         customTokenData: get(customTokenDataAtom),
       },
     ],
