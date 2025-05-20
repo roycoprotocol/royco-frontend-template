@@ -12,7 +12,7 @@ import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal"
 const Page = () => {
   return (
     <ProtectorProvider>
-      <div className="hide-scrollbar relative min-h-screen bg-_surface_">
+      <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-24">
         {/**
          * Background
          */}
