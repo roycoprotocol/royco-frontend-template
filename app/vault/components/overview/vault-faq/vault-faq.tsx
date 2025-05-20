@@ -81,7 +81,7 @@ const vault_faq = [
     ),
   },
   {
-    question: "How long until my withdrawals process?",
+    question: "When will my withdrawal request be processed?",
     answer: (
       <div className="space-y-4">
         <p>

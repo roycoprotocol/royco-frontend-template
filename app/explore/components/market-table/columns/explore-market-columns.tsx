@@ -85,10 +85,48 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
     const isDesc = isSorted?.desc;
 
     return (
-      <div className={cn("flex items-center gap-1", className)} {...props}>
+      <div
+        onClick={() => {
+          if (!column.getCanSort()) {
+            return;
+          }
+
+          if (!isSorted) {
+            setMarketSort([
+              {
+                id: columnName.sortId,
+                desc: true,
+              },
+            ]);
+            return;
+          }
+
+          if (isDesc) {
+            setMarketSort([
+              {
+                id: columnName.sortId,
+                desc: false,
+              },
+            ]);
+            return;
+          }
+
+          setMarketSort([
+            {
+              id: columnName.sortId,
+              desc: true,
+            },
+          ]);
+        }}
+        className={cn(
+          "group flex cursor-pointer items-center gap-1 hover:text-_primary_",
+          className
+        )}
+        {...props}
+      >
         {columnName?.icon}
 
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="text-xs font-medium text-_secondary_ transition-colors duration-300 group-hover:text-_primary_">
           {columnName.label.toUpperCase()}
         </SecondaryLabel>
 
@@ -98,58 +136,32 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
               return (
                 <Button
                   variant="none"
-                  onClick={() => {
-                    setMarketSort([
-                      {
-                        id: columnName.sortId,
-                        desc: true,
-                      },
-                    ]);
-                  }}
-                  className="place-content-center p-1 outline-none hover:text-_primary_"
+                  className="place-content-center p-1 outline-none group-hover:text-_primary_"
                 >
                   <ArrowUpDownIcon className="h-4 w-4" />
                 </Button>
               );
             }
 
-            if (isSorted) {
-              if (isDesc) {
-                return (
-                  <Button
-                    variant="none"
-                    onClick={() => {
-                      setMarketSort([
-                        {
-                          id: columnName.sortId,
-                          desc: false,
-                        },
-                      ]);
-                    }}
-                    className="place-content-center p-1 outline-none hover:text-_primary_"
-                  >
-                    <MoveUpIcon className="h-4 w-4" />
-                  </Button>
-                );
-              } else {
-                return (
-                  <Button
-                    variant="none"
-                    onClick={() => {
-                      setMarketSort([
-                        {
-                          id: columnName.sortId,
-                          desc: true,
-                        },
-                      ]);
-                    }}
-                    className="place-content-center p-1 outline-none hover:text-_primary_"
-                  >
-                    <MoveDownIcon className="h-4 w-4" />
-                  </Button>
-                );
-              }
+            if (isDesc) {
+              return (
+                <Button
+                  variant="none"
+                  className="place-content-center p-1 outline-none group-hover:text-_primary_"
+                >
+                  <MoveUpIcon className="h-4 w-4" />
+                </Button>
+              );
             }
+
+            return (
+              <Button
+                variant="none"
+                className="place-content-center p-1 outline-none group-hover:text-_primary_"
+              >
+                <MoveDownIcon className="h-4 w-4" />
+              </Button>
+            );
           })()}
       </div>
     );

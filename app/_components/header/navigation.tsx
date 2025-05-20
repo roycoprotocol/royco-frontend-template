@@ -223,6 +223,24 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
             </a>
           </div>
         )}
+
+        {tag === "hyperliquid" && (
+          <div className="flex w-full justify-center bg-_primary_/80 py-2">
+            <div className="text-center text-xs text-_surface_">
+              <span>
+                <span className="font-semibold underline underline-offset-2">
+                  HyperEVM is Live:
+                </span>
+                <span>
+                  {" "}
+                  Deposit into the Vaults to collect exclusive Royco rewards
+                  from leading asset issuers and Hyperliquid native
+                  protocols.{" "}
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
