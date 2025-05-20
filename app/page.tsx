@@ -34,11 +34,11 @@ const Page = () => {
             <HeroSection />
           </div>
 
-          <div className="mt-12">
+          <div className="mt-6">
             <VaultsTable />
           </div>
 
-          <div className="mt-12">
+          <div className="mt-16">
             <MarketFilter />
           </div>
 
