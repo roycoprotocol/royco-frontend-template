@@ -30,12 +30,12 @@ export const loadablePortfolioPositionsAtom =
           ...body,
           sorting: [
             {
-              id: "yieldRate",
-              desc: true,
-            },
-            {
               id: "unlockTimestamp",
               desc: false,
+            },
+            {
+              id: "yieldRate",
+              desc: true,
             },
             {
               id: "name",
