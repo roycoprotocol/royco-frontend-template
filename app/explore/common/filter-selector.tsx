@@ -159,7 +159,7 @@ export const FilterSelector = React.forwardRef<
                 </>
               )}
 
-              <div className="flex items-center justify-between p-3">
+              <div className="flex items-center justify-between px-2 py-1">
                 <SecondaryLabel className="text-sm font-normal text-_secondary_">
                   {searchData.length + " results"}
                 </SecondaryLabel>

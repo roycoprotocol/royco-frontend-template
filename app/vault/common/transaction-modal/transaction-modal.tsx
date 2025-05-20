@@ -269,7 +269,7 @@ export const TransactionModal = React.forwardRef<
              * Transaction Description
              */}
             {transactions?.description && (
-              <SecondaryLabel className="break-normal text-base font-normal text-_secondary_">
+              <SecondaryLabel className="mt-3 break-normal text-base font-normal text-_secondary_">
                 {transactions?.description}
               </SecondaryLabel>
             )}
@@ -285,7 +285,7 @@ export const TransactionModal = React.forwardRef<
                     DETAILS
                   </SecondaryLabel>
 
-                  <div className="mt-3 flex flex-col gap-4">
+                  <div className="mt-3 flex flex-col gap-3">
                     {transactions?.metadata?.map((item: any) => (
                       <div className="flex justify-between gap-1">
                         <SecondaryLabel className="text-base font-normal text-_secondary_">
@@ -307,7 +307,7 @@ export const TransactionModal = React.forwardRef<
             {transactions &&
               transactions.steps &&
               transactions.steps.length > 0 && (
-                <div className="mt-4">
+                <div className="mt-6">
                   <SecondaryLabel className="text-xs font-medium">
                     TRANSACTION STEPS
                   </SecondaryLabel>
@@ -440,7 +440,7 @@ export const TransactionModal = React.forwardRef<
              * Transaction Keep Window Open
              */}
             {!isTxSuccess && (
-              <SecondaryLabel className="justify-center text-xs font-normal">
+              <SecondaryLabel className="mt-6 justify-center text-xs font-normal">
                 Keep window open until complete.
               </SecondaryLabel>
             )}

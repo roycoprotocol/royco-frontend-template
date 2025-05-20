@@ -56,11 +56,11 @@ export const DepositActionForm = React.forwardRef<
   const hasSufficientBalance = useMemo(() => {
     const amount = depositForm.getValues("amount");
 
-    if (isLoadingWalletBalance || !balance || !amount) {
+    if (isLoadingWalletBalance || !amount) {
       return true;
     }
 
-    return balance >= parseFloat(amount || "0");
+    return (balance || 0) >= parseFloat(amount || "0");
   }, [isLoadingWalletBalance, balance, depositForm.watch("amount")]);
 
   const dailyYieldAmount = useMemo(() => {

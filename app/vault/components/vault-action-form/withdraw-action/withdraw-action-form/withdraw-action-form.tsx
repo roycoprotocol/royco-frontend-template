@@ -40,11 +40,11 @@ export const WithdrawActionForm = React.forwardRef<
   const hasSufficientBalance = useMemo(() => {
     const amount = withdrawForm.getValues("amount");
 
-    if (!balance || !amount) {
+    if (!amount) {
       return true;
     }
 
-    return balance >= parseFloat(amount || "0");
+    return (balance || 0) >= parseFloat(amount || "0");
   }, [balance, withdrawForm.watch("amount")]);
 
   return (
@@ -58,7 +58,7 @@ export const WithdrawActionForm = React.forwardRef<
               withdrawForm.setValue("amount", balance?.toString() ?? "");
             }}
             className={cn(
-              "text-_tertiary_ flex cursor-pointer items-center justify-center text-xs font-normal underline decoration-_divider_ underline-offset-2",
+              "flex cursor-pointer items-center justify-center text-xs font-normal text-_tertiary_ underline decoration-_divider_ underline-offset-2",
               "transition-all duration-200 ease-in-out hover:opacity-80"
             )}
           >
