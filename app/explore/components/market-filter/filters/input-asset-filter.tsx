@@ -135,7 +135,7 @@ export const InputAssetFilter = React.forwardRef<
         onClear={onClearFilter}
       >
         <PrimaryLabel className="whitespace-nowrap text-sm font-medium text-_primary_">
-          Deposit
+          Asset
         </PrimaryLabel>
 
         <ListFilter className="h-5 w-5" />
