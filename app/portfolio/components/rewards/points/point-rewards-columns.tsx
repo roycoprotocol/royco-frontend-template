@@ -33,19 +33,13 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
     enableSorting: false,
     meta: { className: "text-left w-full", align: "left" },
     cell: ({ row }) => {
-      let sourceName = null;
       let description = "";
-
-      if (row.original.claimInfo?.recipe) {
-        sourceName = row.original.claimInfo.recipe.name;
-      } else if (row.original.claimInfo?.vault) {
-        sourceName = row.original.claimInfo.vault.name;
-      }
 
       if (row.original?.isClaimed) {
         description = "Claimed";
       } else if (row.original?.isUnlocked) {
-        description = "Claimable";
+        // description = "Claimable";
+        description = "Claimed";
       } else {
         if (row.original?.unlockTimestamp) {
           description = `Unlocks at ${formatDate(
@@ -69,15 +63,6 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
 
               <SecondaryLabel className="mt-1 flex flex-row items-center text-xs font-normal text-_secondary_">
                 <div>{description}</div>
-
-                {sourceName && (
-                  <Fragment>
-                    <DotIcon className="h-5 w-5 text-_secondary_" />
-                    <div className="text-xs font-normal text-_secondary_">
-                      {sourceName}
-                    </div>
-                  </Fragment>
-                )}
               </SecondaryLabel>
             </div>
           </div>
@@ -85,88 +70,88 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
       );
     },
   },
-  {
-    accessorKey: "claim",
-    enableResizing: true,
-    enableSorting: false,
-    header: "",
-    meta: { className: "text-right min-w-32", align: "right" },
-    cell: ({ row }) => {
-      const accountAddress = useAtomValue(accountAddressAtom);
+  // {
+  //   accessorKey: "claim",
+  //   enableResizing: true,
+  //   enableSorting: false,
+  //   header: "",
+  //   meta: { className: "text-right min-w-32", align: "right" },
+  //   cell: ({ row }) => {
+  //     const accountAddress = useAtomValue(accountAddressAtom);
 
-      const [transactions, setTransactions] = useAtom(
-        portfolioTransactionsAtom
-      );
+  //     const [transactions, setTransactions] = useAtom(
+  //       portfolioTransactionsAtom
+  //     );
 
-      let canClaim = false;
+  //     let canClaim = false;
 
-      const isClaimed = row.original.isClaimed;
+  //     const isClaimed = row.original.isClaimed;
 
-      if (row.original.isUnlocked && accountAddress) {
-        if (row.original.claimInfo?.recipe || row.original.claimInfo?.vault) {
-          canClaim = true;
-        }
-      }
+  //     if (row.original.isUnlocked && accountAddress) {
+  //       if (row.original.claimInfo?.recipe || row.original.claimInfo?.vault) {
+  //         canClaim = true;
+  //       }
+  //     }
 
-      const onClick = () => {
-        if (accountAddress) {
-          if (row.original.claimInfo?.recipe) {
-            const txOptions = claimRecipeIncentiveTokenTxOptions({
-              chainId: Number(
-                row.original.claimInfo?.recipe.rawMarketRefId.split("_")[0]
-              ),
-              tokenAddress: row.original.contractAddress,
-              weirollWallet: row.original.claimInfo?.recipe.weirollWallet,
-              accountAddress: accountAddress,
-            });
+  //     const onClick = () => {
+  //       if (accountAddress) {
+  //         if (row.original.claimInfo?.recipe) {
+  //           const txOptions = claimRecipeIncentiveTokenTxOptions({
+  //             chainId: Number(
+  //               row.original.claimInfo?.recipe.rawMarketRefId.split("_")[0]
+  //             ),
+  //             tokenAddress: row.original.contractAddress,
+  //             weirollWallet: row.original.claimInfo?.recipe.weirollWallet,
+  //             accountAddress: accountAddress,
+  //           });
 
-            setTransactions({
-              title: `Claim Incentive`,
-              successTitle: `Incentive Claimed `,
-              steps: txOptions,
-              token: row.original,
-            });
-          } else if (row.original.claimInfo?.vault) {
-            const txOptions = claimVaultIncentiveTokenTxOptions({
-              chainId: Number(
-                row.original.claimInfo?.vault.rawMarketRefId.split("_")[0]
-              ),
-              vaultAddress:
-                row.original.claimInfo?.vault.rawMarketRefId.split("_")[2],
-              tokenAddress: row.original.contractAddress,
-              accountAddress,
-            });
+  //           setTransactions({
+  //             title: `Claim Incentive`,
+  //             successTitle: `Incentive Claimed `,
+  //             steps: txOptions,
+  //             token: row.original,
+  //           });
+  //         } else if (row.original.claimInfo?.vault) {
+  //           const txOptions = claimVaultIncentiveTokenTxOptions({
+  //             chainId: Number(
+  //               row.original.claimInfo?.vault.rawMarketRefId.split("_")[0]
+  //             ),
+  //             vaultAddress:
+  //               row.original.claimInfo?.vault.rawMarketRefId.split("_")[2],
+  //             tokenAddress: row.original.contractAddress,
+  //             accountAddress,
+  //           });
 
-            setTransactions({
-              title: `Claim Incentive`,
-              successTitle: `Incentive Claimed `,
-              steps: txOptions,
-              token: row.original,
-            });
-          }
-        }
-      };
+  //           setTransactions({
+  //             title: `Claim Incentive`,
+  //             successTitle: `Incentive Claimed `,
+  //             steps: txOptions,
+  //             token: row.original,
+  //           });
+  //         }
+  //       }
+  //     };
 
-      if (!isClaimed) {
-        return (
-          <ContentFlow customKey={`point:${row.original.id}:claim`}>
-            <div className={cn("flex flex-col items-end")}>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "text-sm font-semibold hover:bg-success/10 hover:text-primary",
-                  !canClaim && "opacity-50"
-                )}
-                onClick={onClick}
-                disabled={!canClaim}
-              >
-                <GradientText>Claim</GradientText>
-              </Button>
-            </div>
-          </ContentFlow>
-        );
-      }
-    },
-  },
+  //     if (!isClaimed) {
+  //       return (
+  //         <ContentFlow customKey={`point:${row.original.id}:claim`}>
+  //           <div className={cn("flex flex-col items-end")}>
+  //             <Button
+  //               variant="ghost"
+  //               size="sm"
+  //               className={cn(
+  //                 "text-sm font-semibold hover:bg-success/10 hover:text-primary",
+  //                 !canClaim && "opacity-50"
+  //               )}
+  //               onClick={onClick}
+  //               disabled={!canClaim}
+  //             >
+  //               <GradientText>Claim</GradientText>
+  //             </Button>
+  //           </div>
+  //         </ContentFlow>
+  //       );
+  //     }
+  //   },
+  // },
 ];
