@@ -17,7 +17,10 @@ const themeConfig: SystemConfig = {
   theme: {
     tokens: {
       radii: {
-        sm: { value: "0.5rem" },
+        sm: { value: "0.125rem" },
+        md: { value: "0.125rem" },
+        lg: { value: "0.125rem" },
+        xl: { value: "0.125rem" },
       },
     },
   },
@@ -73,12 +76,11 @@ export const EnsoShortcutsWidget = React.forwardRef<
       {zapInEnabled && (
         <div className={"mt-2"}>
           <EnsoWidget
-            obligateSelection
-            themeConfig={themeConfig}
             apiKey={ENSO_KEY}
             chainId={chainId}
             outChainId={chainId}
             tokenOut={token}
+            themeConfig={themeConfig}
           />
         </div>
       )}
