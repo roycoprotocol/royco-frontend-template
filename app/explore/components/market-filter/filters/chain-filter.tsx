@@ -7,13 +7,32 @@ import {
   marketFiltersAtom,
   marketPageAtom,
 } from "@/store/explore/explore-market";
-import { SupportedChainMap } from "royco/constants";
+import {
+  ArbitrumOne,
+  Base,
+  EthereumMainnet,
+  EthereumSepolia,
+  Hyperevm,
+  Plume,
+  Sonic,
+  SupportedChainMap,
+} from "royco/constants";
 import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { ListFilter } from "lucide-react";
 import { FilterSelector } from "@/app/explore/common/filter-selector";
 import { tagAtom } from "@/store/protector/protector";
 
 const FILTER_ID = "chainId";
+
+const exploreChains = [
+  EthereumMainnet,
+  EthereumSepolia,
+  ArbitrumOne,
+  Base,
+  Hyperevm,
+  Plume,
+  Sonic,
+];
 
 export const ChainFilter = React.forwardRef<
   HTMLDivElement,
@@ -24,8 +43,17 @@ export const ChainFilter = React.forwardRef<
   const setExploreMarketPage = useSetAtom(marketPageAtom);
 
   const selectOptions = useMemo(() => {
-    return Object.values(SupportedChainMap)
+    return Object.values(exploreChains)
       .filter((item) => {
+        // Show Plume markets only on plume.royco.org, testnet and dev
+        if (item.id === Plume.id) {
+          if (tag === "plume" || tag === "dev" || tag === "testnet") {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
         if (tag !== "dev" && tag !== "testnet") {
           if (item?.testnet === true) {
             return false;

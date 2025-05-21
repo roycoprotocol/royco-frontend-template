@@ -138,12 +138,47 @@ export const marketPageAtom = atom<number>(1);
 
 export const loadableExploreAssetFilterOptionsAtom =
   atomWithQuery<ExploreSettingsMarketResponse>((get) => ({
-    queryKey: ["explore-asset-filter-options"],
-    queryFn: async ({ queryKey: [, params] }) => {
-      const response = await api.marketControllerGetMarketSettings();
+    queryKey: [
+      "explore-asset-filter-options",
+      {
+        filters: get(marketFiltersAtom),
+      },
+    ],
+    queryFn: async () => {
+      /**
+       * @for Uday
+       * @todo
+       * Add markets filters here
+       */
 
-      return response.data;
+      // let filters: Filter[] = [];
+
+      // filters.push({
+      //   id: "fillableUsd",
+      //   value: 0,
+      //   condition: "gt",
+      // });
+
+      // const baseChainFilter = get(marketFiltersAtom).filter(
+      //   (filter) => filter.id === "chainId" && filter.condition === "inArray"
+      // );
+
+      // if (baseChainFilter.length > 0) {
+      //   filters.push(...baseChainFilter);
+      // }
+
+      // filters.push({
+      //   id: "chainId",
+      //   value: 1,
+      // });
+
+      return api
+        .marketControllerGetMarketSettings({
+          // filters,
+        })
+        .then((res) => res.data);
     },
+    ...defaultQueryOptions,
   }));
 
 export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(

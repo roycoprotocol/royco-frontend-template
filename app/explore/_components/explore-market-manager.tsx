@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { produce } from "immer";
-import { isEqual } from "lodash";
-import { useImmer } from "use-immer";
 import { LoadingCircle } from "@/components/animations/loading-circle";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAtom, useAtomValue } from "jotai";
@@ -12,7 +9,6 @@ import {
   marketPageAtom,
   loadableExploreMarketAtom,
 } from "@/store/explore/explore-market";
-import { ExploreMarketResponse } from "@/app/api/royco/data-contracts";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import { ExploreMarketTable } from "./explore-market-table";
@@ -31,25 +27,7 @@ export const ExploreMarketManager = React.forwardRef<
     isError,
   } = useAtomValue(loadableExploreMarketAtom);
 
-  const [placeholderData, setPlaceholderData] = useImmer<
-    Array<ExploreMarketResponse | undefined>
-  >([undefined, undefined]);
-
-  useEffect(() => {
-    if (!isEqual(propsData, placeholderData[1]) && !!propsData) {
-      setPlaceholderData((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsData)) {
-            draft[0] = draft[1]; // Set previous data to the current data
-            draft[1] = propsData; // Set current data to the new data
-          }
-        });
-      });
-    }
-  }, [propsData]);
-
-  if (!placeholderData[1]) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center p-5">
         <LoadingCircle />
@@ -134,7 +112,7 @@ export const ExploreMarketManager = React.forwardRef<
         )}
       >
         <ExploreMarketTable
-          data={placeholderData[1]?.data ? placeholderData[1].data : []}
+          data={propsData?.data ? propsData.data : []}
           isLoading={isLoading}
           isRefetching={isRefetching}
         />
@@ -144,7 +122,7 @@ export const ExploreMarketManager = React.forwardRef<
       <ExploreMarketPagination
         className="mt-3"
         pageIndex={page}
-        totalPages={placeholderData[1]?.page?.total || 1}
+        totalPages={propsData?.page?.total || 1}
         setPageIndex={setPage}
       />
     </div>
