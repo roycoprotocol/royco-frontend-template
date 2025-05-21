@@ -22,16 +22,32 @@ import {
 import { isTestnetAtom, tagAtom } from "../protector/protector";
 import { keepPreviousData } from "@tanstack/react-query";
 import { defaultQueryOptions } from "@/utils/query";
+import { atomWithLocation } from "jotai-location";
+import { atomWithStorage } from "jotai/vanilla/utils";
 
 export const EXPLORE_PAGE_SIZE = 20;
+
+const locationAtom = atomWithLocation();
+export const marketFiltersVerifiedAtom = atomWithStorage<boolean>(
+  "royco_verified_market_filter_type",
+  true
+);
 
 export const baseFilter = atom<Filter[]>((get) => {
   const filters: Filter[] = [];
 
-  filters.push({
-    id: "isVerified",
-    value: true,
-  });
+  const location = get(locationAtom);
+  if (location.pathname === "/explore/all") {
+    filters.push({
+      id: "isVerified",
+      value: get(marketFiltersVerifiedAtom),
+    });
+  } else {
+    filters.push({
+      id: "isVerified",
+      value: true,
+    });
+  }
 
   const tag = get(tagAtom);
 
