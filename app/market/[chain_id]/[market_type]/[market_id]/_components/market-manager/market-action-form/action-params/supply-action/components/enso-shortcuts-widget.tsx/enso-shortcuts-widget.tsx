@@ -1,15 +1,15 @@
 import React from "react";
-import Link from "next/link";
 import EnsoWidget, { SystemConfig } from "@ensofinance/shortcuts-widget";
 import { cn } from "@/lib/utils";
-import { DottedBracket } from "../../../../../../icons/dotted-bracket";
+import { Button } from "@/components/ui/button";
+import { SlideUpWrapper } from "@/components/animations";
+import { FormInputLabel } from "@/components/composables/form/form-input-labels";
 import { TertiaryLabel } from "../../../../../../composables/common-labels";
+import { XIcon } from "lucide-react";
+import { useAtom, useAtomValue } from "jotai";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 const ENSO_KEY = process.env.NEXT_PUBLIC_ENSO_API_KEY;
-
-const DISABLED_ZAPS: string[] = [
-  // "0x42a094364bbdca0efac8af2cf7d6b9ec885ee554", // WABTC/WBTC uni-v2
-];
 
 // Paste styling according to the design system
 // https://www.chakra-ui.com/docs/theming/customization/overview
@@ -26,22 +26,6 @@ const themeConfig: SystemConfig = {
   },
 };
 
-const UniRedirectLink = React.forwardRef<
-  HTMLAnchorElement,
-  {
-    children: React.ReactNode;
-  }
->(({ children, ...props }, ref) => (
-  <Link
-    ref={ref}
-    target="_blank"
-    href="https://app.uniswap.org/positions/create/v2"
-    {...props}
-  >
-    {children}
-  </Link>
-));
-
 export const EnsoShortcutsWidget = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
@@ -49,40 +33,48 @@ export const EnsoShortcutsWidget = React.forwardRef<
     symbol: string;
     chainId?: number;
   }
->(({ className, token, symbol, chainId, ...props }, ref) => {
-  const [zapInEnabled, setZapInEnabled] = React.useState(false);
-
-  const zapDisabled = DISABLED_ZAPS.includes(token);
-  const Wrapper = zapDisabled ? UniRedirectLink : "div";
+>(({ className, token, symbol, chainId, children, ...props }, ref) => {
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   return (
     <div ref={ref} className={cn("mb-1", className)} {...props}>
-      <div className={"flex w-full items-center justify-end gap-2"}>
-        <Wrapper>
-          <TertiaryLabel
-            className={
-              "cursor-pointer gap-2 text-sm underline  decoration-1 underline-offset-2 transition-opacity duration-200 ease-in-out hover:opacity-80"
-            }
-            onClick={
-              zapDisabled ? undefined : () => setZapInEnabled((val) => !val)
-            }
-          >
-            <DottedBracket className="h-6 w-6 text-inherit" />
-            Get {symbol}
-          </TertiaryLabel>
-        </Wrapper>
-      </div>
+      <div className={"flex w-full items-start gap-2"}>{children}</div>
 
-      {zapInEnabled && (
-        <div className={"mt-2"}>
-          <EnsoWidget
-            apiKey={ENSO_KEY}
-            chainId={chainId}
-            outChainId={chainId}
-            tokenOut={token}
-            themeConfig={themeConfig}
-          />
-        </div>
+      {showEnsoWidget && (
+        <SlideUpWrapper>
+          <div className="mt-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <FormInputLabel size="sm" label={`Get ${symbol} with Enso`} />
+                <TertiaryLabel className="mt-1">
+                  Use Enso Shortcuts to easily swap into assets.
+                </TertiaryLabel>
+              </div>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                className="p-2"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                <XIcon className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className={"mt-2"}>
+              <EnsoWidget
+                obligateSelection
+                themeConfig={themeConfig}
+                apiKey={ENSO_KEY}
+                outChainId={chainId}
+                chainId={chainId}
+                tokenOut={token}
+              />
+            </div>
+          </div>
+        </SlideUpWrapper>
       )}
     </div>
   );

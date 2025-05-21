@@ -12,7 +12,7 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { depositFormSchema } from "../deposit-action";
 import { useAccountBalance } from "royco/hooks";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { parseRawAmountToTokenAmount } from "royco/utils";
 import { SlideUpWrapper } from "@/components/animations";
 import { WarningAlert } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/composables/warning-alert";
@@ -24,6 +24,9 @@ import { InfoTip } from "@/app/_components/common/info-tip";
 import { InfoCard } from "@/app/_components/common/info-card";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 import { EnsoShortcutsWidget } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/supply-action/components/enso-shortcuts-widget.tsx/enso-shortcuts-widget";
+import { Button } from "@/components/ui/button";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
+import { DottedBracket } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/dotted-bracket";
 
 export const DepositActionForm = React.forwardRef<
   HTMLDivElement,
@@ -32,6 +35,9 @@ export const DepositActionForm = React.forwardRef<
   }
 >(({ className, depositForm, ...props }, ref) => {
   const { address } = useAccount();
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   const { data } = useAtomValue(vaultMetadataAtom);
   const token = useMemo(() => {
@@ -141,7 +147,21 @@ export const DepositActionForm = React.forwardRef<
             token={token.contractAddress}
             symbol={token.symbol}
             chainId={data.chainId}
-          />
+          >
+            <div className="flex w-full justify-end">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="rounded-sm"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                <div className="flex items-center gap-2">
+                  <DottedBracket className="h-5 w-5 text-inherit" />
+                  <span>Get {token.symbol}</span>
+                </div>
+              </Button>
+            </div>
+          </EnsoShortcutsWidget>
         </div>
       </SlideUpWrapper>
 

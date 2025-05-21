@@ -8,11 +8,14 @@ import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { useMarketManager } from "@/store/use-market-manager";
 import { InfoIcon } from "lucide-react";
 import { SecondaryLabel } from "../../../../../../composables";
 import formatNumber from "@/utils/numbers";
+import { Button } from "@/components/ui/button";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 export const APMarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -21,76 +24,96 @@ export const APMarketActionForm = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
-       * Funding Source Selector
+       * Funding Source Selector & Enso Shortcuts Widget
        */}
       <SlideUpWrapper delay={0.1}>
-        <FundingSourceSelector
-          fundingVaultAddress={marketActionForm.watch("funding_vault") || ""}
-          onSelectFundingVaultAddress={(value) => {
-            marketActionForm.setValue("funding_vault", value);
-          }}
-        />
+        <EnsoShortcutsWidget
+          token={enrichedMarket?.inputToken.contractAddress!}
+          symbol={enrichedMarket?.inputToken.symbol!}
+          chainId={enrichedMarket?.chainId!}
+        >
+          <div className="flex-1">
+            <FundingSourceSelector
+              fundingVaultAddress={
+                marketActionForm.watch("funding_vault") || ""
+              }
+              onSelectFundingVaultAddress={(value) => {
+                marketActionForm.setValue("funding_vault", value);
+              }}
+            />
+          </div>
+
+          {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
+            <div className="mt-7">
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-light"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                Or get {enrichedMarket?.inputToken.symbol!}
+              </Button>
+            </div>
+          )}
+        </EnsoShortcutsWidget>
       </SlideUpWrapper>
 
-      {/**
-       * Enso Shortcuts Widget
-       */}
-      {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
-        <div className="mt-2">
-          <EnsoShortcutsWidget
-            token={enrichedMarket?.inputToken?.contractAddress!}
-            symbol={enrichedMarket?.inputToken?.symbol ?? ""}
-            chainId={enrichedMarket?.chainId!}
-          />
-        </div>
-      )}
+      {!showEnsoWidget && (
+        <>
+          {/**
+           * Input Amount
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.2}>
+              <InputAmountWrapper marketActionForm={marketActionForm} />
+            </SlideUpWrapper>
+          </div>
 
-      {/**
-       * Input Amount
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.2}>
-          <InputAmountWrapper marketActionForm={marketActionForm} />
-        </SlideUpWrapper>
-      </div>
+          {/**
+           * Min Deposit Indicator
+           */}
+          {enrichedMarket?.marketMetadata?.minDepositToken && (
+            <div className="mt-3">
+              <SlideUpWrapper delay={0.3}>
+                <div className="rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">
+                  <div className="flex flex-row items-center gap-2">
+                    <InfoIcon className="h-4 w-4 text-secondary" />
+                    <div className="text-sm font-semibold text-secondary">
+                      INFO
+                    </div>
+                  </div>
 
-      {/**
-       * Min Deposit Indicator
-       */}
-      {enrichedMarket?.marketMetadata?.minDepositToken && (
-        <div className="mt-3">
-          <SlideUpWrapper delay={0.3}>
-            <div className="rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">
-              <div className="flex flex-row items-center gap-2">
-                <InfoIcon className="h-4 w-4 text-secondary" />
-                <div className="text-sm font-semibold text-secondary">INFO</div>
-              </div>
-
-              <SecondaryLabel className="mt-1 text-xs">
-                Min. Deposit:{" "}
-                {formatNumber(
-                  enrichedMarket?.marketMetadata?.minDepositToken.tokenAmount,
-                  {
-                    type: "number",
-                  }
-                )}{" "}
-                {enrichedMarket?.marketMetadata?.minDepositToken.symbol} (
-                {formatNumber(
-                  enrichedMarket?.marketMetadata?.minDepositToken
-                    .tokenAmountUsd,
-                  {
-                    type: "currency",
-                  }
-                )}
-                )
-              </SecondaryLabel>
+                  <SecondaryLabel className="mt-1 text-xs">
+                    Min. Deposit:{" "}
+                    {formatNumber(
+                      enrichedMarket?.marketMetadata?.minDepositToken
+                        .tokenAmount,
+                      {
+                        type: "number",
+                      }
+                    )}{" "}
+                    {enrichedMarket?.marketMetadata?.minDepositToken.symbol} (
+                    {formatNumber(
+                      enrichedMarket?.marketMetadata?.minDepositToken
+                        .tokenAmountUsd,
+                      {
+                        type: "currency",
+                      }
+                    )}
+                    )
+                  </SecondaryLabel>
+                </div>
+              </SlideUpWrapper>
             </div>
-          </SlideUpWrapper>
-        </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -15,7 +15,10 @@ import { SecondaryLabel } from "../../../../../../composables";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { loadableEnrichedMarketAtom } from "@/store/market";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import { DottedBracket } from "../../../../../../icons/dotted-bracket";
+import { Button } from "@/components/ui/button";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 export const APLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -24,6 +27,9 @@ export const APLimitActionForm = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   const { viewType } = useMarketManager();
 
@@ -130,62 +136,86 @@ export const APLimitActionForm = React.forwardRef<
             token={enrichedMarket?.inputToken?.contractAddress!}
             symbol={enrichedMarket?.inputToken?.symbol!}
             chainId={enrichedMarket?.chainId!}
-          />
+          >
+            <div className="flex w-full justify-end">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="rounded-sm"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                <div className="flex items-center gap-2">
+                  <DottedBracket className="h-5 w-5 text-inherit" />
+                  <span>Get {enrichedMarket?.inputToken?.symbol!}</span>
+                </div>
+              </Button>
+            </div>
+          </EnsoShortcutsWidget>
         </div>
       )}
 
-      {/**
-       * Incentive Yield
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.1}>
-          <IncentiveYieldWrapper
-            marketActionForm={marketActionForm}
-            onYieldChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+      {!showEnsoWidget && (
+        <>
+          {/**
+           * Incentive Yield
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.1}>
+              <IncentiveYieldWrapper
+                marketActionForm={marketActionForm}
+                onYieldChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-              updateIncentiveTokenAmount(
-                value,
-                parseFloat(marketActionForm.watch("quantity.amount") || "0"),
-                selectedInputToken,
-                selectedIncentiveTokens[0]
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
+                  updateIncentiveTokenAmount(
+                    value,
+                    parseFloat(
+                      marketActionForm.watch("quantity.amount") || "0"
+                    ),
+                    selectedInputToken,
+                    selectedIncentiveTokens[0]
+                  );
+                }}
+              />
+            </SlideUpWrapper>
+          </div>
 
-      {/**
-       * Input Amount
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.2}>
-          <InputAmountWrapper
-            marketActionForm={marketActionForm}
-            onAmountChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+          {/**
+           * Input Amount
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.2}>
+              <InputAmountWrapper
+                marketActionForm={marketActionForm}
+                onAmountChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-              updateIncentiveTokenAmount(
-                marketActionForm.watch("annual_change_ratio"),
-                value.amount,
-                selectedInputToken,
-                selectedIncentiveTokens[0]
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
+                  updateIncentiveTokenAmount(
+                    marketActionForm.watch("annual_change_ratio"),
+                    value.amount,
+                    selectedInputToken,
+                    selectedIncentiveTokens[0]
+                  );
+                }}
+              />
+            </SlideUpWrapper>
+          </div>
 
-      <hr className="my-3" />
+          <hr className="my-3" />
 
-      {/**
-       * Incentive Token Selector
-       */}
-      {/* <div className="mt-3">
+          {/**
+           * Incentive Token Selector
+           */}
+          {/* <div className="mt-3">
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:vault:ap-limit:incentive-token-selector:${viewType}`}
@@ -224,54 +254,61 @@ export const APLimitActionForm = React.forwardRef<
         </SlideUpWrapper>
       </div> */}
 
-      {/**
-       * Incentive Amount
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.3}>
-          <IncentiveAmountWrapper
-            marketActionForm={marketActionForm}
-            onAmountChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+          {/**
+           * Incentive Amount
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.3}>
+              <IncentiveAmountWrapper
+                marketActionForm={marketActionForm}
+                onAmountChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-              updateIncentiveApr(
-                parseFloat(marketActionForm.watch("quantity.amount") || "0"),
-                selectedInputToken,
-                {
-                  ...selectedIncentiveTokens[0],
-                  distribution: value.amount,
-                }
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
-
-      {/**
-       * Input Expiry
-       */}
-      <div className="mt-5">
-        <SlideUpWrapper delay={0.4}>
-          <InputExpirySelector marketActionForm={marketActionForm} />
-        </SlideUpWrapper>
-      </div>
-
-      {/**
-       * Disclaimer
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.1}>
-          <div className="flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
-            <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
-            <SecondaryLabel className="break-normal text-xs">
-              Your offer will be placed in the rate of incentives to input
-              asset, not percentage APY.
-            </SecondaryLabel>
+                  updateIncentiveApr(
+                    parseFloat(
+                      marketActionForm.watch("quantity.amount") || "0"
+                    ),
+                    selectedInputToken,
+                    {
+                      ...selectedIncentiveTokens[0],
+                      distribution: value.amount,
+                    }
+                  );
+                }}
+              />
+            </SlideUpWrapper>
           </div>
-        </SlideUpWrapper>
-      </div>
+
+          {/**
+           * Input Expiry
+           */}
+          <div className="mt-5">
+            <SlideUpWrapper delay={0.4}>
+              <InputExpirySelector marketActionForm={marketActionForm} />
+            </SlideUpWrapper>
+          </div>
+
+          {/**
+           * Disclaimer
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.1}>
+              <div className="flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
+                <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
+                <SecondaryLabel className="break-normal text-xs">
+                  Your offer will be placed in the rate of incentives to input
+                  asset, not percentage APY.
+                </SecondaryLabel>
+              </div>
+            </SlideUpWrapper>
+          </div>
+        </>
+      )}
     </div>
   );
 });
