@@ -43,14 +43,14 @@ export const AppTypeFilter = React.forwardRef<
     return selectOptions;
   }, [selectOptions]);
 
-  const doFilterExists = (value: SONIC_APP_TYPE) => {
+  const doFilterExists = (id: SONIC_APP_TYPE) => {
     const appTypeFilter = filters.find((item) => item.id === FILTER_ID);
     if (!appTypeFilter) return false;
 
-    return (appTypeFilter.value as string[]).includes(value);
+    return (appTypeFilter.value as string[]).includes(id);
   };
 
-  const addAssetFilter = (id: SONIC_APP_TYPE) => {
+  const addFilter = (id: SONIC_APP_TYPE) => {
     if (doFilterExists(id)) return;
 
     let appTypeFilter = filters.find((item) => item.id === FILTER_ID);
@@ -71,7 +71,7 @@ export const AppTypeFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const removeAssetFilter = (id: SONIC_APP_TYPE) => {
+  const removeFilter = (id: SONIC_APP_TYPE) => {
     if (!doFilterExists(id)) return;
 
     let appTypeFilter = filters.find((item) => item.id === FILTER_ID);
@@ -86,11 +86,11 @@ export const AppTypeFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const handleAssetToggle = (id: SONIC_APP_TYPE) => {
+  const handleToggle = (id: SONIC_APP_TYPE) => {
     if (doFilterExists(id)) {
-      removeAssetFilter(id);
+      removeFilter(id);
     } else {
-      addAssetFilter(id);
+      addFilter(id);
     }
 
     setExploreMarketPage(1);
@@ -110,7 +110,7 @@ export const AppTypeFilter = React.forwardRef<
       <FilterSelector
         data={selectOptions}
         selected={selectedOptions.map((asset) => asset.value)}
-        onSelect={(id) => handleAssetToggle(id as SONIC_APP_TYPE)}
+        onSelect={(id) => handleToggle(id as SONIC_APP_TYPE)}
         onClear={onClearFilter}
       >
         <PrimaryLabel className="whitespace-nowrap text-sm font-medium text-_primary_">

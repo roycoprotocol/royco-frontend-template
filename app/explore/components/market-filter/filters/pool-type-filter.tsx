@@ -43,14 +43,14 @@ export const PoolTypeFilter = React.forwardRef<
     return selectOptions;
   }, [selectOptions]);
 
-  const doFilterExists = (value: MULTIPLIER_ASSET_TYPE) => {
+  const doFilterExists = (id: MULTIPLIER_ASSET_TYPE) => {
     const poolTypeFilter = filters.find((item) => item.id === FILTER_ID);
     if (!poolTypeFilter) return false;
 
-    return (poolTypeFilter.value as string[]).includes(value);
+    return (poolTypeFilter.value as string[]).includes(id);
   };
 
-  const addAssetFilter = (id: MULTIPLIER_ASSET_TYPE) => {
+  const addFilter = (id: MULTIPLIER_ASSET_TYPE) => {
     if (doFilterExists(id)) return;
 
     let poolTypeFilter = filters.find((item) => item.id === FILTER_ID);
@@ -71,7 +71,7 @@ export const PoolTypeFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const removeAssetFilter = (id: MULTIPLIER_ASSET_TYPE) => {
+  const removeFilter = (id: MULTIPLIER_ASSET_TYPE) => {
     if (!doFilterExists(id)) return;
 
     let poolTypeFilter = filters.find((item) => item.id === FILTER_ID);
@@ -86,11 +86,11 @@ export const PoolTypeFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const handleAssetToggle = (id: MULTIPLIER_ASSET_TYPE) => {
+  const handleToggle = (id: MULTIPLIER_ASSET_TYPE) => {
     if (doFilterExists(id)) {
-      removeAssetFilter(id);
+      removeFilter(id);
     } else {
-      addAssetFilter(id);
+      addFilter(id);
     }
 
     setExploreMarketPage(1);
@@ -110,7 +110,7 @@ export const PoolTypeFilter = React.forwardRef<
       <FilterSelector
         data={selectOptions}
         selected={selectedOptions.map((asset) => asset.value)}
-        onSelect={(id) => handleAssetToggle(id as MULTIPLIER_ASSET_TYPE)}
+        onSelect={(id) => handleToggle(id as MULTIPLIER_ASSET_TYPE)}
         onClear={onClearFilter}
       >
         <PrimaryLabel className="whitespace-nowrap text-sm font-medium text-_primary_">

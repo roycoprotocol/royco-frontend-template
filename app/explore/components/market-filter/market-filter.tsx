@@ -83,7 +83,9 @@ export const MarketFilter = React.forwardRef<
         <div className="flex flex-wrap items-center gap-2">
           <InputAssetFilter />
 
-          <ChainFilter />
+          {(tag === "default" || tag === "dev" || tag === "testnet") && (
+            <ChainFilter />
+          )}
 
           <IncentiveAssetFilter />
 

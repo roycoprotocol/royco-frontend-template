@@ -2,121 +2,123 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   marketFiltersAtom,
   marketPageAtom,
 } from "@/store/explore/explore-market";
-import {
-  ArbitrumOne,
-  Base,
-  Corn,
-  EthereumMainnet,
-  EthereumSepolia,
-  Hyperevm,
-  Plume,
-  Sonic,
-} from "royco/constants";
+import { SupportedChainMap } from "royco/constants";
 import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { ListFilter } from "lucide-react";
 import { FilterSelector } from "@/app/explore/common/filter-selector";
+import { tagAtom } from "@/store/protector/protector";
+
+const FILTER_ID = "chainId";
 
 export const ChainFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const tag = useAtomValue(tagAtom);
   const [filters, setFilters] = useAtom(marketFiltersAtom);
-
   const setExploreMarketPage = useSetAtom(marketPageAtom);
 
-  const chainOptions = useMemo(() => {
-    return [
-      ArbitrumOne,
-      Base,
-      Corn,
-      EthereumMainnet,
-      Hyperevm,
-      Plume,
-      Sonic,
-      EthereumSepolia,
-    ]
-      .filter((chain) => {
-        const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
-
-        let shouldHide = false;
-
-        if (frontendTag !== "dev" && frontendTag !== "testnet") {
-          if (chain?.testnet === true) {
-            shouldHide = true;
-          } else if (chain.id === 98866) {
-            shouldHide = true;
+  const selectOptions = useMemo(() => {
+    return Object.values(SupportedChainMap)
+      .filter((item) => {
+        if (tag !== "dev" && tag !== "testnet") {
+          if (item?.testnet === true) {
+            return false;
           }
         }
-
-        return !shouldHide;
+        return true;
       })
-      .map((chain) => ({
-        label: chain.name,
-        value: chain.id,
+      .map((item) => ({
+        label: item.name,
+        value: item.id,
         icon: (
           <img
-            src={chain.image}
-            alt={chain.name}
+            src={item.image}
+            alt={item.name}
             width={20}
             height={20}
             className="mr-1 rounded-full"
           />
         ),
       }));
-  }, []);
+  }, [tag]);
 
-  const handleChainToggle = (chainId: number) => {
-    const chainIdFilterIndex = filters.findIndex(
-      (filter) => filter.id === "chainId" && filter.condition === "inArray"
-    );
-    const currentChainIds =
-      chainIdFilterIndex !== -1
-        ? (filters[chainIdFilterIndex].value as number[])
-        : [];
+  const allOptions = useMemo(() => {
+    return [...selectOptions];
+  }, [selectOptions]);
 
-    const newChainIds = currentChainIds.includes(chainId)
-      ? currentChainIds.filter((id) => id !== chainId)
-      : [...currentChainIds, chainId];
+  const doFilterExists = (id: number) => {
+    const chainFilter = filters.find((item) => item.id === FILTER_ID);
+    if (!chainFilter) return false;
 
-    const newFilters =
-      newChainIds.length === 0
-        ? filters.filter((filter) => filter.id !== "chainId")
-        : [
-            ...filters.filter((filter) => filter.id !== "chainId"),
-            { id: "chainId", value: newChainIds, condition: "inArray" },
-          ];
-
-    setFilters(newFilters);
-    setExploreMarketPage(1);
+    return (chainFilter.value as number[]).includes(id);
   };
 
-  const isChainSelected = (chainId: number) => {
-    const chainFilter = filters.find(
-      (filter) => filter.id === "chainId" && Array.isArray(filter.value)
-    );
-    return chainFilter
-      ? (chainFilter.value as number[]).includes(chainId)
-      : false;
+  const addFilter = (id: number) => {
+    if (doFilterExists(id)) return;
+
+    let chainFilter = filters.find((item) => item.id === FILTER_ID);
+    if (!chainFilter) {
+      chainFilter = {
+        id: FILTER_ID,
+        value: [],
+        condition: "inArray",
+      };
+    }
+
+    const newFilters = filters.filter((item) => item.id !== FILTER_ID);
+    newFilters.push({
+      ...chainFilter,
+      value: [...(chainFilter.value as number[]), id],
+    });
+
+    setFilters(newFilters);
+  };
+
+  const removeFilter = (id: number) => {
+    if (!doFilterExists(id)) return;
+
+    let chainFilter = filters.find((item) => item.id === FILTER_ID);
+    if (!chainFilter) return;
+
+    const newFilters = filters.filter((item) => item.id !== FILTER_ID);
+    newFilters.push({
+      ...chainFilter,
+      value: (chainFilter.value as number[]).filter((value) => value !== id),
+    });
+
+    setFilters(newFilters);
+  };
+
+  const handleToggle = (id: number) => {
+    if (doFilterExists(id)) {
+      removeFilter(id);
+    } else {
+      addFilter(id);
+    }
+    setExploreMarketPage(1);
   };
 
   const onClearFilter = () => {
-    setFilters(filters.filter((filter) => filter.id !== "chainId"));
+    setFilters(filters.filter((filter) => filter.id !== FILTER_ID));
     setExploreMarketPage(1);
   };
+
+  const selectedOptions = useMemo(() => {
+    return allOptions.filter((option) => doFilterExists(option.value));
+  }, [allOptions, filters]);
 
   return (
     <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
       <FilterSelector
-        data={chainOptions}
-        selected={chainOptions
-          .filter((chain) => isChainSelected(chain.value))
-          .map((chain) => chain.value)}
-        onSelect={(id) => handleChainToggle(Number(id))}
+        data={selectOptions}
+        selected={selectedOptions.map((item) => item.value)}
+        onSelect={(id) => handleToggle(Number(id))}
         onClear={onClearFilter}
       >
         <PrimaryLabel className="text-sm font-medium text-_primary_">
