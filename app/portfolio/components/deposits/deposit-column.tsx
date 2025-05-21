@@ -17,7 +17,7 @@ export const depositColumns: ColumnDef<any>[] = [
     accessorKey: "name",
     enableResizing: true,
     enableSorting: false,
-    header: "MARKET",
+    header: "MARKET / VAULT",
     meta: { className: "text-left max-w-96", align: "left" },
     cell: ({ row }) => {
       return (
