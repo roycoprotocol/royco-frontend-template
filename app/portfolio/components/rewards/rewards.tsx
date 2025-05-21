@@ -27,10 +27,10 @@ export const Rewards = React.forwardRef<
       {/**
        * Token Rewards
        */}
-      {data?.incentiveTokens ||
-      data?.unclaimedPointTokens ||
-      data?.claimedPointTokens ? (
-        <div className="mt-8 flex flex-col gap-2">
+      {(data?.incentiveTokens && data.incentiveTokens.length > 0) ||
+      (data?.unclaimedPointTokens && data.unclaimedPointTokens.length > 0) ||
+      (data?.claimedPointTokens && data.claimedPointTokens.length > 0) ? (
+        <div className="mt-6 flex flex-col gap-2">
           {data?.incentiveTokens?.length > 0 && (
             <div>
               <SecondaryLabel className="text-xs font-medium text-_secondary_">
@@ -41,30 +41,29 @@ export const Rewards = React.forwardRef<
             </div>
           )}
 
-          {(data?.unclaimedPointTokens || data?.claimedPointTokens) &&
-            (data?.unclaimedPointTokens?.length > 0 ||
-              data?.claimedPointTokens?.length > 0) && (
-              <div>
-                <SecondaryLabel className="text-xs font-medium text-_secondary_">
-                  POINTS
-                </SecondaryLabel>
+          {(data?.unclaimedPointTokens?.length > 0 ||
+            data?.claimedPointTokens?.length > 0) && (
+            <div>
+              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                POINTS
+              </SecondaryLabel>
 
-                <PointRewardsManager
-                  data={[
-                    ...(data?.unclaimedPointTokens?.map((token) => ({
-                      ...token,
-                      isClaimed: false,
-                    })) ?? []),
-                    ...(data?.claimedPointTokens?.map((token) => ({
-                      ...token,
-                      isClaimed: true,
-                      claimInfo: {},
-                      isUnlocked: true,
-                    })) ?? []),
-                  ]}
-                />
-              </div>
-            )}
+              <PointRewardsManager
+                data={[
+                  ...(data?.unclaimedPointTokens?.map((token) => ({
+                    ...token,
+                    isClaimed: false,
+                  })) ?? []),
+                  ...(data?.claimedPointTokens?.map((token) => ({
+                    ...token,
+                    isClaimed: true,
+                    claimInfo: {},
+                    isUnlocked: true,
+                  })) ?? []),
+                ]}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <AlertIndicator className="mt-8 rounded-sm border border-_divider_ py-10">

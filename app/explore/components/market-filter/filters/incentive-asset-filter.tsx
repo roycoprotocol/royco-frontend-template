@@ -50,8 +50,8 @@ export const IncentiveAssetFilter = React.forwardRef<
     return [...staticOptions, ...selectOptions];
   }, [staticOptions, selectOptions]);
 
-  const doFilterExists = (value: string) => {
-    const option = allOptions.find((option) => option.value === value);
+  const doFilterExists = (id: string) => {
+    const option = allOptions.find((option) => option.value === id);
     if (!option) return false;
 
     const incentiveAssetFilter = filters.find((item) => item.id === FILTER_ID);
@@ -62,7 +62,7 @@ export const IncentiveAssetFilter = React.forwardRef<
     );
   };
 
-  const addAssetFilter = (id: string) => {
+  const addFilter = (id: string) => {
     const option = allOptions.find((option) => option.value === id);
     if (!option) return;
 
@@ -86,7 +86,7 @@ export const IncentiveAssetFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const removeAssetFilter = (id: string) => {
+  const removeFilter = (id: string) => {
     const option = allOptions.find((option) => option.value === id);
     if (!option) return;
 
@@ -106,13 +106,12 @@ export const IncentiveAssetFilter = React.forwardRef<
     setFilters(newFilters);
   };
 
-  const handleAssetToggle = (id: string) => {
+  const handleToggle = (id: string) => {
     if (doFilterExists(id)) {
-      removeAssetFilter(id);
+      removeFilter(id);
     } else {
-      addAssetFilter(id);
+      addFilter(id);
     }
-
     setExploreMarketPage(1);
   };
 
@@ -131,7 +130,7 @@ export const IncentiveAssetFilter = React.forwardRef<
         data={selectOptions}
         staticData={staticOptions}
         selected={selectedOptions.map((asset) => asset.value)}
-        onSelect={(id) => handleAssetToggle(id as string)}
+        onSelect={(id) => handleToggle(id as string)}
         onClear={onClearFilter}
       >
         <PrimaryLabel className="text-sm font-medium text-_primary_">

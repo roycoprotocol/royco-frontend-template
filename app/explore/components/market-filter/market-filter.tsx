@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   PrimaryLabel,
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   loadableExploreMarketAtom,
+  marketFiltersVerifiedAtom,
   marketSearchAtom,
 } from "@/store/explore/explore-market";
 import { useAtom, useAtomValue } from "jotai";
@@ -22,11 +23,23 @@ import { PoolTypeFilter } from "./filters/pool-type-filter";
 import { AppTypeFilter } from "./filters/app-type-filter";
 import { HideColumnsSelector } from "./hide-columns-selector";
 import { IncentiveAssetFilter } from "./filters/incentive-asset-filter";
+import { Switch } from "@/components/ui/switch";
+import { usePathname } from "next/navigation";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const pathname = usePathname();
+  const filterVerifiedMarketOption = useMemo(
+    () => (pathname === "/explore/all" ? true : false),
+    [pathname]
+  );
+
+  const [marketFiltersVerified, setMarketFiltersVerified] = useAtom(
+    marketFiltersVerifiedAtom
+  );
+
   const tag = useAtomValue(tagAtom);
   const { data: propsData } = useAtomValue(loadableExploreMarketAtom);
   const [marketSearch, setMarketSearch] = useAtom(marketSearchAtom);
@@ -35,14 +48,31 @@ export const MarketFilter = React.forwardRef<
 
   return (
     <div ref={ref} {...props} className={cn("", className)}>
-      <div>
-        <PrimaryLabel className="text-2xl font-medium text-_primary_">
-          Markets
-        </PrimaryLabel>
+      <div className="flex flex-col items-start justify-between gap-2 lg:flex-row lg:items-end">
+        <div>
+          <PrimaryLabel className="text-2xl font-medium text-_primary_">
+            Markets
+          </PrimaryLabel>
 
-        <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-          Maximum precision. You decide when and where to move capital.
-        </SecondaryLabel>
+          <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
+            Maximum precision. You decide when and where to move capital.
+          </SecondaryLabel>
+        </div>
+
+        {filterVerifiedMarketOption && (
+          <div className="flex items-center gap-2">
+            <PrimaryLabel className="whitespace-nowrap text-sm font-medium text-_primary_">
+              Show Unverified Markets
+            </PrimaryLabel>
+
+            <Switch
+              checked={!marketFiltersVerified}
+              onCheckedChange={() => {
+                setMarketFiltersVerified(!marketFiltersVerified);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="relative mt-6 flex flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
@@ -53,7 +83,9 @@ export const MarketFilter = React.forwardRef<
         <div className="flex flex-wrap items-center gap-2">
           <InputAssetFilter />
 
-          <ChainFilter />
+          {(tag === "default" || tag === "dev" || tag === "testnet") && (
+            <ChainFilter />
+          )}
 
           <IncentiveAssetFilter />
 
