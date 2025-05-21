@@ -13,3 +13,5 @@ export type CustomTokenDataElement = BaseCustomTokenDataElement & {
 export const customTokenDataAtom = atom<CustomTokenDataElement[]>([]);
 
 export const lastRefreshTimestampAtom = atom<number>(Date.now());
+
+export const showEnsoShortcutsWidgetAtom = atom<boolean>(false);

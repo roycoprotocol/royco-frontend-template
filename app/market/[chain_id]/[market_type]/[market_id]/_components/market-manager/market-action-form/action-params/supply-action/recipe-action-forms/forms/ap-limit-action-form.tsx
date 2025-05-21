@@ -12,8 +12,10 @@ import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper"
 import { parseTokenAmountToRawAmount } from "royco/utils";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { Button } from "@/components/ui/button";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 export const APR_LOCKUP_CONSTANT = 365 * 24 * 60 * 60;
 
@@ -24,6 +26,9 @@ export const APLimitActionForm = React.forwardRef<
   }
 >(({ className, marketActionForm, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   const highestIncentiveData = useMemo(() => {
     if (enrichedMarket && enrichedMarket?.marketType === 0) {
@@ -133,82 +138,102 @@ export const APLimitActionForm = React.forwardRef<
   return (
     <div ref={ref} className={cn("", className)} {...props}>
       {/**
-       * Funding Source Selector
+       * Funding Source Selector & Enso Shortcuts Widget
        */}
       <SlideUpWrapper delay={0.1}>
-        <FundingSourceSelector
-          fundingVaultAddress={marketActionForm.watch("funding_vault") || ""}
-          onSelectFundingVaultAddress={(value) => {
-            marketActionForm.setValue("funding_vault", value);
-          }}
-        />
+        <EnsoShortcutsWidget
+          token={enrichedMarket?.inputToken.contractAddress!}
+          symbol={enrichedMarket?.inputToken.symbol!}
+          chainId={enrichedMarket?.chainId!}
+        >
+          <div className="flex-1">
+            <FundingSourceSelector
+              fundingVaultAddress={
+                marketActionForm.watch("funding_vault") || ""
+              }
+              onSelectFundingVaultAddress={(value) => {
+                marketActionForm.setValue("funding_vault", value);
+              }}
+            />
+          </div>
+
+          {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
+            <div className="mt-7">
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-light"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                Or get {enrichedMarket?.inputToken.symbol!}
+              </Button>
+            </div>
+          )}
+        </EnsoShortcutsWidget>
       </SlideUpWrapper>
 
-      {/**
-       * Enso Shortcuts Widget
-       */}
-      {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
-        <div className="mt-2">
-          <EnsoShortcutsWidget
-            token={enrichedMarket?.inputToken?.contractAddress!}
-            symbol={enrichedMarket?.inputToken?.symbol ?? ""}
-            chainId={enrichedMarket?.chainId!}
-          />
-        </div>
-      )}
+      {!showEnsoWidget && (
+        <>
+          {/**
+           * Incentive Yield
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.2}>
+              <IncentiveYieldWrapper
+                marketActionForm={marketActionForm}
+                onYieldChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-      {/**
-       * Incentive Yield
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.2}>
-          <IncentiveYieldWrapper
-            marketActionForm={marketActionForm}
-            onYieldChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+                  updateIncentiveTokenAmount(
+                    value,
+                    parseFloat(
+                      marketActionForm.watch("quantity.amount") || "0"
+                    ),
+                    selectedInputToken,
+                    selectedIncentiveTokens[0]
+                  );
+                }}
+              />
+            </SlideUpWrapper>
+          </div>
 
-              updateIncentiveTokenAmount(
-                value,
-                parseFloat(marketActionForm.watch("quantity.amount") || "0"),
-                selectedInputToken,
-                selectedIncentiveTokens[0]
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
+          {/**
+           * Input Amount
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.3}>
+              <InputAmountWrapper
+                marketActionForm={marketActionForm}
+                onAmountChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-      {/**
-       * Input Amount
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.3}>
-          <InputAmountWrapper
-            marketActionForm={marketActionForm}
-            onAmountChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+                  updateIncentiveTokenAmount(
+                    marketActionForm.watch("annual_change_ratio"),
+                    value.amount,
+                    selectedInputToken,
+                    selectedIncentiveTokens[0]
+                  );
+                }}
+              />
+            </SlideUpWrapper>
+          </div>
 
-              updateIncentiveTokenAmount(
-                marketActionForm.watch("annual_change_ratio"),
-                value.amount,
-                selectedInputToken,
-                selectedIncentiveTokens[0]
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
+          <hr className="my-3" />
 
-      <hr className="my-3" />
-
-      {/**
-       * Incentive Token Selector
-       */}
-      {/* <div className="mt-3">
+          {/**
+           * Incentive Token Selector
+           */}
+          {/* <div className="mt-3">
         <SlideUpWrapper
           layout="position"
           layoutId={`motion:market:recipe:ap-limit:incentive-token-selector:${viewType}`}
@@ -246,41 +271,48 @@ export const APLimitActionForm = React.forwardRef<
         </SlideUpWrapper>
       </div> */}
 
-      {/**
-       * Incentive Amount
-       */}
-      <div className="mt-3">
-        <SlideUpWrapper delay={0.4}>
-          <IncentiveAmountWrapper
-            marketActionForm={marketActionForm}
-            onAmountChange={(value) => {
-              if (!selectedInputToken || selectedIncentiveTokens.length === 0) {
-                return;
-              }
+          {/**
+           * Incentive Amount
+           */}
+          <div className="mt-3">
+            <SlideUpWrapper delay={0.4}>
+              <IncentiveAmountWrapper
+                marketActionForm={marketActionForm}
+                onAmountChange={(value) => {
+                  if (
+                    !selectedInputToken ||
+                    selectedIncentiveTokens.length === 0
+                  ) {
+                    return;
+                  }
 
-              updateIncentiveApr(
-                parseFloat(marketActionForm.watch("quantity.amount") || "0"),
-                selectedInputToken,
-                {
-                  ...selectedIncentiveTokens[0],
-                  amount: value.amount,
-                  raw_amount: value.rawAmount,
-                }
-              );
-            }}
-          />
-        </SlideUpWrapper>
-      </div>
+                  updateIncentiveApr(
+                    parseFloat(
+                      marketActionForm.watch("quantity.amount") || "0"
+                    ),
+                    selectedInputToken,
+                    {
+                      ...selectedIncentiveTokens[0],
+                      amount: value.amount,
+                      raw_amount: value.rawAmount,
+                    }
+                  );
+                }}
+              />
+            </SlideUpWrapper>
+          </div>
 
-      {/**
-       * Input Expiry
-       */}
-      {enrichedMarket?.category !== "boyco" && (
-        <div className="mt-5">
-          <SlideUpWrapper delay={0.5}>
-            <InputExpirySelector marketActionForm={marketActionForm} />
-          </SlideUpWrapper>
-        </div>
+          {/**
+           * Input Expiry
+           */}
+          {enrichedMarket?.category !== "boyco" && (
+            <div className="mt-5">
+              <SlideUpWrapper delay={0.5}>
+                <InputExpirySelector marketActionForm={marketActionForm} />
+              </SlideUpWrapper>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

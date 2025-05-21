@@ -30,8 +30,8 @@ import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useMarketFormDetailsApi } from "../../use-market-form-details-api";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
-import { AxiosError } from "axios";
 import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -45,6 +45,8 @@ export const SupplyAction = React.forwardRef<
   const { connectWalletModal } = useConnectWallet();
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
   const { viewType, setMarketStep, offerType, userType } = useMarketManager();
+
+  const showEnsoWidget = useAtomValue(showEnsoShortcutsWidgetAtom);
 
   const propsAction = useMarketFormDetailsApi(marketActionForm);
 
@@ -132,95 +134,149 @@ export const SupplyAction = React.forwardRef<
             </div>
           )}
 
-          <div className="mt-5">
-            {(() => {
-              if (!address) {
+          {showEnsoWidget ? (
+            <></>
+          ) : (
+            <div className="mt-5">
+              {(() => {
+                if (!address) {
+                  return (
+                    <Button
+                      onClick={() => {
+                        try {
+                          connectWalletModal();
+                        } catch (error) {
+                          toast.custom(
+                            <ErrorAlert message="Error connecting wallet" />
+                          );
+                        }
+                      }}
+                      size="sm"
+                      className="w-full"
+                    >
+                      Connect Wallet
+                    </Button>
+                  );
+                }
+
+                if (chainId !== enrichedMarket?.chainId) {
+                  return (
+                    <Button
+                      onClick={async () => {
+                        try {
+                          // @ts-ignore
+                          await switchChain(config, {
+                            chainId: enrichedMarket?.chainId,
+                          });
+                        } catch (error) {
+                          toast.custom(
+                            <ErrorAlert message="Error switching chain" />
+                          );
+                          console.log("Failed:", error);
+                        }
+                      }}
+                      size="sm"
+                      className="w-full"
+                    >
+                      Switch Chain
+                    </Button>
+                  );
+                }
+
                 return (
                   <Button
                     onClick={() => {
                       try {
-                        connectWalletModal();
+                        if (propsAction.isSuccess) {
+                          setMarketStep(MarketSteps.preview.id);
+                        } else if (propsAction.isError) {
+                          const error = propsAction.error as any;
+
+                          toast.custom(
+                            <ErrorAlert
+                              message={
+                                error.response.data.error.message ||
+                                "Error submitting offer"
+                              }
+                            />
+                          );
+                        } else {
+                          throw new Error("Unknown error");
+                        }
                       } catch (error) {
                         toast.custom(
-                          <ErrorAlert message="Error connecting wallet" />
+                          <ErrorAlert message="Error submitting offer" />
                         );
                       }
                     }}
                     size="sm"
                     className="w-full"
                   >
-                    Connect Wallet
-                  </Button>
-                );
-              }
+                    {offerType === MarketOfferType.market.id ? (
+                      userType === MarketUserType.ap.id &&
+                      highestIncentiveToken &&
+                      marketActionForm.watch("quantity.amount") ? (
+                        <>
+                          {highestIncentiveToken && (
+                            <div className="ml-1 flex items-center gap-1">
+                              <span>Supply</span>
 
-              if (chainId !== enrichedMarket?.chainId) {
-                return (
-                  <Button
-                    onClick={async () => {
-                      try {
-                        // @ts-ignore
-                        await switchChain(config, {
-                          chainId: enrichedMarket?.chainId,
-                        });
-                      } catch (error) {
-                        toast.custom(
-                          <ErrorAlert message="Error switching chain" />
-                        );
-                        console.log("Failed:", error);
-                      }
-                    }}
-                    size="sm"
-                    className="w-full"
-                  >
-                    Switch Chain
-                  </Button>
-                );
-              }
+                              <span>for</span>
 
-              return (
-                <Button
-                  onClick={() => {
-                    try {
-                      if (propsAction.isSuccess) {
-                        setMarketStep(MarketSteps.preview.id);
-                      } else if (propsAction.isError) {
-                        const error = propsAction.error as any;
+                              <span>
+                                {highestIncentiveToken.yieldRate === 0 &&
+                                highestIncentiveToken.type === "point"
+                                  ? formatNumber(
+                                      parseFloat(
+                                        marketActionForm.watch(
+                                          "quantity.amount"
+                                        ) || "0"
+                                      ) *
+                                        (isNaN(
+                                          highestIncentiveToken.perInputToken
+                                        )
+                                          ? 0
+                                          : highestIncentiveToken.perInputToken)
+                                    )
+                                  : formatNumber(
+                                      highestIncentiveToken.yieldRate || 0,
+                                      {
+                                        type: "percent",
+                                      }
+                                    )}
+                              </span>
 
-                        toast.custom(
-                          <ErrorAlert
-                            message={
-                              error.response.data.error.message ||
-                              "Error submitting offer"
-                            }
-                          />
-                        );
-                      } else {
-                        throw new Error("Unknown error");
-                      }
-                    } catch (error) {
-                      toast.custom(
-                        <ErrorAlert message="Error submitting offer" />
-                      );
-                    }
-                  }}
-                  size="sm"
-                  className="w-full"
-                >
-                  {offerType === MarketOfferType.market.id ? (
-                    userType === MarketUserType.ap.id &&
-                    highestIncentiveToken &&
-                    marketActionForm.watch("quantity.amount") ? (
+                              <span className="font-regular text-white">
+                                {highestIncentiveToken?.symbol}
+                              </span>
+
+                              <span className="mb-px">
+                                <TokenDisplayer
+                                  size={4}
+                                  tokens={[highestIncentiveToken] as any}
+                                  symbols={false}
+                                  symbolClassName="text-white font-regular"
+                                />
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span>Supply Now</span>
+                      )
+                    ) : userType === MarketUserType.ap.id &&
+                      selectedIncentiveToken &&
+                      marketActionForm.watch("quantity.amount") ? (
                       <>
-                        {highestIncentiveToken && (
+                        {selectedIncentiveToken && (
                           <div className="ml-1 flex items-center gap-1">
-                            <span>Supply</span>
+                            <span>Bid</span>
 
                             <span>for</span>
 
                             <span>
-                              {highestIncentiveToken.yieldRate === 0 &&
-                              highestIncentiveToken.type === "point"
+                              {selectedIncentiveToken.yieldRate === 0 &&
+                              selectedIncentiveToken.type === "point"
                                 ? formatNumber(
                                     parseFloat(
                                       marketActionForm.watch(
@@ -228,13 +284,13 @@ export const SupplyAction = React.forwardRef<
                                       ) || "0"
                                     ) *
                                       (isNaN(
-                                        highestIncentiveToken.perInputToken
+                                        selectedIncentiveToken.perInputToken
                                       )
                                         ? 0
-                                        : highestIncentiveToken.perInputToken)
+                                        : selectedIncentiveToken.perInputToken)
                                   )
                                 : formatNumber(
-                                    highestIncentiveToken.yieldRate || 0,
+                                    selectedIncentiveToken.yieldRate || 0,
                                     {
                                       type: "percent",
                                     }
@@ -242,13 +298,13 @@ export const SupplyAction = React.forwardRef<
                             </span>
 
                             <span className="font-regular text-white">
-                              {highestIncentiveToken?.symbol}
+                              {selectedIncentiveToken.symbol}
                             </span>
 
                             <span className="mb-px">
                               <TokenDisplayer
                                 size={4}
-                                tokens={[highestIncentiveToken] as any}
+                                tokens={[selectedIncentiveToken]}
                                 symbols={false}
                                 symbolClassName="text-white font-regular"
                               />
@@ -258,73 +314,26 @@ export const SupplyAction = React.forwardRef<
                       </>
                     ) : (
                       <span>Supply Now</span>
-                    )
-                  ) : userType === MarketUserType.ap.id &&
-                    selectedIncentiveToken &&
-                    marketActionForm.watch("quantity.amount") ? (
-                    <>
-                      {selectedIncentiveToken && (
-                        <div className="ml-1 flex items-center gap-1">
-                          <span>Bid</span>
+                    )}
+                  </Button>
+                );
+              })()}
 
-                          <span>for</span>
+              {offerType === MarketOfferType.market.id &&
+                userType === MarketUserType.ap.id &&
+                (enrichedMarket?.yieldRate || 0) !== 0 && (
+                  <TertiaryLabel className="mt-2 space-x-1 italic">
+                    <span>Total APY:</span>
 
-                          <span>
-                            {selectedIncentiveToken.yieldRate === 0 &&
-                            selectedIncentiveToken.type === "point"
-                              ? formatNumber(
-                                  parseFloat(
-                                    marketActionForm.watch("quantity.amount") ||
-                                      "0"
-                                  ) *
-                                    (isNaN(selectedIncentiveToken.perInputToken)
-                                      ? 0
-                                      : selectedIncentiveToken.perInputToken)
-                                )
-                              : formatNumber(
-                                  selectedIncentiveToken.yieldRate || 0,
-                                  {
-                                    type: "percent",
-                                  }
-                                )}
-                          </span>
-
-                          <span className="font-regular text-white">
-                            {selectedIncentiveToken.symbol}
-                          </span>
-
-                          <span className="mb-px">
-                            <TokenDisplayer
-                              size={4}
-                              tokens={[selectedIncentiveToken]}
-                              symbols={false}
-                              symbolClassName="text-white font-regular"
-                            />
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <span>Supply Now</span>
-                  )}
-                </Button>
-              );
-            })()}
-
-            {offerType === MarketOfferType.market.id &&
-              userType === MarketUserType.ap.id &&
-              (enrichedMarket?.yieldRate || 0) !== 0 && (
-                <TertiaryLabel className="mt-2 space-x-1 italic">
-                  <span>Total APY:</span>
-
-                  <span className="flex items-center justify-center">
-                    {formatNumber(enrichedMarket?.yieldRate || 0, {
-                      type: "percent",
-                    })}
-                  </span>
-                </TertiaryLabel>
-              )}
-          </div>
+                    <span className="flex items-center justify-center">
+                      {formatNumber(enrichedMarket?.yieldRate || 0, {
+                        type: "percent",
+                      })}
+                    </span>
+                  </TertiaryLabel>
+                )}
+            </div>
+          )}
         </>
       )}
     </div>
