@@ -90,6 +90,12 @@ export const loadableVaultPositionsAtom = atomWithQuery<VaultPositionResponse>(
             size: 20,
           },
           customTokenData,
+          sorting: [
+            {
+              id: "blockTimestamp",
+              desc: true,
+            },
+          ],
         })
         .then((res) => res.data);
     },

@@ -42,6 +42,8 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { LoadingCircle } from "@/components/animations/loading-circle";
 import { SlideUpWrapper } from "@/components/animations";
+import { defaultQueryOptions } from "@/utils/query";
+import { Plume } from "royco/constants";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -223,6 +225,10 @@ export const TransactionModal = React.forwardRef<
 
   const showSimulation = useMemo(() => {
     if (transactions.length !== 0) {
+      if (transactions.some((tx) => tx.chainId === Plume.id)) {
+        return false;
+      }
+
       if (
         transactions.some(
           (tx) =>
@@ -242,9 +248,7 @@ export const TransactionModal = React.forwardRef<
       "simulation",
       {
         rawTxns: transactions.map((tx) => {
-          return {
-            ...tx,
-          };
+          return tx.id;
         }),
       },
     ],
@@ -258,6 +262,7 @@ export const TransactionModal = React.forwardRef<
       });
     },
     enabled: showSimulation,
+    ...defaultQueryOptions,
   });
 
   useEffect(() => {
@@ -274,16 +279,17 @@ export const TransactionModal = React.forwardRef<
     }
   }, [isTxError]);
 
+  const invalidateQueries = async () => {
+    setTimeout(async () => {
+      setLastRefreshTimestamp(Date.now());
+      await queryClient.invalidateQueries();
+      setIsTransactionTimeout(false);
+    }, 5 * 1000); // 5 seconds
+  };
+
   useEffect(() => {
     if (allTransactionsExecuted && isOpen) {
-      setTimeout(() => {
-        queryClient.invalidateQueries();
-        setLastRefreshTimestamp(Date.now());
-
-        console.log("lastRefreshTimestamp", lastRefreshTimestamp);
-
-        setIsTransactionTimeout(false);
-      }, 5 * 1000); // 5 seconds
+      invalidateQueries();
     }
   }, [allTransactionsExecuted]);
 

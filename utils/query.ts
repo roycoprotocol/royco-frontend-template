@@ -13,7 +13,7 @@ export const defaultQueryOptions = {
 export const defaultQueryOptionsFastRefresh = {
   refetchOnWindowFocus: false,
   refetchIntervalInBackground: true,
-  refetchInterval: secondsToMilliseconds(10), // 10 seconds
+  refetchInterval: secondsToMilliseconds(60), // 60 seconds
   placeholderData: keepPreviousData, // Keep previous data while fetching new data
-  staleTime: secondsToMilliseconds(10), // 10 seconds
+  // staleTime: secondsToMilliseconds(10), // 10 seconds
 } as const;

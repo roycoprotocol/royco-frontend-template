@@ -89,6 +89,12 @@ export const loadableRecipePositionsAtom =
           size: 20,
         },
         customTokenData,
+        sorting: [
+          {
+            id: "blockTimestamp",
+            desc: false,
+          },
+        ],
       };
 
       return api

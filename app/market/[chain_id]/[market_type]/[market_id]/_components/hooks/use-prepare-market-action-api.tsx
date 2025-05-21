@@ -63,6 +63,7 @@ export const usePrepareMarketActionApi = ({
 
   const enrichedMarketId = useAtomValue(enrichedMarketIdAtom);
   const accountAddress = useAtomValue(accountAddressAtom);
+
   const lastRefreshTimestamp = useAtomValue(lastRefreshTimestampAtom);
 
   return useQuery({

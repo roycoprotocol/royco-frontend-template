@@ -90,6 +90,12 @@ export const loadableBoycoPositionsAtom = atomWithQuery<BoycoPositionResponse>(
             size: 20,
           },
           customTokenData,
+          sorting: [
+            {
+              id: "blockTimestamp",
+              desc: false,
+            },
+          ],
         })
         .then((res) => res.data);
     },
