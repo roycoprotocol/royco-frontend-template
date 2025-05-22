@@ -10,7 +10,7 @@ export const Activity = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   return (
-    <div ref={ref} {...props} className={cn(className)}>
+    <div ref={ref} {...props} className={cn("flex flex-col gap-3", className)}>
       <PrimaryLabel className="text-2xl font-medium  text-_primary_">
         Activity
       </PrimaryLabel>

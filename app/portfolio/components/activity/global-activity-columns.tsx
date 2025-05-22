@@ -9,9 +9,10 @@ import {
 import formatNumber from "@/utils/numbers";
 import { formatDate } from "date-fns";
 import { ContentFlow } from "@/components/animations/content-flow";
-import { DotIcon, ExternalLinkIcon } from "lucide-react";
+import { DotIcon } from "lucide-react";
 import { EnrichedActivity } from "royco/api";
 import { getExplorerUrl } from "royco/utils";
+import { ExternalLinkIcon } from "@/assets/icons/external-link";
 
 export type GlobalActivityColumnDataElement = EnrichedActivity;
 
@@ -108,23 +109,22 @@ export const globalActivityColumns: ColumnDef<GlobalActivityColumnDataElement>[]
                 {amount}
               </PrimaryLabel>
 
-              <SecondaryLabel className="mt-1 flex flex-row items-center gap-2 text-xs font-normal text-_secondary_">
+              <SecondaryLabel className="mt-1 flex flex-row items-center gap-[0.3rem] text-xs font-normal text-_secondary_">
                 <div className={cn(status === "Cancelled" && "text-error")}>
                   {status}
                 </div>
-                <div>
-                  <ExternalLinkIcon
-                    onClick={() => {
-                      const explorerUrl = getExplorerUrl({
-                        chainId: row.original.chainId,
-                        value: row.original.transactionHash,
-                        type: "tx",
-                      });
+                <div
+                  onClick={() => {
+                    const explorerUrl = getExplorerUrl({
+                      chainId: row.original.chainId,
+                      value: row.original.transactionHash,
+                      type: "tx",
+                    });
 
-                      window.open(explorerUrl, "_blank", "noopener,noreferrer");
-                    }}
-                    className="h-4 w-4 cursor-pointer opacity-90 transition-all duration-200 ease-in-out hover:opacity-80"
-                  />
+                    window.open(explorerUrl, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  <ExternalLinkIcon className="h-4 w-4 cursor-pointer opacity-90 transition-all duration-200 ease-in-out hover:opacity-70" />
                 </div>
               </SecondaryLabel>
             </div>
