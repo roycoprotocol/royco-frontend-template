@@ -2,10 +2,7 @@
 
 import React from "react";
 import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
-import {
-  GlobalActivityColumnDataElement,
-  globalActivityColumns,
-} from "./global-activity-columns";
+import { globalActivityColumns } from "./global-activity-columns";
 import { GlobalActivityPagination } from "./global-activity-pagination";
 import { GlobalActivityTable } from "./global-acitivity-table";
 import {
