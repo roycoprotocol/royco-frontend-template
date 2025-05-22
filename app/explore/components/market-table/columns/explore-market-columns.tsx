@@ -38,6 +38,7 @@ import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumptio
 import { CustomProgress } from "@/app/vault/common/custom-progress";
 import { useAtom } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
+import formatNumber from "@/utils/numbers";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: "default" },
@@ -230,16 +231,15 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      <NumberFlow
-                        value={totalYieldRate}
-                        format={{
-                          style: "percent",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                      {formatNumber(
+                        totalYieldRate,
+                        {
+                          type: "percent",
+                        },
+                        {
+                          mantissa: 2,
+                        }
+                      )}
                     </PrimaryLabel>
 
                     <TokenDisplayer
@@ -333,16 +333,15 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      <NumberFlow
-                        value={totalYieldRate}
-                        format={{
-                          style: "percent",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                      {formatNumber(
+                        totalYieldRate,
+                        {
+                          type: "percent",
+                        },
+                        {
+                          mantissa: 2,
+                        }
+                      )}
                     </PrimaryLabel>
 
                     <TokenDisplayer
@@ -411,16 +410,15 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      <NumberFlow
-                        value={totalYieldRate}
-                        format={{
-                          style: "percent",
-                          notation: "compact",
-                          useGrouping: true,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                      {formatNumber(
+                        totalYieldRate,
+                        {
+                          type: "percent",
+                        },
+                        {
+                          mantissa: 2,
+                        }
+                      )}
                     </PrimaryLabel>
 
                     <TokenDisplayer
