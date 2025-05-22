@@ -151,7 +151,24 @@ export const loadableExploreAssetFilterOptionsAtom =
        * Add markets filters here
        */
 
-      // let filters: Filter[] = [];
+      const baseFilters = get(baseFilter);
+      const baseChainFilters = get(baseChainFilter);
+      const marketFilters = get(marketFiltersAtom);
+
+      let filters: Filter[] = [];
+
+      for (let i = 0; i < marketFilters.length; i++) {
+        const newFilter = marketFilters[i];
+
+        if (Array.isArray(newFilter.value) && newFilter.value.length === 0) {
+          // skip
+        } else {
+          filters.push(newFilter);
+        }
+      }
+
+      filters.push(...baseFilters);
+      filters.push(...baseChainFilters);
 
       // filters.push({
       //   id: "fillableUsd",
@@ -174,7 +191,7 @@ export const loadableExploreAssetFilterOptionsAtom =
 
       return api
         .marketControllerGetMarketSettings({
-          // filters,
+          filters,
         })
         .then((res) => res.data);
     },
