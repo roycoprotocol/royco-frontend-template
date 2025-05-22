@@ -23,27 +23,29 @@ export const SimpleMarketManager = forwardRef<
       transition={{ duration: 1, ease: "easeIn" }}
       key={`market-manager:${viewType}`}
       className={cn(
-        "flex w-full max-w-lg flex-col rounded-2xl border border-divider bg-white md:min-h-[800px]"
+        "flex w-full max-w-lg flex-col justify-between rounded-2xl border border-divider bg-white md:min-h-[800px]"
       )}
     >
-      {/**
-       * Market Info
-       */}
-      {marketStep === MarketSteps.params.id && (
-        <>
-          <div className="p-3 md:p-6">
-            <MarketInfo />
-          </div>
+      <div className="flex flex-col">
+        {/**
+         * Market Info
+         */}
+        {marketStep === MarketSteps.params.id && (
+          <>
+            <div className="p-3 md:p-6">
+              <MarketInfo />
+            </div>
 
-          <hr />
-        </>
-      )}
+            <hr />
+          </>
+        )}
 
-      {/**
-       * Market Action Form
-       */}
-      <div className="p-3 md:p-6">
-        <MarketActionForm key={`market-form:simple`} />
+        {/**
+         * Market Action Form
+         */}
+        <div className="p-3 md:p-6">
+          <MarketActionForm key={`market-form:simple`} />
+        </div>
       </div>
 
       {/**

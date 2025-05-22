@@ -59,7 +59,7 @@ export const exploreMarketColumnNames = {
     type: "default",
   },
   fillable: {
-    label: "Fillable",
+    label: "Capacity",
     icon: <DatabaseIcon className="h-3 w-3" />,
     sortId: "fillableUsd",
     type: "default",
@@ -120,14 +120,20 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
           ]);
         }}
         className={cn(
-          "group flex cursor-pointer items-center gap-1 hover:text-_primary_",
+          "group flex cursor-pointer items-center gap-1",
+          column.getCanSort() && "hover:text-_primary_",
           className
         )}
         {...props}
       >
         {columnName?.icon}
 
-        <SecondaryLabel className="text-xs font-medium text-_secondary_ transition-colors duration-300 group-hover:text-_primary_">
+        <SecondaryLabel
+          className={cn(
+            "text-xs font-medium text-_secondary_ transition-colors duration-300",
+            column.getCanSort() && "group-hover:text-_primary_"
+          )}
+        >
           {columnName.label.toUpperCase()}
         </SecondaryLabel>
 
@@ -137,7 +143,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
               return (
                 <Button
                   variant="none"
-                  className="place-content-center p-1 outline-none group-hover:text-_primary_"
+                  className={cn(
+                    "place-content-center p-1 outline-none",
+                    column.getCanSort() && "group-hover:text-_primary_"
+                  )}
                 >
                   <ArrowUpDownIcon className="h-4 w-4" />
                 </Button>
@@ -148,7 +157,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
               return (
                 <Button
                   variant="none"
-                  className="place-content-center p-1 outline-none group-hover:text-_primary_"
+                  className={cn(
+                    "place-content-center p-1 outline-none",
+                    column.getCanSort() && "group-hover:text-_primary_"
+                  )}
                 >
                   <MoveUpIcon className="h-4 w-4" />
                 </Button>
@@ -158,7 +170,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
             return (
               <Button
                 variant="none"
-                className="place-content-center p-1 outline-none group-hover:text-_primary_"
+                className={cn(
+                  "place-content-center p-1 outline-none",
+                  column.getCanSort() && "group-hover:text-_primary_"
+                )}
               >
                 <MoveDownIcon className="h-4 w-4" />
               </Button>

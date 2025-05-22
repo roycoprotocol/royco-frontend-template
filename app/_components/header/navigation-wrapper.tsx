@@ -13,7 +13,7 @@ export const NavigationWrapper: React.FC = () => {
       window.history.scrollRestoration = "manual";
     }
     window.scrollTo(0, 0);
-  }, []);
+  }, [pathname]);
 
   return <Navigation />;
 };
