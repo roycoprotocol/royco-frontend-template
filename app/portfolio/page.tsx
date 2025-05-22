@@ -7,6 +7,7 @@ import { Deposits } from "./components/deposits/deposits";
 import { PortfolioWrapper } from "./provider/portfolio-wrapper";
 import { Rewards } from "./components/rewards/rewards";
 import { TransactionModalV2 } from "@/components/composables/transaction-modal-v2/transaction-modal/transaction-modal";
+import { Activity } from "./components/activity/activity";
 
 const Page = () => {
   return (
@@ -24,6 +25,10 @@ const Page = () => {
 
             <div className="mt-12">
               <Rewards />
+            </div>
+
+            <div className="mt-12">
+              <Activity />
             </div>
           </PortfolioWrapper>
 

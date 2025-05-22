@@ -1,11 +1,64 @@
 import { api } from "@/app/api/royco";
 import { atom } from "jotai";
 import { atomWithQuery } from "jotai-tanstack-query";
-import { BaseEnrichedTokenData, GlobalPositionResponse } from "royco/api";
+import {
+  ActivityResponse,
+  BaseEnrichedTokenData,
+  EnrichedActivity,
+  Filter,
+  GlobalPositionResponse,
+} from "royco/api";
 import { baseChainFilter } from "../explore/explore-market";
 import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
 import { ModalTxOption } from "@/types";
 import { defaultQueryOptions } from "@/utils/query";
+
+export const portfolioActivityPageIndexAtom = atom(1);
+export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
+  queryKey: [
+    "portfolio-activity",
+    {
+      accountAddress: get(accountAddressAtom),
+      lastRefreshTimestamp: get(lastRefreshTimestampAtom),
+      pageIndex: get(portfolioActivityPageIndexAtom),
+      filters: [...get(baseChainFilter)],
+    },
+  ],
+  queryFn: async () => {
+    const accountAddress = get(accountAddressAtom);
+    const baseChainFilters = get(baseChainFilter);
+
+    if (!accountAddress) {
+      throw new Error("Wallet not connected");
+    }
+
+    let filters: Filter[] = [
+      {
+        id: "accountAddress",
+        value: accountAddress,
+      },
+      ...baseChainFilters,
+    ];
+
+    return api
+      .activityControllerGetActivities({
+        filters,
+        sorting: [
+          {
+            id: "blockTimestamp",
+            desc: true,
+          },
+        ],
+        page: {
+          index: get(portfolioActivityPageIndexAtom),
+          size: 6,
+        },
+      })
+      .then((res) => res.data);
+  },
+  enabled: Boolean(get(accountAddressAtom)),
+  ...defaultQueryOptions,
+}));
 
 export const loadablePortfolioPositionsAtom =
   atomWithQuery<GlobalPositionResponse>((get) => ({
@@ -46,11 +99,7 @@ export const loadablePortfolioPositionsAtom =
         .then((res) => res.data);
     },
     enabled: Boolean(get(accountAddressAtom)),
-    refetchOnWindowFocus: false, // Don't refetch on window focus
-    refetchIntervalInBackground: true, // Refetch in background
-    refetchInterval: 1000 * 60, // Check for updates every 1 minute
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
+    ...defaultQueryOptions,
   }));
 
 export const portfolioTransactionsAtom = atom<{

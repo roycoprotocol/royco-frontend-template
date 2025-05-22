@@ -6,7 +6,10 @@ import { SlideUpWrapper } from "@/components/animations";
 import { AlertIndicator } from "@/components/common";
 import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { useAtomValue } from "jotai";
-import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
+import {
+  loadableActivityAtom,
+  loadablePortfolioPositionsAtom,
+} from "@/store/portfolio/portfolio";
 import { useAccount } from "wagmi";
 import { ConnectWalletButton } from "@/app/_components/header/connect-wallet-button/connect-wallet-button";
 
@@ -19,7 +22,10 @@ export const PortfolioWrapper = React.forwardRef<
     loadablePortfolioPositionsAtom
   );
 
-  if (isLoading) {
+  const { data: activityData, isLoading: isActivityLoading } =
+    useAtomValue(loadableActivityAtom);
+
+  if (isLoading || isActivityLoading) {
     return (
       <div className="flex w-full flex-col place-content-center items-center pt-16">
         <LoadingIndicator className="h-5 w-5" />
