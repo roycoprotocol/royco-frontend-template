@@ -46,10 +46,7 @@ export const loadableSpecificVaultPositionAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "1" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "1"),
   }));
 
 export const vaultPositionsPageIndexAtom = atom(1);
@@ -100,9 +97,6 @@ export const loadableVaultPositionsAtom = atomWithQuery<VaultPositionResponse>(
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "1" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "1"),
   })
 );

@@ -56,7 +56,6 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
       })
       .then((res) => res.data);
   },
-  enabled: Boolean(get(accountAddressAtom)),
   ...defaultQueryOptions,
 }));
 
@@ -71,6 +70,12 @@ export const loadablePortfolioPositionsAtom =
       },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
+      const accountAddress = get(accountAddressAtom);
+
+      if (!accountAddress) {
+        throw new Error("Wallet not connected");
+      }
+
       const _params = params as any;
 
       const body: any = {};
@@ -98,7 +103,6 @@ export const loadablePortfolioPositionsAtom =
         })
         .then((res) => res.data);
     },
-    enabled: Boolean(get(accountAddressAtom)),
     ...defaultQueryOptions,
   }));
 

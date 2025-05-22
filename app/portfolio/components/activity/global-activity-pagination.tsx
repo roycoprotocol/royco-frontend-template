@@ -9,11 +9,6 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { Table as TableInstance } from "@tanstack/react-table";
-import { TokenRewardsColumnDataElement } from "./token-rewards-columns";
-import { GlobalActivityColumnDataElement } from "./global-activity-columns";
-import { useAtomValue } from "jotai";
-import { portfolioActivityPageIndexAtom } from "@/store/portfolio";
 
 export const PaginationButtonMotionWrapper = React.forwardRef<
   HTMLDivElement,

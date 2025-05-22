@@ -46,10 +46,7 @@ export const loadableSpecificRecipePositionAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "0"),
   }));
 
 export const recipePositionsPageIndexAtom = atom(1);
@@ -102,8 +99,5 @@ export const loadableRecipePositionsAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "0"),
   }));

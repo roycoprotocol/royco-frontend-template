@@ -2,11 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import {
-  PrimaryLabel,
-  SecondaryLabel,
-} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
-import { AlertIndicator } from "@/components/common";
+import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { GlobalActivityManager } from "./global-activity-manager";
 
 export const Activity = React.forwardRef<

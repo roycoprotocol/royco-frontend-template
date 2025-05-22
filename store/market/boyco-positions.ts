@@ -46,10 +46,7 @@ export const loadableSpecificBoycoPositionAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "0"),
   }));
 
 export const boycoPositionsPageIndexAtom = atom(1);
@@ -100,9 +97,6 @@ export const loadableBoycoPositionsAtom = atomWithQuery<BoycoPositionResponse>(
         .then((res) => res.data);
     },
     ...defaultQueryOptionsFastRefresh,
-    enabled: Boolean(
-      get(enrichedMarketIdAtom)?.split("_")[1] === "0" &&
-        get(accountAddressAtom)
-    ),
+    enabled: Boolean(get(enrichedMarketIdAtom)?.split("_")[1] === "0"),
   })
 );

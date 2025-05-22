@@ -145,12 +145,6 @@ export const loadableExploreAssetFilterOptionsAtom =
       },
     ],
     queryFn: async () => {
-      /**
-       * @for Uday
-       * @todo
-       * Add markets filters here
-       */
-
       const baseFilters = get(baseFilter);
       const baseChainFilters = get(baseChainFilter);
       const marketFilters = get(marketFiltersAtom);
@@ -169,25 +163,6 @@ export const loadableExploreAssetFilterOptionsAtom =
 
       filters.push(...baseFilters);
       filters.push(...baseChainFilters);
-
-      // filters.push({
-      //   id: "fillableUsd",
-      //   value: 0,
-      //   condition: "gt",
-      // });
-
-      // const baseChainFilter = get(marketFiltersAtom).filter(
-      //   (filter) => filter.id === "chainId" && filter.condition === "inArray"
-      // );
-
-      // if (baseChainFilter.length > 0) {
-      //   filters.push(...baseChainFilter);
-      // }
-
-      // filters.push({
-      //   id: "chainId",
-      //   value: 1,
-      // });
 
       return api
         .marketControllerGetMarketSettings({
