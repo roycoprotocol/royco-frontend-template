@@ -11,12 +11,13 @@ import { GradientText } from "./gradient-text";
 interface AnnualYieldAssumptionProps
   extends React.HTMLAttributes<HTMLDivElement> {
   incentives: any[];
+  showFdv?: boolean;
 }
 
 export const AnnualYieldAssumption = React.forwardRef<
   HTMLDivElement,
   AnnualYieldAssumptionProps
->(({ className, incentives, ...props }, ref) => {
+>(({ className, incentives, showFdv = true, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -41,11 +42,13 @@ export const AnnualYieldAssumption = React.forwardRef<
                   {item.name}
                 </PrimaryLabel>
 
-                <SecondaryLabel className="mt-1 text-sm font-normal text-_secondary_">
-                  {formatNumber(item.fdv, {
-                    type: "currency",
-                  }) + " FDV"}
-                </SecondaryLabel>
+                {showFdv && (
+                  <SecondaryLabel className="mt-1 text-sm font-normal text-_secondary_">
+                    {formatNumber(item.fdv, {
+                      type: "currency",
+                    }) + " FDV"}
+                  </SecondaryLabel>
+                )}
               </div>
             </div>
 

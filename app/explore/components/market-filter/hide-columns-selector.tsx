@@ -33,21 +33,26 @@ export const HideColumnsSelector = React.forwardRef<
   const [search, setSearch] = useState("");
 
   const columns = useMemo(() => {
-    const types = ["default"];
+    let type = "default";
     if (tag === "boyco") {
-      types.push("boyco");
+      type = "boyco";
     }
     if (tag === "sonic") {
-      types.push("sonic");
+      type = "sonic";
     }
-    return Object.entries(exploreMarketColumnNames)
-      .filter(([key, value]) => types.includes(value.type))
+    if (tag === "plume") {
+      type = "plume";
+    }
+    const columnNames = Object.entries(exploreMarketColumnNames)
+      .filter(([key, value]) => value.type.includes(type))
       .map(([key, value]) => {
         return {
           label: value.label,
           value: key,
         };
       });
+
+    return columnNames;
   }, [tag]);
 
   const fuse = useMemo(() => {

@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import React from "react";
 import {
   ArrowUpDownIcon,
+  CirclePercentIcon,
   ClockIcon,
   CoinsIcon,
   DatabaseIcon,
@@ -41,36 +42,41 @@ import { marketSortAtom } from "@/store/explore/explore-market";
 import formatNumber from "@/utils/numbers";
 
 export const exploreMarketColumnNames = {
-  name: { label: "Market", type: "default" },
+  name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
   totalYield: {
-    label: "Est. Total APY",
+    label: "Total APY",
     enableSorting: true,
     sortId: "yieldRate",
-    type: "default",
+    type: ["default", "boyco", "sonic", "plume"],
+  },
+  realYield: {
+    label: "Real Yields",
+    icon: <CirclePercentIcon className="h-3 w-3" />,
+    type: ["default", "boyco", "sonic"],
   },
   tokenYield: {
-    label: "Est. Token APY",
+    label: "Token Incentives",
     icon: <CoinsIcon className="h-3 w-3" />,
-    type: "default",
+    type: ["default", "boyco", "sonic", "plume"],
   },
   pointsYield: {
-    label: "Est. Points APY",
+    label: "Est. Points",
     icon: <SparklesIcon className="h-3 w-3" />,
-    type: "default",
+    type: ["default", "boyco", "sonic"],
   },
   fillable: {
     label: "Capacity",
     icon: <DatabaseIcon className="h-3 w-3" />,
     sortId: "fillableUsd",
-    type: "default",
+    type: ["default", "boyco", "sonic", "plume"],
   },
   lockup: {
     label: "Lockup",
     icon: <ClockIcon className="h-3 w-3" />,
-    type: "default",
+    type: ["default", "boyco", "sonic", "plume"],
   },
-  appType: { label: "Gem Allocation", type: "sonic" },
-  poolType: { label: "Pool Type", type: "boyco" },
+  appType: { label: "Gem Allocation", type: ["sonic"] },
+  poolType: { label: "Pool Type", type: ["boyco"] },
 };
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
@@ -222,16 +228,23 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
-        const activeIncentives = row.original.activeIncentives || [];
-        const underlyingIncentives = row.original.underlyingIncentives || [];
-        const nativeIncentives = row.original.nativeIncentives || [];
+        const tokenIncentives = (row.original.activeIncentives || []).filter(
+          (item) => item.type === "token"
+        );
 
-        const fixedIncentives = activeIncentives;
-        const variableIncentives = [
-          ...underlyingIncentives,
-          ...nativeIncentives,
+        const pointIncentives = (row.original.activeIncentives || []).filter(
+          (item) => item.type === "point"
+        );
+
+        const realIncentives = [
+          ...(row.original.underlyingIncentives || []),
+          ...(row.original.nativeIncentives || []),
         ];
-        const incentives = [...fixedIncentives, ...variableIncentives];
+
+        const incentives = [
+          ...(row.original.activeIncentives || []),
+          ...realIncentives,
+        ];
         const totalYieldRate = incentives.reduce(
           (acc, curr) => acc + (curr?.yieldRate || 0),
           0
@@ -275,35 +288,134 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-col gap-4">
-                        {fixedIncentives.length > 0 && (
+                        {realIncentives.length > 0 && (
                           <>
                             <SecondaryLabel className="text-xs font-medium text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
-                                <div>FIXED RATE</div>
+                                <div>REAL YIELDS</div>
                                 <div>EST. APY</div>
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={fixedIncentives}
+                              incentives={realIncentives}
                               className="divide-y-0"
+                              showFdv={false}
                             />
                           </>
                         )}
 
-                        {variableIncentives.length > 0 && (
+                        {tokenIncentives.length > 0 && (
                           <>
                             <SecondaryLabel className="text-xs font-medium text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
-                                <div>VARIABLE RATE</div>
+                                <div>TOKEN INCENTIVES</div>
                                 <div>EST. APY</div>
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={variableIncentives}
+                              incentives={tokenIncentives}
                               className="divide-y-0"
+                              showFdv={false}
                             />
                           </>
                         )}
+
+                        {pointIncentives.length > 0 && (
+                          <>
+                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                              <div className="flex w-full items-center justify-between gap-2">
+                                <div>EST. POINTS</div>
+                                <div>EST. APY</div>
+                              </div>
+                            </SecondaryLabel>
+                            <AnnualYieldAssumption
+                              incentives={pointIncentives}
+                              className="divide-y-0"
+                              showFdv={false}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </HoverCardContent>,
+                    document.body
+                  )}
+              </HoverCard>
+            ) : (
+              <span>-</span>
+            )}
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "realYield",
+      enableResizing: false,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const incentives = [
+          ...(row.original.underlyingIncentives || []),
+          ...(row.original.nativeIncentives || []),
+        ];
+        const totalYieldRate = incentives.reduce(
+          (acc, curr) => acc + (curr?.yieldRate || 0),
+          0
+        );
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            {incentives.length > 0 ? (
+              <HoverCard openDelay={200} closeDelay={200}>
+                <HoverCardTrigger
+                  className={cn("flex cursor-pointer items-center")}
+                >
+                  <div className="flex items-center gap-1">
+                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                      {formatNumber(
+                        totalYieldRate,
+                        {
+                          type: "percent",
+                        },
+                        {
+                          mantissa: 2,
+                        }
+                      )}
+                    </PrimaryLabel>
+
+                    <TokenDisplayer
+                      size={4}
+                      tokens={incentives}
+                      symbols={false}
+                    />
+                  </div>
+                </HoverCardTrigger>
+
+                {incentives.length > 0 &&
+                  typeof window !== "undefined" &&
+                  createPortal(
+                    <HoverCardContent
+                      className={cn(
+                        "min-w-[320px] rounded-sm border border-_divider_ bg-_surface_ p-2 shadow-none"
+                      )}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-col gap-4">
+                        <>
+                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div>REAL YIELDS</div>
+                              <div>EST. APY</div>
+                            </div>
+                          </SecondaryLabel>
+                          <AnnualYieldAssumption
+                            incentives={incentives}
+                            className="divide-y-0"
+                            showFdv={false}
+                          />
+                        </>
                       </div>
                     </HoverCardContent>,
                     document.body
@@ -323,17 +435,11 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-40 w-52",
+      meta: "min-w-44 w-52",
       cell: ({ row }) => {
-        const activeIncentives = row.original.activeIncentives || [];
-        const underlyingIncentives = row.original.underlyingIncentives || [];
-        const nativeIncentives = row.original.nativeIncentives || [];
-
-        const incentives = [
-          ...activeIncentives,
-          ...underlyingIncentives,
-          ...nativeIncentives,
-        ].filter((item) => item.type === "token");
+        const incentives = (row.original.activeIncentives || []).filter(
+          (item) => item.type === "token"
+        );
         const totalYieldRate = incentives.reduce(
           (acc, curr) => acc + (curr?.yieldRate || 0),
           0
@@ -348,6 +454,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
+                      {"+ "}
                       {formatNumber(
                         totalYieldRate,
                         {
@@ -377,10 +484,19 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-col gap-4">
-                        <AnnualYieldAssumption
-                          incentives={incentives}
-                          className="divide-y-0"
-                        />
+                        <>
+                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div>TOKEN INCENTIVES</div>
+                              <div>EST. APY</div>
+                            </div>
+                          </SecondaryLabel>
+                          <AnnualYieldAssumption
+                            incentives={incentives}
+                            className="divide-y-0"
+                            showFdv={false}
+                          />
+                        </>
                       </div>
                     </HoverCardContent>,
                     document.body
@@ -402,15 +518,9 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
-        const activeIncentives = row.original.activeIncentives || [];
-        const underlyingIncentives = row.original.underlyingIncentives || [];
-        const nativeIncentives = row.original.nativeIncentives || [];
-
-        const incentives = [
-          ...activeIncentives,
-          ...underlyingIncentives,
-          ...nativeIncentives,
-        ].filter((item) => item.type === "point");
+        const incentives = (row.original.activeIncentives || []).filter(
+          (item) => item.type === "point"
+        );
         const totalYieldRate = incentives.reduce(
           (acc, curr) => acc + (curr?.yieldRate || 0),
           0
@@ -425,6 +535,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
+                      {"+ "}
                       {formatNumber(
                         totalYieldRate,
                         {
@@ -454,10 +565,19 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-col gap-4">
-                        <AnnualYieldAssumption
-                          incentives={incentives}
-                          className="divide-y-0"
-                        />
+                        <>
+                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div>EST. POINTS</div>
+                              <div>EST. APY</div>
+                            </div>
+                          </SecondaryLabel>
+                          <AnnualYieldAssumption
+                            incentives={incentives}
+                            className="divide-y-0"
+                            showFdv={false}
+                          />
+                        </>
                       </div>
                     </HoverCardContent>,
                     document.body
@@ -588,53 +708,6 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
         );
       },
     },
-  ];
-
-export const boycoExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
-  [
-    ...exploreMarketColumns,
-    {
-      accessorKey: "poolType",
-      enableResizing: false,
-      enableSorting: false,
-      header: ({ column }: { column: any }) => {
-        return <HeaderWrapper column={column} />;
-      },
-      meta: "min-w-40 w-52",
-      cell: ({ row }) => {
-        const poolType = row.original.marketMetadata?.boyco?.assetType;
-        const marketMultiplier = row.original.marketMetadata?.boyco?.multiplier;
-
-        let formattedPoolType = "-";
-
-        if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
-          formattedPoolType = "Major";
-        } else if (poolType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY) {
-          formattedPoolType = "Third-Party";
-        } else if (poolType === MULTIPLIER_ASSET_TYPE.HYBRID) {
-          formattedPoolType = "Hybrid";
-        }
-
-        return (
-          <ContentFlow customKey={row.original.id}>
-            <div className={cn("flex flex-row items-center gap-2")}>
-              <span className="leading-5">{formattedPoolType}</span>
-
-              {marketMultiplier && (
-                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-medium text-success">
-                  {marketMultiplier}x
-                </SecondaryLabel>
-              )}
-            </div>
-          </ContentFlow>
-        );
-      },
-    },
-  ];
-
-export const sonicExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
-  [
-    ...exploreMarketColumns,
     {
       accessorKey: "appType",
       enableResizing: false,
@@ -700,6 +773,43 @@ export const sonicExploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement
                   document.body
                 )}
             </Tooltip>
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "poolType",
+      enableResizing: false,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const poolType = row.original.marketMetadata?.boyco?.assetType;
+        const marketMultiplier = row.original.marketMetadata?.boyco?.multiplier;
+
+        let formattedPoolType = "-";
+
+        if (poolType === MULTIPLIER_ASSET_TYPE.MAJOR_ONLY) {
+          formattedPoolType = "Major";
+        } else if (poolType === MULTIPLIER_ASSET_TYPE.THIRD_PARTY_ONLY) {
+          formattedPoolType = "Third-Party";
+        } else if (poolType === MULTIPLIER_ASSET_TYPE.HYBRID) {
+          formattedPoolType = "Hybrid";
+        }
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            <div className={cn("flex flex-row items-center gap-2")}>
+              <span className="leading-5">{formattedPoolType}</span>
+
+              {marketMultiplier && (
+                <SecondaryLabel className="h-full rounded-full border border-success px-2 py-1 text-xs font-medium text-success">
+                  {marketMultiplier}x
+                </SecondaryLabel>
+              )}
+            </div>
           </ContentFlow>
         );
       },
