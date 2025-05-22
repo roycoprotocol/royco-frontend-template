@@ -225,6 +225,7 @@ export const IncentiveTokenDetails = React.forwardRef<
                   {formatNumber(Math.abs(token_data.yieldRate), {
                     type: "percent",
                   })}
+                  {" APY"}
                 </span>
               </div>
             ) : (

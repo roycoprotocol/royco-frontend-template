@@ -42,7 +42,7 @@ export const MarketDetails = React.forwardRef<
         <div className="flex flex-row justify-between">
           {enrichedMarket.marketType === 0 ? (
             <div>
-              <TertiaryLabel className="text-sm">Fillable</TertiaryLabel>
+              <TertiaryLabel className="text-sm">Capacity</TertiaryLabel>
               <PrimaryLabel className="mt-1 text-2xl font-500 ">
                 <NumberFlow
                   value={enrichedMarket?.fillableUsd ?? 0}
