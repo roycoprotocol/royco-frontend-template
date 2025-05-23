@@ -18,10 +18,9 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  boycoExploreMarketColumns,
   ExploreMarketColumnDataElement,
+  exploreMarketColumnNames,
   exploreMarketColumns,
-  sonicExploreMarketColumns,
 } from "./columns/explore-market-columns";
 import { AlertIndicator } from "@/components/common/alert-indicator";
 import { useAtomValue } from "jotai";
@@ -39,13 +38,25 @@ export const ExploreMarketTable = React.forwardRef<
   const { hiddenTableColumns } = useExploreMarket();
 
   const columns = useMemo(() => {
+    let type = "default";
     if (tag === "boyco") {
-      return boycoExploreMarketColumns;
+      type = "boyco";
     }
     if (tag === "sonic") {
-      return sonicExploreMarketColumns;
+      type = "sonic";
     }
-    return exploreMarketColumns;
+    if (tag === "plume") {
+      type = "plume";
+    }
+    const columnNames = Object.entries(exploreMarketColumnNames)
+      .filter(([key, value]) => value.type.includes(type))
+      .map(([key, value]) => {
+        return key;
+      });
+
+    return exploreMarketColumns.filter((column) =>
+      columnNames.includes((column as any).accessorKey)
+    );
   }, [tag]);
 
   const table = useReactTable({
