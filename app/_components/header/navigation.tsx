@@ -47,7 +47,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
       <div
         ref={ref}
         className={cn(
-          "sticky left-0 right-0 top-0 z-50  border-b border-divider bg-_surface_/80",
+          "sticky left-0 right-0 top-0 z-50  border-b border-divider bg-_surface_",
           className
         )}
         {...props}

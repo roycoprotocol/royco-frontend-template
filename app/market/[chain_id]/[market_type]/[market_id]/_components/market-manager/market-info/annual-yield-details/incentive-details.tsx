@@ -208,9 +208,9 @@ export const IncentiveTokenDetails = React.forwardRef<
                           enrichedMarket?.marketType === 1 ||
                           enrichedMarket?.chainId === SONIC_CHAIN_ID
                         ) {
-                          return "Variable Incentive Rate, based on # of participants";
+                          return "Dilutable rate";
                         }
-                        return "Fixed Incentive Rate";
+                        return "Non-dilutable rate";
                       })()}
                     </TooltipContent>,
                     document.body
@@ -289,7 +289,7 @@ export const IncentiveTokenDetails = React.forwardRef<
         </TertiaryLabel>
       )}
 
-      {category === "base" && token_data.type !== "point" && (
+      {/* {category === "base" && token_data.type !== "point" && (
         <div className="mt-1 flex flex-row items-center gap-1">
           <TertiaryLabel className={cn("text-right", className)}>
             {formatNumber(token_data.fdv, {
@@ -298,7 +298,7 @@ export const IncentiveTokenDetails = React.forwardRef<
             FDV
           </TertiaryLabel>
         </div>
-      )}
+      )} */}
     </div>
   );
 });
@@ -378,7 +378,9 @@ export const IncentiveDetails = React.forwardRef<
                         />
 
                         <TertiaryLabel className="ml-5">
-                          Negotiable Rate
+                          {token_data.type === "point"
+                            ? "Est. Points"
+                            : "Token Incentives"}
                         </TertiaryLabel>
 
                         {token_data.startTimestamp &&
@@ -428,7 +430,7 @@ export const IncentiveDetails = React.forwardRef<
                           />
 
                           <TertiaryLabel className="ml-5">
-                            Underlying Rate
+                            Real Yields
                           </TertiaryLabel>
                         </InfoCard.Row.Key>
 

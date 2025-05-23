@@ -59,6 +59,19 @@ export const AnnualYieldDetails = React.forwardRef<
     return;
   }, [enrichedMarket]);
 
+  const getLockupTime = (lockupTime: string) => {
+    const seconds = Number(lockupTime);
+    if (seconds < 3600) {
+      return `${seconds} ${seconds === 1 ? "Second" : "Seconds"}`;
+    }
+    const hours = Math.ceil(seconds / 3600);
+    if (seconds < 86400) {
+      return `${hours} ${hours === 1 ? "Hour" : "Hours"}`;
+    }
+    const days = Math.ceil(seconds / 86400);
+    return `${days} ${days === 1 ? "Day" : "Days"}`;
+  };
+
   return (
     <div
       ref={ref}
@@ -124,7 +137,7 @@ export const AnnualYieldDetails = React.forwardRef<
              */}
             {enrichedMarket?.rewardStyle === 2 ? (
               <span className="text-p flex items-center gap-1 text-dodger_blue">
-                Forfeitable
+                Lockup
                 <LogOutIcon className="h-4 w-4" />
               </span>
             ) : (
@@ -134,18 +147,7 @@ export const AnnualYieldDetails = React.forwardRef<
           <PrimaryLabel className="mt-1 text-2xl font-medium">
             {enrichedMarket?.marketType === 0 &&
             enrichedMarket?.lockupTime !== "0"
-              ? (() => {
-                  const seconds = Number(enrichedMarket?.lockupTime);
-                  if (seconds < 3600) {
-                    return `${seconds} ${seconds === 1 ? "Second" : "Seconds"}`;
-                  }
-                  const hours = Math.ceil(seconds / 3600);
-                  if (seconds < 86400) {
-                    return `${hours} ${hours === 1 ? "Hour" : "Hours"}`;
-                  }
-                  const days = Math.ceil(seconds / 86400);
-                  return `${days} ${days === 1 ? "Day" : "Days"}`;
-                })()
+              ? getLockupTime(enrichedMarket?.lockupTime)
               : "None"}
           </PrimaryLabel>
         </div>
@@ -223,11 +225,11 @@ export const AnnualYieldDetails = React.forwardRef<
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
-              <span className="font-semibold">Forfeitable:</span>{" "}
+              <span className="font-semibold">Forfeit to Exit Early:</span>{" "}
               <span>
-                Depositors may exit at anytime, however withdrawing before the
-                end of the forfeitable period will forfeit all incentives earned
-                to date.
+                Withdrawing funds before{" "}
+                {getLockupTime(enrichedMarket?.lockupTime).toLowerCase()} will
+                result in forfeiture of all rewards earned during that period.
               </span>
             </span>
           </SecondaryLabel>
