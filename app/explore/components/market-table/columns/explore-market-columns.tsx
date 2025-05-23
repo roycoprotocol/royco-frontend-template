@@ -32,7 +32,7 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SONIC_APP_TYPE } from "royco/sonic";
 import { Button } from "@/components/ui/button";
-import { EnrichedMarket } from "royco/api";
+import { EnrichedMarket, GenericIncentive } from "royco/api";
 import NumberFlow from "@number-flow/react";
 import { ContentFlow } from "@/components/animations/content-flow";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
@@ -45,22 +45,25 @@ export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
   totalYield: {
     label: "Total APY",
-    enableSorting: true,
     sortId: "yieldRate",
     type: ["default", "boyco", "sonic", "plume"],
   },
   realYield: {
     label: "Real Yields",
+    sortId: "realYieldRate",
     icon: <CirclePercentIcon className="h-3 w-3" />,
     type: ["default", "boyco", "sonic"],
   },
   tokenYield: {
     label: "Token Incentives",
+    sortId: "tokenYieldRate",
     icon: <CoinsIcon className="h-3 w-3" />,
     type: ["default", "boyco", "sonic", "plume"],
   },
   pointsYield: {
     label: "Est. Points",
+
+    sortId: "pointYieldRate",
     icon: <SparklesIcon className="h-3 w-3" />,
     type: ["default", "boyco", "sonic"],
   },
@@ -228,27 +231,11 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
-        const tokenIncentives = (row.original.activeIncentives || []).filter(
-          (item) => item.type === "token"
-        );
-
-        const pointIncentives = (row.original.activeIncentives || []).filter(
-          (item) => item.type === "point"
-        );
-
-        const realIncentives = [
-          ...(row.original.underlyingIncentives || []),
-          ...(row.original.nativeIncentives || []),
-        ];
-
         const incentives = [
-          ...(row.original.activeIncentives || []),
-          ...realIncentives,
+          ...row.original.realIncentives,
+          ...row.original.tokenIncentives,
+          ...row.original.pointIncentives,
         ];
-        const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + (curr?.yieldRate || 0),
-          0
-        );
 
         return (
           <ContentFlow customKey={row.original.id}>
@@ -260,7 +247,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       {formatNumber(
-                        totalYieldRate,
+                        row.original.yieldRate,
                         {
                           type: "percent",
                         },
@@ -288,7 +275,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-col gap-4">
-                        {realIncentives.length > 0 && (
+                        {row.original.realIncentives.length > 0 && (
                           <>
                             <SecondaryLabel className="text-xs font-medium text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
@@ -297,14 +284,14 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={realIncentives}
+                              incentives={incentives}
                               className="divide-y-0"
                               showFdv={false}
                             />
                           </>
                         )}
 
-                        {tokenIncentives.length > 0 && (
+                        {row.original.tokenIncentives.length > 0 && (
                           <>
                             <SecondaryLabel className="text-xs font-medium text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
@@ -313,14 +300,14 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={tokenIncentives}
+                              incentives={row.original.tokenIncentives}
                               className="divide-y-0"
                               showFdv={false}
                             />
                           </>
                         )}
 
-                        {pointIncentives.length > 0 && (
+                        {row.original.pointIncentives.length > 0 && (
                           <>
                             <SecondaryLabel className="text-xs font-medium text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
@@ -329,7 +316,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={pointIncentives}
+                              incentives={row.original.pointIncentives}
                               className="divide-y-0"
                               showFdv={false}
                             />
@@ -350,20 +337,14 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "realYield",
       enableResizing: false,
-      enableSorting: false,
+      enableSorting: true,
+
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
-        const incentives = [
-          ...(row.original.underlyingIncentives || []),
-          ...(row.original.nativeIncentives || []),
-        ];
-        const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + (curr?.yieldRate || 0),
-          0
-        );
+        const incentives = row.original.realIncentives;
 
         return (
           <ContentFlow customKey={row.original.id}>
@@ -375,7 +356,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       {formatNumber(
-                        totalYieldRate,
+                        row.original.realYieldRate,
                         {
                           type: "percent",
                         },
@@ -431,19 +412,13 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "tokenYield",
       enableResizing: false,
-      enableSorting: false,
+      enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
       meta: "min-w-44 w-52",
       cell: ({ row }) => {
-        const incentives = (row.original.activeIncentives || []).filter(
-          (item) => item.type === "token"
-        );
-        const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + (curr?.yieldRate || 0),
-          0
-        );
+        const incentives = row.original.tokenIncentives;
 
         return (
           <ContentFlow customKey={row.original.id}>
@@ -456,7 +431,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       {"+ "}
                       {formatNumber(
-                        totalYieldRate,
+                        row.original.tokenYieldRate,
                         {
                           type: "percent",
                         },
@@ -512,19 +487,13 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "pointsYield",
       enableResizing: false,
-      enableSorting: false,
+      enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
       meta: "min-w-40 w-52",
       cell: ({ row }) => {
-        const incentives = (row.original.activeIncentives || []).filter(
-          (item) => item.type === "point"
-        );
-        const totalYieldRate = incentives.reduce(
-          (acc, curr) => acc + (curr?.yieldRate || 0),
-          0
-        );
+        const incentives = row.original.pointIncentives;
 
         return (
           <ContentFlow customKey={row.original.id}>
@@ -537,7 +506,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       {"+ "}
                       {formatNumber(
-                        totalYieldRate,
+                        row.original.pointYieldRate,
                         {
                           type: "percent",
                         },
