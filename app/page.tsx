@@ -16,7 +16,7 @@ const Page = () => {
         {/**
          * Background
          */}
-        <div className="fixed left-0 right-0 top-0">
+        <div className="absolute -top-16 left-0 right-0">
           <img
             src="/images/explore/explore-bg.png"
             alt="explore-bg"
@@ -46,10 +46,6 @@ const Page = () => {
             <MarketTable />
           </div>
         </MaxWidthProvider>
-
-        <RoycoRoyalty
-          open={process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" ? false : true}
-        />
 
         {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
       </div>

@@ -24,15 +24,7 @@ import { tagAtom } from "@/store/protector/protector";
 
 const FILTER_ID = "chainId";
 
-const exploreChains = [
-  EthereumMainnet,
-  EthereumSepolia,
-  ArbitrumOne,
-  Base,
-  Hyperevm,
-  Plume,
-  Sonic,
-];
+const exploreChains = [EthereumMainnet, EthereumSepolia, Base, Plume, Sonic];
 
 export const ChainFilter = React.forwardRef<
   HTMLDivElement,

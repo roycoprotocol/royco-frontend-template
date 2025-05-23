@@ -132,7 +132,7 @@ export function BoringVaultActionProvider({
       if (boringVault.account.unlockTime > Date.now()) {
         toast.custom(
           <ErrorAlert
-            message={`User shares are locked. Please wait until ${formatDate(boringVault.account.unlockTime, "MMM dd, yyyy hh:mm aa")} to withdraw.`}
+            message={`Withdrawals cannot be queued until 24 hours after deposit. Please wait until ${formatDate(boringVault.account.unlockTime, "MMM dd, yyyy hh:mm aa")} to queue your withdrawal.`}
           />
         );
         return;

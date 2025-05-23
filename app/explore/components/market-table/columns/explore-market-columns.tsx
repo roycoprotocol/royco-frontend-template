@@ -648,9 +648,6 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
           );
         }
 
-        const lockupType =
-          row.original.rewardStyle !== 2 ? "Hard Lock" : "Soft Lock";
-
         if (!row.original.lockupTime) {
           return (
             <ContentFlow customKey={`${row.original.id}`}>
@@ -658,6 +655,10 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
             </ContentFlow>
           );
         }
+
+        const isLocked = row.original.rewardStyle !== 2;
+
+        const lockupType = isLocked ? "Hard Lock" : "Forfeit to Exit";
 
         let formattedValue = "-";
         const seconds = parseInt(row.original.lockupTime);
@@ -669,10 +670,10 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
         }
 
         let tooltipContent = "";
-        if (lockupType === "Hard Lock") {
+        if (isLocked) {
           tooltipContent = `You may not withdraw your funds for ${formattedValue} after depositing.`;
         } else {
-          tooltipContent = `If you withdraw before ${formattedValue}, you'll forfeit the rewards you earned during that period.`;
+          tooltipContent = `Withdrawing funds before ${formattedValue} will result in forfeiture of all rewards earned during that period.`;
         }
 
         return (
@@ -681,7 +682,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
               <TooltipTrigger
                 className={cn("flex cursor-pointer items-center")}
               >
-                {formattedValue + " " + lockupType}
+                {formattedValue + ", " + lockupType}
               </TooltipTrigger>
 
               {typeof window !== "undefined" &&

@@ -54,18 +54,14 @@ export const APMarketActionForm = React.forwardRef<
           </div>
         )}
 
-      {!showEnsoWidget && (
-        <>
-          {/**
-           * Input Amount
-           */}
-          <div className="mt-3">
-            <SlideUpWrapper delay={0.1}>
-              <InputAmountWrapper marketActionForm={marketActionForm} />
-            </SlideUpWrapper>
-          </div>
-        </>
-      )}
+      {/**
+       * Input Amount
+       */}
+      <div className="mt-3">
+        <SlideUpWrapper delay={0.1}>
+          <InputAmountWrapper marketActionForm={marketActionForm} />
+        </SlideUpWrapper>
+      </div>
     </div>
   );
 });

@@ -93,11 +93,11 @@ export const Rewards = React.forwardRef<
                     <PrimaryLabel className="text-base font-normal text-_primary_">
                       {reward.label || reward.name}
                     </PrimaryLabel>
-                    <SecondaryLabel className="mt-1 text-xs font-normal text-_secondary_">
+                    {/* <SecondaryLabel className="mt-1 text-xs font-normal text-_secondary_">
                       {reward.unlockTimestamp
                         ? `Until ${formatDate(Number(reward.unlockTimestamp) * 1000, "MMM d")}`
                         : "N/A"}
-                    </SecondaryLabel>
+                    </SecondaryLabel> */}
                   </div>
                 </div>
 

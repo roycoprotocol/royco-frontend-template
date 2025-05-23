@@ -12,7 +12,7 @@ export const VaultDetailsOptionMap = {
   },
   [TypeVaultDetailsOption.Positions]: {
     value: TypeVaultDetailsOption.Positions,
-    label: "Positions",
+    label: "Your Position",
   },
 };
 

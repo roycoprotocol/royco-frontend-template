@@ -13,11 +13,13 @@ import { LockIcon } from "lucide-react";
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { tagAtom } from "@/store/protector/protector";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const tag = useAtomValue(tagAtom);
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const [showDescription, setShowDescription] = useState(false);
@@ -101,24 +103,26 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Token Estimate
          */}
-        <div className="mt-2">
-          <TokenEstimator
-            defaultTokenId={pointTokenIds}
-            marketCategory={
-              enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
-                ? "sonic"
-                : undefined
-            }
-          >
-            <Button
-              variant="link"
-              size="sm"
-              className="w-fit p-0 font-medium text-black underline outline-none"
+        {tag !== "plume" && (
+          <div className="mt-2">
+            <TokenEstimator
+              defaultTokenId={pointTokenIds}
+              marketCategory={
+                enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
+                  ? "sonic"
+                  : undefined
+              }
             >
-              APY Calculator
-            </Button>
-          </TokenEstimator>
-        </div>
+              <Button
+                variant="link"
+                size="sm"
+                className="w-fit p-0 font-medium text-black underline outline-none"
+              >
+                APY Calculator
+              </Button>
+            </TokenEstimator>
+          </div>
+        )}
 
         {/**
          * External Incentive Details
