@@ -5,7 +5,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@/components/ui/tooltip";
-import { InfoSquareIcon } from "@/app/vault/assets/info-square";
+import { InfoSquareIcon } from "@/assets/icons/info-square";
 
 interface InfoTipProps {
   triggerClassName?: string;

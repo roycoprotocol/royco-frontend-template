@@ -17,7 +17,6 @@ import {
 } from "@/store/vault/vault-manager";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { GradientText } from "../../../common/gradient-text";
-import { InfoSquareIcon } from "../../../assets/info-square";
 import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { VaultPositionUnclaimedRewardToken } from "@/app/api/royco/data-contracts";

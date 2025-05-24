@@ -3,7 +3,7 @@
 import React from "react";
 
 import { cn } from "@/lib/utils";
-import { InfoSquareIcon } from "@/app/vault/assets/info-square";
+import { InfoSquareIcon } from "@/assets/icons/info-square";
 import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
 
 interface InfoCardProps {}
