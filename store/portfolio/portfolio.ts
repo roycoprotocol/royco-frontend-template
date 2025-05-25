@@ -88,8 +88,8 @@ export const loadablePortfolioPositionsAtom =
           ...body,
           sorting: [
             {
-              id: "unlockTimestamp",
-              desc: false,
+              id: "depositToken.tokenAmountUsd",
+              desc: true,
             },
             {
               id: "yieldRate",
