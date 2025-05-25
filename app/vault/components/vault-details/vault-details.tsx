@@ -10,7 +10,7 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
-import { UsdcCoinIcon } from "../../assets/usdc";
+import { UsdcCoinIcon } from "../../../../assets/icons/usdc";
 import { CustomProgress } from "../../common/custom-progress";
 
 export const VaultDetails = React.forwardRef<
