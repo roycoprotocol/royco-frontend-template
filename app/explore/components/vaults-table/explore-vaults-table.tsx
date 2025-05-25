@@ -113,7 +113,7 @@ export const ExploreVaultsTable = React.forwardRef<
       ...(propsData?.data || []),
       {
         id: "royco-btc",
-        type: "coming soon",
+        type: "comingSoon",
         name: "Royco BTC",
         depositTokens: [
           {

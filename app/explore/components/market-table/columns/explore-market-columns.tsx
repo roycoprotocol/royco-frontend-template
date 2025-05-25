@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { TokenDisplayer } from "@/components/common";
 import {
   Tooltip,
   TooltipContent,
@@ -40,6 +39,7 @@ import { CustomProgress } from "@/app/vault/common/custom-progress";
 import { useAtom } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
 import formatNumber from "@/utils/numbers";
+import { TokenDisplayer } from "@/app/_components/common/token-displayer";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
@@ -208,7 +208,8 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
               <TokenDisplayer
                 size={6}
                 tokens={[row.original.inputToken]}
-                symbols={false}
+                showSymbol={false}
+                showChain={true}
               />
 
               <div className="overflow-hidden truncate">
@@ -273,7 +274,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <TokenDisplayer
                       size={4}
                       tokens={incentives}
-                      symbols={false}
+                      showSymbol={false}
                     />
                   </div>
                 </HoverCardTrigger>
@@ -388,7 +389,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <TokenDisplayer
                       size={4}
                       tokens={incentives}
-                      symbols={false}
+                      showSymbol={false}
                     />
                   </div>
                 </HoverCardTrigger>
@@ -469,7 +470,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <TokenDisplayer
                       size={4}
                       tokens={incentives}
-                      symbols={false}
+                      showSymbol={false}
                     />
                   </div>
                 </HoverCardTrigger>
@@ -550,7 +551,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     <TokenDisplayer
                       size={4}
                       tokens={incentives}
-                      symbols={false}
+                      showSymbol={false}
                     />
                   </div>
                 </HoverCardTrigger>
