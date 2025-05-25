@@ -6,8 +6,10 @@ import { VaultsTable } from "./explore/components/vaults-table/vaults-table";
 import { HeroSection } from "./explore/components/hero-section/hero-section";
 import { MarketFilter } from "./explore/components/market-filter/market-filter";
 import { MarketTable } from "./explore/components/market-table/market-table";
-import { RoycoRoyalty } from "./explore/_components/royco-royalty";
 import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
+import { ExploreWrapper } from "./explore/provider/explore-wrapper";
+import { PrimaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
+import { SecondaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
 
 const Page = () => {
   return (
@@ -34,17 +36,42 @@ const Page = () => {
             <HeroSection />
           </div>
 
-          <div className="mt-6">
-            <VaultsTable />
-          </div>
+          <ExploreWrapper>
+            <div className="mt-6">
+              <div>
+                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                  NEW
+                </SecondaryLabel>
 
-          <div className="mt-16">
-            <MarketFilter />
-          </div>
+                <PrimaryLabel className="mt-2 text-2xl font-medium text-_primary_">
+                  Vaults
+                </PrimaryLabel>
 
-          <div className="mt-6">
-            <MarketTable />
-          </div>
+                <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
+                  High yield without the spreadsheets. Rebalanced automatically
+                  so your capital never sits idle.
+                </SecondaryLabel>
+              </div>
+
+              <div className="mt-6">
+                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                  FEATURED
+                </SecondaryLabel>
+
+                <div className="mt-6">
+                  <VaultsTable />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-16">
+              <MarketFilter />
+            </div>
+
+            <div className="mt-6">
+              <MarketTable />
+            </div>
+          </ExploreWrapper>
         </MaxWidthProvider>
 
         {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
