@@ -178,14 +178,7 @@ export const DepositActionForm = React.forwardRef<
 
       <SlideUpWrapper delay={0.2} className="mt-6">
         <PrimaryLabel className="text-sm font-normal">
-          <div className="flex items-center gap-1">
-            <span>Projected Yield</span>
-
-            <InfoTip>
-              Projected yield based on curator's assumptions of incentive value.
-              Returns are not guaranteed.
-            </InfoTip>
-          </div>
+          Projected Yield
         </PrimaryLabel>
 
         <div className="my-3 flex items-end gap-2">
@@ -205,32 +198,19 @@ export const DepositActionForm = React.forwardRef<
         <SecondaryLabel className="mt-1 text-xs font-medium text-_secondary_">
           <div className="flex items-center gap-1">
             <span className="flex gap-1">
-              Calculated on
+              Estimated from
               <span className="border-b-2 border-dotted border-current">
-                Base
+                Current
               </span>
-              Assumptions
+              APY
             </span>
 
-            {(() => {
-              if (data.incentiveTokens && data.incentiveTokens.length > 0) {
-                const incentives = data.incentiveTokens.filter((item) => {
-                  return item.yieldRate && item.yieldRate > 0;
-                });
-
-                if (incentives.length > 0) {
-                  return (
-                    <InfoTip
-                      contentClassName="w-[400px]"
-                      className="divide-y divide-_divider_"
-                    >
-                      <AnnualYieldAssumption incentives={incentives} />
-                    </InfoTip>
-                  );
-                }
-              }
-              return null;
-            })()}
+            <InfoTip contentClassName="max-w-[400px]">
+              APY is a snapshot based on current token prices and market
+              allocations. It excludes compounding, duration, and changes in
+              token value. Vault curators may adjust allocations at any time.
+              Actual rewards will vary.
+            </InfoTip>
           </div>
         </SecondaryLabel>
       </SlideUpWrapper>
