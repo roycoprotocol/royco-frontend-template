@@ -74,9 +74,9 @@ export const WithdrawAction = React.forwardRef<
         title: "Request Withdrawal",
         successTitle: "Withdrawal Requested",
         description: withdrawTransactions.description,
-        steps: withdrawTransactions.steps || [],
+        steps: withdrawTransactions.steps,
         metadata: withdrawTransactions.metadata,
-        warnings: withdrawTransactions.warnings || [],
+        warnings: withdrawTransactions.warnings,
         token: {
           data: token,
           amount: amount,

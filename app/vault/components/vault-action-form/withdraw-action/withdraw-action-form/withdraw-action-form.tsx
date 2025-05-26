@@ -89,7 +89,7 @@ export const WithdrawActionForm = React.forwardRef<
         {/**
          * Balance
          */}
-        <SecondaryLabel className="space-x-1 border-t border-_divider_ pt-1 text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="space-x-1 border-t border-_divider_ pt-1 text-xs font-medium tracking-wide text-_secondary_">
           <span>AVAILABLE BALANCE:</span>
 
           <span className="flex items-center justify-center">

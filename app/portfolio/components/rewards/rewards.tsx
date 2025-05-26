@@ -33,7 +33,7 @@ export const Rewards = React.forwardRef<
         <div className="mt-6 flex flex-col gap-2">
           {data?.incentiveTokens?.length > 0 && (
             <div>
-              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+              <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 TOKENS
               </SecondaryLabel>
 
@@ -44,7 +44,7 @@ export const Rewards = React.forwardRef<
           {(data?.unclaimedPointTokens?.length > 0 ||
             data?.claimedPointTokens?.length > 0) && (
             <div>
-              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+              <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 POINTS
               </SecondaryLabel>
 

@@ -77,9 +77,9 @@ export const Rewards = React.forwardRef<
         title: "Claim Incentive",
         successTitle: "Incentive Claimed",
         description: claimIncentiveTransactions.description,
-        steps: claimIncentiveTransactions.steps || [],
+        steps: claimIncentiveTransactions.steps,
         metadata: claimIncentiveTransactions.metadata,
-        warnings: claimIncentiveTransactions.warnings || [],
+        warnings: claimIncentiveTransactions.warnings,
         token: {
           data: incentive,
           amount: incentive.tokenAmount,
@@ -100,7 +100,7 @@ export const Rewards = React.forwardRef<
        * Estimated APY
        */}
       <div className="mt-4">
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           ESTIMATED APY
         </SecondaryLabel>
 
@@ -142,7 +142,7 @@ export const Rewards = React.forwardRef<
         <div>
           {tokenIncentives.data.length > 0 && (
             <div className="mt-4">
-              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+              <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 TOKENS
               </SecondaryLabel>
 
@@ -187,7 +187,7 @@ export const Rewards = React.forwardRef<
 
           {pointIncentives.data.length > 0 && (
             <div className="mt-4">
-              <SecondaryLabel className="text-xs font-medium text-_secondary_">
+              <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 POINTS
               </SecondaryLabel>
 
