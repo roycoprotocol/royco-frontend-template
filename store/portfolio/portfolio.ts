@@ -21,12 +21,17 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
       accountAddress: get(accountAddressAtom),
       lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       pageIndex: get(portfolioActivityPageIndexAtom),
-      // filters: [...get(baseChainFilter)],
+      filters: [...get(baseChainFilter)],
     },
   ],
   queryFn: async () => {
     const accountAddress = get(accountAddressAtom);
-    const baseChainFilters = get(baseChainFilter);
+    const baseChainFilters =
+      process.env.NEXT_PUBLIC_FRONTEND_TAG === "testnet" ||
+      process.env.NEXT_PUBLIC_FRONTEND_TAG === "dev" ||
+      process.env.NEXT_PUBLIC_FRONTEND_TAG === "internal"
+        ? []
+        : get(baseChainFilter);
 
     if (!accountAddress) {
       throw new Error("Wallet not connected");
@@ -37,7 +42,7 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
         id: "accountAddress",
         value: accountAddress,
       },
-      // ...baseChainFilters,
+      ...baseChainFilters,
     ];
 
     return api
@@ -65,12 +70,18 @@ export const loadablePortfolioPositionsAtom =
       "portfolio-positions",
       {
         address: get(accountAddressAtom),
-        // filters: [...get(baseChainFilter)],
+        filters: [...get(baseChainFilter)],
         lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
       const accountAddress = get(accountAddressAtom);
+      const baseChainFilters =
+        process.env.NEXT_PUBLIC_FRONTEND_TAG === "testnet" ||
+        process.env.NEXT_PUBLIC_FRONTEND_TAG === "dev" ||
+        process.env.NEXT_PUBLIC_FRONTEND_TAG === "internal"
+          ? []
+          : get(baseChainFilter);
 
       if (!accountAddress) {
         throw new Error("Wallet not connected");
@@ -78,14 +89,15 @@ export const loadablePortfolioPositionsAtom =
 
       const _params = params as any;
 
-      const body: any = {};
+      // const body: any = {};
       // if (_params.filters.length > 0) {
       //   body.filters = _params.filters;
       // }
 
       return api
         .positionControllerGetGlobalPositions(_params.address, {
-          ...body,
+          // ...body,
+          filters: [...baseChainFilters],
           sorting: [
             {
               id: "unlockTimestamp",
