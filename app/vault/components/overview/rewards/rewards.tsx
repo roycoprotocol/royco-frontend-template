@@ -33,7 +33,7 @@ export const Rewards = React.forwardRef<
        * Estimated APY
        */}
       <div className="mt-4">
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           ESTIMATED APY
         </SecondaryLabel>
 

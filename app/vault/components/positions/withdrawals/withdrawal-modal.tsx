@@ -59,9 +59,9 @@ export const WithdrawalModal = React.forwardRef<
         title: "Cancel Withdrawal",
         successTitle: "Withdrawal Cancelled",
         description: cancelWithdrawalTransactions.description,
-        steps: cancelWithdrawalTransactions.steps || [],
+        steps: cancelWithdrawalTransactions.steps,
         metadata: cancelWithdrawalTransactions.metadata,
-        warnings: cancelWithdrawalTransactions.warnings || [],
+        warnings: cancelWithdrawalTransactions.warnings,
         token: {
           data: withdrawal.token,
           amount: withdrawal.amountInBaseAsset,

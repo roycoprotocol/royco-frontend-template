@@ -100,8 +100,8 @@ export const loadablePortfolioPositionsAtom =
           filters: [...baseChainFilters],
           sorting: [
             {
-              id: "unlockTimestamp",
-              desc: false,
+              id: "depositToken.tokenAmountUsd",
+              desc: true,
             },
             {
               id: "yieldRate",

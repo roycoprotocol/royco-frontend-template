@@ -12,6 +12,7 @@ import formatNumber from "@/utils/numbers";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { UsdcCoinIcon } from "../../../../assets/icons/usdc";
 import { CustomProgress } from "../../common/custom-progress";
+import { formatLockupTime } from "@/utils/lockup-time";
 
 export const VaultDetails = React.forwardRef<
   HTMLDivElement,
@@ -32,7 +33,7 @@ export const VaultDetails = React.forwardRef<
         <UsdcCoinIcon className="h-24 w-24" />
 
         <div>
-          <PrimaryLabel className="font-shippori text-[40px] font-normal text-_primary_">
+          <PrimaryLabel className="font-shippori text-[40px] font-normal leading-relaxed -tracking-[1.6px] text-_primary_">
             {data.name}
           </PrimaryLabel>
 
@@ -58,7 +59,7 @@ export const VaultDetails = React.forwardRef<
                       height={16}
                       className="rounded-full"
                     />
-                    <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                    <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                       {manager.name.toUpperCase()}
                     </SecondaryLabel>
                   </div>
@@ -66,7 +67,7 @@ export const VaultDetails = React.forwardRef<
               })}
 
             {data.chainId && (
-              <div className="flex items-center gap-1 pl-3">
+              <div className="flex items-center gap-1 px-3">
                 <img
                   src={chain.image}
                   alt={chain.name}
@@ -74,8 +75,16 @@ export const VaultDetails = React.forwardRef<
                   height={16}
                   className="rounded-full"
                 />
-                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                   {chain.name.toUpperCase()}
+                </SecondaryLabel>
+              </div>
+            )}
+
+            {data.maxLockup && (
+              <div className="flex items-center gap-1 px-3">
+                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
+                  {`${formatLockupTime(data.maxLockup).toUpperCase()} LOCK, FORFEIT TO EXIT EARLY`}
                 </SecondaryLabel>
               </div>
             )}

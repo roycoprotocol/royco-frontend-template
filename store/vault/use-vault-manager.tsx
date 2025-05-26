@@ -51,7 +51,7 @@ export type TypeVaultTransaction = {
     value: string;
   }[];
   steps: any[];
-  warnings?: string[];
+  warnings?: React.ReactNode;
   token: {
     amount: number;
     data: any;

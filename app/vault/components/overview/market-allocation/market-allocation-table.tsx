@@ -40,7 +40,7 @@ export const MarketAllocationTable = React.forwardRef<
                 <TableHead
                   key={header.id}
                   className={cn(
-                    "px-0 py-3 pr-8 align-top text-xs font-medium text-_secondary_",
+                    "px-0 py-3 pr-8 align-top text-xs font-medium tracking-wide text-_secondary_",
                     (header.column.columnDef.meta as any).className
                   )}
                 >

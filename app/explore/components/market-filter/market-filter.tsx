@@ -76,7 +76,7 @@ export const MarketFilter = React.forwardRef<
       </div>
 
       <div className="relative mt-6 flex flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           {propsData?.count || 0} MARKETS
         </SecondaryLabel>
 

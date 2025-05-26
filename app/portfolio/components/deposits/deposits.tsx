@@ -47,7 +47,7 @@ export const Deposits = React.forwardRef<
        * Total Deposits
        */}
       <div className="mt-6">
-        <SecondaryLabel className="text-xs font-medium text-_secondary_">
+        <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           TOTAL DEPOSITS
         </SecondaryLabel>
 

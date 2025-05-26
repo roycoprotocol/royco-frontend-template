@@ -37,7 +37,7 @@ export const Balance = React.forwardRef<
       {/**t
        * Total Deposits
        */}
-      <SecondaryLabel className="text-xs font-medium text-_secondary_">
+      <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
         YOUR POSITION
       </SecondaryLabel>
 

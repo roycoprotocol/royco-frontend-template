@@ -281,7 +281,7 @@ export const TransactionModal = React.forwardRef<
               transactions?.metadata &&
               transactions?.metadata.length > 0 && (
                 <div className="mt-6">
-                  <SecondaryLabel className="text-xs font-medium">
+                  <SecondaryLabel className="text-xs font-medium tracking-wide">
                     DETAILS
                   </SecondaryLabel>
 
@@ -301,6 +301,14 @@ export const TransactionModal = React.forwardRef<
                 </div>
               )}
 
+            {transactions && transactions.warnings && (
+              <div className="mt-3 rounded-sm border border-_divider_ p-4">
+                <SecondaryLabel className="break-normal text-base">
+                  {transactions.warnings}
+                </SecondaryLabel>
+              </div>
+            )}
+
             {/**
              * Transaction Breakdown
              */}
@@ -308,7 +316,7 @@ export const TransactionModal = React.forwardRef<
               transactions.steps &&
               transactions.steps.length > 0 && (
                 <div className="mt-6">
-                  <SecondaryLabel className="text-xs font-medium">
+                  <SecondaryLabel className="text-xs font-medium tracking-wide">
                     TRANSACTION STEPS
                   </SecondaryLabel>
 
@@ -330,18 +338,6 @@ export const TransactionModal = React.forwardRef<
                       </div>
                     </div>
                   </DropdownAnimationWrapper>
-                </div>
-              )}
-
-            {transactions &&
-              transactions.warnings &&
-              transactions.warnings.length > 0 && (
-                <div className="mt-3 flex flex-col gap-2">
-                  {transactions.warnings.map(
-                    (warning: string, index: number) => (
-                      <InfoCard key={index}>{warning}</InfoCard>
-                    )
-                  )}
                 </div>
               )}
 
