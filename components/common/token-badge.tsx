@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import React, { Fragment } from "react";
 import { detect } from "detect-browser";
