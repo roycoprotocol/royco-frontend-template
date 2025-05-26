@@ -62,7 +62,6 @@ export const exploreMarketColumnNames = {
   },
   pointsYield: {
     label: "Est. Points",
-
     sortId: "pointYieldRate",
     icon: <SparklesIcon className="h-3 w-3" />,
     type: ["default", "boyco", "sonic"],
