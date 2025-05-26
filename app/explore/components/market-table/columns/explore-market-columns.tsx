@@ -40,6 +40,10 @@ import { useAtom } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
 import formatNumber from "@/utils/numbers";
 import { TokenDisplayer } from "@/app/_components/common/token-displayer";
+import {
+  formatLockupTime,
+  formatLockupTimeAbbreviated,
+} from "@/utils/lockup-time";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
@@ -277,7 +281,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                       <div className="flex flex-col gap-4">
                         {row.original.realIncentives.length > 0 && (
                           <>
-                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
                                 <div>REAL YIELDS</div>
                                 <div>EST. APY</div>
@@ -293,7 +297,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
 
                         {row.original.tokenIncentives.length > 0 && (
                           <>
-                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
                                 <div>TOKEN INCENTIVES</div>
                                 <div>EST. APY</div>
@@ -309,7 +313,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
 
                         {row.original.pointIncentives.length > 0 && (
                           <>
-                            <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                            <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                               <div className="flex w-full items-center justify-between gap-2">
                                 <div>EST. POINTS</div>
                                 <div>EST. APY</div>
@@ -385,7 +389,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     >
                       <div className="flex flex-col gap-4">
                         <>
-                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                          <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                             <div className="flex w-full items-center justify-between gap-2">
                               <div>REAL YIELDS</div>
                               <div>EST. APY</div>
@@ -460,7 +464,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     >
                       <div className="flex flex-col gap-4">
                         <>
-                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                          <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                             <div className="flex w-full items-center justify-between gap-2">
                               <div>TOKEN INCENTIVES</div>
                               <div>EST. APY</div>
@@ -535,7 +539,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                     >
                       <div className="flex flex-col gap-4">
                         <>
-                          <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                          <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                             <div className="flex w-full items-center justify-between gap-2">
                               <div>EST. POINTS</div>
                               <div>EST. APY</div>
@@ -627,22 +631,16 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
 
         const isLocked = row.original.rewardStyle !== 2;
 
+        const formattedValue = formatLockupTimeAbbreviated(
+          row.original.lockupTime
+        );
         const lockupType = isLocked ? "Hard Lock" : "Forfeit to Exit";
-
-        let formattedValue = "-";
-        const seconds = parseInt(row.original.lockupTime);
-        const hours = seconds / 3600;
-        if (hours < 24) {
-          formattedValue = `${Math.round(hours)}H`;
-        } else {
-          formattedValue = `${Math.round(hours / 24)}D`;
-        }
 
         let tooltipContent = "";
         if (isLocked) {
-          tooltipContent = `You may not withdraw your funds for ${formattedValue} after depositing.`;
+          tooltipContent = `You may not withdraw your funds for ${formatLockupTime(row.original.lockupTime).toLowerCase()} after depositing.`;
         } else {
-          tooltipContent = `Withdrawing funds before ${formattedValue} will result in forfeiture of all rewards earned during that period.`;
+          tooltipContent = `Withdrawing funds before ${formatLockupTime(row.original.lockupTime).toLowerCase()} will result in forfeiture of all rewards earned during that period.`;
         }
 
         return (

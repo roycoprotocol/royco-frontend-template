@@ -16,6 +16,7 @@ import {
 import { formatDate } from "date-fns";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { VaultTransactionType } from "@/store/vault/use-vault-manager";
+import { formatLockupTime } from "@/utils/lockup-time";
 
 export function BoringVaultActionProvider({
   children,
@@ -89,22 +90,28 @@ export function BoringVaultActionProvider({
         },
       });
 
+      const lockupTime = formatLockupTime(data.maxLockup);
+
       const metadata = [
         {
-          label: "Timing",
-          value: "Instant",
-        },
-        {
-          label: "Source",
-          value: address.slice(0, 6) + "..." + address.slice(-4),
+          label: "Lockup",
+          value: lockupTime + ", Forfeit to Exit Early",
         },
       ];
 
-      const warnings = [
-        "Incentives start after next rebalance. APY shown reflects projected returns that will apply after rebalancing.",
-        "Depositing funds resets a 24-hour lockup on your entire balance, delaying withdrawals until the period ends.",
-        "Withdrawing funds before 90 days will result in forfeiture of all rewards earned during that period.",
-      ];
+      const warnings = (
+        <div className="space-y-2">
+          <p>By selecting Confirm, I understand that:</p>
+          <ul className="list-disc space-y-2 pl-6">
+            <li>
+              Withdrawing funds before {lockupTime.toLowerCase()} will result in
+              forfeiture of all rewards earned during that period.
+            </li>
+            <li>Withdrawals can take up to 5 days to process.</li>
+            <li>Lockup will begin after the next rebalance.</li>
+          </ul>
+        </div>
+      );
 
       return { steps: transactions, metadata, warnings };
     } catch (error) {
@@ -468,7 +475,7 @@ type TypeVaultTransactionReturn = {
     label: string;
     value: string;
   }[];
-  warnings?: string[];
+  warnings?: React.ReactNode;
 };
 
 interface BoringVaultActions {

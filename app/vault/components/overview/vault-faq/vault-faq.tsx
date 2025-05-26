@@ -109,8 +109,9 @@ const vault_faq = [
       <div className="space-y-4">
         <p>
           To ensure long-term stability and fair distribution of rewards, the
-          Vault implements a 90-day minimum holding period. If you withdraw your
-          funds before completing the 90-day period:
+          Vault implements a 90-day minimum holding period, starting from the
+          vault's next rebalance. If you withdraw your funds before completing
+          the 90-day period:
         </p>
         <ul className="list-disc space-y-2 pl-6">
           <li>

@@ -73,9 +73,9 @@ export const DepositAction = React.forwardRef<
         title: "Deposit",
         successTitle: "Deposit Complete",
         description: depositTransactions.description,
-        steps: depositTransactions.steps || [],
+        steps: depositTransactions.steps,
         metadata: depositTransactions.metadata,
-        warnings: depositTransactions.warnings || [],
+        warnings: depositTransactions.warnings,
         token: {
           data: token,
           amount: amount,

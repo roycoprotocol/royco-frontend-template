@@ -39,7 +39,7 @@ const Page = () => {
           <ExploreWrapper>
             <div className="mt-6">
               <div>
-                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                   NEW
                 </SecondaryLabel>
 
@@ -54,7 +54,7 @@ const Page = () => {
               </div>
 
               <div className="mt-6">
-                <SecondaryLabel className="text-xs font-medium text-_secondary_">
+                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                   FEATURED
                 </SecondaryLabel>
 
