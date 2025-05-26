@@ -284,7 +284,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                               </div>
                             </SecondaryLabel>
                             <AnnualYieldAssumption
-                              incentives={incentives}
+                              incentives={row.original.realIncentives}
                               className="divide-y-0"
                               showFdv={false}
                             />

@@ -9,20 +9,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getSupportedToken } from "royco/constants";
 import { getSupportedChain } from "royco/utils";
-
-type TokenProps = {
-  id: string;
-  symbol: string;
-  image: string;
-  chainId?: number;
-  name?: string;
-  type?: "token" | "point" | "lp";
-};
+import { TokenQuote } from "royco/api";
 
 interface TokenDisplayerProps extends React.HTMLAttributes<HTMLDivElement> {
-  tokens: TokenProps[];
+  tokens: TokenQuote[];
   size?: 4 | 5 | 6;
   imageClassName?: string;
   symbolClassName?: string;
@@ -94,43 +85,33 @@ export const TokenDisplayer = React.forwardRef<
       >
         <div className="flex shrink-0 items-center">
           {tokens.map((item, index) => {
-            const token = getSupportedToken(item.id);
+            const token = item;
+            // const token = getSupportedToken(item.id);
             const chain = getSupportedChain(item.chainId);
 
             return (
               <Tooltip key={index}>
                 <TooltipTrigger className={cn(index !== 0 && "-ml-1")}>
-                  {token.type === "lp" ? (
+                  {token.subTokens ? (
                     <div className="relative">
                       <div className="flex items-center">
-                        <motion.img
-                          src={getSupportedToken(token.token0).image}
-                          alt={token.symbol}
-                          className={cn(
-                            "shrink-0 rounded-full bg-z2 transition-transform",
-                            getTokenImageSize(size),
-                            imageClassName
-                          )}
-                          variants={bounceAnimationVariants}
-                          initial="initial"
-                          whileHover={showBounce ? "hover" : "default"}
-                          transition={bounceAnimationTransition}
-                        />
-
-                        <motion.img
-                          src={getSupportedToken(token.token1).image}
-                          alt={token.symbol}
-                          className={cn(
-                            "shrink-0 rounded-full bg-z2 transition-transform",
-                            "-ml-2",
-                            getTokenImageSize(size),
-                            imageClassName
-                          )}
-                          variants={bounceAnimationVariants}
-                          initial="initial"
-                          whileHover={showBounce ? "hover" : "default"}
-                          transition={bounceAnimationTransition}
-                        />
+                        {token.subTokens.map((subToken, index) => (
+                          <motion.img
+                            key={`token:${token.id}:image:${index}`}
+                            src={subToken.image}
+                            alt={subToken.symbol}
+                            className={cn(
+                              "shrink-0 rounded-full bg-z2 transition-transform",
+                              index !== 0 && "-ml-2",
+                              getTokenImageSize(size),
+                              imageClassName
+                            )}
+                            variants={bounceAnimationVariants}
+                            initial="initial"
+                            whileHover={showBounce ? "hover" : "default"}
+                            transition={bounceAnimationTransition}
+                          />
+                        ))}
                       </div>
 
                       {showChain && chain && (
