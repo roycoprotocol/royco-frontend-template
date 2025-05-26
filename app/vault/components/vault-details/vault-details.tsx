@@ -13,6 +13,7 @@ import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { UsdcCoinIcon } from "../../../../assets/icons/usdc";
 import { CustomProgress } from "../../common/custom-progress";
 import { formatLockupTime } from "@/utils/lockup-time";
+import { LockupIcon } from "@/assets/icons/lockup";
 
 export const VaultDetails = React.forwardRef<
   HTMLDivElement,
@@ -83,6 +84,8 @@ export const VaultDetails = React.forwardRef<
 
             {data.maxLockup && (
               <div className="flex items-center gap-1 px-3">
+                <LockupIcon className="h-4 w-4" />
+
                 <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                   {`${formatLockupTime(data.maxLockup).toUpperCase()} LOCK, FORFEIT TO EXIT EARLY`}
                 </SecondaryLabel>

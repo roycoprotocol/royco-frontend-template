@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  switchChain,
-  writeContract,
-  waitForTransactionReceipt,
-} from "@wagmi/core";
-import { CheckCircleIcon, ChevronsUpDown } from "lucide-react";
-import { useAccount } from "wagmi";
-import toast from "react-hot-toast";
-import { useAtomValue } from "jotai";
-import { useEthersSigner } from "@/app/vault/hook/useEthersSigner";
-import { config } from "@/components/rainbow-modal/modal-config";
+import { motion } from "framer-motion";
 import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,12 +19,7 @@ import {
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
-import { ErrorAlert } from "@/components/composables";
-import { LoadingSpinner } from "@/components/composables";
-import { vaultMetadataAtom } from "@/store/vault/vault-manager";
-import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 import { SuccessIcon } from "@/assets/icons/success";
-import { InfoCard } from "@/app/_components/common/info-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const DropdownAnimationWrapper = React.forwardRef<
@@ -74,11 +58,7 @@ export const TransactionModal = React.forwardRef<
   TransactionModalProps
 >(({ className, onSuccess, onError, ...props }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showTransactionBreakdown, setShowTransactionBreakdown] =
-    useState(true);
-
   const { transactions, setTransactions } = useVaultManager();
-  const signer = useEthersSigner();
 
   useEffect(() => {
     setIsOpen(transactions !== null && transactions !== undefined);
@@ -87,11 +67,6 @@ export const TransactionModal = React.forwardRef<
       setIsOpen(false);
     }
   }, [transactions]);
-
-  const { address, chainId } = useAccount();
-  const { connectWalletModal } = useConnectWallet();
-
-  const { data } = useAtomValue(vaultMetadataAtom);
 
   const transaction = useMemo(() => {
     if (transactions === null || transactions === undefined) {
@@ -114,72 +89,6 @@ export const TransactionModal = React.forwardRef<
       document.body.style.pointerEvents = "auto";
       document.body.style.overflow = "auto";
     }, 100);
-  };
-
-  const handleAction = async () => {
-    if (!address || !signer) {
-      return;
-    }
-
-    if (!transaction || !transaction.data) {
-      toast.custom(<ErrorAlert message="Transaction data not available" />);
-      return;
-    }
-
-    try {
-      setTransactions({
-        ...transactions,
-        steps: transactions.steps.map((step: any) => {
-          if (step.type === transaction.type) {
-            return {
-              ...step,
-              txStatus: "loading",
-            };
-          }
-          return step;
-        }),
-      });
-
-      // @ts-ignore
-      const txHash = await writeContract(config, transaction.data);
-
-      // @ts-ignore
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: txHash,
-      });
-
-      setTransactions({
-        ...transactions,
-        steps: transactions.steps.map((step: any) => {
-          if (step.type === transaction.type) {
-            return {
-              ...step,
-              txStatus: "success",
-              txHash: receipt.transactionHash,
-            };
-          }
-          return step;
-        }),
-      });
-
-      onSuccess?.();
-    } catch (error: any) {
-      setTransactions({
-        ...transactions,
-        steps: transactions.steps.map((step: any) => {
-          if (step.type === transaction.type) {
-            return {
-              ...step,
-              txStatus: "error",
-            };
-          }
-          return step;
-        }),
-      });
-      toast.custom(<ErrorAlert message={"Transaction failed"} />);
-
-      onError?.();
-    }
   };
 
   const isTxLoading = useMemo(() => {
@@ -330,7 +239,12 @@ export const TransactionModal = React.forwardRef<
                               <TransactionRow
                                 key={key}
                                 transactionIndex={txIndex + 1}
+                                isSelected={
+                                  transaction?.type === txOptions.type
+                                }
                                 transaction={txOptions}
+                                onSuccess={onSuccess}
+                                onError={onError}
                               />
                             );
                           }
@@ -340,86 +254,6 @@ export const TransactionModal = React.forwardRef<
                   </DropdownAnimationWrapper>
                 </div>
               )}
-
-            {/**
-             * Transaction Action Button
-             */}
-            {!isTxSuccess && (
-              <div className="mt-3">
-                {(() => {
-                  if (!address) {
-                    return (
-                      <Button
-                        onClick={() => {
-                          try {
-                            connectWalletModal();
-                          } catch (error) {
-                            toast.custom(
-                              <ErrorAlert message="Error connecting wallet" />
-                            );
-                          }
-                        }}
-                        size="sm"
-                        className={cn("h-10 w-full rounded-sm")}
-                      >
-                        Connect Wallet
-                      </Button>
-                    );
-                  }
-
-                  if (chainId !== data.chainId) {
-                    return (
-                      <Button
-                        onClick={async () => {
-                          try {
-                            // @ts-ignore
-                            await switchChain(config, {
-                              chainId: data.chainId,
-                            });
-                          } catch (error) {
-                            toast.custom(
-                              <ErrorAlert message="Error switching chain" />
-                            );
-                            console.log("Failed:", error);
-                          }
-                        }}
-                        size="sm"
-                        className={cn("h-10 w-full rounded-sm")}
-                      >
-                        Switch Chain
-                      </Button>
-                    );
-                  }
-
-                  if (!isTxSuccess) {
-                    return (
-                      <Button
-                        onClick={handleAction}
-                        size="sm"
-                        className={cn("h-10 w-full rounded-sm")}
-                        disabled={isTxLoading}
-                      >
-                        {isTxLoading ? (
-                          <LoadingSpinner className="h-5 w-5" />
-                        ) : (
-                          "Confirm Transaction"
-                        )}
-                      </Button>
-                    );
-                  }
-                })()}
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClose}
-                  className="mt-2 h-10 w-full justify-center rounded-sm"
-                  disabled={isTxLoading}
-                >
-                  <div className="text-error">Cancel</div>
-                </Button>
-              </div>
-            )}
 
             {isTxSuccess && (
               <Button
