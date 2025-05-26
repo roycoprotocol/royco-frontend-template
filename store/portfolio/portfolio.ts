@@ -21,7 +21,7 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
       accountAddress: get(accountAddressAtom),
       lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       pageIndex: get(portfolioActivityPageIndexAtom),
-      filters: [...get(baseChainFilter)],
+      // filters: [...get(baseChainFilter)],
     },
   ],
   queryFn: async () => {
@@ -37,7 +37,7 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
         id: "accountAddress",
         value: accountAddress,
       },
-      ...baseChainFilters,
+      // ...baseChainFilters,
     ];
 
     return api
@@ -65,7 +65,7 @@ export const loadablePortfolioPositionsAtom =
       "portfolio-positions",
       {
         address: get(accountAddressAtom),
-        filters: [...get(baseChainFilter)],
+        // filters: [...get(baseChainFilter)],
         lastRefreshTimestamp: get(lastRefreshTimestampAtom),
       },
     ],
@@ -79,9 +79,9 @@ export const loadablePortfolioPositionsAtom =
       const _params = params as any;
 
       const body: any = {};
-      if (_params.filters.length > 0) {
-        body.filters = _params.filters;
-      }
+      // if (_params.filters.length > 0) {
+      //   body.filters = _params.filters;
+      // }
 
       return api
         .positionControllerGetGlobalPositions(_params.address, {
