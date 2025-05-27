@@ -6,7 +6,7 @@ import { EnrichedMarketDataType } from "royco/queries";
 import { TokenDisplayer } from "@/components/common";
 import formatNumber from "@/utils/numbers";
 import { SONIC_ROYCO_GEM_BOOST_ID } from "royco/sonic";
-import { EnrichedMarket, TokenQuote } from "@/app/api/royco/data-contracts";
+import { EnrichedMarket, TokenQuote } from "royco/api";
 
 const BreakdownTitle = React.forwardRef<
   HTMLDivElement,
