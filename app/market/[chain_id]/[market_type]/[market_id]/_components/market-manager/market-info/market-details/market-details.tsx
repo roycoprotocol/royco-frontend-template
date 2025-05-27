@@ -20,6 +20,7 @@ import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { useAtomValue } from "jotai";
 import NumberFlow from "@number-flow/react";
+import Markdown from "react-markdown";
 
 export const MarketDetails = React.forwardRef<
   HTMLDivElement,
