@@ -14,6 +14,9 @@ import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { tagAtom } from "@/store/protector/protector";
+import Markdown from "react-markdown";
+import Link from "next/link";
+import { MarkdownRenderer } from "@/app/_components/common/markdown-renderer";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -49,16 +52,10 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Market Description
          */}
-        <div className="mt-3 h-auto">
-          <pre
-            className={cn(
-              "whitespace-pre-wrap break-normal font-gt text-sm font-light text-black",
-              !showDescription && "line-clamp-2"
-            )}
-          >
-            {validator.unescape(enrichedMarket.description ?? "") ||
-              "No description available"}
-          </pre>
+        <div className="mt-3 h-auto font-gt text-sm font-light text-black">
+          <MarkdownRenderer>
+            {enrichedMarket.description ?? ""}
+          </MarkdownRenderer>
         </div>
 
         {/**

@@ -141,7 +141,9 @@ export const loadableExploreAssetFilterOptionsAtom =
     queryKey: [
       "explore-asset-filter-options",
       {
-        filters: get(marketFiltersAtom),
+        marketFilters: get(marketFiltersAtom),
+        baseFilters: get(baseFilter),
+        baseChainFilters: get(baseChainFilter),
       },
     ],
     queryFn: async () => {
@@ -155,6 +157,11 @@ export const loadableExploreAssetFilterOptionsAtom =
         const newFilter = marketFilters[i];
 
         if (Array.isArray(newFilter.value) && newFilter.value.length === 0) {
+          // skip
+        } else if (
+          newFilter.id === "incentiveTokenIds" ||
+          newFilter.id === "inputTokenId"
+        ) {
           // skip
         } else {
           filters.push(newFilter);

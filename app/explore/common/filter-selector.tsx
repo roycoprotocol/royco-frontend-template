@@ -121,7 +121,7 @@ export const FilterSelector = React.forwardRef<
 
               <hr className="my-0 border-_divider_" />
 
-              {staticData && (
+              {staticData && staticData.length > 0 && (
                 <>
                   <div className="flex flex-wrap gap-1 p-3">
                     {staticData?.map((item, index) => {

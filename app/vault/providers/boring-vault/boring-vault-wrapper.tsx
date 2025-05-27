@@ -28,6 +28,8 @@ import { vaultContractProviderMap } from "royco/vault";
 import BigNumber from "bignumber.js";
 import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
+import { loadableBoringPositionsAtom } from "@/store/vault/boring-positions";
+import { loadableEnrichedVaultAtom } from "@/store/vault/enriched-vault";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -217,6 +219,12 @@ export const BoringVaultWrapper = React.forwardRef<
     };
   };
 
+  const { data: boringPosition, isLoading: isLoadingBoringPosition } =
+    useAtomValue(loadableBoringPositionsAtom);
+
+  const { data: enrichedVault, isLoading: isLoadingEnrichedVault } =
+    useAtomValue(loadableEnrichedVaultAtom);
+
   const initializeBoringVault = async () => {
     if (!isBoringV1ContextReady || !vault || !data) {
       return;
@@ -229,6 +237,10 @@ export const BoringVaultWrapper = React.forwardRef<
 
     const token = (data as unknown as VaultInfoResponse)?.depositTokens?.[0];
     if (!token) {
+      return;
+    }
+
+    if (isLoadingBoringPosition || isLoadingEnrichedVault) {
       return;
     }
 
@@ -271,7 +283,13 @@ export const BoringVaultWrapper = React.forwardRef<
 
   useEffect(() => {
     initializeBoringVault();
-  }, [isBoringV1ContextReady, address, data]);
+  }, [
+    isBoringV1ContextReady,
+    address,
+    data,
+    isLoadingBoringPosition,
+    isLoadingEnrichedVault,
+  ]);
 
   useEffect(() => {
     if (reload) {

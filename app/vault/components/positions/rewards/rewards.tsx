@@ -99,7 +99,7 @@ export const Rewards = React.forwardRef<
       {/**
        * Estimated APY
        */}
-      <div className="mt-4">
+      <div className="mt-7">
         <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           ESTIMATED APY
         </SecondaryLabel>
@@ -141,7 +141,7 @@ export const Rewards = React.forwardRef<
       {tokenIncentives.data.length || pointIncentives.data.length ? (
         <div>
           {tokenIncentives.data.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-7">
               <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 TOKENS
               </SecondaryLabel>
@@ -186,7 +186,7 @@ export const Rewards = React.forwardRef<
           )}
 
           {pointIncentives.data.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-7">
               <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
                 POINTS
               </SecondaryLabel>
@@ -231,7 +231,7 @@ export const Rewards = React.forwardRef<
           )}
         </div>
       ) : (
-        <AlertIndicator className="mt-4 rounded-sm border border-_divider_ py-10">
+        <AlertIndicator className="mt-7 rounded-sm border border-_divider_ py-10">
           <span className="text-base">No reward distributions yet.</span>
         </AlertIndicator>
       )}
