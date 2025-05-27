@@ -48,7 +48,7 @@ export const Rewards = React.forwardRef<
         <SecondaryLabel className="mt-2 text-xs font-medium text-_secondary_">
           <div className="flex items-center gap-1">
             <span className="flex gap-1">
-              Estimated from
+              Based on
               <span className="border-b-2 border-dotted border-current">
                 Current
               </span>
@@ -56,10 +56,10 @@ export const Rewards = React.forwardRef<
             </span>
 
             <InfoTip contentClassName="max-w-[400px]">
-              APY is a snapshot based on current token prices and market
-              allocations. It excludes compounding, duration, and changes in
-              token value. Vault curators may adjust allocations at any time.
-              Actual rewards will vary.
+              Estimated APY reflects the Vault's current performance based on
+              token prices and market allocations. It excludes compounding,
+              duration, and future changes in token value. Vault curators
+              regularly rebalance and reallocate. Actual rewards may vary.
             </InfoTip>
           </div>
         </SecondaryLabel>

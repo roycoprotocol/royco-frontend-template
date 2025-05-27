@@ -103,6 +103,7 @@ export function BoringVaultActionProvider({
         <div className="space-y-2">
           <p>By selecting Confirm, I understand that:</p>
           <ul className="list-disc space-y-2 pl-6">
+            <li>Incentives will be paid out after lockup.</li>
             <li>
               Withdrawing funds before {lockupTime.toLowerCase()} will result in
               forfeiture of all rewards earned during that period.
