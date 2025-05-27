@@ -184,8 +184,8 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
                 </span>
                 <span className="font-semibold">Plume X Royco: </span>
                 <span className="text-center">
-                  Access incentives from Plume and our ecosystem dapps by
-                  helping seed liquidity and bootstrap TVL.{" "}
+                  Access exclusive token incentives from Plume and dapps to help
+                  bootstrap the new ecosystem.{" "}
                 </span>
               </span>
             </div>

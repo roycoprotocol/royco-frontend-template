@@ -37,3 +37,18 @@ export const formatLockupTimeAbbreviated = (lockup: string) => {
     return "-";
   }
 };
+
+export const formatIncentivePayout = (
+  rewardStyle: number,
+  lockupTime: string
+) => {
+  if (rewardStyle === 0) {
+    return "Upfront";
+  }
+
+  if (rewardStyle === 1) {
+    return "After Lockup";
+  }
+
+  return `${formatLockupTimeAbbreviated(lockupTime)}, Forfeit to Exit`;
+};
