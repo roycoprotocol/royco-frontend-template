@@ -87,17 +87,17 @@ export const MarketInfo = React.forwardRef<
           )}
 
         {/**
-         * Market Details
-         */}
-        <div className="mt-5">
-          <MarketDetails />
-        </div>
-
-        {/**
          * Annual Incentive Percent
          */}
         <div className="mt-5">
           <AnnualYieldDetails />
+        </div>
+
+        {/**
+         * Market Details
+         */}
+        <div className="mt-5">
+          <MarketDetails />
         </div>
 
         {/**
