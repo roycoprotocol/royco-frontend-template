@@ -22,7 +22,7 @@ const vault_faq = [
       "Vault gets rebalanced at least once a week. The goal of Vault is to keep assets safe and secure, while optimizing for incentives",
   },
   {
-    question: "Can the strategist rug my assets? What are the risks?",
+    question: "What are the key risks vectors?",
     answer: (
       <div className="space-y-4">
         <p>

@@ -27,7 +27,6 @@ import {
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
 import { Button } from "@/components/ui/button";
 import { InfoTip } from "@/app/_components/common/info-tip";
-import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 
 export const Rewards = React.forwardRef<
   HTMLDivElement,
@@ -150,35 +149,49 @@ export const Rewards = React.forwardRef<
                 <SlideUpWrapper key={index} delay={0.2 + index * 0.1}>
                   <div className="flex items-center justify-between border-b border-_divider_ py-4">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      <div className="flex items-center gap-3 ">
+                      <div className="flex items-center gap-3">
                         <TokenDisplayer
                           size={6}
                           tokens={[incentive]}
                           symbols={false}
                         />
 
-                        <span>
-                          {formatNumber(
-                            incentive.tokenAmount,
-                            { type: "number" },
-                            {
-                              average: false,
-                            }
-                          )}
-                        </span>
+                        {incentive.tokenAmount > 0 && (
+                          <span>
+                            {formatNumber(
+                              incentive.tokenAmount,
+                              { type: "number" },
+                              {
+                                average: false,
+                              }
+                            )}
+                          </span>
+                        )}
 
                         <span>{incentive.symbol}</span>
                       </div>
                     </PrimaryLabel>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-sm font-medium hover:bg-success/10 hover:text-primary"
-                      onClick={() => handleClaimIncentive(incentive)}
-                    >
-                      <GradientText>Claim</GradientText>
-                    </Button>
+                    {(incentive.rawMetadata as any)?.isClaimable === false ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-sm font-medium hover:bg-success/10 hover:text-primary"
+                      >
+                        <GradientText>
+                          {(incentive.rawMetadata as any).claimText}
+                        </GradientText>
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-sm font-medium hover:bg-success/10 hover:text-primary"
+                        onClick={() => handleClaimIncentive(incentive)}
+                      >
+                        <GradientText>Claim</GradientText>
+                      </Button>
+                    )}
                   </div>
                 </SlideUpWrapper>
               ))}

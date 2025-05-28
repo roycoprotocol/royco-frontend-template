@@ -21,7 +21,6 @@ import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { useAtomValue } from "jotai";
 import NumberFlow from "@number-flow/react";
 import { formatIncentivePayout } from "@/utils/lockup-time";
-import Markdown from "react-markdown";
 
 export const MarketDetails = React.forwardRef<
   HTMLDivElement,
