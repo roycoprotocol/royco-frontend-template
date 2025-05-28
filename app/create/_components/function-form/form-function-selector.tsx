@@ -49,6 +49,7 @@ export const FormFunctionSelector = React.forwardRef<
     );
 
     if (!matchingContractFunction) {
+      // @ts-ignore
       functionForm.setValue("contract_function", undefined);
     }
   };

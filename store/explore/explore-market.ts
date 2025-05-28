@@ -147,11 +147,13 @@ export const loadableExploreAssetFilterOptionsAtom =
       },
     ],
     queryFn: async () => {
+      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
+
+      const filters: Filter[] = [];
+
       const baseFilters = get(baseFilter);
       const baseChainFilters = get(baseChainFilter);
       const marketFilters = get(marketFiltersAtom);
-
-      let filters: Filter[] = [];
 
       for (let i = 0; i < marketFilters.length; i++) {
         const newFilter = marketFilters[i];
@@ -170,6 +172,25 @@ export const loadableExploreAssetFilterOptionsAtom =
 
       filters.push(...baseFilters);
       filters.push(...baseChainFilters);
+
+      /**
+       * @todo PLUME -- Remove this on Plume launch
+       * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
+       */
+      const hidePlumeMarketsFilter: Filter[] =
+        frontendTag !== "testnet" &&
+        frontendTag !== "plume" &&
+        frontendTag !== "dev" &&
+        frontendTag !== "internal"
+          ? [
+              {
+                id: "chainId",
+                value: Plume.id,
+                condition: "ne",
+              },
+            ]
+          : [];
+      filters.push(...hidePlumeMarketsFilter);
 
       return api
         .marketControllerGetMarketSettings({
@@ -197,38 +218,60 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
       },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
-      const _params = params as any;
+      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
 
-      const body: any = {};
+      let filters: Filter[] = [];
 
-      if (_params.searchKey.length > 0) {
-        body.searchKey = _params.searchKey;
-      }
-      if (_params.filters.length > 0) {
-        body.filters = _params.filters.filter((filter: Filter) => {
-          if (
-            filter.condition === "inArray" &&
-            Array.isArray(filter.value) &&
-            filter.value.length === 0
-          ) {
-            return false;
-          }
-          return true;
-        });
-      }
-      if (_params.sorting.length > 0) {
-        body.sorting = _params.sorting;
-      }
-      if (_params.customTokenData.length > 0) {
-        body.customTokenData = _params.customTokenData;
-      }
+      const baseFilters = get(baseFilter);
+      const baseChainFilters = get(baseChainFilter);
+      const marketFilters = get(marketFiltersAtom);
 
-      body.page = {
-        index: _params.page,
-        size: EXPLORE_PAGE_SIZE,
-      };
+      filters.push(...baseFilters);
+      filters.push(...baseChainFilters);
+      filters.push(...marketFilters);
 
-      const response = await api.marketControllerGetMarkets(body);
+      /**
+       * @todo PLUME -- Remove this on Plume launch
+       * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
+       */
+      const hidePlumeMarketsFilter: Filter[] =
+        frontendTag !== "testnet" &&
+        frontendTag !== "plume" &&
+        frontendTag !== "dev" &&
+        frontendTag !== "internal"
+          ? [
+              {
+                id: "chainId",
+                value: Plume.id,
+                condition: "ne",
+              },
+            ]
+          : [];
+      filters.push(...hidePlumeMarketsFilter);
+
+      // Remove empty filters
+      filters = filters.filter((filter) => {
+        if (Array.isArray(filter.value) && filter.value.length === 0) {
+          return false;
+        }
+        return true;
+      });
+
+      const customTokenData = get(customTokenDataAtom);
+      const sorting = get(marketSortAtom);
+      const page = get(marketPageAtom) ?? 1;
+      const searchKey = get(marketSearchAtom);
+
+      const response = await api.marketControllerGetMarkets({
+        filters,
+        sorting,
+        customTokenData,
+        page: {
+          index: page,
+          size: EXPLORE_PAGE_SIZE,
+        },
+        searchKey,
+      });
 
       return response.data;
     },

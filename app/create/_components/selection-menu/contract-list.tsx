@@ -9,19 +9,20 @@ import {
   useMarketBuilderManager,
   useSelectionMenu,
 } from "@/store";
-import { GripVerticalIcon } from "lucide-react";
-import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { ContractDropdown } from "./contract-dropdown";
-import { FunctionFormSchema, FunctionFormUtilities } from "../function-form";
+import { Droppable } from "@hello-pangea/dnd";
+import { FunctionFormSchema } from "../function-form";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MarketBuilderFormSchema } from "../market-builder-form";
 import { useFunctionForm } from "@/store/use-function-form";
 import { ContractRow } from "./contract-row";
 import { PinnedContracts } from "./pinned-contracts";
-import { useContract } from "royco/hooks";
-import { ContractMap } from "royco/contracts";
 import { AlertIndicator } from "../../../../components/common";
+import { isSolidityAddressValid } from "royco/utils";
+import { useQuery } from "@tanstack/react-query";
+import { ContractResponse } from "royco/api";
+import { api } from "@/app/api/royco";
+import { AddressMap } from "royco/constants";
 
 // @ts-ignore
 export function getStyle(style, snapshot) {
@@ -62,37 +63,74 @@ export const ContractList = React.forwardRef<
 
   const { setIsContractAddressUpdated } = useMarketBuilderManager();
 
-  const { data: tokenContract } = useContract({
-    chain_id: marketBuilderForm.watch("chain").id,
-    contract_address: marketBuilderForm.watch("asset").contract_address,
+  const { data: tokenContract } = useQuery<ContractResponse>({
+    queryKey: [
+      "token-contract",
+      {
+        chainId: marketBuilderForm.watch("chain").id,
+        contractAddress: marketBuilderForm.watch("asset").contract_address,
+      },
+    ],
+    queryFn: async () => {
+      const chainId = marketBuilderForm.watch("chain").id;
+      const contractAddress = marketBuilderForm.watch("asset").contract_address;
+
+      if (!isSolidityAddressValid("address", contractAddress)) {
+        throw new Error("Invalid contract address");
+      }
+
+      return api
+        .contractControllerGetContract(chainId, contractAddress)
+        .then((res) => res.data);
+    },
   });
 
-  // const { data: tokenContract } = useQuery({
-  //   queryKey: ["token-contract", marketBuilderForm.watch("chain").id, marketBuilderForm.watch("asset").contract_address],
-  //   queryFn: () =>
-  //     api.contractControllerGetContract({
-  //       chain_id: marketBuilderForm.watch("chain").id,
-  //       contract_address: marketBuilderForm.watch("asset").contract_address,
-  //     }),
-  // });
+  const { data: weirollContract } = useQuery<ContractResponse>({
+    queryKey: [
+      "weiroll-contract",
+      {
+        chainId: marketBuilderForm.watch("chain").id,
+        contractAddress: AddressMap.get(
+          `${marketBuilderForm.watch("chain").id}_WeirollWalletHelper`
+        ),
+      },
+    ],
+    queryFn: async () => {
+      const chainId = marketBuilderForm.watch("chain").id;
+      const contractAddress =
+        AddressMap.get(
+          `${marketBuilderForm.watch("chain").id}_WeirollWalletHelper`
+        ) ?? "";
 
-  const { data: weirollContract } = useContract({
-    chain_id: marketBuilderForm.watch("chain").id,
-    /**
-     * @TODO Strictly type this
-     */
-    // @ts-ignore
-    contract_address:
-      // @ts-ignore
-      ContractMap[
-        marketBuilderForm.watch("chain").id as keyof typeof ContractMap
-      ]["WeirollWalletHelper"].address.toLowerCase(),
+      if (!isSolidityAddressValid("address", contractAddress)) {
+        throw new Error("Invalid contract address");
+      }
+
+      return api
+        .contractControllerGetContract(chainId, contractAddress)
+        .then((res) => res.data);
+    },
   });
 
-  const { data: depositLockerContractOnEthMainnet } = useContract({
-    chain_id: 1,
-    contract_address: "0x63e8209caa13bba1838e3946a50d717071a28cfb",
-  });
+  const { data: depositLockerContractOnEthMainnet } =
+    useQuery<ContractResponse>({
+      queryKey: [
+        "weiroll-contract",
+        {
+          chainId: 1,
+          contractAddress: "0x63e8209caa13bba1838e3946a50d717071a28cfb",
+        },
+      ],
+      queryFn: async () => {
+        return api
+          .contractControllerGetContract(
+            1,
+            "0x63e8209caa13bba1838e3946a50d717071a28cfb"
+          )
+          .then((res) => res.data);
+      },
+      enabled: marketBuilderForm.watch("chain").id === 1,
+    });
 
   const pinContractList = useMemo(() => {
     const arr: any[] = [];
@@ -100,26 +138,32 @@ export const ContractList = React.forwardRef<
     if (
       !!weirollContract &&
       !arr.find(
-        (contract) => contract.address === (weirollContract as any)[0].address
+        (contract) =>
+          contract.contractAddress.trim().toLowerCase() ===
+          weirollContract.contractAddress.trim().toLowerCase()
       )
     ) {
       arr.push({
-        ...(weirollContract as any)[0],
-        id: (weirollContract as any)[0]?.contract_id,
+        ...weirollContract,
+        id: weirollContract.id,
         description:
           "The WeirollWalletHelper can access data on a user's offer and the market.",
+        address: weirollContract.contractAddress,
       });
     }
 
     if (
       !!tokenContract &&
       !arr.find(
-        (contract) => contract.address === (tokenContract as any)[0].address
+        (contract) =>
+          contract.contractAddress.trim().toLowerCase() ===
+          tokenContract.contractAddress.trim().toLowerCase()
       )
     ) {
       arr.push({
-        ...(tokenContract as any)[0],
-        id: (tokenContract as any)[0]?.contract_id,
+        ...tokenContract,
+        id: tokenContract.id,
+        address: tokenContract.contractAddress,
       });
     }
 
@@ -132,13 +176,16 @@ export const ContractList = React.forwardRef<
         !!depositLockerContractOnEthMainnet &&
         !arr.find(
           (contract) =>
-            contract.address ===
-            (depositLockerContractOnEthMainnet as any)[0].address
+            contract.address.trim().toLowerCase() ===
+            depositLockerContractOnEthMainnet.contractAddress
+              .trim()
+              .toLowerCase()
         )
       ) {
         arr.push({
-          ...(depositLockerContractOnEthMainnet as any)[0],
-          id: (depositLockerContractOnEthMainnet as any)[0]?.contract_id,
+          ...depositLockerContractOnEthMainnet,
+          id: depositLockerContractOnEthMainnet.id,
+          address: depositLockerContractOnEthMainnet.contractAddress,
         });
       }
     }
@@ -157,7 +204,7 @@ export const ContractList = React.forwardRef<
 
   const resetClickedKey = () => {
     if (clickedKey !== null) {
-      const [chain_id, address] = clickedKey.split("-");
+      const [chain_id, address] = clickedKey.split("_");
 
       setIsContractAddressUpdated(true);
 

@@ -23,7 +23,7 @@ import { isAbiValid, isSolidityAddressValid } from "royco/utils";
 
 import type { Abi as TypedAbi } from "abitype";
 import { ErrorAlert, LoadingSpinner } from "@/components/composables";
-import { isEqual } from "lodash";
+import { isEqual, isError } from "lodash";
 import { useContract } from "royco/hooks";
 import { FormContractAddress } from "./form-contract-address";
 import { FormContractAbi } from "./form-contract-abi";
@@ -47,6 +47,10 @@ import { MotionWrapper } from "../market-builder-flow/animations";
 import { useFunctionForm } from "@/store/use-function-form";
 import toast from "react-hot-toast";
 import { produce } from "immer";
+import { useQuery } from "@tanstack/react-query";
+import { defaultQueryOptions } from "@/utils/query";
+import { ContractResponse } from "royco/api";
+import { api } from "@/app/api/royco";
 
 export const FunctionForm = React.forwardRef<
   HTMLDivElement,
@@ -123,87 +127,133 @@ export const FunctionForm = React.forwardRef<
     setIsActionButtonClicked(true);
   };
 
+  // const {
+  //   isLoading: isLoadingContract,
+  //   data: dataContract,
+  //   isError: isErrorContract,
+  //   isRefetching: isRefetchingContract,
+  // } = useContract({
+  //   chain_id: marketBuilderForm.watch("chain").id,
+  //   contract_address: functionForm.watch("placeholder_contract_address") || "",
+  // });
+
   const {
     isLoading: isLoadingContract,
     data: dataContract,
     isError: isErrorContract,
     isRefetching: isRefetchingContract,
-  } = useContract({
-    chain_id: marketBuilderForm.watch("chain").id,
-    contract_address: functionForm.watch("placeholder_contract_address") || "",
+  } = useQuery<ContractResponse>({
+    queryKey: [
+      "contract",
+      {
+        chainId: marketBuilderForm.watch("chain").id,
+        contractAddress:
+          functionForm.watch("placeholder_contract_address") || "",
+      },
+    ],
+    queryFn: async () => {
+      const chainId = marketBuilderForm.watch("chain").id;
+      const contractAddress =
+        functionForm.watch("placeholder_contract_address") || "";
+
+      if (!isSolidityAddressValid("address", contractAddress)) {
+        throw new Error("Invalid contract address");
+      }
+
+      return api
+        .contractControllerGetContract(chainId, contractAddress)
+        .then((res) => res.data);
+    },
+    enabled: Boolean(
+      marketBuilderForm.watch("chain").id &&
+        functionForm.watch("placeholder_contract_address")
+    ),
   });
 
   const updateContractAbi = () => {
-    if (
-      !!dataContract &&
-      !(dataContract instanceof Error) &&
-      dataContract.length > 0
-    ) {
-      if (dataContract.length === 1 && dataContract[0].abi === null) {
-        // setIsContractAbiUpdated(true);
+    if (!isErrorContract) {
+      try {
+        // console.log("chainId", marketBuilderForm.watch("chain").id);
+        // console.log(
+        //   "contractAddress",
+        //   functionForm.watch("placeholder_contract_address")
+        // );
+        // console.log("dataContract", dataContract);
+
+        if (!dataContract) {
+          throw new Error("Contract not found");
+        }
+
+        const abi = dataContract?.implementation
+          ? dataContract.implementation.abi
+          : dataContract.abi;
+
+        if (!abi) {
+          throw new Error("Contract ABI not found");
+        }
+
+        if (
+          !isEqual(abi, JSON.parse(functionForm.watch("contract_abi") || "[]"))
+        ) {
+          setIsContractAbiUpdated(true);
+
+          setTimeout(() => {
+            functionForm.setValue("contract_abi", JSON.stringify(abi));
+          }, 200);
+        }
+      } catch (error) {
+        // console.log("Error updating contract ABI", error);
 
         setTimeout(() => {
           functionForm.setValue("contract_abi", "");
         }, 200);
-      } else if (
-        dataContract.length === 1 &&
-        isAbiValid(JSON.stringify(dataContract[0].abi)) &&
-        !isEqual(
-          dataContract[0].abi,
-          JSON.parse(
-            isAbiValid(functionForm.watch("contract_abi"))
-              ? functionForm.watch("contract_abi")
-              : "[]"
-          )
-        )
-
-        // &&
-        // (functionForm.watch("contract_abi") === undefined ||
-        //   isAbiValid(functionForm.watch("contract_abi"))) &&
-        // !isEqual(
-        //   dataContract[0].abi,
-        //   JSON.parse(functionForm.watch("contract_abi") || "[]")
-        // )
-      ) {
-        setIsContractAbiUpdated(true);
-
-        setTimeout(() => {
-          functionForm.setValue(
-            "contract_abi",
-            JSON.stringify(dataContract[0].abi)
-          );
-        }, 200);
-      } else if (
-        dataContract.length === 2 &&
-        !isEqual(
-          // @ts-ignore
-          [...dataContract[0].abi, ...dataContract[1].abi],
-          JSON.parse(functionForm.watch("contract_abi") || "[]")
-        )
-
-        // &&
-        // (functionForm.watch("contract_abi") === undefined ||
-        //   isAbiValid(functionForm.watch("contract_abi"))) &&
-        // !isEqual(
-        //   /**
-        //    * @TODO Strictly type this
-        //    */
-        //   // @ts-ignore
-        //   [...dataContract[0].abi, ...dataContract[1].abi],
-        //   JSON.parse(functionForm.watch("contract_abi") || "[]")
-        // )
-      ) {
-        // @ts-ignore
-        const combined_abi = [...dataContract[0].abi, ...dataContract[1].abi];
-
-        if (!!combined_abi) {
-          setIsContractAbiUpdated(true);
-
-          setTimeout(() => {
-            functionForm.setValue("contract_abi", JSON.stringify(combined_abi));
-          }, 200);
-        }
       }
+
+      // if (dataContract.length === 1 && dataContract[0].abi === null) {
+      //   // setIsContractAbiUpdated(true);
+
+      //   setTimeout(() => {
+      //     functionForm.setValue("contract_abi", "");
+      //   }, 200);
+      // } else if (
+      //   dataContract.length === 1 &&
+      //   isAbiValid(JSON.stringify(dataContract[0].abi)) &&
+      //   !isEqual(
+      //     dataContract[0].abi,
+      //     JSON.parse(
+      //       isAbiValid(functionForm.watch("contract_abi"))
+      //         ? functionForm.watch("contract_abi")
+      //         : "[]"
+      //     )
+      //   )
+      // ) {
+      //   setIsContractAbiUpdated(true);
+
+      //   setTimeout(() => {
+      //     functionForm.setValue(
+      //       "contract_abi",
+      //       JSON.stringify(dataContract[0].abi)
+      //     );
+      //   }, 200);
+      // } else if (
+      //   dataContract.length === 2 &&
+      //   !isEqual(
+      //     // @ts-ignore
+      //     [...dataContract[0].abi, ...dataContract[1].abi],
+      //     JSON.parse(functionForm.watch("contract_abi") || "[]")
+      //   )
+      // ) {
+      //   // @ts-ignore
+      //   const combined_abi = [...dataContract[0].abi, ...dataContract[1].abi];
+
+      //   if (!!combined_abi) {
+      //     setIsContractAbiUpdated(true);
+
+      //     setTimeout(() => {
+      //       functionForm.setValue("contract_abi", JSON.stringify(combined_abi));
+      //     }, 200);
+      //   }
+      // }
     }
   };
 

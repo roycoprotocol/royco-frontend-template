@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,8 @@ import { MarketBuilderFormSchema } from "../../market-builder-form";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { getExplorerUrl } from "royco/utils";
-import { getMarketIdFromEventLog } from "royco/market";
+import { api } from "@/app/api/royco";
+import { CreateMarketBody } from "royco/api";
 
 export const TransactionStep = React.forwardRef<
   HTMLDivElement,
@@ -33,72 +34,53 @@ export const TransactionStep = React.forwardRef<
     },
   });
 
+  const [marketCreationStatus, setMarketCreationStatus] = useState<
+    "pending" | "success" | "error"
+  >("pending");
+
   const { activeStep, setActiveStep } = useMarketBuilderManager();
 
-  const { market_id } = getMarketIdFromEventLog({
-    chain_id: marketBuilderForm.watch("chain").id,
-    market_type: marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-    logs: txData?.logs,
-  });
-
-  // console.log("market_id decode is", market_id);
-
-  // const isTxConfirming = true;
-  // const isTxConfirmed = true;
-  // const txStatus = "success";
+  const [marketId, setMarketId] = useState<string | undefined>(undefined);
 
   const updateMarketUserdata = async () => {
     try {
-      if (!!market_id) {
-        // // Save in royco server & sdk
-        // const response1 = await fetch(
-        //   `${process.env.NEXT_PUBLIC_ROYCO_SERVER_URL}/api/market`,
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       chain_id: marketBuilderForm.watch("chain").id,
-        //       market_type:
-        //         marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-        //       tx_hash: txHash,
-        //       id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
-        //       name: marketBuilderForm.watch("market_name"),
-        //       description: marketBuilderForm.watch("market_description"),
-        //       push: true,
-        //     }),
-        //   }
-        // );
-
-        // Save in local db
-        const response2 = await fetch(`/api/market`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            chain_id: marketBuilderForm.watch("chain").id,
-            market_type:
-              marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
-            tx_hash: txHash,
-            id: `${marketBuilderForm.watch("chain").id}_${marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1}_${market_id}`,
-            name: marketBuilderForm.watch("market_name"),
-            description: marketBuilderForm.watch("market_description"),
-            push: true,
-          }),
-        });
-
-        await response2.json();
+      if (!txHash || !isTxConfirmed) {
+        return;
       }
+
+      const body: CreateMarketBody = {
+        chainId: marketBuilderForm.watch("chain").id,
+        marketType: marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1,
+        name: marketBuilderForm.watch("market_name"),
+        description: marketBuilderForm.watch("market_description"),
+        txHash: txHash,
+      };
+
+      const response = await api.marketControllerCreateMarket(body);
+
+      setMarketId(response.data.data.marketId);
+
+      setMarketCreationStatus("success");
     } catch (error) {
       console.log("Error in updateMarketUserdata", error);
+
+      setMarketCreationStatus("error");
+    }
+  };
+
+  const updateMarketCreationStatus = () => {
+    if (isTxConfirming) {
+      setMarketCreationStatus("pending");
     }
   };
 
   useEffect(() => {
+    updateMarketCreationStatus();
+  }, [isTxConfirming]);
+
+  useEffect(() => {
     updateMarketUserdata();
-  }, [market_id]); // Add market_id and txData as dependencies
+  }, [txHash, isTxConfirmed]);
 
   return (
     <div
@@ -112,9 +94,9 @@ export const TransactionStep = React.forwardRef<
       <div
         className={cn(
           "relative h-[10rem] w-[10rem] transition-all duration-200 ease-in-out",
-          txStatus === "pending" && "text-tertiary",
-          txStatus === "error" && "text-error",
-          txStatus === "success" && "text-success"
+          marketCreationStatus === "pending" && "text-tertiary",
+          marketCreationStatus === "error" && "text-error",
+          marketCreationStatus === "success" && "text-success"
         )}
       >
         <div
@@ -147,7 +129,7 @@ export const TransactionStep = React.forwardRef<
 
         <AnimatePresence mode="sync">
           <motion.div
-            key={`icon:offer-status:${txStatus}`}
+            key={`icon:market-creation-status:${marketCreationStatus}`}
             className="absolute flex h-full w-full flex-col place-content-center items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: [1, 0.8, 1] }}
@@ -161,7 +143,7 @@ export const TransactionStep = React.forwardRef<
               duration: 1,
             }}
           >
-            {txStatus === "pending" && (
+            {marketCreationStatus === "pending" && (
               <motion.svg
                 key="tx-status:pending"
                 xmlns="http://www.w3.org/2000/svg"
@@ -214,7 +196,7 @@ export const TransactionStep = React.forwardRef<
               </motion.svg>
             )}
 
-            {txStatus === "error" && (
+            {marketCreationStatus === "error" && (
               <motion.svg
                 key="tx-status:error"
                 xmlns="http://www.w3.org/2000/svg"
@@ -249,7 +231,7 @@ export const TransactionStep = React.forwardRef<
               </motion.svg>
             )}
 
-            {txStatus === "success" && (
+            {marketCreationStatus === "success" && (
               <motion.svg
                 key="tx-status:success"
                 xmlns="http://www.w3.org/2000/svg"
@@ -281,21 +263,21 @@ export const TransactionStep = React.forwardRef<
       </div>
 
       <div
-        key={`tx-status:title:${txStatus}`}
+        key={`tx-status:title:${marketCreationStatus}`}
         className="mt-10 w-full text-center font-gt text-lg font-500 text-black"
       >
-        {txStatus === "pending" && "Awaiting Confirmation"}
-        {txStatus === "success" &&
+        {marketCreationStatus === "pending" && "Awaiting Confirmation"}
+        {marketCreationStatus === "success" &&
           `Congrats ${marketBuilderForm.watch("market_name")} created!`}
-        {txStatus === "error" && "Deployment Error"}
+        {marketCreationStatus === "error" && "Deployment Error"}
       </div>
       <div
-        key={`tx-status:subtitle:${txStatus}`}
+        key={`tx-status:subtitle:${marketCreationStatus}`}
         className="mt-2 w-full text-center font-gt text-base font-300 text-secondary"
       >
-        {txStatus === "pending" &&
+        {marketCreationStatus === "pending" &&
           "Please wait, this might take a while. Do not navigate off this page until confirmation."}
-        {txStatus === "success" && (
+        {marketCreationStatus === "success" && (
           <div className="max-w-[600px]">
             Newly deployed markets must be verified before becoming available to
             depositors.{" "}
@@ -328,23 +310,23 @@ export const TransactionStep = React.forwardRef<
             </motion.a>
           </div>
         )}
-        {txStatus === "error" && "Error while deploying market."}
+        {marketCreationStatus === "error" && "Error while deploying market."}
       </div>
 
-      {txStatus === "success" && (
+      {marketCreationStatus === "success" && (
         <div className="mt-2 flex flex-row items-center gap-3">
           <BadgeLink
             target="_blank"
             href={`/market/${marketBuilderForm.watch("chain").id}/${
               marketBuilderForm.watch("action_type") === "recipe" ? 0 : 1
-            }/${market_id}`}
+            }/${marketId}`}
             text="View Market"
           />
         </div>
       )}
 
       <div>
-        {txStatus === "error" && (
+        {marketCreationStatus === "error" && (
           <Button
             onClick={() => {
               setActiveStep(MarketBuilderSteps.info.id);
@@ -354,7 +336,7 @@ export const TransactionStep = React.forwardRef<
             Close
           </Button>
         )}
-        {txStatus === "success" && (
+        {marketCreationStatus === "success" && (
           <Button
             onClick={() =>
               window.open("https://forms.gle/FzP4opTucTqHLD9v8", "_blank")

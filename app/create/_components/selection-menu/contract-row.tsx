@@ -9,6 +9,7 @@ import { GripVerticalIcon, PinIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContractDropdown } from "./contract-dropdown";
 
+// @ts-ignore
 export function getStyle(style, snapshot) {
   if (!snapshot.isDragging) return {};
   if (!snapshot.isDropAnimating) {
@@ -61,8 +62,8 @@ export const ContractRow = React.forwardRef<
             onClick={() => {
               if (snapshot.isDragging) return;
 
-              if (contract.contract_name) {
-                functionForm.setValue("contract_name", contract.contract_name);
+              if (contract.contractName) {
+                functionForm.setValue("contract_name", contract.contractName);
               }
 
               if (contract.image) {
@@ -126,9 +127,9 @@ export const ContractRow = React.forwardRef<
               >
                 <div className="flex h-5 max-w-[90%] grow flex-row items-center ">
                   <div className="overflow-hidden truncate text-ellipsis text-base">
-                    {contract.contract_name ? (
+                    {contract.contractName ? (
                       <span className="leading-5 text-black">
-                        {contract.contract_name}
+                        {contract.contractName}
                       </span>
                     ) : (
                       <span className="leading-5 text-tertiary">
@@ -168,7 +169,7 @@ export const ContractRow = React.forwardRef<
                 <div className="h-5 grow overflow-hidden truncate text-ellipsis">
                   <span className="text-xs leading-5 text-tertiary">
                     {contract.description ||
-                      `${contract.address.slice(0, 4)}...${contract.address.slice(-4)}`.toLowerCase()}
+                      `${contract.contractAddress.slice(0, 4)}...${contract.contractAddress.slice(-4)}`.toLowerCase()}
                   </span>
                 </div>
               </div>
@@ -176,7 +177,7 @@ export const ContractRow = React.forwardRef<
               <div className="flex h-9 shrink-0 flex-col items-end">
                 <ContractDropdown
                   chainId={marketBuilderForm.watch("chain").id}
-                  address={contract.address as string}
+                  address={contract.contractAddress as string}
                 />
 
                 {isPinned && <PinIcon className="rotate-45 text-tertiary" />}
