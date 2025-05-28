@@ -48,19 +48,14 @@ const Page = () => {
                 </PrimaryLabel>
 
                 <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-                  High yield without the spreadsheets. Rebalanced automatically
-                  so your capital never sits idle.
+                  Eliminate the guesswork. Vaults rebalance your capital and
+                  negotiate incentives across Royco Markets — optimizing for
+                  risk-adjusted returns.
                 </SecondaryLabel>
               </div>
 
               <div className="mt-6">
-                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
-                  FEATURED
-                </SecondaryLabel>
-
-                <div className="mt-6">
-                  <VaultsTable />
-                </div>
+                <VaultsTable />
               </div>
             </div>
 

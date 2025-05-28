@@ -17,6 +17,7 @@ import { formatDate } from "date-fns";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { VaultTransactionType } from "@/store/vault/use-vault-manager";
 import { formatLockupTime } from "@/utils/lockup-time";
+import { ROYCO_USDC_VAULT_ID } from "../../constants/vaults";
 
 export function BoringVaultActionProvider({
   children,
@@ -92,6 +93,8 @@ export function BoringVaultActionProvider({
 
       const lockupTime = formatLockupTime(data.maxLockup);
 
+      const description = `This Vault will initially allocate into Plume Markets with ${lockupTime.toLowerCase()} lockups.`;
+
       const metadata = [
         {
           label: "Lockup",
@@ -114,7 +117,15 @@ export function BoringVaultActionProvider({
         </div>
       );
 
-      return { steps: transactions, metadata, warnings };
+      return {
+        steps: transactions,
+        metadata,
+        warnings,
+        description:
+          ROYCO_USDC_VAULT_ID.toLowerCase() === data.vaultAddress.toLowerCase()
+            ? description
+            : undefined,
+      };
     } catch (error) {
       toast.custom(
         <ErrorAlert message="Failed to create deposit transaction." />

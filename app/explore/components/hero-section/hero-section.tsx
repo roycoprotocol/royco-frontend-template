@@ -37,7 +37,7 @@ export const HeroSection = React.forwardRef<
             </div>
           ),
           description:
-            "Earn $PLUME and other incentives in addition to the base APY.",
+            "Earn RWA yields, PLUME incentives, and ecosystem points.",
         };
       default:
         return {

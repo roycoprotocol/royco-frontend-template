@@ -14,8 +14,6 @@ import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { tagAtom } from "@/store/protector/protector";
-import Markdown from "react-markdown";
-import Link from "next/link";
 import { MarkdownRenderer } from "@/app/_components/common/markdown-renderer";
 
 export const MarketInfo = React.forwardRef<
