@@ -86,13 +86,12 @@ export const TokenDisplayer = React.forwardRef<
         <div className="flex shrink-0 items-center">
           {tokens.map((item, index) => {
             const token = item;
-            // const token = getSupportedToken(item.id);
             const chain = getSupportedChain(item.chainId);
 
             return (
               <Tooltip key={index}>
                 <TooltipTrigger className={cn(index !== 0 && "-ml-1")}>
-                  {token.subTokens ? (
+                  {token.subTokens && token.subTokens.length > 0 ? (
                     <div className="relative">
                       <div className="flex items-center">
                         {token.subTokens.map((subToken, index) => (
