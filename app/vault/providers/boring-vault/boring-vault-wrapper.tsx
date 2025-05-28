@@ -30,6 +30,7 @@ import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
 import { loadableBoringPositionsAtom } from "@/store/vault/boring-positions";
 import { loadableEnrichedVaultAtom } from "@/store/vault/enriched-vault";
+import { ROYCO_USDC_VAULT_ID } from "../../constants/vaults";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -158,7 +159,44 @@ export const BoringVaultWrapper = React.forwardRef<
         address
       );
 
-      return response.data;
+      let rewards = response.data;
+      if (ROYCO_USDC_VAULT_ID.toLowerCase() === vaultAddress.toLowerCase()) {
+        rewards = {
+          ...rewards,
+          unclaimedRewardTokens: [
+            ...rewards.unclaimedRewardTokens,
+            {
+              rawMetadata: {
+                isClaimable: false,
+                claimText: "~90 days after deposit",
+              },
+              id: "98866-0xea237441c92cae6fc17caaf9a7acb3f953be4bd1",
+              chainId: 98866,
+              contractAddress: "0xea237441c92cae6fc17caaf9a7acb3f953be4bd1",
+              name: "Wrapped Plume",
+              symbol: "WPLUME",
+              image:
+                "https://assets.plume.org/images/logos/WPLUME/WPLUME-token.png",
+              decimals: 18,
+              source: "coinmarketcap",
+              searchId: "35364",
+              type: "token",
+              price: 0,
+              fdv: 0,
+              totalSupply: 0,
+              lastUpdated: "0",
+              rawAmount: "0",
+              tokenAmount: 0,
+              tokenAmountUsd: 0,
+              rewardIds: [],
+            },
+          ],
+        };
+      }
+
+      console.log({ rewards });
+
+      return rewards;
     } catch (error) {
       toast.custom(<ErrorAlert message="Error: User rewards not found." />);
       return {
