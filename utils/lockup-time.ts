@@ -18,6 +18,26 @@ export const formatLockupTime = (lockup: string) => {
   }
 };
 
+export const formatLockupTimeSingular = (lockup: string) => {
+  try {
+    const seconds = parseInt(lockup);
+
+    if (seconds < 3600) {
+      return `${seconds} Second`;
+    }
+
+    const hours = Math.ceil(seconds / 3600);
+    if (hours < 24) {
+      return `${hours} Hour`;
+    }
+
+    const days = Math.ceil(seconds / (24 * 3600));
+    return `${days} Day`;
+  } catch (error) {
+    return "-";
+  }
+};
+
 export const formatLockupTimeAbbreviated = (lockup: string) => {
   try {
     const seconds = parseInt(lockup);
