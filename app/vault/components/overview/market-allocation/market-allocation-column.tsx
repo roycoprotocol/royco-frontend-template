@@ -21,14 +21,15 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left max-w-60", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id} className="group/link">
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(
+            "group/link",
+            row.original.type === "whitelisted" && "opacity-70"
+          )}
+        >
           <a href={row.original.link} target="_blank" rel="noreferrer">
-            <div
-              className={cn(
-                "relative flex items-center pr-5",
-                row.original.type === "whitelisted" && "opacity-70"
-              )}
-            >
+            <div className={cn("relative flex items-center pr-5")}>
               <div className="max-w- z-10 flex-1 overflow-hidden truncate bg-_surface_">
                 {row.original.name}
               </div>
