@@ -19,7 +19,6 @@ import { type UseFormReturn } from "react-hook-form";
 
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 
-import { useSupportedTokens } from "royco/hooks";
 import { type MarketBuilderFormSchema } from "../../market-builder-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,6 +44,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/app/api/royco";
+import { Filter } from "royco/api";
+import { defaultQueryOptions } from "@/utils/query";
 
 export const FormAsset = React.forwardRef<
   HTMLDivElement,
@@ -58,23 +61,51 @@ export const FormAsset = React.forwardRef<
 
   const [search, setSearch] = React.useState<string>("");
 
-  const [placeholderPage, setPlaceholderPage] = React.useState<Array<number>>([
-    1, 1,
-  ]);
   const [page, setPage] = React.useState<number>(1);
 
-  const [placeholderTotalPages, setPlaceholderTotalPages] = React.useState<
-    Array<number>
-  >([1, 1]);
+  const { data } = useQuery({
+    queryKey: [
+      "supported-tokens",
+      {
+        chainId: marketBuilderForm.watch("chain").id,
+        page,
+        search,
+      },
+    ],
+    queryFn: async () => {
+      let filters: Filter[] = [
+        {
+          id: "chainId",
+          value: marketBuilderForm.watch("chain").id,
+        },
+        {
+          id: "type",
+          value: "token",
+        },
+      ];
 
-  const { data, totalPages } = useSupportedTokens({
-    chain_id: marketBuilderForm.watch("chain").id,
-    page,
-    search,
+      return api
+        .tokenControllerGetTokenDirectory({
+          filters,
+          sorting: [
+            {
+              id: "symbol",
+              desc: false,
+            },
+          ],
+          searchKey: search.trim().length > 0 ? search : undefined,
+          page: {
+            index: page,
+            size: 20,
+          },
+        })
+        .then((res) => res.data);
+    },
+    ...defaultQueryOptions,
   });
 
   const canPrevPage = page > 1;
-  const canNextPage = page < totalPages;
+  const canNextPage = page < (data?.page.total ?? 1);
 
   const handleNextPage = () => {
     if (canNextPage) {
@@ -88,44 +119,9 @@ export const FormAsset = React.forwardRef<
     }
   };
 
-  const updatePlaceholderPage = () => {
-    let newPlaceholderPage = [...placeholderPage, page];
-    if (newPlaceholderPage.length > 2) {
-      newPlaceholderPage.shift();
-    }
-    setPlaceholderPage(newPlaceholderPage);
-  };
-
-  const updatePlaceholderTotalPages = () => {
-    let newPlaceholderTotalPages = [...placeholderTotalPages, totalPages];
-    if (newPlaceholderTotalPages.length > 2) {
-      newPlaceholderTotalPages.shift();
-    }
-    setPlaceholderTotalPages(newPlaceholderTotalPages);
-  };
-
-  const resetPlaceholders = () => {
-    if (open === false) {
-      setPlaceholderPage([page, page]);
-      setPlaceholderTotalPages([totalPages, totalPages]);
-    }
-  };
-
   const resetPage = () => {
     setPage(1);
   };
-
-  useEffect(() => {
-    updatePlaceholderPage();
-  }, [page]);
-
-  useEffect(() => {
-    updatePlaceholderTotalPages();
-  }, [totalPages]);
-
-  useEffect(() => {
-    resetPlaceholders();
-  }, [open]);
 
   useEffect(() => {
     resetPage();
@@ -250,14 +246,14 @@ export const FormAsset = React.forwardRef<
                   />
 
                   <ul className="list mt-1 flex h-44 w-full flex-col gap-0 overflow-x-hidden overflow-y-scroll">
-                    {data.length === 0 && (
+                    {data?.data.length === 0 && (
                       <AlertIndicator className="h-full">
                         No tokens found
                       </AlertIndicator>
                     )}
 
                     <AnimatePresence mode="popLayout">
-                      {data.map((token, index) => {
+                      {data?.data.map((token, index) => {
                         const baseKey = `form-asset-select:${token.id}`;
 
                         return (
@@ -282,7 +278,14 @@ export const FormAsset = React.forwardRef<
                           > */}
                               <div
                                 onClick={() => {
-                                  marketBuilderForm.setValue("asset", token);
+                                  marketBuilderForm.setValue("asset", {
+                                    id: token.id,
+                                    symbol: token.symbol,
+                                    image: token.image,
+                                    decimals: token.decimals,
+                                    chain_id: token.chainId,
+                                    contract_address: token.contractAddress,
+                                  });
                                 }}
                                 // layout
                                 // initial={false}
@@ -326,33 +329,7 @@ export const FormAsset = React.forwardRef<
 
                   <div className="mt-1 flex w-full flex-row items-center justify-between rounded-md border border-divider bg-z2 px-2 py-1 text-sm">
                     <div className="text-secondary">
-                      Page
-                      <SpringNumber
-                        defaultColor="text-secondary"
-                        className="mx-1 inline-block"
-                        numberFormatOptions={{
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }}
-                        // previousValue={placeholderPage[0]}
-                        previousValue={placeholderPage[1]}
-                        currentValue={placeholderPage[1]}
-                      />
-                      of{" "}
-                      <SpringNumber
-                        defaultColor="text-secondary"
-                        numberFormatOptions={{
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }}
-                        previousValue={
-                          placeholderTotalPages[0] === 0
-                            ? 1
-                            : placeholderTotalPages[0]
-                        }
-                        currentValue={totalPages === 0 ? 1 : totalPages}
-                        className="mx-1 inline-block"
-                      />
+                      Page {data?.page.index ?? 1} of {data?.page.total ?? 1}
                     </div>
                     <div className="flex flex-row items-center gap-1">
                       <div
