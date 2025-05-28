@@ -6,20 +6,16 @@ import { MarketActionFormSchema } from "../../market-action-form-schema";
 import {
   MarketOfferType,
   MarketSteps,
-  MarketType,
   MarketUserType,
   MarketViewType,
   useMarketManager,
 } from "@/store";
 import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
-import { useActiveMarket } from "../../../../hooks";
 import { RecipeActionForms } from "./recipe-action-forms";
 import { Button } from "@/components/ui/button";
 import { useAccount, useChainId } from "wagmi";
 import { switchChain } from "@wagmi/core";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { config } from "@/components/rainbow-modal/modal-config";
-import { useMarketFormDetails } from "../../use-market-form-details";
 import toast from "react-hot-toast";
 import { ErrorAlert } from "@/components/composables";
 import { TertiaryLabel } from "../../../../composables";
@@ -28,9 +24,13 @@ import { TokenDisplayer } from "@/components/common";
 import { VaultActionForms } from "./vault-action-forms";
 import { OfferTypeSelector } from "./components/offer-type-selector";
 import LightningIcon from "../../../../icons/lightning";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import formatNumber from "@/utils/numbers";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { useMarketFormDetailsApi } from "../../use-market-form-details-api";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const SupplyAction = React.forwardRef<
   HTMLDivElement,
@@ -42,53 +42,36 @@ export const SupplyAction = React.forwardRef<
   const chainId = useChainId();
 
   const { connectWalletModal } = useConnectWallet();
-
-  const { marketMetadata, currentMarketData, currentHighestOffers } =
-    useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
   const { viewType, setMarketStep, offerType, userType } = useMarketManager();
 
-  const { isValid, incentiveData } = useMarketFormDetails(marketActionForm);
+  const propsAction = useMarketFormDetailsApi(marketActionForm);
 
   const highestIncentiveToken = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
-      if (
-        !currentHighestOffers ||
-        currentHighestOffers.ip_offers.length === 0 ||
-        currentHighestOffers.ip_offers[0].tokens_data.length === 0
-      ) {
-        return null;
-      }
-
-      return currentHighestOffers.ip_offers[0].tokens_data[0];
-    }
-
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
-      if (
-        !currentMarketData ||
-        currentMarketData.incentive_tokens_data.length === 0
-      ) {
-        return null;
-      }
-
-      return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigInt(token_data.raw_amount ?? "0") > 0;
-      });
-    }
-  }, [currentMarketData, currentHighestOffers, marketMetadata]);
-
-  const selectedIncentiveToken = useMemo(() => {
-    if (incentiveData && incentiveData.length > 0) {
-      return incentiveData[0];
+    if (enrichedMarket && enrichedMarket.activeIncentives.length > 0) {
+      return enrichedMarket.activeIncentives[0];
     }
 
     return null;
-  }, [incentiveData]);
+  }, [enrichedMarket]);
+
+  const selectedIncentiveToken = useMemo(() => {
+    if (
+      propsAction.data &&
+      propsAction.data.incentiveTokens &&
+      propsAction.data.incentiveTokens.length > 0
+    ) {
+      return propsAction.data.incentiveTokens[0];
+    }
+
+    return null;
+  }, [propsAction]);
 
   const showIncentiveTokenEstimate = useMemo(() => {
     if (
       highestIncentiveToken &&
       highestIncentiveToken.type === "point" &&
-      highestIncentiveToken.annual_change_ratio === 0
+      highestIncentiveToken.yieldRate === 0
     ) {
       return true;
     }
@@ -114,8 +97,7 @@ export const SupplyAction = React.forwardRef<
                 highestIncentiveToken?.id ? [highestIncentiveToken.id] : []
               }
               marketCategory={
-                currentMarketData &&
-                currentMarketData.chain_id === SONIC_CHAIN_ID
+                enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
                   ? "sonic"
                   : undefined
               }
@@ -134,7 +116,7 @@ export const SupplyAction = React.forwardRef<
           {/**
            * Recipe Action Forms
            */}
-          {marketMetadata.market_type === MarketType.recipe.id && (
+          {enrichedMarket?.marketType === RoycoMarketType.recipe.value && (
             <div className={cn("mt-3")}>
               <RecipeActionForms marketActionForm={marketActionForm} />
             </div>
@@ -143,7 +125,7 @@ export const SupplyAction = React.forwardRef<
           {/**
            * Vault Action Forms
            */}
-          {marketMetadata.market_type === MarketType.vault.id && (
+          {enrichedMarket?.marketType === RoycoMarketType.vault.value && (
             <div className={cn("mt-3")}>
               <VaultActionForms marketActionForm={marketActionForm} />
             </div>
@@ -171,14 +153,14 @@ export const SupplyAction = React.forwardRef<
                 );
               }
 
-              if (chainId !== marketMetadata.chain_id) {
+              if (chainId !== enrichedMarket?.chainId) {
                 return (
                   <Button
                     onClick={async () => {
                       try {
                         // @ts-ignore
                         await switchChain(config, {
-                          chainId: marketMetadata.chain_id,
+                          chainId: enrichedMarket?.chainId,
                         });
                       } catch (error) {
                         toast.custom(
@@ -199,10 +181,21 @@ export const SupplyAction = React.forwardRef<
                 <Button
                   onClick={() => {
                     try {
-                      if (isValid.status) {
+                      if (propsAction.isSuccess) {
                         setMarketStep(MarketSteps.preview.id);
+                      } else if (propsAction.isError) {
+                        const error = propsAction.error as any;
+
+                        toast.custom(
+                          <ErrorAlert
+                            message={
+                              error.response.data.error.message ||
+                              "Error submitting offer"
+                            }
+                          />
+                        );
                       } else {
-                        toast.custom(<ErrorAlert message={isValid.message} />);
+                        throw new Error("Unknown error");
                       }
                     } catch (error) {
                       toast.custom(
@@ -225,8 +218,8 @@ export const SupplyAction = React.forwardRef<
                             <span>for</span>
 
                             <span>
-                              {highestIncentiveToken.annual_change_ratio ===
-                                0 && highestIncentiveToken.type === "point"
+                              {highestIncentiveToken.yieldRate === 0 &&
+                              highestIncentiveToken.type === "point"
                                 ? formatNumber(
                                     parseFloat(
                                       marketActionForm.watch(
@@ -234,14 +227,13 @@ export const SupplyAction = React.forwardRef<
                                       ) || "0"
                                     ) *
                                       (isNaN(
-                                        highestIncentiveToken.per_input_token
+                                        highestIncentiveToken.perInputToken
                                       )
                                         ? 0
-                                        : highestIncentiveToken.per_input_token)
+                                        : highestIncentiveToken.perInputToken)
                                   )
                                 : formatNumber(
-                                    highestIncentiveToken.annual_change_ratio ||
-                                      0,
+                                    highestIncentiveToken.yieldRate || 0,
                                     {
                                       type: "percent",
                                     }
@@ -277,22 +269,19 @@ export const SupplyAction = React.forwardRef<
                           <span>for</span>
 
                           <span>
-                            {selectedIncentiveToken.annual_change_ratio === 0 &&
+                            {selectedIncentiveToken.yieldRate === 0 &&
                             selectedIncentiveToken.type === "point"
                               ? formatNumber(
                                   parseFloat(
                                     marketActionForm.watch("quantity.amount") ||
                                       "0"
                                   ) *
-                                    (isNaN(
-                                      selectedIncentiveToken.per_input_token
-                                    )
+                                    (isNaN(selectedIncentiveToken.perInputToken)
                                       ? 0
-                                      : selectedIncentiveToken.per_input_token)
+                                      : selectedIncentiveToken.perInputToken)
                                 )
                               : formatNumber(
-                                  selectedIncentiveToken.annual_change_ratio ||
-                                    0,
+                                  selectedIncentiveToken.yieldRate || 0,
                                   {
                                     type: "percent",
                                   }
@@ -323,12 +312,12 @@ export const SupplyAction = React.forwardRef<
 
             {offerType === MarketOfferType.market.id &&
               userType === MarketUserType.ap.id &&
-              (currentMarketData?.annual_change_ratio || 0) !== 0 && (
+              (enrichedMarket?.yieldRate || 0) !== 0 && (
                 <TertiaryLabel className="mt-2 space-x-1 italic">
                   <span>Total APY:</span>
 
                   <span className="flex items-center justify-center">
-                    {formatNumber(currentMarketData?.annual_change_ratio || 0, {
+                    {formatNumber(enrichedMarket?.yieldRate || 0, {
                       type: "percent",
                     })}
                   </span>

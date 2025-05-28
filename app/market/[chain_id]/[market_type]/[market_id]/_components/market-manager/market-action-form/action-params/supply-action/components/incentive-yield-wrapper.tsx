@@ -10,7 +10,6 @@ import { InputYieldSelector } from "../../composables/input-yield-selector";
 import { DEFAULT_TOKEN_COLOR } from "../../../../market-info/annual-yield-details/incentive-details";
 import ShieldIcon from "../../../../../icons/shield";
 import { RoycoMarketType } from "royco/market";
-import { useActiveMarket } from "../../../../../hooks/use-active-market";
 import { Vibrant } from "node-vibrant/browser";
 import SparkleIcon from "../../../../../icons/sparkle";
 import { TooltipContent } from "@/components/ui/tooltip";
@@ -18,6 +17,8 @@ import { TooltipTrigger } from "@/components/ui/tooltip";
 import { Tooltip } from "@/components/ui/tooltip";
 import { createPortal } from "react-dom";
 import formatNumber from "@/utils/numbers";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const IncentiveYieldWrapper = React.forwardRef<
   HTMLDivElement,
@@ -26,37 +27,29 @@ export const IncentiveYieldWrapper = React.forwardRef<
     onYieldChange?: (value: string) => void;
   }
 >(({ className, marketActionForm, onYieldChange, ...props }, ref) => {
-  const { currentMarketData, marketMetadata, currentHighestOffers } =
-    useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
   const highestIncentiveToken = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
-      if (
-        !currentHighestOffers ||
-        currentHighestOffers.ip_offers.length === 0 ||
-        currentHighestOffers.ip_offers[0].tokens_data.length === 0
-      ) {
+    if (enrichedMarket?.marketType === 0) {
+      if (!enrichedMarket || enrichedMarket.activeIncentives.length === 0) {
         return null;
       }
 
-      return currentHighestOffers.ip_offers[0].tokens_data[0];
+      return enrichedMarket.activeIncentives[0];
     }
 
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
-      if (
-        !currentMarketData ||
-        currentMarketData.incentive_tokens_data.length === 0
-      ) {
+    if (enrichedMarket?.marketType === 1) {
+      if (!enrichedMarket || enrichedMarket.activeIncentives.length === 0) {
         return null;
       }
 
-      return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
+      return enrichedMarket.activeIncentives.find((token) => {
+        return BigInt(token.rawAmount ?? "0") > BigInt(0);
       });
     }
-  }, [currentMarketData, currentHighestOffers, marketMetadata]);
+  }, [enrichedMarket]);
 
   useEffect(() => {
     if (highestIncentiveToken) {
@@ -87,7 +80,7 @@ export const IncentiveYieldWrapper = React.forwardRef<
 
       getTokenColor();
     }
-  }, [currentHighestOffers, highestIncentiveToken]);
+  }, [highestIncentiveToken]);
 
   const selectedYield =
     marketActionForm.watch("annual_change_ratio")?.toString() || "";
@@ -104,14 +97,14 @@ export const IncentiveYieldWrapper = React.forwardRef<
 
   const totalYield = useMemo(() => {
     let result = selectedYield ? parseFloat(selectedYield) / 100 : 0;
-    if (currentMarketData && currentMarketData.native_annual_change_ratio) {
-      result += (currentMarketData as any).native_annual_change_ratios.reduce(
-        (acc: number, item: number) => acc + item,
+    if (enrichedMarket?.nativeIncentives?.length) {
+      result += enrichedMarket.nativeIncentives.reduce(
+        (acc, item) => acc + (item.yieldRate || 0),
         0
       );
     }
     return result;
-  }, [selectedYield, currentMarketData]);
+  }, [selectedYield, enrichedMarket]);
 
   return (
     <div ref={ref} className={cn("contents", className)} {...props}>
@@ -138,7 +131,8 @@ export const IncentiveYieldWrapper = React.forwardRef<
             <div className="flex flex-row items-center gap-1">
               <Tooltip>
                 <TooltipTrigger className={cn("cursor-pointer")}>
-                  {marketMetadata.market_type === RoycoMarketType.recipe.id ? (
+                  {enrichedMarket?.marketType ===
+                  RoycoMarketType.recipe.value ? (
                     <ShieldIcon
                       className="h-5 w-5"
                       style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
@@ -152,7 +146,7 @@ export const IncentiveYieldWrapper = React.forwardRef<
                 </TooltipTrigger>
                 {createPortal(
                   <TooltipContent className={cn("bg-white", "max-w-80")}>
-                    {marketMetadata.market_type === RoycoMarketType.recipe.id
+                    {enrichedMarket?.marketType === RoycoMarketType.recipe.value
                       ? "Fixed Incentive Rate"
                       : "Variable Incentive Rate, based on # of participants"}
                   </TooltipContent>,

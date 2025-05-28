@@ -10,12 +10,13 @@ import {
   MarketViewType,
   useMarketManager,
 } from "@/store";
-import { useActiveMarket } from "../../hooks";
-import { MarketActionType, MarketOfferType, MarketType } from "@/store";
+import { MarketActionType, MarketOfferType } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MarketActionFormSchema } from "./market-action-form-schema";
 import { ActionParams } from "./action-params";
 import { ActionPreview } from "./action-preview/action-preview";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const MarketActionForm = React.forwardRef<
   HTMLDivElement,
@@ -33,7 +34,7 @@ export const MarketActionForm = React.forwardRef<
     vaultIncentiveActionType,
   } = useMarketManager();
 
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const marketActionForm = useForm<z.infer<typeof MarketActionFormSchema>>({
     resolver: zodResolver(MarketActionFormSchema),
@@ -72,7 +73,7 @@ export const MarketActionForm = React.forwardRef<
     });
   }, [userType, offerType]);
 
-  if (!!currentMarketData) {
+  if (enrichedMarket) {
     return (
       <div
         key={`market-action-form:container:${marketStep}:${viewType}`}

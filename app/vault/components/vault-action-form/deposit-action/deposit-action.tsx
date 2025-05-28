@@ -10,12 +10,15 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { ErrorAlert } from "@/components/composables";
 import { DepositActionForm } from "./deposit-action-form/deposit-action-form";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const depositFormSchema = z.object({
   amount: z.string(),
@@ -66,10 +69,13 @@ export const DepositAction = React.forwardRef<
 
     if (depositTransactions && depositTransactions.steps.length > 0) {
       const transactions = {
-        type: "deposit" as const,
+        type: VaultTransactionType.Deposit,
         title: "Deposit",
+        successTitle: "Deposit Complete",
         description: depositTransactions.description,
-        steps: depositTransactions.steps || [],
+        steps: depositTransactions.steps,
+        metadata: depositTransactions.metadata,
+        warnings: depositTransactions.warnings,
         token: {
           data: token,
           amount: amount,
@@ -99,7 +105,7 @@ export const DepositAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Connect Wallet
               </Button>
@@ -123,7 +129,7 @@ export const DepositAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Switch Chain
               </Button>
@@ -140,7 +146,8 @@ export const DepositAction = React.forwardRef<
                 }
               }}
               size="sm"
-              className="w-full"
+              className="h-10 w-full rounded-sm bg-_highlight_"
+              disabled={data.capacity.ratio >= 1}
             >
               Deposit
             </Button>

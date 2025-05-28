@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { FallMotion } from "@/components/animations";
 import { TypedRoycoMarketVaultIncentiveAction } from "royco/market";
-import { useActiveMarket } from "../../../../hooks";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const ActionTypeSelector = React.forwardRef<
   HTMLDivElement,
@@ -20,19 +21,19 @@ export const ActionTypeSelector = React.forwardRef<
   const { vaultIncentiveActionType, setVaultIncentiveActionType } =
     useMarketManager();
 
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   let availableActionTypes = [MarketVaultIncentiveAction.add];
 
   if (
-    currentMarketData?.base_incentive_ids &&
-    currentMarketData.base_incentive_ids.length > 0
+    enrichedMarket?.vaultMetadata?.baseIncentives &&
+    enrichedMarket?.vaultMetadata?.baseIncentives.length > 0
   ) {
     let availableIncentivesThatCanBeRefunded =
-      currentMarketData.base_incentive_ids.filter((incentive_id, index) => {
+      enrichedMarket.vaultMetadata.baseIncentives.filter((incentive, index) => {
         const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
         const startTimestamp = BigInt(
-          currentMarketData.base_start_timestamps![index] ?? "0"
+          enrichedMarket.vaultMetadata.baseStartTimestamps![index] ?? "0"
         );
 
         if (currentTimestamp < startTimestamp) {

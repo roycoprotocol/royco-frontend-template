@@ -1,40 +1,37 @@
 import { cn } from "@/lib/utils";
 import React, { useMemo } from "react";
 import { InfoIcon } from "lucide-react";
-import { SpringNumber } from "@/components/composables";
-import { MarketRewardStyle } from "@/store";
 import { LogOutIcon } from "lucide-react";
-import { MarketType } from "@/store/market-manager-props";
 import { Button } from "@/components/ui/button";
 import LightningIcon from "../../../icons/lightning";
 import { PrimaryLabel, SecondaryLabel } from "../../../composables";
 import { TertiaryLabel } from "../../../composables";
 import { IncentiveDetails } from "./incentive-details";
-import { useActiveMarket } from "../../../hooks";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import { InfoTip } from "@/components/common";
 import { SONIC_CHAIN_ID, sonicMarketMap } from "royco/sonic";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { useAtomValue } from "jotai";
+import NumberFlow from "@number-flow/react";
 
 export const AnnualYieldDetails = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { currentMarketData, previousMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   // find break of point where annual_change_ratio is 0
-  const breakdowns = currentMarketData.yield_breakdown.filter(
-    (item: any) =>
-      item.category === "base" &&
-      item.type === "point" &&
-      item.annual_change_ratio === 0
-  );
+  const breakdowns =
+    enrichedMarket?.activeIncentives.filter(
+      (item) => item.type === "point" && item.yieldRate === 0
+    ) ?? [];
 
   // get first token data of point where annual_change_ratio is 0
   let point_token_data;
   if (breakdowns.length > 0) {
     point_token_data = {
-      ...currentMarketData.incentive_tokens_data.find(
-        (token: any) => token.id === breakdowns[0].id
+      ...enrichedMarket?.activeIncentives.find(
+        (token) => token.id === breakdowns[0].id
       ),
       ...breakdowns[0],
     };
@@ -51,7 +48,7 @@ export const AnnualYieldDetails = React.forwardRef<
   const sonicInfo = useMemo(() => {
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
       const sonicMarket = sonicMarketMap.find(
-        (market) => market.id === currentMarketData.id
+        (market) => market.id === enrichedMarket?.id
       );
 
       if (sonicMarket) {
@@ -60,7 +57,20 @@ export const AnnualYieldDetails = React.forwardRef<
     }
 
     return;
-  }, [currentMarketData]);
+  }, [enrichedMarket]);
+
+  const getLockupTime = (lockupTime: string) => {
+    const seconds = Number(lockupTime);
+    if (seconds < 3600) {
+      return `${seconds} ${seconds === 1 ? "Second" : "Seconds"}`;
+    }
+    const hours = Math.ceil(seconds / 3600);
+    if (seconds < 86400) {
+      return `${hours} ${hours === 1 ? "Hour" : "Hours"}`;
+    }
+    const days = Math.ceil(seconds / 86400);
+    return `${days} ${days === 1 ? "Day" : "Days"}`;
+  };
 
   return (
     <div
@@ -84,13 +94,11 @@ export const AnnualYieldDetails = React.forwardRef<
               </div>
             )}
           </TertiaryLabel>
-          {currentMarketData.annual_change_ratio === 0 &&
-          breakdowns.length > 0 ? (
+          {enrichedMarket?.yieldRate === 0 && breakdowns.length > 0 ? (
             <TokenEstimator
               defaultTokenId={point_token_data?.id ? [point_token_data.id] : []}
               marketCategory={
-                currentMarketData &&
-                currentMarketData.chain_id === SONIC_CHAIN_ID
+                enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
                   ? "sonic"
                   : undefined
               }
@@ -104,22 +112,16 @@ export const AnnualYieldDetails = React.forwardRef<
               </Button>
             </TokenEstimator>
           ) : (
-            <PrimaryLabel className="mt-1 text-2xl font-medium">
-              <SpringNumber
-                previousValue={
-                  previousMarketData && previousMarketData.annual_change_ratio
-                    ? previousMarketData.annual_change_ratio
-                    : 0
-                }
-                currentValue={currentMarketData.annual_change_ratio ?? 0}
-                numberFormatOptions={{
+            <PrimaryLabel className="text-2xl font-medium text-success">
+              <NumberFlow
+                value={enrichedMarket?.yieldRate ?? 0}
+                format={{
                   style: "percent",
                   notation: "compact",
                   useGrouping: true,
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 }}
-                defaultColor="text-success"
               />
             </PrimaryLabel>
           )}
@@ -130,10 +132,12 @@ export const AnnualYieldDetails = React.forwardRef<
          */}
         <div>
           <TertiaryLabel className="text-sm">
-            {currentMarketData.reward_style ===
-            MarketRewardStyle.forfeitable.value ? (
+            {/**
+             * Forfeitable Reward Style
+             */}
+            {enrichedMarket?.rewardStyle === 2 ? (
               <span className="text-p flex items-center gap-1 text-dodger_blue">
-                Forfeitable
+                Lockup
                 <LogOutIcon className="h-4 w-4" />
               </span>
             ) : (
@@ -141,20 +145,9 @@ export const AnnualYieldDetails = React.forwardRef<
             )}
           </TertiaryLabel>
           <PrimaryLabel className="mt-1 text-2xl font-medium">
-            {currentMarketData.market_type === MarketType.recipe.value &&
-            currentMarketData.lockup_time !== "0"
-              ? (() => {
-                  const seconds = Number(currentMarketData.lockup_time);
-                  if (seconds < 3600) {
-                    return `${seconds} ${seconds === 1 ? "Second" : "Seconds"}`;
-                  }
-                  const hours = Math.ceil(seconds / 3600);
-                  if (seconds < 86400) {
-                    return `${hours} ${hours === 1 ? "Hour" : "Hours"}`;
-                  }
-                  const days = Math.ceil(seconds / 86400);
-                  return `${days} ${days === 1 ? "Day" : "Days"}`;
-                })()
+            {enrichedMarket?.marketType === 0 &&
+            enrichedMarket?.lockupTime !== "0"
+              ? getLockupTime(enrichedMarket?.lockupTime)
               : "None"}
           </PrimaryLabel>
         </div>
@@ -163,7 +156,7 @@ export const AnnualYieldDetails = React.forwardRef<
       {/**
        * Boyco Market Info
        */}
-      {currentMarketData?.category === "boyco" && (
+      {enrichedMarket?.category === "boyco" && (
         <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
@@ -227,17 +220,16 @@ export const AnnualYieldDetails = React.forwardRef<
       {/**
        * Forfeitable Info
        */}
-      {currentMarketData.reward_style ===
-        MarketRewardStyle.forfeitable.value && (
+      {enrichedMarket?.rewardStyle === 2 && (
         <div className="mt-3 flex flex-row items-center gap-3 rounded-lg bg-z2 p-3">
           <InfoIcon className={cn("h-4 w-4 shrink-0 text-secondary")} />
           <SecondaryLabel className="break-normal text-xs">
             <span>
-              <span className="font-semibold">Forfeitable:</span>{" "}
+              <span className="font-semibold">Forfeit to Exit Early:</span>{" "}
               <span>
-                Depositors may exit at anytime, however withdrawing before the
-                end of the forfeitable period will forfeit all incentives earned
-                to date.
+                Withdrawing funds before{" "}
+                {getLockupTime(enrichedMarket?.lockupTime).toLowerCase()} will
+                result in forfeiture of all rewards earned during that period.
               </span>
             </span>
           </SecondaryLabel>

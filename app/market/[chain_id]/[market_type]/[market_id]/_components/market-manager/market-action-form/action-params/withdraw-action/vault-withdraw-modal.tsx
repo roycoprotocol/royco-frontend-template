@@ -14,51 +14,45 @@ import React, { useState } from "react";
 import { useAccount } from "wagmi";
 import { useMarketManager } from "@/store";
 import {
-  getVaultInputTokenWithdrawalByAssetTransactionOptions,
-  getVaultInputTokenWithdrawalTransactionOptions,
-} from "royco/hooks";
-import {
   parseRawAmount,
   parseRawAmountToTokenAmount,
   parseTextToFormattedValue,
   parseTokenAmountToRawAmount,
 } from "royco/utils";
-import { SupportedToken } from "royco/constants";
 import { SpringNumber } from "@/components/composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { SecondaryLabel, TertiaryLabel } from "../../../../composables";
 import { WarningAlert } from "../composables/warning-alert";
 import { InputAmountSelector } from "../composables";
+import { LockedInputTokenSpecificVaultPosition } from "royco/api";
+import {
+  withdrawVaultInputTokenByAssetsTxOptions,
+  withdrawVaultInputTokenBySharesTxOptions,
+} from "royco/transaction";
 
 interface VaultWithdrawModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   position: {
-    token_data: SupportedToken & {
-      raw_amount: string;
-      token_amount: number;
-      token_amount_usd: number;
-      shares: string;
-      price: number;
-    };
+    chainId: number;
+    vaultAddress: string;
+    tokenData: LockedInputTokenSpecificVaultPosition;
   };
-  marketId: string;
-  chainId: number;
 }
 
 export const VaultWithdrawModal = React.forwardRef<
   HTMLDivElement,
   VaultWithdrawModalProps
->(({ isOpen, onOpenChange, position, marketId, chainId }, ref) => {
+>(({ isOpen, onOpenChange, position }, ref) => {
   const { address } = useAccount();
   const { setTransactions } = useMarketManager();
 
   const [amount, setAmount] = useState("");
-  const maxAmount = parseRawAmount(position.token_data.raw_amount ?? "0");
+  const maxAmount = parseRawAmount(position.tokenData.rawAmount);
 
   const isAmountExceedingPosition =
     parseFloat(amount) >
-    parseRawAmountToTokenAmount(maxAmount, position.token_data.decimals ?? 0);
+    parseRawAmountToTokenAmount(maxAmount, position.tokenData.decimals);
 
   const handleWithdraw = () => {
     if (!address || !amount) return;
@@ -66,33 +60,17 @@ export const VaultWithdrawModal = React.forwardRef<
     try {
       const rawAmount = parseTokenAmountToRawAmount(
         amount,
-        position.token_data.decimals
+        position.tokenData.decimals
       );
 
-      const contractOptions =
-        getVaultInputTokenWithdrawalByAssetTransactionOptions({
-          chain_id: chainId,
-          market_id: marketId,
-          account: address.toLowerCase(),
-          position: {
-            token_data: {
-              ...position.token_data,
-              raw_amount: rawAmount,
-              token_amount: parseRawAmountToTokenAmount(
-                rawAmount,
-                position.token_data.decimals
-              ),
-              token_amount_usd:
-                position.token_data.price *
-                parseRawAmountToTokenAmount(
-                  rawAmount,
-                  position.token_data.decimals
-                ),
-            },
-          },
-        });
+      const contractOptions = withdrawVaultInputTokenByAssetsTxOptions({
+        chainId: position.chainId,
+        vaultAddress: position.vaultAddress,
+        accountAddress: address?.toLowerCase(),
+        rawAmount: rawAmount,
+      });
 
-      setTransactions([contractOptions]);
+      setTransactions(contractOptions);
       onOpenChange(false);
     } catch (error) {
       console.error("Error processing withdrawal:", error);
@@ -103,14 +81,14 @@ export const VaultWithdrawModal = React.forwardRef<
     if (!address) return;
 
     try {
-      const contractOptions = getVaultInputTokenWithdrawalTransactionOptions({
-        chain_id: chainId,
-        market_id: marketId,
-        account: address.toLowerCase(),
-        position,
+      const contractOptions = withdrawVaultInputTokenBySharesTxOptions({
+        chainId: position.chainId,
+        vaultAddress: position.vaultAddress,
+        accountAddress: address?.toLowerCase(),
+        shares: position.tokenData.shares,
       });
 
-      setTransactions([contractOptions]);
+      setTransactions(contractOptions);
       onOpenChange(false);
     } catch (error) {
       console.error("Error processing withdrawal:", error);
@@ -137,11 +115,11 @@ export const VaultWithdrawModal = React.forwardRef<
                 defaultColor="text-tertiary"
                 previousValue={parseRawAmountToTokenAmount(
                   maxAmount,
-                  position.token_data.decimals ?? 0
+                  position.tokenData.decimals
                 )}
                 currentValue={parseRawAmountToTokenAmount(
                   maxAmount,
-                  position.token_data.decimals ?? 0
+                  position.tokenData.decimals
                 )}
                 numberFormatOptions={{
                   style: "decimal",
@@ -151,9 +129,7 @@ export const VaultWithdrawModal = React.forwardRef<
                   useGrouping: true,
                 }}
               />
-              <span className="ml-1">
-                {position.token_data.symbol?.toUpperCase()}
-              </span>
+              <span className="ml-1">{position.tokenData.symbol}</span>
             </TertiaryLabel>
           </div>
 
@@ -164,7 +140,7 @@ export const VaultWithdrawModal = React.forwardRef<
             Suffix={() => (
               <TokenDisplayer
                 size={4}
-                tokens={[position.token_data]}
+                tokens={[position.tokenData]}
                 symbols={true}
               />
             )}
@@ -190,7 +166,7 @@ export const VaultWithdrawModal = React.forwardRef<
                 className="h-9 text-sm"
               >
                 <div className="h-5">
-                  {`Withdraw ${parseTextToFormattedValue(amount) || "0"} ${position.token_data.symbol?.toUpperCase()}`}
+                  {`Withdraw ${parseTextToFormattedValue(amount) || "0"} ${position.tokenData.symbol}`}
                 </div>
               </Button>
             </DialogClose>

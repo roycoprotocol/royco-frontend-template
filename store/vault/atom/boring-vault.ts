@@ -1,9 +1,6 @@
 import { atom } from "jotai";
 
-import {
-  SpecificBoringPositionResponse,
-  VaultDepositToken,
-} from "@/app/api/royco/data-contracts";
+import { SpecificBoringPositionResponse, VaultDepositToken } from "royco/api";
 
 export type BoringVaultToken = VaultDepositToken;
 

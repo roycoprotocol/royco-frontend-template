@@ -8,15 +8,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { LoadingSpinner } from "@/components/composables";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { Vibrant } from "node-vibrant/browser";
-import { useActiveMarket } from "../../hooks";
 import { SecondaryLabel, TertiaryLabel } from "../../composables";
 import { Circle } from "lucide-react";
-import { RoycoMarketType } from "royco/market";
 import { DEFAULT_TOKEN_COLOR } from "../market-info/annual-yield-details/incentive-details";
 import formatNumber from "@/utils/numbers";
+import { useAtomValue } from "jotai";
+import { loadableChartAtom, loadableEnrichedMarketAtom } from "@/store/market";
+import { LoadingCircle } from "@/components/animations/loading-circle";
 
 const DEFAULT_OFFER_TEXT_COLOR = "#737373";
 
@@ -44,7 +44,7 @@ function CustomizedXAxisTick(props: any) {
   if (token_data && token_data.type === "point" && apr === 0) {
     formatted_data = (
       <tspan textAnchor="middle" x="0" dy="16">
-        {formatNumber(token_data.token_amount)}
+        {formatNumber(token_data.tokenAmount)}
       </tspan>
     );
   }
@@ -67,41 +67,19 @@ export const OfferListVisualizer = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const {
-    propsHighestOffers,
-    currentHighestOffers,
-    currentMarketData,
-    marketMetadata,
-  } = useActiveMarket();
+  const { data: rawChartData, isLoading: isLoadingRawChartData } =
+    useAtomValue(loadableChartAtom);
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const [tokenColor, setTokenColor] = useState<string | null>(null);
 
   const highestIncentiveToken = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.recipe.id) {
-      if (
-        !currentHighestOffers ||
-        currentHighestOffers.ip_offers.length === 0 ||
-        currentHighestOffers.ip_offers[0].tokens_data.length === 0
-      ) {
-        return null;
-      }
-
-      return currentHighestOffers.ip_offers[0].tokens_data[0];
+    if (enrichedMarket && enrichedMarket.activeIncentives.length > 0) {
+      return enrichedMarket.activeIncentives[0];
+    } else {
+      return null;
     }
-
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
-      if (
-        !currentMarketData ||
-        currentMarketData.incentive_tokens_data.length === 0
-      ) {
-        return null;
-      }
-
-      return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
-      });
-    }
-  }, [currentMarketData, currentHighestOffers, marketMetadata]);
+  }, [enrichedMarket]);
 
   useEffect(() => {
     if (highestIncentiveToken) {
@@ -132,7 +110,7 @@ export const OfferListVisualizer = React.forwardRef<
 
       getTokenColor();
     }
-  }, [currentHighestOffers]);
+  }, [rawChartData]);
 
   const chartConfig = useMemo(() => {
     return {
@@ -147,120 +125,60 @@ export const OfferListVisualizer = React.forwardRef<
         textColor: tokenColor ?? DEFAULT_OFFER_TEXT_COLOR,
       },
     };
-  }, [currentMarketData, tokenColor]);
+  }, [enrichedMarket, tokenColor]);
 
   const chartData = useMemo(() => {
-    if (!currentHighestOffers) {
+    if (!rawChartData) {
       return [];
     }
 
-    const data = [];
-    if (currentHighestOffers.ap_offers.length > 0) {
-      data.push(
-        ...currentHighestOffers.ap_offers.map((offer) => {
-          return {
-            market_type: currentMarketData.market_type,
-            annual_change_ratio: offer.annual_change_ratio,
-            quantity_value_usd: offer.quantity_value_usd,
-            fill: chartConfig.ap_offer.color,
-            offer_side: offer.offer_side,
-            quantity: offer.quantity,
-            input_token_amount: offer.input_token_data.token_amount,
-            input_token_data: offer.input_token_data,
-            incentive_value_usd: offer.incentive_value_usd,
-            tokens_data: offer.tokens_data,
-            textColor: chartConfig.ap_offer.textColor,
-          };
-        })
-      );
-    }
-    if (currentHighestOffers.ip_offers.length > 0) {
-      data.push(
-        ...currentHighestOffers.ip_offers
-          .map((offer) => {
-            let tokensData = offer.tokens_data;
-            if (currentMarketData.market_type === RoycoMarketType.vault.value) {
-              tokensData = offer.tokens_data
-                .map((token) => {
-                  const index = currentMarketData.base_incentive_ids?.findIndex(
-                    (id) => id === token.id
-                  );
-
-                  if (index === undefined || index === -1) {
-                    return null;
-                  }
-
-                  const startTimestamp = parseInt(
-                    currentMarketData.base_start_timestamps?.[index] ?? "0"
-                  );
-                  const endTimestamp = parseInt(
-                    currentMarketData.base_end_timestamps?.[index] ?? "0"
-                  );
-                  const currentTimestamp = Math.floor(Date.now() / 1000);
-
-                  const isActive =
-                    startTimestamp &&
-                    endTimestamp &&
-                    currentTimestamp >= startTimestamp &&
-                    currentTimestamp <= endTimestamp;
-
-                  if (!isActive) {
-                    return null;
-                  }
-
-                  return token;
-                })
-                .filter((token) => token !== null);
-            }
-
-            if (tokensData.length === 0) {
-              return null;
-            }
-
-            return {
-              market_type: currentMarketData.market_type,
-              annual_change_ratio: offer.annual_change_ratio,
-              quantity_value_usd: offer.quantity_value_usd,
-              fill: chartConfig.ip_offer.color,
-              offer_side: offer.offer_side,
-              quantity: offer.quantity,
-              input_token_amount: offer.input_token_data.token_amount,
-              input_token_data: offer.input_token_data,
-              incentive_value_usd: offer.incentive_value_usd,
-              tokens_data: tokensData,
-              textColor: chartConfig.ip_offer.textColor,
-            };
-          })
-          .filter((offer) => offer !== null)
-      );
-    }
+    const data = rawChartData.offers.map((offer) => {
+      return {
+        market_type: enrichedMarket?.marketType,
+        annual_change_ratio: offer.yieldRate,
+        quantity_value_usd: offer.inputTokenData.tokenAmountUsd,
+        fill:
+          offer.offerSide === 0
+            ? chartConfig.ap_offer.color
+            : chartConfig.ip_offer.color,
+        offer_side: offer.offerSide,
+        quantity: offer.inputTokenData.tokenAmount,
+        input_token_amount: offer.inputTokenData.tokenAmount,
+        input_token_data: offer.inputTokenData,
+        incentive_value_usd: offer.incentiveTokensData.reduce(
+          (acc, token) => acc + token.tokenAmountUsd,
+          0
+        ),
+        tokens_data: offer.incentiveTokensData,
+        textColor:
+          offer.offerSide === 0
+            ? chartConfig.ap_offer.textColor
+            : chartConfig.ip_offer.textColor,
+      };
+    });
 
     // Sort the data by `annual_change_ratio`
     return data.sort(
       (a, b) => (a.annual_change_ratio ?? 0) - (b.annual_change_ratio ?? 0)
     );
-  }, [currentHighestOffers, currentMarketData, tokenColor]);
+  }, [rawChartData, enrichedMarket, tokenColor]);
 
-  const YAxisLabel = useMemo(() => {
-    if (currentMarketData && currentMarketData.input_token_data) {
-      return `${currentMarketData.input_token_data.symbol} Offer Size`;
-    }
-    return "Offer Size";
-  }, [currentMarketData]);
-
-  if (propsHighestOffers.isLoading) {
+  if (isLoadingRawChartData) {
     return (
       <div
         ref={ref}
-        className={cn("flex h-80 flex-col place-content-center", className)}
+        className={cn(
+          "flex h-80 w-full flex-col place-content-center items-center",
+          className
+        )}
         {...props}
       >
-        <LoadingSpinner className="h-4 w-4" />
+        <LoadingCircle />
       </div>
     );
   }
 
-  if (!chartData.length || !currentHighestOffers) {
+  if (!chartData.length) {
     return (
       <div
         ref={ref}
@@ -310,7 +228,9 @@ export const OfferListVisualizer = React.forwardRef<
         <div className="absolute bottom-0 left-0 top-0 flex w-5 items-center justify-center">
           <div className="flex shrink-0 -rotate-90 items-center gap-1">
             <TokenDisplayer
-              tokens={[currentMarketData.input_token_data] as any}
+              tokens={
+                enrichedMarket?.inputToken ? [enrichedMarket.inputToken] : []
+              }
               size={4}
               symbols={true}
               symbolClassName="text-black text-xs font-medium"
@@ -350,7 +270,7 @@ export const OfferListVisualizer = React.forwardRef<
               tickMargin={0}
               tickFormatter={(value) => {
                 const formattedValue = formatNumber(value as number);
-                return formattedValue;
+                return formattedValue ?? "0";
               }}
             />
 

@@ -10,11 +10,8 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { InputAmountSelector } from "./input-amount-selector";
 import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "royco/utils";
-import { useMarketManager } from "@/store";
-import { RoycoMarketType } from "royco/market";
-import { useActiveMarket } from "../../../../hooks";
-import { useMarketFormDetails } from "../../use-market-form-details";
-import { WarningAlert } from "./warning-alert";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { useAtomValue } from "jotai";
 
 export const IncentivesAmountSelector = React.forwardRef<
   HTMLDivElement,
@@ -28,38 +25,43 @@ export const IncentivesAmountSelector = React.forwardRef<
     { className, marketActionForm, delayTitle, delayContent, ...props },
     ref
   ) => {
-    const { userType } = useMarketManager();
+    const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-    const { marketMetadata, currentHighestOffers, currentMarketData } =
-      useActiveMarket();
-    const currentIncentives =
-      marketMetadata.market_type === RoycoMarketType.recipe.id &&
-      !!currentHighestOffers &&
-      currentHighestOffers.ip_offers.length > 0
-        ? currentHighestOffers.ip_offers[0].tokens_data
-        : [];
+    // const { userType } = useMarketManager();
 
-    const { incentiveData } = useMarketFormDetails(marketActionForm);
+    // const { marketMetadata, currentHighestOffers, currentMarketData } =
+    //   useActiveMarket();
+    // const currentIncentives =
+    //   marketMetadata.market_type === RoycoMarketType.recipe.id &&
+    //   !!currentHighestOffers &&
+    //   currentHighestOffers.ip_offers.length > 0
+    //     ? currentHighestOffers.ip_offers[0].tokens_data
+    //     : [];
 
-    const hasLowerAPR = useMemo(() => {
-      return marketActionForm.watch("incentive_tokens").some((token) => {
-        const currentIncentive = currentIncentives.find(
-          (i) => i.id === token.id
-        );
-        const incentive = incentiveData.find((i) => i.token_id === token.id);
+    // const { incentiveData } = useMarketFormDetails(marketActionForm);
 
-        if (currentIncentive && incentive) {
-          return (
-            incentive.annual_change_ratio < currentIncentive.annual_change_ratio
-          );
-        }
-        return false;
-      });
-    }, [
-      marketActionForm.watch("incentive_tokens"),
-      currentIncentives,
-      incentiveData,
-    ]);
+    // const hasLowerAPR = useMemo(() => {
+    //   if (enrichedMarket) {
+    //     return marketActionForm.watch("incentive_tokens").some((token) => {
+    //       const currentIncentive = enrichedMarket?.activeIncentives.find(
+    //         (i) => i.id === token.id
+    //       );
+    //       const incentive = incentiveData.find((i) => i.token_id === token.id);
+
+    //       if (currentIncentive && incentive && enrichedMarket) {
+    //         return incentive.annual_change_ratio < currentIncentive.yieldRate;
+    //       }
+    //       return false;
+    //     });
+    //   } else {
+    //     return false;
+    //   }
+    // }, [
+    //   marketActionForm.watch("incentive_tokens"),
+    //   currentIncentives,
+    //   incentiveData,
+    //   enrichedMarket,
+    // ]);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -84,7 +86,7 @@ export const IncentivesAmountSelector = React.forwardRef<
                 marketActionForm.setValue("incentive_tokens", [token]);
               }
             }}
-            token_ids={currentMarketData.incentive_ids}
+            token_ids={enrichedMarket?.incentiveTokenIds}
             // onSelect={(token) => {
             //   const incentiveTokens =
             //     marketActionForm.watch("incentive_tokens");
@@ -105,13 +107,13 @@ export const IncentivesAmountSelector = React.forwardRef<
           />
         </SlideUpWrapper>
 
-        {hasLowerAPR && (
+        {/* {hasLowerAPR && (
           <SlideUpWrapper className="mt-3" delay={0.4}>
             <WarningAlert>
               WARNING: Your offered APR is below market rate
             </WarningAlert>
           </SlideUpWrapper>
-        )}
+        )} */}
 
         <SlideUpWrapper className="mt-2" delay={delayContent}>
           <div className="flex h-fit w-full flex-col gap-1 rounded-xl border border-divider bg-z2 p-1">

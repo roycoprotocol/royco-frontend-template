@@ -11,15 +11,16 @@ import { FallMotion } from "@/components/animations";
 import { CheckIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
-import { getTokenQuote, useTokenQuotes, useAllowedTokens } from "royco/hooks";
-import { useActiveMarket } from "../../../../hooks";
 import { AnimatePresence } from "framer-motion";
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
-import { useMarketManager } from "@/store";
-import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/composables";
 import { Badge } from "@/components/ui/badge";
 import { useAccount } from "wagmi";
-import { RoycoMarketType, RoycoMarketUserType } from "royco/market";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/app/api/royco";
+import { Filter } from "royco/api";
+import { defaultQueryOptions } from "@/utils/query";
 
 export const IncentiveTokenSelector = React.forwardRef<
   HTMLDivElement,
@@ -43,93 +44,87 @@ export const IncentiveTokenSelector = React.forwardRef<
     },
     ref
   ) => {
-    const { marketMetadata, currentMarketData } = useActiveMarket();
+    const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
     const { address } = useAccount();
 
-    const { userType } = useMarketManager();
-
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [page, setPage] = useState(0);
+    const [pageIndex, setPageIndex] = useState(1);
     const [type, setType] = useState<"point" | "token" | "lp">("token");
 
-    const { data, count, total_pages, isLoading } = useAllowedTokens({
-      chain_id: marketMetadata.chain_id,
-      page,
-      search,
-      included_token_ids: token_ids,
-      excluded_token_ids: not_token_ids,
-      id: currentMarketData?.id ?? undefined,
-      user_type: userType,
-      type,
-      account_address: address?.toLowerCase(),
-      ...(currentMarketData.market_type === RoycoMarketType.vault.value &&
-        userType === RoycoMarketUserType.ip.id && {
-          vault_address: currentMarketData.market_id,
-        }),
+    const { data: propsTokens, isLoading } = useQuery({
+      queryKey: [
+        "allowed-tokens",
+        {
+          enrichedMarketId: enrichedMarket?.id,
+          type,
+          token_ids,
+          not_token_ids,
+          search,
+          pageIndex,
+        },
+      ],
+      queryFn: async () => {
+        if (!enrichedMarket) throw new Error("Enriched market not found");
+
+        let filters: Filter[] = [
+          {
+            id: "chainId",
+            value: enrichedMarket.chainId,
+          },
+          {
+            id: "type",
+            value: type,
+          },
+        ];
+
+        if (token_ids && token_ids.length > 0) {
+          filters.push({
+            id: "id",
+            value: token_ids,
+            condition: "inArray",
+          });
+        } else if (not_token_ids && not_token_ids.length > 0) {
+          filters.push({
+            id: "id",
+            value: not_token_ids,
+            condition: "notInArray",
+          });
+        }
+
+        return api
+          .tokenControllerGetTokenDirectory({
+            filters,
+            searchKey: search.trim().length > 0 ? search : undefined,
+            page: {
+              index: pageIndex,
+              size: 20,
+            },
+          })
+          .then((res) => res.data);
+      },
+      ...defaultQueryOptions,
     });
 
-    const propsTokenQuotes = useTokenQuotes({
-      token_ids: data.map((token) => token.id),
-    });
-
-    const canPrevPage = page > 0;
-    const canNextPage = page < total_pages - 1;
+    const canPrevPage = pageIndex > 1;
+    const canNextPage = pageIndex < (propsTokens?.page.total ?? 1);
 
     const handleNextPage = () => {
       if (canNextPage) {
-        setPage(page + 1);
+        setPageIndex(pageIndex + 1);
       }
     };
 
     const handlePrevPage = () => {
       if (canPrevPage) {
-        setPage(page - 1);
-      }
-    };
-
-    const [placeholderPage, setPlaceholderPage] = useState<Array<number>>([
-      0, 0,
-    ]);
-    const [placeholderTotalPages, setPlaceholderTotalPages] = useState<
-      Array<number>
-    >([0, 0]);
-
-    const updatePlaceholderPage = () => {
-      let newPlaceholderPage = [...placeholderPage, page];
-      if (newPlaceholderPage.length > 2) {
-        newPlaceholderPage.shift();
-      }
-      setPlaceholderPage(newPlaceholderPage);
-    };
-
-    const updatePlaceholderTotalPages = () => {
-      let newPlaceholderTotalPages = [...placeholderTotalPages, total_pages];
-      if (newPlaceholderTotalPages.length > 2) {
-        newPlaceholderTotalPages.shift();
-      }
-      setPlaceholderTotalPages(newPlaceholderTotalPages);
-    };
-
-    const resetPlaceholders = () => {
-      if (open === false) {
-        setPlaceholderPage([page, page]);
-        setPlaceholderTotalPages([total_pages, total_pages]);
+        setPageIndex(pageIndex - 1);
       }
     };
 
     useEffect(() => {
-      updatePlaceholderPage();
-    }, [page]);
-
-    useEffect(() => {
-      updatePlaceholderTotalPages();
-    }, [total_pages]);
-
-    useEffect(() => {
-      resetPlaceholders();
-    }, [open]);
+      setPageIndex(1);
+    }, [type]);
 
     return (
       <div ref={ref} className={cn("", className)} {...props}>
@@ -212,7 +207,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                 <Input
                   onChange={(e) => {
                     setSearch(e.target.value);
-                    setPage(0);
+                    setPageIndex(1);
                   }}
                   value={search}
                   Prefix={() => {
@@ -228,7 +223,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                 />
 
                 <ul className="list mt-1 flex w-full grow flex-col gap-0 overflow-x-hidden overflow-y-scroll">
-                  {data.length === 0 && (
+                  {propsTokens?.data.length === 0 && (
                     <AlertIndicator className="h-full">
                       No{" "}
                       {type === "token" || type === "lp" ? "tokens" : "points"}{" "}
@@ -237,7 +232,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                   )}
 
                   <AnimatePresence mode="popLayout">
-                    {data.map((token, index) => {
+                    {propsTokens?.data.map((token, index) => {
                       const baseKey = `${key}:${index}:${token.id}`;
                       const selected = selected_token_ids?.some(
                         (selected_token_id) => selected_token_id === token.id
@@ -251,12 +246,7 @@ export const IncentiveTokenSelector = React.forwardRef<
                           <FallMotion height="2rem" customKey={baseKey}>
                             <div
                               onClick={() => {
-                                const token_quote = getTokenQuote({
-                                  token_id: token.id,
-                                  token_quotes: propsTokenQuotes,
-                                });
-
-                                onSelect?.(token_quote);
+                                onSelect?.(token);
                               }}
                               key={`fall-motion:${baseKey}`}
                               tabIndex={0}
@@ -291,33 +281,7 @@ export const IncentiveTokenSelector = React.forwardRef<
 
                 <div className="mt-1 flex w-full flex-row items-center justify-between rounded-md border border-divider bg-z2 px-2 py-1 text-sm">
                   <div className="text-secondary">
-                    Page
-                    <SpringNumber
-                      defaultColor="text-secondary"
-                      className="mx-1 inline-block"
-                      numberFormatOptions={{
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }}
-                      // previousValue={placeholderPage[0]}
-                      previousValue={placeholderPage[1] + 1}
-                      currentValue={placeholderPage[1] + 1}
-                    />
-                    of{" "}
-                    <SpringNumber
-                      defaultColor="text-secondary"
-                      numberFormatOptions={{
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }}
-                      previousValue={
-                        placeholderTotalPages[0] === 0
-                          ? 1
-                          : placeholderTotalPages[0]
-                      }
-                      currentValue={total_pages === 0 ? 1 : total_pages}
-                      className="mx-1 inline-block"
-                    />
+                    Page {propsTokens?.page.index} of {propsTokens?.page.total}
                   </div>
                   <div className="flex flex-row items-center gap-1">
                     <div

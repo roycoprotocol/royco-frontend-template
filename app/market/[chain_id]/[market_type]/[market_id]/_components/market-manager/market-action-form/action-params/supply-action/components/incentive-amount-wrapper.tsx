@@ -10,7 +10,8 @@ import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { RoycoMarketType } from "royco/market";
-import { useActiveMarket } from "../../../../../hooks/use-active-market";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const IncentiveAmountWrapper = React.forwardRef<
   HTMLDivElement,
@@ -19,7 +20,7 @@ export const IncentiveAmountWrapper = React.forwardRef<
     onAmountChange?: (value: { amount: number; rawAmount: string }) => void;
   }
 >(({ className, marketActionForm, onAmountChange, ...props }, ref) => {
-  const { marketMetadata } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const selectedIncentiveToken =
     marketActionForm.watch("incentive_tokens")?.[0] || null;
@@ -31,7 +32,7 @@ export const IncentiveAmountWrapper = React.forwardRef<
       selectedIncentiveToken.decimals ?? 0
     );
 
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
+    if (enrichedMarket?.marketType === RoycoMarketType.vault.value) {
       const updatedIncentiveTokens = marketActionForm
         .watch("incentive_tokens")
         .map((t) =>
@@ -78,7 +79,7 @@ export const IncentiveAmountWrapper = React.forwardRef<
       <InputAmountSelector
         containerClassName="mt-2"
         currentValue={
-          marketMetadata.market_type === RoycoMarketType.vault.id
+          enrichedMarket?.marketType === RoycoMarketType.vault.value
             ? (selectedIncentiveToken.distribution ?? "")
             : (selectedIncentiveToken.amount ?? "")
         }
@@ -91,7 +92,7 @@ export const IncentiveAmountWrapper = React.forwardRef<
                 tokens={[selectedIncentiveToken]}
                 symbols={false}
               />
-              {marketMetadata.market_type === RoycoMarketType.vault.id ? (
+              {enrichedMarket?.marketType === RoycoMarketType.vault.value ? (
                 <SecondaryLabel className="font-gt font-light text-black">
                   {selectedIncentiveToken.symbol} / YEAR
                 </SecondaryLabel>

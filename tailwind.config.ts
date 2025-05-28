@@ -28,10 +28,14 @@ const config = {
         "3xl": "1600px",
       },
       fontFamily: {
-        inter: ["var(--font-inter)"],
-        gt: ["var(--font-gt)"],
         morion: ["var(--font-morion)"],
         ortica: ["var(--font-ortica)"],
+
+        // new fonts
+        inter: ["var(--font-inter)"],
+        gt: ["var(--font-gt)"], // TODO: remove this - keep one inter font
+        shippori: ["var(--font-shippori)"],
+        fragmentMono: ["var(--font-fragment-mono)"],
       },
 
       fontWeight: {
@@ -70,7 +74,18 @@ const config = {
 
         background: "#fbfbf8",
 
-        _primary: "#011A16",
+        // new variables
+        _surface_: "#FDFDFB",
+        _surface_secondary: "#E5E5E1",
+        _surface_tertiary: "#F2F2ED",
+        _primary_: "#0F0E0D",
+        _secondary_: "#4D4B49",
+        _divider_: "#D9D9D5",
+        _disabled_: "#999494",
+        _highlight_: "#83715C",
+        _tertiary_: "#676564",
+
+        _primary_text_: "#6C4315",
       },
       keyframes: {
         "accordion-down": {

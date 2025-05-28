@@ -15,6 +15,9 @@ import {
 } from "../../constants/abi";
 import { formatDate } from "date-fns";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
+import { VaultTransactionType } from "@/store/vault/use-vault-manager";
+import { formatLockupTime } from "@/utils/lockup-time";
+import { ROYCO_USDC_VAULT_ID } from "../../constants/vaults";
 
 export function BoringVaultActionProvider({
   children,
@@ -56,13 +59,13 @@ export function BoringVaultActionProvider({
 
       if (new BigNumber(allowance.toString()).gte(rawAmount)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${boringVault.baseAsset.symbol}`,
           txStatus: "success",
         });
       } else if (new BigNumber(allowance.toString()).lt(rawAmount)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${boringVault.baseAsset.symbol}`,
           data: {
             address: boringVault.baseAsset.contractAddress,
@@ -74,7 +77,7 @@ export function BoringVaultActionProvider({
       }
 
       transactions.push({
-        type: "deposit",
+        type: VaultTransactionType.Deposit,
         label: `Deposit ${boringVault.baseAsset.symbol}`,
         data: {
           address: boringVault.contracts.teller,
@@ -88,7 +91,41 @@ export function BoringVaultActionProvider({
         },
       });
 
-      return { steps: transactions };
+      const lockupTime = formatLockupTime(data.maxLockup);
+
+      const description = `This Vault will initially allocate into Plume Markets with ${lockupTime.toLowerCase()} lockups.`;
+
+      const metadata = [
+        {
+          label: "Lockup",
+          value: lockupTime + ", Forfeit to Exit Early",
+        },
+      ];
+
+      const warnings = (
+        <div className="space-y-2">
+          <p>By selecting Confirm, I understand that:</p>
+          <ul className="list-disc space-y-2 pl-6">
+            <li>Incentives will be paid out after lockup.</li>
+            <li>
+              Withdrawing funds before {lockupTime.toLowerCase()} will result in
+              forfeiture of all rewards earned during that period.
+            </li>
+            <li>Withdrawals can take up to 5 days to process.</li>
+            <li>Lockup will begin after the next rebalance.</li>
+          </ul>
+        </div>
+      );
+
+      return {
+        steps: transactions,
+        metadata,
+        warnings,
+        description:
+          ROYCO_USDC_VAULT_ID.toLowerCase() === data.vaultAddress.toLowerCase()
+            ? description
+            : undefined,
+      };
     } catch (error) {
       toast.custom(
         <ErrorAlert message="Failed to create deposit transaction." />
@@ -114,7 +151,7 @@ export function BoringVaultActionProvider({
       if (boringVault.account.unlockTime > Date.now()) {
         toast.custom(
           <ErrorAlert
-            message={`User shares are locked. Please wait until ${formatDate(boringVault.account.unlockTime, "MMM dd, yyyy hh:mm aa")} to withdraw.`}
+            message={`Withdrawals cannot be queued until 24 hours after deposit. Please wait until ${formatDate(boringVault.account.unlockTime, "MMM dd, yyyy hh:mm aa")} to queue your withdrawal.`}
           />
         );
         return;
@@ -168,7 +205,8 @@ export function BoringVaultActionProvider({
 
       const daysValid = new BigNumber(assetParams.minimumSecondsToDeadline)
         .div(86400)
-        .ceil();
+        .ceil()
+        .add(1);
 
       const minDiscount = new BigNumber(assetParams.minDiscount).div(100);
       const maxDiscount = new BigNumber(assetParams.maxDiscount).div(100);
@@ -183,13 +221,13 @@ export function BoringVaultActionProvider({
 
       if (new BigNumber(allowance.toString()).gte(shares)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${data.name}`,
           txStatus: "success",
         });
       } else if (new BigNumber(allowance.toString()).lt(shares)) {
         transactions.push({
-          type: "approve",
+          type: VaultTransactionType.Approve,
           label: `Approve ${data.name}`,
           data: {
             address: boringVault.contracts.vault,
@@ -201,7 +239,7 @@ export function BoringVaultActionProvider({
       }
 
       transactions.push({
-        type: "withdraw",
+        type: VaultTransactionType.Withdraw,
         label: `Create ${boringVault.baseAsset.symbol} Withdraw Request`,
         data: {
           address: boringVault.contracts.boringQueue,
@@ -216,18 +254,27 @@ export function BoringVaultActionProvider({
         },
       });
 
+      const description = `Your withdrawal request will be submitted to the vault manager and processed within ${daysValid} business days. You will not earn rewards during this period.`;
+
+      const metadata = [
+        {
+          label: "Slippage",
+          value: `0% - ${maxDiscount}%`,
+        },
+        {
+          label: "Timing",
+          value: `Up to ${daysValid} Business Days`,
+        },
+        {
+          label: "Destination",
+          value: address.slice(0, 6) + "..." + address.slice(-4),
+        },
+      ];
+
       return {
-        description: [
-          {
-            label: "What to Expect",
-            value: `Your withdrawal request will be reviewed by the vault manager within ${daysValid} days. If denied or canceled, the funds will return to vault.`,
-          },
-          {
-            label: "Slippage",
-            value: `${minDiscount}% - ${maxDiscount}%`,
-          },
-        ],
+        description,
         steps: transactions,
+        metadata,
       };
     } catch (error) {
       toast.custom(
@@ -273,7 +320,7 @@ export function BoringVaultActionProvider({
       const transactions = [];
 
       transactions.push({
-        type: "cancelWithdraw",
+        type: VaultTransactionType.CancelWithdraw,
         label: `Cancel ${boringVault.baseAsset.symbol} Withdraw Request`,
         data: {
           address: boringVault.contracts.boringQueue,
@@ -295,18 +342,80 @@ export function BoringVaultActionProvider({
       });
 
       return {
-        description: [
-          {
-            label: "What to Expect",
-            value: `The funds will return to vault.`,
-          },
-        ],
+        description: `The funds will return to vault.`,
         steps: transactions,
       };
     } catch (error) {
       toast.custom(
         <ErrorAlert message="Failed to cancel withdrawal request." />
       );
+      return { steps: [] };
+    }
+  };
+
+  const getRecoverWithdrawalTransaction = async (metadata: any) => {
+    try {
+      if (!address) {
+        toast.custom(
+          <ErrorAlert message="No account found. Please connect your wallet and try again." />
+        );
+        return;
+      }
+
+      if (!boringVault) {
+        toast.custom(<ErrorAlert message="Vault data not available." />);
+        return;
+      }
+
+      const withdrawal = boringVault.account.withdrawals.find(
+        (withdrawal: any) =>
+          withdrawal.metadata.assetOut === metadata.assetOut &&
+          withdrawal.metadata.creationTime === metadata.creationTime &&
+          withdrawal.metadata.nonce === metadata.nonce
+      );
+
+      if (!withdrawal) {
+        toast.custom(<ErrorAlert message="Withdrawal request not found." />);
+        return;
+      }
+
+      if (withdrawal.status !== "expired") {
+        toast.custom(
+          <ErrorAlert message={`Withdrawal request is ${withdrawal.status}.`} />
+        );
+        return;
+      }
+
+      const transactions = [];
+
+      transactions.push({
+        type: VaultTransactionType.RecoverWithdraw,
+        label: `Recover ${boringVault.baseAsset.symbol} Withdraw Request`,
+        data: {
+          address: boringVault.contracts.boringQueue,
+          abi: BoringQueueABI,
+          functionName: "cancelOnChainWithdraw",
+          args: [
+            [
+              withdrawal.metadata.nonce,
+              withdrawal.metadata.user,
+              withdrawal.metadata.assetOut,
+              withdrawal.metadata.amountOfShares,
+              withdrawal.metadata.amountOfAssets,
+              withdrawal.metadata.creationTime,
+              withdrawal.metadata.secondsToMaturity,
+              withdrawal.metadata.secondsToDeadline,
+            ],
+          ],
+        },
+      });
+
+      return {
+        description: `The funds will return to your wallet.`,
+        steps: transactions,
+      };
+    } catch (error) {
+      toast.custom(<ErrorAlert message="Failed to recover withdrawal." />);
       return { steps: [] };
     }
   };
@@ -328,7 +437,7 @@ export function BoringVaultActionProvider({
       const transactions = [];
 
       transactions.push({
-        type: "claimIncentive",
+        type: VaultTransactionType.ClaimIncentives,
         label: `Claim ${boringVault.baseAsset.symbol} Incentive`,
         data: {
           address: boringVault.contracts.vault,
@@ -338,7 +447,18 @@ export function BoringVaultActionProvider({
         },
       });
 
-      return { steps: transactions };
+      const metadata = [
+        {
+          label: "Timing",
+          value: "Instant",
+        },
+        {
+          label: "Destination",
+          value: address.slice(0, 6) + "..." + address.slice(-4),
+        },
+      ];
+
+      return { steps: transactions, metadata };
     } catch (error) {
       toast.custom(<ErrorAlert message="Failed to claim incentive." />);
       return { steps: [] };
@@ -351,6 +471,7 @@ export function BoringVaultActionProvider({
         getDepositTransaction,
         getWithdrawalTransaction,
         getCancelWithdrawalTransaction,
+        getRecoverWithdrawalTransaction,
         getClaimIncentiveTransaction,
       }}
     >
@@ -360,11 +481,13 @@ export function BoringVaultActionProvider({
 }
 
 type TypeVaultTransactionReturn = {
-  description?: {
+  description?: string;
+  steps: any[];
+  metadata?: {
     label: string;
     value: string;
   }[];
-  steps: any[];
+  warnings?: React.ReactNode;
 };
 
 interface BoringVaultActions {
@@ -375,6 +498,9 @@ interface BoringVaultActions {
     amount: number
   ) => Promise<TypeVaultTransactionReturn | undefined>;
   getCancelWithdrawalTransaction: (
+    metadata: any
+  ) => Promise<TypeVaultTransactionReturn | undefined>;
+  getRecoverWithdrawalTransaction: (
     metadata: any
   ) => Promise<TypeVaultTransactionReturn | undefined>;
   getClaimIncentiveTransaction: (

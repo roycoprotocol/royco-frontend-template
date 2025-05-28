@@ -1,20 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { useActiveMarket } from "../../../../hooks";
-import { useEnrichedPositionsBoyco } from "royco/hooks";
 import { useAccount } from "wagmi";
 import { LoadingSpinner } from "@/components/composables";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import formatNumber from "@/utils/numbers";
 import { Button } from "@/components/ui/button";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
 import { getSupportedToken } from "royco/constants";
 import { BERA_TOKEN_ID } from "royco/boyco";
-import { getBoycoReceiptTokenWithdrawalTransactionOptions } from "royco/hooks";
 import { useMarketManager } from "@/store/use-market-manager";
 import { ExternalLinkIcon, InfoIcon } from "lucide-react";
+import { useAtomValue } from "jotai";
+import {
+  loadableEnrichedMarketAtom,
+  loadableSpecificBoycoPositionAtom,
+} from "@/store/market";
+import { withdrawBoycoReceiptTokenTxOptions } from "royco/transaction";
 
 export const BoycoWithdrawSectionRow = React.forwardRef<
   HTMLDivElement,
@@ -49,31 +51,46 @@ export const BoycoWithdrawSection = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const page_size = 100;
-  const [page, setPage] = useState(0);
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
   const { address } = useAccount();
-
   const { transactions, setTransactions } = useMarketManager();
 
-  const propsPositionsBoyco = useEnrichedPositionsBoyco({
-    account_address: address?.toLowerCase() ?? "",
-    market_id: currentMarketData?.market_id ?? undefined,
-    // account_address: "0xa1c3ba712fcf2bb8a22f8b9f9d5b6ab4c4cade61",
-    // market_id:
-    //   "0x6262ac035c2284f5b5249a690a6fd81c35f1ecef501da089f25741a4492cf5f3",
-    page_index: page,
-    page_size,
-  });
+  const propsBoycoPosition = useAtomValue(loadableSpecificBoycoPositionAtom);
 
-  const isUnlocked =
-    propsPositionsBoyco?.data?.data?.some(
-      (position) =>
-        position.unlock_timestamp &&
-        Number(position.unlock_timestamp) < new Date().getTime() / 1000
-    ) ?? false;
+  const isLoading = propsBoycoPosition.isLoading;
 
-  if (propsPositionsBoyco.isLoading) {
+  if (enrichedMarket?.lockupTime !== "2592000") {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex h-fit flex-1 grow flex-col items-center gap-2",
+          className
+        )}
+        {...props}
+      >
+        <BoycoWithdrawSectionRowContainer className="flex flex-col">
+          <div>Withdrawal is available from boyco.berachain.com</div>
+          <Button
+            size="sm"
+            className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
+            onClick={() => {
+              const redirect_link = `https://boyco.berachain.com/`;
+
+              window.open(redirect_link, "_blank", "noopener,noreferrer");
+            }}
+          >
+            <div className="flex flex-row items-center gap-2">
+              Go to boyco.berachain.com
+              <ExternalLinkIcon className="h-4 w-4" />
+            </div>
+          </Button>
+        </BoycoWithdrawSectionRowContainer>
+      </div>
+    );
+  }
+
+  if (isLoading) {
     return (
       <div
         className={cn(
@@ -88,24 +105,24 @@ export const BoycoWithdrawSection = React.forwardRef<
 
   if (!address) {
     return (
-      <AlertIndicator className="w-full rounded-md">
-        Wallet not connected
-      </AlertIndicator>
+      <div className="h-full w-full place-content-center items-start">
+        <AlertIndicator>Wallet not connected</AlertIndicator>
+      </div>
     );
   }
 
   if (
-    !propsPositionsBoyco.data?.data ||
-    propsPositionsBoyco.data?.data?.length === 0
+    propsBoycoPosition.data &&
+    propsBoycoPosition.data.inputToken.rawAmount === "0"
   ) {
     return (
-      <AlertIndicator className="w-full rounded-md">
-        No withdrawable positions found
-      </AlertIndicator>
+      <div className="h-full w-full place-content-center items-start">
+        <AlertIndicator>No withdrawable positions found</AlertIndicator>
+      </div>
     );
   }
 
-  if (currentMarketData?.lockup_time !== "2592000") {
+  if (enrichedMarket?.lockupTime !== "2592000") {
     return (
       <div
         ref={ref}
@@ -144,40 +161,30 @@ export const BoycoWithdrawSection = React.forwardRef<
     >
       <div className="text-sm font-normal text-secondary">Receipt Token</div>
 
-      {propsPositionsBoyco.data?.data?.map((position) => {
-        const isUnlocked =
-          position.unlock_timestamp &&
-          Number(position.unlock_timestamp) < new Date().getTime() / 1000;
-
-        const isWithdrawn = position.is_withdrawn;
-
-        const isDisabled = isWithdrawn || !isUnlocked;
-
+      {propsBoycoPosition.data?.lockedInputToken.map((position) => {
         return (
           <BoycoWithdrawSectionRowContainer
-            key={`boyco-withdraw-position-${position.id}`}
+            key={`boyco-withdraw-position-${position.weirollWallet}`}
           >
             <div className="flex grow flex-col overflow-hidden truncate text-ellipsis">
               <div className="flex flex-wrap text-wrap">
-                {position.incentive_token_datas
-                  .map((token) => token.symbol)
-                  .join(", ")}
+                {position.breakdown.map((token) => token.symbol).join(", ")}
               </div>
 
               <div className="flex flex-wrap text-wrap">
-                {position.incentive_token_datas.map((token) => {
+                {position.breakdown.map((token) => {
                   return (
                     <div
-                      key={`boyco-withdraw-position-${position.id}-${token.id}`}
+                      key={`boyco-withdraw-position-${position.weirollWallet}-${token.id}`}
                       className="grow overflow-hidden truncate text-ellipsis text-xs font-normal text-tertiary"
                     >
-                      {formatNumber(token.token_amount, {
+                      {formatNumber(token.tokenAmount, {
                         type: "number",
                       })}{" "}
                       {token.symbol.length > 10
                         ? `${token.symbol.slice(0, 10)}...`
                         : token.symbol}{" "}
-                      {`(${formatNumber(token.token_amount_usd, {
+                      {`(${formatNumber(token.tokenAmountUsd, {
                         type: "currency",
                       })})`}
                     </div>
@@ -187,23 +194,20 @@ export const BoycoWithdrawSection = React.forwardRef<
             </div>
             <div className="flex flex-1 grow flex-col items-center justify-center">
               <Button
-                disabled={isDisabled}
                 size="sm"
                 className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
                 onClick={() => {
-                  const contractOptions =
-                    getBoycoReceiptTokenWithdrawalTransactionOptions({
-                      position,
-                    });
+                  const txOptions = withdrawBoycoReceiptTokenTxOptions({
+                    amountDeposited: position.amountDeposited,
+                    merkleDepositNonce: position.merkleDepositNonce,
+                    merkleProof: position.merkleProof,
+                    weirollWallet: position.weirollWallet,
+                  });
 
-                  setTransactions([contractOptions]);
+                  setTransactions(txOptions);
                 }}
               >
-                {isUnlocked
-                  ? isWithdrawn
-                    ? "Withdrawn"
-                    : "Withdraw"
-                  : "Locked"}
+                Withdraw
               </Button>
             </div>
           </BoycoWithdrawSectionRowContainer>
@@ -218,11 +222,11 @@ export const BoycoWithdrawSection = React.forwardRef<
         <div className="flex-1 text-sm font-light leading-tight text-secondary">
           You can redeem your receipt tokens for underlying tokens from Dapp's
           page.{" "}
-          {currentMarketData.boyco?.native_incentive_link && (
+          {propsBoycoPosition.data?.dappLink && (
             <>
               Click{" "}
               <a
-                href={currentMarketData.boyco?.native_incentive_link ?? ""}
+                href={propsBoycoPosition.data?.dappLink ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
                 className=" text-black underline decoration-secondary decoration-dotted decoration-2 underline-offset-2 duration-200 ease-in-out hover:opacity-80"
@@ -235,99 +239,54 @@ export const BoycoWithdrawSection = React.forwardRef<
         </div>
       </div>
 
-      {propsPositionsBoyco.data?.data?.length > 0 && (
-        <>
-          <div className="my-2 h-px w-full rounded-full bg-divider" />
-
-          <div className="text-sm font-normal text-secondary">Incentives</div>
-
-          <BoycoWithdrawSectionRowContainer>
-            <TokenDisplayer
-              tokens={[getSupportedToken(BERA_TOKEN_ID)]}
-              symbols={true}
-            />
-
-            <Button
-              onClick={() => {
-                const redirect_link = `/claim/berachain/80094/${currentMarketData.boyco?.bera_merkle_id}`;
-
-                window.open(redirect_link, "_blank", "noopener,noreferrer");
-              }}
-              disabled={!isUnlocked}
-              className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
-              size="sm"
-            >
-              {isUnlocked ? "Claim" : "Locked"}
-            </Button>
-          </BoycoWithdrawSectionRowContainer>
-
-          <div className="my-2 h-px w-full rounded-full bg-divider" />
-
-          <div className="text-sm font-normal text-secondary">
-            Native Incentives
-          </div>
-
-          <BoycoWithdrawSectionRowContainer>
-            <TokenDisplayer
-              tokens={propsPositionsBoyco.data?.data?.[0].token_1_datas}
-              symbols={true}
-            />
-
-            <Button
-              onClick={() => {
-                const redirect_link =
-                  currentMarketData.boyco?.native_incentive_link ?? "";
-
-                window.open(redirect_link, "_blank", "noopener,noreferrer");
-              }}
-              disabled={
-                !isUnlocked && !!currentMarketData.boyco?.native_incentive_link
-              }
-              className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
-              size="sm"
-            >
-              {isUnlocked && !!currentMarketData.boyco?.native_incentive_link
-                ? "View"
-                : "Locked"}
-            </Button>
-          </BoycoWithdrawSectionRowContainer>
-        </>
-      )}
-
-      {/* <div className="my-2 h-px w-full rounded-full bg-divider" />
+      <div className="my-2 h-px w-full rounded-full bg-divider" />
 
       <div className="text-sm font-normal text-secondary">
-        External Incentives
+        Underlying Incentives
       </div>
 
       <BoycoWithdrawSectionRowContainer>
-        <div className="flex grow flex-row items-center justify-start">
-          <div className="h-6 w-6 rounded-full border border-divider bg-secondary drop-shadow-sm" />
-          <div className="-ml-2 h-6 w-6 rounded-full border border-divider bg-tertiary drop-shadow-md" />
-          <div className="-ml-2 h-6 w-6 rounded-full border border-divider bg-white drop-shadow-lg" />
-        </div>
+        <TokenDisplayer
+          tokens={[getSupportedToken(BERA_TOKEN_ID)]}
+          symbols={true}
+        />
 
         <Button
-          disabled={true}
-          className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
-          size="sm"
-        >
-          Locked
-        </Button>
-      </BoycoWithdrawSectionRowContainer> */}
-
-      {/* <BoycoWithdrawSectionRowContainer>
-        <div className="flex grow flex-col items-start justify-center">
-          Bodiak Points
-        </div>
-
-        <Button
+          onClick={() => {
+            const redirect_link = `/claim/berachain/80094/${propsBoycoPosition.data?.merkleLink}`;
+            window.open(redirect_link, "_blank", "noopener,noreferrer");
+          }}
           className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
           size="sm"
         >
           Claim
         </Button>
-      </BoycoWithdrawSectionRowContainer> */}
+      </BoycoWithdrawSectionRowContainer>
+
+      <div className="my-2 h-px w-full rounded-full bg-divider" />
+
+      <div className="text-sm font-normal text-secondary">
+        Native Incentives
+      </div>
+
+      <BoycoWithdrawSectionRowContainer>
+        <TokenDisplayer
+          tokens={propsBoycoPosition.data?.nativeIncentives ?? []}
+          symbols={true}
+        />
+
+        <Button
+          onClick={() => {
+            const redirect_link = propsBoycoPosition.data?.dappLink ?? "";
+
+            window.open(redirect_link, "_blank", "noopener,noreferrer");
+          }}
+          className="h-fit w-fit rounded-lg px-4 py-2 text-sm font-normal"
+          size="sm"
+        >
+          View
+        </Button>
+      </BoycoWithdrawSectionRowContainer>
     </div>
   );
 });

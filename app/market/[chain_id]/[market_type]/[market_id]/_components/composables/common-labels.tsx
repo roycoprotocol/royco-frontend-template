@@ -16,7 +16,7 @@ export const SecondaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit items-center break-all font-gt text-sm font-normal leading-tight text-secondary",
+        "flex h-fit items-center font-gt text-sm font-normal text-secondary",
         className
       )}
       {...props}
@@ -59,9 +59,7 @@ export const PrimaryLabel = React.forwardRef<
       )}
       {...props}
     >
-      <div className={cn("flex h-fit flex-1 leading-tight")}>
-        {props.children}
-      </div>
+      <div className={cn("flex h-fit flex-1")}>{props.children}</div>
       {isVerified !== undefined && (
         <Tooltip>
           <TooltipTrigger className="ml-2 flex flex-col place-content-center items-center">

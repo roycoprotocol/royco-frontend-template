@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/select";
 import { useVaultBalances } from "royco/hooks";
 import { LoadingSpinner } from "@/components/composables";
-import { useActiveMarket } from "../../../../../../hooks";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 
 export const FundingVaultSelector = React.forwardRef<
   HTMLDivElement,
@@ -26,10 +27,10 @@ export const FundingVaultSelector = React.forwardRef<
     ref
   ) => {
     const { address } = useAccount();
-    const { currentMarketData } = useActiveMarket();
+    const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
     const validVaultMarketData = useMemo(() => {
-      if (!currentMarketData) {
+      if (!enrichedMarket) {
         return [];
       }
 
@@ -37,7 +38,7 @@ export const FundingVaultSelector = React.forwardRef<
         (market) => {
           const [chainId, marketType] = market.id.split("_").map(Number);
           return (
-            chainId === currentMarketData.chain_id &&
+            chainId === enrichedMarket.chainId &&
             market.is_verified === true &&
             marketType === MarketType.vault.value
           );
@@ -54,7 +55,7 @@ export const FundingVaultSelector = React.forwardRef<
       });
 
       return marketData;
-    }, [SupportedMarketMap, currentMarketData]);
+    }, [SupportedMarketMap, enrichedMarket]);
 
     const {
       data: userVaultMarketBalanceData,
@@ -68,7 +69,7 @@ export const FundingVaultSelector = React.forwardRef<
     });
 
     const fundingVaultMarketData = useMemo(() => {
-      if (!userVaultMarketBalanceData || !currentMarketData) {
+      if (!userVaultMarketBalanceData || !enrichedMarket) {
         return [];
       }
 
@@ -81,15 +82,13 @@ export const FundingVaultSelector = React.forwardRef<
           return false;
         }
 
-        if (
-          userVaultBalance.token_id !== currentMarketData.input_token_data.id
-        ) {
+        if (userVaultBalance.token_id !== enrichedMarket.inputToken?.id) {
           return false;
         }
 
         return BigInt(userVaultBalance.raw_amount) > BigInt(0);
       });
-    }, [validVaultMarketData, userVaultMarketBalanceData, currentMarketData]);
+    }, [validVaultMarketData, userVaultMarketBalanceData, enrichedMarket]);
 
     const selectedFundingVault = useMemo(() => {
       const vaultMarketData = fundingVaultMarketData.find(

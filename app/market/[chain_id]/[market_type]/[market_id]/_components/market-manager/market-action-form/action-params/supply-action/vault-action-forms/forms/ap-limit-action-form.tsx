@@ -8,14 +8,17 @@ import { useMarketManager } from "@/store";
 import { InputAmountWrapper } from "../../components/input-amount-wrapper";
 import { SlideUpWrapper } from "@/components/animations";
 import { IncentiveYieldWrapper } from "../../components/incentive-yield-wrapper";
-import { useActiveMarket } from "../../../../../../hooks";
 import { IncentiveAmountWrapper } from "../../components/incentive-amount-wrapper";
-import { RoycoMarketType } from "royco/market";
 import { APR_LOCKUP_CONSTANT } from "../../recipe-action-forms/forms/ap-limit-action-form";
 import { InfoIcon } from "lucide-react";
 import { SecondaryLabel } from "../../../../../../composables";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtom, useAtomValue } from "jotai";
+import { DottedBracket } from "../../../../../../icons/dotted-bracket";
+import { Button } from "@/components/ui/button";
+import { showEnsoShortcutsWidgetAtom } from "@/store/global";
 
 export const APLimitActionForm = React.forwardRef<
   HTMLDivElement,
@@ -23,33 +26,30 @@ export const APLimitActionForm = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { currentMarketData, marketMetadata, currentHighestOffers } =
-    useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
+  const [showEnsoWidget, setShowEnsoWidget] = useAtom(
+    showEnsoShortcutsWidgetAtom
+  );
 
   const { viewType } = useMarketManager();
 
   const highestIncentiveData = useMemo(() => {
-    if (marketMetadata.market_type === RoycoMarketType.vault.id) {
-      if (
-        !currentMarketData ||
-        currentMarketData.incentive_tokens_data.length === 0
-      ) {
-        return null;
-      }
-
-      return currentMarketData.incentive_tokens_data.find((token_data) => {
-        return BigInt(token_data.raw_amount ?? "0") > BigInt(0);
-      });
+    if (enrichedMarket && enrichedMarket.activeIncentives.length > 0) {
+      return enrichedMarket.activeIncentives[0];
     }
-  }, [currentMarketData, currentHighestOffers]);
+
+    return null;
+  }, [enrichedMarket]);
 
   useEffect(() => {
     if (highestIncentiveData) {
       const token = {
         ...highestIncentiveData,
-        total_supply: highestIncentiveData.total_supply?.toString() || "0",
+        total_supply: highestIncentiveData.totalSupply?.toString() || "0",
         fdv: highestIncentiveData.fdv?.toString() || "0",
         token_id: highestIncentiveData.id,
+        chain_id: highestIncentiveData.chainId,
+        contract_address: highestIncentiveData.contractAddress,
       };
 
       delete (token as any).annual_change_ratio;
@@ -62,9 +62,7 @@ export const APLimitActionForm = React.forwardRef<
       marketActionForm.setValue(
         "annual_change_ratio",
         (
-          parseFloat(
-            highestIncentiveData.annual_change_ratio?.toString() || "0"
-          ) * 100
+          parseFloat(highestIncentiveData.yieldRate?.toString() || "0") * 100
         ).toString()
       );
       marketActionForm.setValue("incentive_tokens", [token]);
@@ -72,11 +70,11 @@ export const APLimitActionForm = React.forwardRef<
   }, [highestIncentiveData]);
 
   const selectedInputToken = useMemo(() => {
-    if (!currentMarketData?.input_token_data) {
+    if (!enrichedMarket?.inputToken) {
       return;
     }
-    return currentMarketData.input_token_data;
-  }, [currentMarketData]);
+    return enrichedMarket.inputToken;
+  }, [enrichedMarket]);
   const selectedIncentiveTokens = marketActionForm.watch("incentive_tokens");
 
   const updateIncentiveTokenAmount = (
@@ -132,13 +130,27 @@ export const APLimitActionForm = React.forwardRef<
       {/**
        * Enso Shortcuts Widget
        */}
-      {currentMarketData?.chain_id !== SONIC_CHAIN_ID && (
+      {enrichedMarket?.chainId !== SONIC_CHAIN_ID && (
         <div className="mt-2">
           <EnsoShortcutsWidget
-            token={currentMarketData?.input_token_data.contract_address!}
-            symbol={currentMarketData?.input_token_data.symbol}
-            chainId={currentMarketData?.chain_id!}
-          />
+            token={enrichedMarket?.inputToken?.contractAddress!}
+            symbol={enrichedMarket?.inputToken?.symbol!}
+            chainId={enrichedMarket?.chainId!}
+          >
+            <div className="flex w-full justify-end">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="rounded-sm"
+                onClick={() => setShowEnsoWidget(!showEnsoWidget)}
+              >
+                <div className="flex items-center gap-2">
+                  <DottedBracket className="h-5 w-5 text-inherit" />
+                  <span>Get {enrichedMarket?.inputToken?.symbol!}</span>
+                </div>
+              </Button>
+            </div>
+          </EnsoShortcutsWidget>
         </div>
       )}
 

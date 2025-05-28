@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { X, ArrowRight, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -11,7 +10,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   PrimaryLabel,
   SecondaryLabel,
@@ -27,8 +25,8 @@ export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
   const [isOpen, setIsOpen] = useState(open);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 hidden rounded-xl md:block">
-      <Card className={cn("w-[400px] max-w-[95vw] rounded-lg")}>
+    <div className="fixed bottom-4 right-4 z-50 hidden md:block">
+      <Card className={cn("w-[400px] max-w-[95vw] rounded-sm")}>
         {isOpen ? (
           <>
             <CardHeader className="relative">
@@ -42,12 +40,14 @@ export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
               </Button>
 
               <div className="pt-5">
-                <CardTitle className="mb-2 flex justify-center">
-                  <PrimaryLabel>Join the Royco Royalty.</PrimaryLabel>
+                <CardTitle className="flex justify-center">
+                  <PrimaryLabel className="text-_primary_">
+                    Join the Royco Royalty.
+                  </PrimaryLabel>
                 </CardTitle>
 
-                <CardDescription className="flex justify-center">
-                  <TertiaryLabel className="max-w-60 text-center text-primary">
+                <CardDescription className="mt-2 flex justify-center">
+                  <TertiaryLabel className="max-w-60 text-center text-_primary_">
                     Join 7,000+ users and get priority alpha, access, and
                     benefits on Royco.
                   </TertiaryLabel>
@@ -56,10 +56,14 @@ export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
             </CardHeader>
 
             <CardContent>
-              <hr className="mb-5" />
+              <hr />
 
-              <div>
-                <img src="/royalty/pop-up.png" alt="Royco Royalty" />
+              <div className="mt-5">
+                <img
+                  src="/royalty/pop-up.png"
+                  alt="Royco Royalty"
+                  className="w-full"
+                />
               </div>
 
               <div className="mt-6">
@@ -67,20 +71,23 @@ export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
                   href="/royalty"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-lg bg-primary p-4"
+                  className="flex items-center justify-between rounded-lg bg-_primary_ p-4"
                 >
-                  <SecondaryLabel className="font-medium text-white">
+                  <SecondaryLabel className="font-medium text-_surface_">
                     Learn More
                   </SecondaryLabel>
 
-                  <ArrowRight className="h-4 w-4 text-white" strokeWidth={3} />
+                  <ArrowRight
+                    className="h-4 w-4 text-_surface_"
+                    strokeWidth={3}
+                  />
                 </a>
               </div>
             </CardContent>
           </>
         ) : (
           <CardHeader
-            className="cursor-pointer"
+            className="cursor-pointer p-0 py-4 pl-6 pr-4"
             onClick={() => setIsOpen(true)}
           >
             <div className="flex items-center justify-between">
@@ -88,7 +95,14 @@ export function RoycoRoyalty({ open = true }: RoycoRoyaltyProps) {
                 Join the Royco Royalty.
               </PrimaryLabel>
 
-              <ChevronUp className="h-4 w-4 rotate-180" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="flex items-center justify-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <ChevronUp className="h-4 w-4" />
+              </Button>
             </div>
           </CardHeader>
         )}

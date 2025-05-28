@@ -12,7 +12,7 @@ import { TokenDisplayer } from "@/components/common";
 import { SparklesIcon, SquarePenIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import { MarketType } from "@/store";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator/token-estimator";
 import {
   BERA_TOKEN_ID,
   DEFAULT_TOKEN_COLOR,
@@ -27,6 +27,7 @@ import ShieldIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_compo
 import SparkleIcon from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/icons/sparkle";
 import formatNumber from "@/utils/numbers";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { EnrichedMarket, TokenQuote } from "@/app/api/royco/data-contracts";
 
 const BreakdownItem = React.forwardRef<
   HTMLDivElement,
@@ -45,8 +46,14 @@ const BreakdownTitle = React.forwardRef<
 const BreakdownRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    item: EnrichedMarketDataType["yield_breakdown"][number];
-    base_key: string;
+    item: TokenQuote & {
+      rawAmount?: string;
+      tokenAmount?: number;
+      tokenAmountUsd?: number;
+      yieldRate?: number;
+      yieldText?: string;
+    };
+    baseKey: string;
     closeParentModal?: () => void;
     marketType?: number;
     marketCategory?: string;
@@ -56,7 +63,7 @@ const BreakdownRow = React.forwardRef<
     {
       className,
       item,
-      base_key,
+      baseKey,
       closeParentModal,
       marketType,
       marketCategory,
@@ -102,69 +109,64 @@ const BreakdownRow = React.forwardRef<
     return (
       <div
         ref={ref}
-        key={`yield-breakdown:${base_key}:${item.category}:${item.id}`}
+        key={`yield-breakdown:${baseKey}:${item.id}`}
         className="flex flex-row items-center justify-between gap-3 font-light"
         {...props}
       >
         <TokenDisplayer tokens={[item] as any} symbols={true} />
 
-        {item.annual_change_ratio > 0 && (
+        {item.yieldRate && item.yieldRate > 0 && (
           <div className="flex flex-row items-center gap-2">
             <div className="flex flex-row items-center">
-              {item.category === "base" && (
-                <Tooltip>
-                  <TooltipTrigger className={cn("cursor-pointer")}>
-                    {(() => {
-                      if (
-                        marketType === MarketType.vault.value ||
-                        marketCategory === "boyco" ||
-                        item.chain_id === SONIC_CHAIN_ID
-                      ) {
-                        return (
-                          <SparkleIcon
-                            className="h-5 w-5"
-                            style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
-                          />
-                        );
-                      }
-
+              <Tooltip>
+                <TooltipTrigger className={cn("cursor-pointer")}>
+                  {(() => {
+                    if (
+                      marketType === MarketType.vault.value ||
+                      marketCategory === "boyco" ||
+                      item.chainId === SONIC_CHAIN_ID
+                    ) {
                       return (
-                        <ShieldIcon
+                        <SparkleIcon
                           className="h-5 w-5"
                           style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
                         />
                       );
+                    }
+
+                    return (
+                      <ShieldIcon
+                        className="h-5 w-5"
+                        style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                      />
+                    );
+                  })()}
+                </TooltipTrigger>
+                {createPortal(
+                  <TooltipContent className={cn("bg-white", "max-w-80")}>
+                    {(() => {
+                      if (marketCategory === "boyco") {
+                        return "Variable Rate, will change based on # of deposits";
+                      }
+                      if (
+                        marketType === MarketType.vault.value ||
+                        item.chainId === SONIC_CHAIN_ID
+                      ) {
+                        return "Variable Incentive Rate, based on # of participants";
+                      }
+                      return "Fixed Incentive Rate";
                     })()}
-                  </TooltipTrigger>
-                  {createPortal(
-                    <TooltipContent className={cn("bg-white", "max-w-80")}>
-                      {(() => {
-                        if (marketCategory === "boyco") {
-                          return "Variable Rate, will change based on # of deposits";
-                        }
-                        if (
-                          marketType === MarketType.vault.value ||
-                          item.chain_id === SONIC_CHAIN_ID
-                        ) {
-                          return "Variable Incentive Rate, based on # of participants";
-                        }
-                        return "Fixed Incentive Rate";
-                      })()}
-                    </TooltipContent>,
-                    document.body
-                  )}
-                </Tooltip>
-              )}
+                  </TooltipContent>,
+                  document.body
+                )}
+              </Tooltip>
 
               <span
                 style={{
-                  color:
-                    item.category === "base"
-                      ? tokenColor || DEFAULT_TOKEN_COLOR
-                      : "black",
+                  color: tokenColor || DEFAULT_TOKEN_COLOR,
                 }}
               >
-                {formatNumber(item.annual_change_ratio, {
+                {formatNumber(item.yieldRate, {
                   type: "percent",
                 })}
               </span>
@@ -189,8 +191,14 @@ const BreakdownRow = React.forwardRef<
 const BreakdownContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["yield_breakdown"];
-    base_key: string;
+    breakdown: (TokenQuote & {
+      rawAmount?: string;
+      tokenAmount?: number;
+      tokenAmountUsd?: number;
+      yieldRate?: number;
+      yieldText?: string;
+    })[];
+    baseKey: string;
     closeParentModal?: () => void;
     marketType?: number;
     marketCategory?: string;
@@ -200,7 +208,7 @@ const BreakdownContent = React.forwardRef<
     {
       className,
       breakdown,
-      base_key,
+      baseKey,
       closeParentModal,
       marketType,
       marketCategory,
@@ -214,7 +222,7 @@ const BreakdownContent = React.forwardRef<
           <BreakdownRow
             key={item.id}
             item={item}
-            base_key={base_key}
+            baseKey={baseKey}
             closeParentModal={closeParentModal}
             marketType={marketType}
             marketCategory={marketCategory}
@@ -228,10 +236,10 @@ const BreakdownContent = React.forwardRef<
 const NetYield = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    base_key: string;
-    annual_change_ratio: number;
+    baseKey: string;
+    yieldRate: number;
   }
->(({ className, base_key, annual_change_ratio, ...props }, ref) => {
+>(({ className, baseKey, yieldRate, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -240,7 +248,7 @@ const NetYield = React.forwardRef<
     >
       <div className="w-full border-b border-divider"></div>
       <div
-        key={`yield-breakdown:${base_key}:net-yield`}
+        key={`yield-breakdown:${baseKey}:net-yield`}
         className=" flex flex-row items-center justify-between"
       >
         <div className="flex flex-row items-center gap-2">
@@ -248,7 +256,7 @@ const NetYield = React.forwardRef<
           <span>Net APY</span>
         </div>
         <div className="">
-          {formatNumber(annual_change_ratio, {
+          {formatNumber(yieldRate, {
             type: "percent",
           })}
         </div>
@@ -260,23 +268,68 @@ const NetYield = React.forwardRef<
 export const YieldBreakdown = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    breakdown: EnrichedMarketDataType["yield_breakdown"];
-    base_key: string;
+    baseKey: string;
     marketType?: number;
     marketCategory?: string;
+    activeIncentives?: EnrichedMarket["activeIncentives"];
+    underlyingIncentives?: EnrichedMarket["underlyingIncentives"];
+    nativeIncentives?: EnrichedMarket["nativeIncentives"];
+    externalIncentives?: EnrichedMarket["externalIncentives"];
   }
 >(
   (
-    { className, breakdown, base_key, marketType, marketCategory, ...props },
+    {
+      className,
+      baseKey,
+      marketType,
+      marketCategory,
+      activeIncentives,
+      underlyingIncentives,
+      nativeIncentives,
+      externalIncentives,
+      ...props
+    },
     ref
   ) => {
+    const allIncentives = useMemo(() => {
+      return [
+        ...(activeIncentives || []),
+        ...(underlyingIncentives || []),
+        ...(nativeIncentives || []),
+        ...(externalIncentives || []),
+      ];
+    }, [
+      activeIncentives,
+      underlyingIncentives,
+      nativeIncentives,
+      externalIncentives,
+    ]);
+
+    const combinedUnderlyingAndNativeIncentives = [
+      ...(underlyingIncentives || []),
+      ...(nativeIncentives || []),
+    ];
+
+    const totalLength = allIncentives.length;
+
+    const netYield = useMemo(() => {
+      return (
+        (activeIncentives?.reduce((acc, item) => acc + item.yieldRate, 0) ||
+          0) +
+        (combinedUnderlyingAndNativeIncentives?.reduce(
+          (acc, item) => acc + item.yieldRate,
+          0
+        ) || 0)
+      );
+    }, [activeIncentives, combinedUnderlyingAndNativeIncentives]);
+
     return (
       <HoverCard openDelay={200} closeDelay={200}>
         <HoverCardTrigger className={cn("flex cursor-pointer items-end")}>
           {props.children}
         </HoverCardTrigger>
         {typeof window !== "undefined" &&
-          breakdown.length > 0 &&
+          totalLength > 0 &&
           createPortal(
             <HoverCardContent className="w-full min-w-64">
               <div
@@ -287,16 +340,14 @@ export const YieldBreakdown = React.forwardRef<
                 )}
                 {...props}
               >
-                {breakdown.some((item) => item.category === "base") && (
+                {activeIncentives && activeIncentives.length > 0 && (
                   <div>
                     <BreakdownItem>
                       <BreakdownTitle>Royco Fixed Rate</BreakdownTitle>
                       <BreakdownContent
                         className="mt-1"
-                        breakdown={breakdown.filter(
-                          (item) => item.category === "base"
-                        )}
-                        base_key={base_key}
+                        breakdown={activeIncentives}
+                        baseKey={baseKey}
                         marketType={marketType}
                         marketCategory={marketCategory}
                       />
@@ -304,27 +355,21 @@ export const YieldBreakdown = React.forwardRef<
                   </div>
                 )}
 
-                {breakdown.some((item) => item.category !== "base") && (
+                {combinedUnderlyingAndNativeIncentives.length > 0 && (
                   <BreakdownItem>
                     <BreakdownTitle>Variable Rate</BreakdownTitle>
                     <BreakdownContent
                       className="mt-1"
-                      breakdown={breakdown.filter(
-                        (item) => item.category !== "base"
-                      )}
-                      base_key={base_key}
+                      breakdown={combinedUnderlyingAndNativeIncentives}
+                      baseKey={baseKey}
+                      marketType={marketType}
+                      marketCategory={marketCategory}
                     />
                   </BreakdownItem>
                 )}
 
                 <BreakdownItem>
-                  <NetYield
-                    base_key={base_key}
-                    annual_change_ratio={breakdown.reduce(
-                      (acc, item) => acc + item.annual_change_ratio,
-                      0
-                    )}
-                  />
+                  <NetYield baseKey={baseKey} yieldRate={netYield} />
                 </BreakdownItem>
               </div>
             </HoverCardContent>,

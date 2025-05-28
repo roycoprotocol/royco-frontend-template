@@ -16,7 +16,7 @@ export const ActionParams = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { actionType, setActionType, userType, viewType } = useMarketManager();
+  const { actionType, setActionType, userType } = useMarketManager();
 
   return (
     <div ref={ref} className={cn("flex grow flex-col", className)} {...props}>

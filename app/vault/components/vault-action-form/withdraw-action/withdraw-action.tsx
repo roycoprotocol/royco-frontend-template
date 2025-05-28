@@ -8,15 +8,18 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorAlert } from "@/components/composables/alerts";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import toast from "react-hot-toast";
 import { useAtomValue } from "jotai";
 import { vaultManagerAtom } from "@/store/vault/vault-manager";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
-import { useVaultManager } from "@/store/vault/use-vault-manager";
+import {
+  useVaultManager,
+  VaultTransactionType,
+} from "@/store/vault/use-vault-manager";
 import { vaultMetadataAtom } from "@/store/vault/vault-manager";
 import { useBoringVaultActions } from "@/app/vault/providers/boring-vault/boring-vault-action-provider";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const withdrawFormSchema = z.object({
   amount: z.string(),
@@ -67,10 +70,13 @@ export const WithdrawAction = React.forwardRef<
 
     if (withdrawTransactions && withdrawTransactions.steps.length > 0) {
       const transactions = {
-        type: "withdraw" as const,
-        title: "Withdraw",
+        type: VaultTransactionType.Withdraw,
+        title: "Request Withdrawal",
+        successTitle: "Withdrawal Requested",
         description: withdrawTransactions.description,
-        steps: withdrawTransactions.steps || [],
+        steps: withdrawTransactions.steps,
+        metadata: withdrawTransactions.metadata,
+        warnings: withdrawTransactions.warnings,
         token: {
           data: token,
           amount: amount,
@@ -100,7 +106,7 @@ export const WithdrawAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Connect Wallet
               </Button>
@@ -124,7 +130,7 @@ export const WithdrawAction = React.forwardRef<
                   }
                 }}
                 size="sm"
-                className="w-full"
+                className="h-10 w-full rounded-sm bg-_highlight_"
               >
                 Switch Chain
               </Button>
@@ -141,7 +147,7 @@ export const WithdrawAction = React.forwardRef<
                 }
               }}
               size="sm"
-              className="w-full"
+              className="h-10 w-full rounded-sm bg-_highlight_"
             >
               Withdraw
             </Button>

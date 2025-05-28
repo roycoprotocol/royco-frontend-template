@@ -1,42 +1,35 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import validator from "validator";
 import { MarketDetails } from "./market-details/market-details";
 import { AnnualYieldDetails } from "./annual-yield-details/annual-yield-details";
-import { useActiveMarket } from "../../hooks";
 import { PrimaryLabel, SecondaryLabel } from "../../composables";
-import { TokenEstimator } from "@/app/_components/ui/token-estimator";
+import { TokenEstimator } from "@/app/_components/token-estimator";
 import { Button } from "@/components/ui/button";
 import { ExternalIncentiveDetails } from "./external-incentive-details.tsx/external-incentive-detail";
 import { LockIcon } from "lucide-react";
 import { SONIC_CHAIN_ID } from "royco/sonic";
+import { useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { tagAtom } from "@/store/protector/protector";
+import { MarkdownRenderer } from "@/app/_components/common/markdown-renderer";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { isLoading, marketMetadata, currentMarketData, propsReadMarket } =
-    useActiveMarket();
+  const tag = useAtomValue(tagAtom);
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const [showDescription, setShowDescription] = useState(false);
 
-  const fillableAmount = useMemo(() => {
-    return parseFloat(currentMarketData?.quantity_ip ?? "0");
-  }, [currentMarketData]);
+  const pointTokenIds = (enrichedMarket?.activeIncentives ?? [])
+    .filter((item) => item.type === "point")
+    .map((item) => item.id);
 
-  const breakdowns = currentMarketData.yield_breakdown.filter(
-    (item: any) => item.category === "base" && item.type === "point"
-  );
-  const pointTokenIds = breakdowns.map((item: any) => item.id);
-
-  if (
-    !isLoading &&
-    !!currentMarketData &&
-    !!marketMetadata &&
-    !!propsReadMarket.data
-  ) {
+  if (!!enrichedMarket) {
     return (
       <div
         ref={ref}
@@ -49,24 +42,18 @@ export const MarketInfo = React.forwardRef<
         <PrimaryLabel
           className={cn("mt-1 break-normal text-4xl font-semibold")}
         >
-          {currentMarketData.name && currentMarketData.name.trim() !== ""
-            ? validator.unescape(currentMarketData.name)
+          {enrichedMarket?.name && enrichedMarket?.name.trim() !== ""
+            ? validator.unescape(enrichedMarket?.name)
             : "Unknown Market"}
         </PrimaryLabel>
 
         {/**
          * Market Description
          */}
-        <div className="mt-3 h-auto">
-          <pre
-            className={cn(
-              "whitespace-pre-wrap break-normal font-gt text-sm font-light text-black",
-              !showDescription && "line-clamp-2"
-            )}
-          >
-            {validator.unescape(currentMarketData.description ?? "") ||
-              "No description available"}
-          </pre>
+        <div className="mt-3 h-auto font-gt text-sm font-light text-black">
+          <MarkdownRenderer>
+            {enrichedMarket.description ?? ""}
+          </MarkdownRenderer>
         </div>
 
         {/**
@@ -84,8 +71,8 @@ export const MarketInfo = React.forwardRef<
          * @note disabled this condition as per request from @capnjack
          */}
         {false &&
-          currentMarketData?.category === "boyco" &&
-          fillableAmount === 0 && (
+          enrichedMarket?.category === "boyco" &&
+          enrichedMarket?.fillableUsd === 0 && (
             <div className="mt-5 w-fit rounded-lg bg-primary px-4 py-3">
               <SecondaryLabel className="flex items-center gap-1 font-500 text-white">
                 <LockIcon className="h-4 w-4" />
@@ -95,13 +82,6 @@ export const MarketInfo = React.forwardRef<
           )}
 
         {/**
-         * Market Details
-         */}
-        <div className="mt-5">
-          <MarketDetails />
-        </div>
-
-        {/**
          * Annual Incentive Percent
          */}
         <div className="mt-5">
@@ -109,33 +89,42 @@ export const MarketInfo = React.forwardRef<
         </div>
 
         {/**
+         * Market Details
+         */}
+        <div className="mt-5">
+          <MarketDetails />
+        </div>
+
+        {/**
          * Token Estimate
          */}
-        <div className="mt-2">
-          <TokenEstimator
-            defaultTokenId={pointTokenIds}
-            marketCategory={
-              currentMarketData && currentMarketData.chain_id === SONIC_CHAIN_ID
-                ? "sonic"
-                : undefined
-            }
-          >
-            <Button
-              variant="link"
-              size="sm"
-              className="w-fit p-0 font-medium text-black underline outline-none"
+        {tag !== "plume" && (
+          <div className="mt-2">
+            <TokenEstimator
+              defaultTokenId={pointTokenIds}
+              marketCategory={
+                enrichedMarket && enrichedMarket.chainId === SONIC_CHAIN_ID
+                  ? "sonic"
+                  : undefined
+              }
             >
-              APY Calculator
-            </Button>
-          </TokenEstimator>
-        </div>
+              <Button
+                variant="link"
+                size="sm"
+                className="w-fit p-0 font-medium text-black underline outline-none"
+              >
+                APY Calculator
+              </Button>
+            </TokenEstimator>
+          </div>
+        )}
 
         {/**
          * External Incentive Details
          */}
-        {currentMarketData &&
-          currentMarketData.external_incentives &&
-          currentMarketData.external_incentives.length > 0 && (
+        {enrichedMarket &&
+          enrichedMarket.externalIncentives &&
+          enrichedMarket.externalIncentives.length > 0 && (
             <div className="mt-5">
               <ExternalIncentiveDetails />
             </div>

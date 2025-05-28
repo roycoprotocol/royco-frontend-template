@@ -7,8 +7,9 @@ import { MarketActionFormSchema } from "../../market-action-form-schema";
 import { z } from "zod";
 import { InfoIcon } from "lucide-react";
 import { useMarketManager } from "@/store";
-import { useActiveMarket } from "../../../../hooks";
 import formatNumber from "@/utils/numbers";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { useAtomValue } from "jotai";
 
 export const IPQuantityIndicator = React.forwardRef<
   HTMLDivElement,
@@ -16,7 +17,7 @@ export const IPQuantityIndicator = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
-  const { currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
   const { userType, offerType, marketStep } = useMarketManager();
 
   return (
@@ -37,10 +38,10 @@ export const IPQuantityIndicator = React.forwardRef<
               {formatNumber(
                 parseRawAmountToTokenAmount(
                   marketActionForm.watch("quantity.raw_amount"),
-                  currentMarketData?.input_token_data?.decimals
+                  enrichedMarket?.inputToken.decimals ?? 0
                 )
               )}{" "}
-              {currentMarketData?.input_token_data?.symbol}
+              {enrichedMarket?.inputToken.symbol}
             </div>
           </div>
         </SlideUpWrapper>

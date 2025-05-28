@@ -68,6 +68,8 @@ const TokenDisplayer = React.forwardRef<
   ) => {
     const { browserType } = useGeneralStats();
 
+    const hardcodedBounce = false;
+
     return (
       <div
         ref={ref}
@@ -130,7 +132,7 @@ const TokenDisplayer = React.forwardRef<
                               size === 4 && "h-4 w-4",
                               imageClassName
                             )}
-                            whileHover={{ y: bounce ? -6 : 0 }}
+                            whileHover={{ y: hardcodedBounce ? -6 : 0 }}
                             initial={{ y: 0 }}
                             id={`token-${index}`}
                             transition={{
@@ -154,7 +156,7 @@ const TokenDisplayer = React.forwardRef<
                             size === 4 && "h-4 w-4",
                             imageClassName
                           )}
-                          whileHover={{ y: bounce ? -6 : 0 }}
+                          whileHover={{ y: hardcodedBounce ? -6 : 0 }}
                           initial={{ y: 0 }}
                           id={`token-${index}`}
                           transition={{
@@ -188,7 +190,7 @@ const TokenDisplayer = React.forwardRef<
                             size === 4 && "h-4 w-4",
                             imageClassName
                           )}
-                          whileHover={{ y: bounce ? -6 : 0 }}
+                          whileHover={{ y: hardcodedBounce ? -6 : 0 }}
                           initial={{ y: 0 }}
                           id={`token-${index}`}
                           transition={{
@@ -215,7 +217,7 @@ const TokenDisplayer = React.forwardRef<
                             size === 4 && "h-4 w-4",
                             imageClassName
                           )}
-                          whileHover={{ y: bounce ? -6 : 0 }}
+                          whileHover={{ y: hardcodedBounce ? -6 : 0 }}
                           initial={{ y: 0 }}
                           id={`token-${index}`}
                           transition={{
@@ -239,7 +241,7 @@ const TokenDisplayer = React.forwardRef<
                           size === 4 && "h-4 w-4",
                           imageClassName
                         )}
-                        whileHover={{ y: bounce ? -6 : 0 }}
+                        whileHover={{ y: hardcodedBounce ? -6 : 0 }}
                         initial={{ y: 0 }}
                         id={`token-${index}`}
                         transition={{

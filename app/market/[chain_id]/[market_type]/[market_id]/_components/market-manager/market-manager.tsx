@@ -9,7 +9,6 @@ import {
   TypedMarketViewType,
 } from "@/store/market-manager-props";
 import { cn } from "@/lib/utils";
-import { useActiveMarket } from "../hooks";
 import { LoadingSpinner } from "@/components/composables";
 import { Switch } from "@/components/ui/switch";
 import { AlertIndicator } from "@/components/common";
@@ -21,6 +20,10 @@ import { MAX_SCREEN_WIDTH } from "@/components/constants";
 import { useAccount } from "wagmi";
 import { SimpleMarketManager } from "./simple-market-manager";
 import { AdvanceMarketManager } from "./advance-market-manager";
+import { useAtom, useAtomValue } from "jotai";
+import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { userTypeAtom } from "@/store/market/atoms";
+import { get } from "lodash";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -28,12 +31,16 @@ export const MarketManager = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { viewType, setViewType, userType, setUserType } = useMarketManager();
 
-  const { isLoading, currentMarketData } = useActiveMarket();
+  const { data: enrichedMarket, isLoading } = useAtomValue(
+    loadableEnrichedMarketAtom
+  );
 
   const { address: walletAddress } = useAccount();
   const [connectWalletAddress, setConnectWalletAddress] = useState<
     `0x${string}` | undefined
   >(undefined);
+
+  const [userTypeAtomValue, setUserTypeAtomValue] = useAtom(userTypeAtom);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -46,29 +53,36 @@ export const MarketManager = React.forwardRef<
   }, []);
 
   useEffect(() => {
-    if (!!currentMarketData && walletAddress !== connectWalletAddress) {
+    if (enrichedMarket && walletAddress !== connectWalletAddress) {
       setConnectWalletAddress(walletAddress);
     }
-  }, [walletAddress, currentMarketData]);
+  }, [walletAddress, enrichedMarket]);
 
   useEffect(() => {
     if (
-      !!currentMarketData &&
-      !!currentMarketData.owner &&
+      enrichedMarket &&
+      enrichedMarket?.owner &&
       !!connectWalletAddress &&
-      currentMarketData.market_type === MarketType.vault.value &&
-      connectWalletAddress.toLowerCase() ===
-        currentMarketData.owner.toLowerCase()
+      enrichedMarket.marketType === MarketType.vault.value &&
+      connectWalletAddress.toLowerCase() === enrichedMarket?.owner.toLowerCase()
     ) {
       setUserType(MarketUserType.ip.id);
     }
   }, [connectWalletAddress]);
 
+  useEffect(() => {
+    if (userType === MarketUserType.ap.id && userTypeAtomValue !== 0) {
+      setUserTypeAtomValue(0);
+    } else if (userType === MarketUserType.ip.id && userTypeAtomValue !== 1) {
+      setUserTypeAtomValue(1);
+    }
+  }, [userType]);
+
   if (isLoading) {
     return <LoadingSpinner className="h-5 w-5" />;
   }
 
-  if (!currentMarketData) {
+  if (!enrichedMarket) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center">
         <AlertIndicator
@@ -89,7 +103,7 @@ export const MarketManager = React.forwardRef<
       {/**
        * Unverified warning
        */}
-      {currentMarketData.is_verified === false && (
+      {enrichedMarket?.isVerified === false && (
         <SlideUpWrapper className="w-fit">
           <WarningBox
             className={cn("mb-10")}

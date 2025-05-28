@@ -5,7 +5,7 @@ import { config, metadata, projectId } from "./modal-config";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Config, cookieToInitialState, State, WagmiProvider } from "wagmi";
-import { ConnectWalletProvider } from "../../app/_components/provider/connect-wallet-provider";
+import { ConnectWalletProvider } from "@/app/_containers/providers/connect-wallet-provider";
 
 export default function AppKitProvider({
   children,

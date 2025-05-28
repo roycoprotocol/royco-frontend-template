@@ -26,6 +26,11 @@ import { useVaultManager } from "@/store/vault/use-vault-manager";
 import { api } from "@/app/api/royco";
 import { vaultContractProviderMap } from "royco/vault";
 import BigNumber from "bignumber.js";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
+import { VaultInfoResponse } from "@/app/api/royco/data-contracts";
+import { loadableBoringPositionsAtom } from "@/store/vault/boring-positions";
+import { loadableEnrichedVaultAtom } from "@/store/vault/enriched-vault";
+import { ROYCO_USDC_VAULT_ID } from "../../constants/vaults";
 
 const DEFAULT_WITHDRAWALS_API_URL =
   "https://api.sevenseas.capital/boringQueue/";
@@ -154,7 +159,44 @@ export const BoringVaultWrapper = React.forwardRef<
         address
       );
 
-      return response.data;
+      let rewards = response.data;
+      if (ROYCO_USDC_VAULT_ID.toLowerCase() === vaultAddress.toLowerCase()) {
+        rewards = {
+          ...rewards,
+          unclaimedRewardTokens: [
+            ...rewards.unclaimedRewardTokens,
+            {
+              rawMetadata: {
+                isClaimable: false,
+                claimText: "~90 days after deposit",
+              },
+              id: "98866-0xea237441c92cae6fc17caaf9a7acb3f953be4bd1",
+              chainId: 98866,
+              contractAddress: "0xea237441c92cae6fc17caaf9a7acb3f953be4bd1",
+              name: "Wrapped Plume",
+              symbol: "WPLUME",
+              image:
+                "https://assets.plume.org/images/logos/WPLUME/WPLUME-token.png",
+              decimals: 18,
+              source: "coinmarketcap",
+              searchId: "35364",
+              type: "token",
+              price: 0,
+              fdv: 0,
+              totalSupply: 0,
+              lastUpdated: "0",
+              rawAmount: "0",
+              tokenAmount: 0,
+              tokenAmountUsd: 0,
+              rewardIds: [],
+            },
+          ],
+        };
+      }
+
+      console.log({ rewards });
+
+      return rewards;
     } catch (error) {
       toast.custom(<ErrorAlert message="Error: User rewards not found." />);
       return {
@@ -215,13 +257,28 @@ export const BoringVaultWrapper = React.forwardRef<
     };
   };
 
+  const { data: boringPosition, isLoading: isLoadingBoringPosition } =
+    useAtomValue(loadableBoringPositionsAtom);
+
+  const { data: enrichedVault, isLoading: isLoadingEnrichedVault } =
+    useAtomValue(loadableEnrichedVaultAtom);
+
   const initializeBoringVault = async () => {
-    if (!isBoringV1ContextReady || !vault || !data || !address) {
+    if (!isBoringV1ContextReady || !vault || !data) {
       return;
     }
 
-    const token = data.depositTokens[0];
+    if (!address) {
+      setBoringVault(null);
+      return;
+    }
+
+    const token = (data as unknown as VaultInfoResponse)?.depositTokens?.[0];
     if (!token) {
+      return;
+    }
+
+    if (isLoadingBoringPosition || isLoadingEnrichedVault) {
       return;
     }
 
@@ -232,8 +289,8 @@ export const BoringVaultWrapper = React.forwardRef<
       const sharePriceInBaseAsset = (await fetchShareValue()) || 0;
 
       const account = await getAccount({
-        chainId: data.chainId,
-        vaultAddress: data.vaultAddress,
+        chainId: (data as unknown as VaultInfoResponse).chainId,
+        vaultAddress: (data as unknown as VaultInfoResponse).vaultAddress,
         address,
         sharePrice: sharePriceInBaseAsset,
         token,
@@ -241,7 +298,7 @@ export const BoringVaultWrapper = React.forwardRef<
 
       setBoringVault({
         baseAsset: token,
-        chainId: data.chainId,
+        chainId: (data as unknown as VaultInfoResponse).chainId,
         contracts: {
           vault: vault.contracts.vault,
           teller: vault.contracts.teller,
@@ -264,7 +321,13 @@ export const BoringVaultWrapper = React.forwardRef<
 
   useEffect(() => {
     initializeBoringVault();
-  }, [isBoringV1ContextReady, address, data]);
+  }, [
+    isBoringV1ContextReady,
+    address,
+    data,
+    isLoadingBoringPosition,
+    isLoadingEnrichedVault,
+  ]);
 
   useEffect(() => {
     if (reload) {
@@ -278,7 +341,7 @@ export const BoringVaultWrapper = React.forwardRef<
   if (isLoading) {
     return (
       <div className="flex w-full flex-col place-content-center items-center pt-16">
-        <LoadingSpinner className="h-5 w-5" />
+        <LoadingIndicator className="h-5 w-5" />
       </div>
     );
   }

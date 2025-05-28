@@ -3,7 +3,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
-import { useConnectWallet } from "@/app/_components/provider/connect-wallet-provider";
 import { Button } from "@/components/ui/button";
 import { ErrorAlert, LoadingSpinner } from "@/components/composables";
 import { toast } from "sonner";
@@ -21,6 +20,7 @@ import { berachain } from "viem/chains";
 import { useParams } from "next/navigation";
 import { BerachainTestnet } from "royco/constants";
 import { ethers } from "ethers";
+import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
 
 export const ClaimCard = React.forwardRef<
   HTMLDivElement,

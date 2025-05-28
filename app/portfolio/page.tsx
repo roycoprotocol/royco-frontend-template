@@ -1,73 +1,42 @@
-import "./local.css";
+"use client";
 
-import { cn } from "@/lib/utils";
-import { Protector } from "../protector";
-import { MAX_SCREEN_WIDTH } from "@/components/constants";
-import { PositionsTable } from "./_components/positions-table";
-import { MarketManagerStoreProvider } from "@/store";
-import { PortfolioStats } from "./_components/portfolio-stats";
-import { RoycoRoyalty } from "../explore/_components/royco-royalty";
+import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
+import { ProtectorProvider } from "@/app/_containers/providers/protector-provider";
+import { HeroSection } from "./components/hero-section/hero-section";
+import { Deposits } from "./components/deposits/deposits";
+import { PortfolioWrapper } from "./provider/portfolio-wrapper";
+import { Rewards } from "./components/rewards/rewards";
+import { TransactionModalV2 } from "@/components/composables/transaction-modal-v2/transaction-modal/transaction-modal";
+import { Activity } from "./components/activity/activity";
 
 const Page = () => {
-  const Content = () => {
-    return (
-      <MarketManagerStoreProvider>
-        <div className="hide-scrollbar flex flex-col items-center bg-[#FBFBF8] px-3 md:px-12">
-          {/**
-           * @title Header Bar
-           * @description Header Tilte + Tagline + Stats
-           */}
-          <div
-            className={cn(
-              "mt-9 flex w-full shrink-0 flex-col items-center justify-between  px-3 pt-3 md:mt-12 md:px-12 lg:flex-row",
-              "gap-7 md:gap-3 xl:gap-12",
-              MAX_SCREEN_WIDTH,
-              "px-0 md:px-0"
-            )}
-          >
-            <div className="flex w-full shrink flex-col items-start lg:w-1/2">
-              <h2 className="heading-2 text-black">
-                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-                  ? "Portfolio"
-                  : "Account"}
-              </h2>
-
-              <div className="body-1 mt-2 text-secondary">
-                {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco"
-                  ? "View your positions across all Royco Markets."
-                  : "View your positions across all Royco Action Markets."}
-              </div>
+  return (
+    <ProtectorProvider>
+      <div className="hide-scrollbar min-h-screen bg-_surface_">
+        <MaxWidthProvider className="relative z-10 mb-5">
+          <PortfolioWrapper>
+            <div className="pt-14">
+              <HeroSection />
             </div>
 
-            {/* <PortfolioStats /> */}
-          </div>
+            <div className="mt-14">
+              <Deposits />
+            </div>
 
-          <div
-            className={cn(
-              "hide-scrollbar flex w-full flex-row items-start space-x-0 p-3 pb-12 md:p-12 lg:space-x-3",
-              "mt-7 md:mt-0",
-              MAX_SCREEN_WIDTH,
-              "px-0 md:px-0"
-            )}
-          >
-            <PositionsTable />
-          </div>
-        </div>
-      </MarketManagerStoreProvider>
-    );
-  };
+            <div className="mt-12">
+              <Rewards />
+            </div>
 
-  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
+            <div className="mt-12">
+              <Activity />
+            </div>
+          </PortfolioWrapper>
 
-  if (
-    frontendTag === "internal" ||
-    frontendTag === "testnet" ||
-    frontendTag === "plume"
-  ) {
-    return <Protector children={<Content />} />;
-  } else {
-    return <Content />;
-  }
+          <TransactionModalV2 />
+        </MaxWidthProvider>
+      </div>
+    </ProtectorProvider>
+  );
 };
 
 export default Page;
