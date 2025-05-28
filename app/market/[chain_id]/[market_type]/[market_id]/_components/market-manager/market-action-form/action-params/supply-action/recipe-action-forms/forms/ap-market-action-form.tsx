@@ -55,7 +55,7 @@ export const APMarketActionForm = React.forwardRef<
               <Button
                 size="sm"
                 variant="outline"
-                className="font-light"
+                className="h-[33px] border-divider font-light"
                 onClick={() => setShowEnsoWidget(!showEnsoWidget)}
               >
                 Or get {enrichedMarket?.inputToken.symbol!}
@@ -83,7 +83,9 @@ export const APMarketActionForm = React.forwardRef<
             <div className="rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">
               <div className="flex flex-row items-center gap-2">
                 <InfoIcon className="h-4 w-4 text-secondary" />
-                <div className="text-sm font-semibold text-secondary">INFO</div>
+                <div className="text-sm font-semibold text-secondary">
+                  Minimum Deposit
+                </div>
               </div>
 
               <SecondaryLabel className="mt-1 text-xs">

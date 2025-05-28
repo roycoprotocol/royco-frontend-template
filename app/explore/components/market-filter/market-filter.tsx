@@ -55,7 +55,8 @@ export const MarketFilter = React.forwardRef<
           </PrimaryLabel>
 
           <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-            Maximum precision. You decide when and where to move capital.
+            With Royco Markets, you control allocation and negotiate incentives
+            on your terms.
           </SecondaryLabel>
         </div>
 

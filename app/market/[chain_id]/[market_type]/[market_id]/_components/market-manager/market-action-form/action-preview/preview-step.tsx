@@ -26,6 +26,7 @@ import { enrichTxOptions } from "royco/transaction";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useMarketFormDetailsApi } from "../use-market-form-details-api";
+import { formatIncentivePayout } from "@/utils/lockup-time";
 
 export const PreviewStep = React.forwardRef<
   HTMLDivElement,
@@ -168,16 +169,25 @@ export const PreviewStep = React.forwardRef<
               {/**
                * Incentives Schedule
                */}
-              {enrichedMarket?.rewardStyle && (
+              {enrichedMarket?.rewardStyle !== undefined && (
                 <SecondaryLabel
                   className={cn(BASE_MARGIN_TOP.XL, "w-full text-black")}
                 >
                   <div className="flex w-full items-center justify-between text-sm">
-                    <span>Incentives Schedule</span>
+                    <span>Lockup</span>
                     <span className="rounded-full border px-2 py-px text-tertiary">
-                      {enrichedMarket?.marketType === MarketType.vault.value
-                        ? "Streaming"
-                        : RewardStyleMap[enrichedMarket?.rewardStyle].label}
+                      {(() => {
+                        if (
+                          enrichedMarket?.marketType === MarketType.vault.value
+                        ) {
+                          return "Streaming";
+                        }
+
+                        return formatIncentivePayout(
+                          enrichedMarket?.rewardStyle,
+                          enrichedMarket?.lockupTime
+                        );
+                      })()}
                     </span>
                   </div>
                 </SecondaryLabel>

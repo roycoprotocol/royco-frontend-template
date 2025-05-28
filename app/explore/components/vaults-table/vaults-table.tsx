@@ -79,7 +79,7 @@ const VaultsCard = ({ data }: VaultsCardProps) => {
             className="h-9 rounded-sm border-_divider_ px-4 text-center font-medium opacity-40 sm:h-10"
             style={{ color: depositToken.color }}
           >
-            Explore
+            Deposit
           </Button>
         ) : (
           <a href={`/vault/boring/${data.chainId}/${data.vaultAddress}`}>
@@ -89,7 +89,7 @@ const VaultsCard = ({ data }: VaultsCardProps) => {
               className="h-9 rounded-sm border-_divider_ px-4 text-center font-medium sm:h-10"
               style={{ color: depositToken.color }}
             >
-              Explore
+              Deposit
             </Button>
           </a>
         )}

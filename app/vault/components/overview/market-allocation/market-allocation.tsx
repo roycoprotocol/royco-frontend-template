@@ -99,7 +99,11 @@ export const MarketAllocation = React.forwardRef<
           onClick={() => setShowWhitelistedMarkets(!showWhitelistedMarkets)}
         >
           <div className="flex items-center gap-2">
-            <span>Show Whitelisted Markets</span>
+            {showWhitelistedMarkets ? (
+              <span>Hide Whitelisted Markets</span>
+            ) : (
+              <span>Show Whitelisted Markets</span>
+            )}
 
             <ChevronsUpDown
               className={cn(

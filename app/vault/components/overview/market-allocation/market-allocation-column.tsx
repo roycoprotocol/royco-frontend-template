@@ -21,9 +21,15 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left max-w-60", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id} className="group/link">
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(
+            "group/link",
+            row.original.type === "whitelisted" && "opacity-70"
+          )}
+        >
           <a href={row.original.link} target="_blank" rel="noreferrer">
-            <div className="relative flex items-center pr-5">
+            <div className={cn("relative flex items-center pr-5")}>
               <div className="max-w- z-10 flex-1 overflow-hidden truncate bg-_surface_">
                 {row.original.name}
               </div>
@@ -48,7 +54,10 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
       const chain = SupportedChainMap[chainId];
 
       return (
-        <ContentFlow customKey={row.original.id}>
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(row.original.type === "whitelisted" && "opacity-70")}
+        >
           {chain ? (
             <div className={cn("flex items-center gap-2")}>
               <img
@@ -73,7 +82,10 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id}>
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(row.original.type === "whitelisted" && "opacity-70")}
+        >
           <div className={cn("flex items-center gap-2")}>
             <CustomCircleProgress
               size={20}
@@ -101,7 +113,10 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id}>
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(row.original.type === "whitelisted" && "opacity-70")}
+        >
           {formatNumber(row.original.depositToken.tokenAmountUsd, {
             type: "currency",
           })}
@@ -117,7 +132,10 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id}>
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(row.original.type === "whitelisted" && "opacity-70")}
+        >
           {row.original.unlockTimestamp
             ? formatDate(
                 Number(row.original.unlockTimestamp) * 1000,
@@ -136,7 +154,10 @@ export const marketAllocationColumns: ColumnDef<any>[] = [
     meta: { className: "text-left min-w-20", align: "left" },
     cell: ({ row }) => {
       return (
-        <ContentFlow customKey={row.original.id}>
+        <ContentFlow
+          customKey={row.original.id}
+          className={cn(row.original.type === "whitelisted" && "opacity-70")}
+        >
           {row.original.yieldRate ? (
             <PrimaryLabel className="text-base font-normal">
               <GradientText>

@@ -162,7 +162,7 @@ export const APLimitActionForm = React.forwardRef<
               <Button
                 size="sm"
                 variant="outline"
-                className="font-light"
+                className="h-[33px] border-divider font-light"
                 onClick={() => setShowEnsoWidget(!showEnsoWidget)}
               >
                 Or get {enrichedMarket?.inputToken.symbol!}

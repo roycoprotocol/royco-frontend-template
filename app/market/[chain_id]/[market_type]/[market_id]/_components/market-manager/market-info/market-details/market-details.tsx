@@ -20,7 +20,7 @@ import { MULTIPLIER_ASSET_TYPE } from "royco/boyco";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { useAtomValue } from "jotai";
 import NumberFlow from "@number-flow/react";
-import Markdown from "react-markdown";
+import { formatIncentivePayout } from "@/utils/lockup-time";
 
 export const MarketDetails = React.forwardRef<
   HTMLDivElement,
@@ -189,6 +189,28 @@ export const MarketDetails = React.forwardRef<
               <InfoCard.Row.Key>Incentive Payout</InfoCard.Row.Key>
 
               <InfoCard.Row.Value>After Sonic S1</InfoCard.Row.Value>
+            </InfoCard.Row>
+          )}
+
+          {/**
+           * Incentive Payout
+           */}
+          {enrichedMarket?.rewardStyle !== undefined && (
+            <InfoCard.Row className={INFO_ROW_CLASSES}>
+              <InfoCard.Row.Key>Incentive Payout</InfoCard.Row.Key>
+
+              <InfoCard.Row.Value>
+                {(() => {
+                  if (enrichedMarket?.marketType === 1) {
+                    return "Streaming";
+                  }
+
+                  return formatIncentivePayout(
+                    enrichedMarket?.rewardStyle,
+                    enrichedMarket?.lockupTime
+                  );
+                })()}
+              </InfoCard.Row.Value>
             </InfoCard.Row>
           )}
 
