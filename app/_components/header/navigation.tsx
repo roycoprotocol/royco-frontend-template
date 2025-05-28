@@ -179,29 +179,22 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
             <div className="text-center text-xs text-_surface_">
               <span>
-                <span className="font-semibold underline-offset-2 hover:underline">
-                  <a
-                    href="https://plume.org/blog/royco-markets"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Plume X Royco{" "}
-                  </a>
-                </span>
+                <span className="font-semibold">Plume X Royco </span>
                 <span>Plume is distributing 150,000,000 PLUME </span>
                 <span>
                   <PlumeLogo className="inline-block h-4 w-4" />{" "}
                 </span>
                 <span>
-                  as part of its Season 2 Incentive Campaign. Explore the{" "}
+                  as part of its Season 2 Incentive Campaign. Learn more about
+                  the campaign{" "}
                 </span>
                 <span className="underline-offset-2 hover:underline">
                   <a
-                    href="https://portal.plume.org/"
+                    href="https://plume.org/blog/royco-markets"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Plume Portal.
+                    here.
                   </a>
                 </span>
               </span>
