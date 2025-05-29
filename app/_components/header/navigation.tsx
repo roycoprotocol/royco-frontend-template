@@ -56,9 +56,9 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
         <MaxWidthProvider className="flex h-16 items-center">
           <div className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-10">
-              <a target="_self" href="/" className="shrink-0 cursor-pointer">
+              <Link target="_self" href="/" className="shrink-0 cursor-pointer">
                 <RoycoLogoIcon className="h-[18px] fill-_primary_" />
-              </a>
+              </Link>
 
               <div className="hidden shrink-0 items-center gap-10 lg:flex">
                 {Links.map((item, index) => {
