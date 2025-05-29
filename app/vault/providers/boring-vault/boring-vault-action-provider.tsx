@@ -111,7 +111,7 @@ export function BoringVaultActionProvider({
               Withdrawing funds before {lockupTime.toLowerCase()} will result in
               forfeiture of all rewards earned during that period.
             </li>
-            <li>Withdrawals can take up to 5 days to process.</li>
+            <li>Withdrawals can take up to 15 days to process.</li>
             <li>Lockup will begin after the next rebalance.</li>
           </ul>
         </div>

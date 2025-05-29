@@ -176,7 +176,7 @@ export const DepositActionForm = React.forwardRef<
         </SlideUpWrapper>
       )}
 
-      <SlideUpWrapper delay={0.2} className="mt-6">
+      {/* <SlideUpWrapper delay={0.2} className="mt-6">
         <PrimaryLabel className="text-sm font-normal">
           Projected Yield
         </PrimaryLabel>
@@ -213,7 +213,7 @@ export const DepositActionForm = React.forwardRef<
             </InfoTip>
           </div>
         </SecondaryLabel>
-      </SlideUpWrapper>
+      </SlideUpWrapper> */}
     </div>
   );
 });

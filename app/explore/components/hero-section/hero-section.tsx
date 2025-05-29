@@ -42,7 +42,7 @@ export const HeroSection = React.forwardRef<
       default:
         return {
           title: "Earn on Royco",
-          description: "Where capital meets its highest potential.",
+          description: "Where capital meets its potential.",
         };
     }
   }, [tag]);
