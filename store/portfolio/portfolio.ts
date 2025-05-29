@@ -4,7 +4,6 @@ import { atomWithQuery } from "jotai-tanstack-query";
 import {
   ActivityResponse,
   BaseEnrichedTokenData,
-  EnrichedActivity,
   Filter,
   GlobalPositionResponse,
 } from "royco/api";
