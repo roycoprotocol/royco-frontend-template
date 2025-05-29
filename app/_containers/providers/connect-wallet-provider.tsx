@@ -11,6 +11,8 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { SANCTIONED_ADDRESSES } from "@celo/compliance";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/header/connect-wallet-button/connect-wallet-alert-modal";
+import { authenticationStatusAtom, sessionAtom } from "@/store/global";
+import { useAtom } from "jotai";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -28,8 +30,14 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(
+    authenticationStatusAtom
+  );
+
+  const [session, setSession] = useAtom(sessionAtom);
+
   const { isConnected, address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { disconnect } = useDisconnect();
 
@@ -75,6 +83,38 @@ export const ConnectWalletProvider = ({
     }
   };
 
+  const reconnectSession = () => {
+    if (
+      address &&
+      authenticationStatus === "unauthenticated" &&
+      session &&
+      session.walletAddress === address.toLowerCase()
+    ) {
+      setAuthenticationStatus("authenticated");
+    }
+  };
+
+  const promptSignIn = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    if (
+      address &&
+      authenticationStatus === "unauthenticated" &&
+      !connectModalOpen &&
+      (!session || session.walletAddress !== address.toLowerCase())
+    ) {
+      openConnectModal?.();
+    }
+  };
+
+  useEffect(() => {
+    reconnectSession();
+  }, [address, authenticationStatus, session]);
+
+  useEffect(() => {
+    promptSignIn();
+  }, [isConnected, authenticationStatus, session, connectModalOpen]);
+
   useEffect(() => {
     disconnectWalletIfSanctioned();
   }, [isConnected, address]);
@@ -86,6 +126,17 @@ export const ConnectWalletProvider = ({
         connectAccountModal,
       }}
     >
+      {/* <button
+        onClick={() => {
+          console.log("disconnecting");
+          disconnect();
+          // setAuthenticationStatus("unauthenticated");
+          // setSession(null);
+        }}
+      >
+        Click Me to disconnect
+      </button> */}
+
       {children}
 
       <ConnectWalletAlertModal

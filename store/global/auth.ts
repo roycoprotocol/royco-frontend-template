@@ -1,27 +1,20 @@
 import { atom } from "jotai";
-import { accountAddressAtom } from "./atoms";
 import { atomWithStorage } from "jotai/utils";
-import { atomWithQuery } from "jotai-tanstack-query";
-import { defaultQueryOptions } from "@/utils/query";
-import { api } from "@/app/api/royco";
-import { SessionResponse } from "royco/api";
+import { Session } from "royco/api";
 
-export const sessionAtom = atomWithStorage<SessionResponse | null>(
+export const parentSessionAtom = atom<Session | null>(null);
+
+export const sessionAtom = atomWithStorage<Session | null>(
   "session",
-  null
+  null,
+  undefined,
+  {
+    getOnInit: true,
+  }
 );
 
-export const authenticationStatusAtom = atom((get) => {
-  const session = get(sessionAtom);
-  const accountAddress = get(accountAddressAtom);
+export const authenticationStatusAtom = atom<
+  "unauthenticated" | "loading" | "authenticated"
+>("unauthenticated");
 
-  if (!session || !accountAddress) {
-    return "unauthenticated";
-  }
-
-  if (session.walletAddress !== accountAddress.toLowerCase()) {
-    return "unauthenticated";
-  }
-
-  return "authenticated";
-});
+export const isAuthEnabledAtom = atom(true);

@@ -12,6 +12,7 @@ import { ConnectWalletButton } from "./connect-wallet-button/connect-wallet-butt
 import { tagAtom } from "@/store/protector/protector";
 import { useAtomValue } from "jotai";
 import { PlumeLogo } from "@/assets/logo/plume/plume";
+import Link from "next/link";
 
 const Links = [
   {
@@ -61,6 +62,25 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
 
               <div className="hidden shrink-0 items-center gap-10 lg:flex">
                 {Links.map((item, index) => {
+                  // If the link starts with "/" it is a relative link and should be rendered as a Link
+                  if (item.link.startsWith("/")) {
+                    return (
+                      <Link
+                        key={index}
+                        href={item.link}
+                        rel="noopener noreferrer"
+                        className={cn(
+                          "flex cursor-pointer items-center gap-2 text-sm font-normal hover:text-secondary",
+                          "transition-all duration-200 ease-in-out"
+                        )}
+                      >
+                        {item.icon}
+
+                        {item.label}
+                      </Link>
+                    );
+                  }
+
                   return (
                     <a
                       key={index}

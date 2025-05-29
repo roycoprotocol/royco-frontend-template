@@ -29,7 +29,7 @@ export const Disconnector = React.forwardRef<
   };
 
   useEffect(() => {
-    autoDisconnect();
+    // autoDisconnect();
   }, [address, connectModalOpen, session]);
 
   return <div ref={ref} {...props} className={cn("contents", className)}></div>;
