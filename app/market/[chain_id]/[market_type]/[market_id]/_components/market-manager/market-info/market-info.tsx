@@ -50,7 +50,12 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Market Description
          */}
-        <div className="mt-3 h-auto font-gt text-sm font-light text-black">
+        <div
+          className={cn(
+            "mt-3 h-auto font-gt text-sm font-light text-black",
+            !showDescription && "line-clamp-3"
+          )}
+        >
           <MarkdownRenderer>
             {enrichedMarket.description ?? ""}
           </MarkdownRenderer>
