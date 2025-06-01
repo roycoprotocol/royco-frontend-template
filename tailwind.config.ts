@@ -78,12 +78,16 @@ const config = {
         _surface_: "#FDFDFB",
         _surface_secondary: "#E5E5E1",
         _surface_tertiary: "#F2F2ED",
+
         _primary_: "#0F0E0D",
         _secondary_: "#4D4B49",
-        _divider_: "#D9D9D5",
-        _disabled_: "#999494",
-        _highlight_: "#83715C",
         _tertiary_: "#676564",
+
+        _divider_: "#D9D9D5",
+
+        _disabled_: "#999494",
+
+        _highlight_: "#83715C",
 
         _primary_text_: "#6C4315",
       },

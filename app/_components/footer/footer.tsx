@@ -3,6 +3,8 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
+import { TwitterIcon } from "@/assets/icons/twitter";
+import { TelegramIcon } from "@/assets/icons/telegram";
 
 const Links = [
   {
@@ -25,12 +27,14 @@ const Socials = [
     link: "https://x.com/roycoprotocol",
     label: "Twitter",
     target: "_blank",
+    icon: <TwitterIcon className="hover:fill-_primary_" />,
   },
   {
     id: "telegram",
     link: "https://t.co/oUDKnVZUp3",
     label: "Telegram",
     target: "_blank",
+    icon: <TelegramIcon className="hover:fill-_primary_" />,
   },
 ];
 
@@ -47,30 +51,45 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
         )}
         {...props}
       >
-        <MaxWidthProvider className="flex h-16 items-center">
-          <div className="flex flex-row items-center justify-between">
-            <div className="flex items-center gap-10">
-              <div className="hidden shrink-0 items-center gap-10 lg:flex">
-                {Links.map((item, index) => {
-                  return (
-                    <a
-                      key={index}
-                      href={item.link}
-                      target={item.target}
-                      rel="noopener noreferrer"
-                      className={cn(
-                        "flex cursor-pointer items-center gap-2 text-sm font-normal text-_secondary_ hover:text-_primary_",
-                        "transition-all duration-200 ease-in-out"
-                      )}
-                    >
-                      {item.label}
-                    </a>
-                  );
-                })}
-              </div>
+        <MaxWidthProvider className="flex items-center py-5">
+          <div className="flex flex-row flex-wrap items-center justify-between gap-5">
+            <div className="flex shrink-0 items-center gap-10">
+              {Links.map((item, index) => {
+                return (
+                  <a
+                    key={index}
+                    href={item.link}
+                    target={item.target}
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "flex cursor-pointer items-center gap-2 text-sm font-normal text-_tertiary_ hover:text-_primary_",
+                      "transition-all duration-200 ease-in-out"
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
             </div>
 
-            <div className="flex items-center gap-2"></div>
+            <div className="flex shrink-0  items-center gap-6">
+              {Socials.map((item, index) => {
+                return (
+                  <a
+                    key={index}
+                    href={item.link}
+                    target={item.target}
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "flex cursor-pointer items-center gap-2 text-sm font-normal text-_tertiary_ hover:text-_primary_",
+                      "transition-all duration-200 ease-in-out"
+                    )}
+                  >
+                    {item.icon}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </MaxWidthProvider>
       </div>
