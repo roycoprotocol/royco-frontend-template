@@ -16,6 +16,7 @@ import { AtomProvider } from "./atom-provider";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
 import { NavigationWrapper } from "./_components/header/navigation-wrapper";
+import { FooterWrapper } from "./_components/footer/footer-wrapper";
 
 /**
  * Inter Font
@@ -101,6 +102,8 @@ export default function RootLayout({
               <NavigationWrapper />
 
               {children}
+
+              <FooterWrapper />
             </WalletProvider>
 
             <BrowserDetector />

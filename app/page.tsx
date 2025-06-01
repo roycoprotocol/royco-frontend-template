@@ -21,7 +21,7 @@ const Page = () => {
 
   return (
     <ProtectorProvider>
-      <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-24">
+      <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-10">
         {/**
          * Background
          */}
