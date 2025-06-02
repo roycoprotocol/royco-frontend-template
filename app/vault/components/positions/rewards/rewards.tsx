@@ -168,7 +168,7 @@ export const Rewards = React.forwardRef<
                           </span>
                         )}
 
-                        <span>{incentive.symbol}</span>
+                        <span>{incentive.label || incentive.symbol}</span>
                       </div>
                     </PrimaryLabel>
 
@@ -225,7 +225,7 @@ export const Rewards = React.forwardRef<
                           )}
                         </span>
 
-                        <span>{incentive.symbol}</span>
+                        <span>{incentive.label || incentive.symbol}</span>
                       </div>
                     </PrimaryLabel>
 

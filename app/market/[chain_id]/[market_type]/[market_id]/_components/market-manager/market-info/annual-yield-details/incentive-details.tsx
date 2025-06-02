@@ -33,7 +33,9 @@ export const BERA_TOKEN_ID = "80094-0x0000000000000000000000000000000000000000";
 export const IncentiveToken = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    token_data: TokenQuote;
+    token_data: TokenQuote & {
+      label?: string;
+    };
     symbolClassName?: string;
     category?: string;
   }
@@ -54,7 +56,7 @@ export const IncentiveToken = React.forwardRef<
               if (token_data.id === SONIC_ROYCO_GEM_BOOST_ID) {
                 return "Royco Gem Bonus";
               }
-              return token_data.symbol;
+              return token_data.label || token_data.symbol;
             })()}
           </div>
         </div>
