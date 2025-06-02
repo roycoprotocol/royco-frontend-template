@@ -175,7 +175,7 @@ export const TokenDisplayer = React.forwardRef<
 
         {(showSymbol || showName) && (
           <div className={cn("", getTokenTextSize(size), symbolClassName)}>
-            {showName ? tokens[0].name : tokens[0].symbol}
+            {showName ? tokens[0].name : tokens[0].label || tokens[0].symbol}
             {tokens.length > 1 && ` +${tokens.length - 1} more`}
           </div>
         )}
