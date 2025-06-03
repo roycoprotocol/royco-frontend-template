@@ -220,7 +220,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
                   </span>
                   <span>
                     <img
-                      src="/sonic-token.png"
+                      src="/images/navigation/sonic-token.png"
                       alt="Sonic Logo"
                       className="inline-block h-4 w-4"
                     />{" "}
