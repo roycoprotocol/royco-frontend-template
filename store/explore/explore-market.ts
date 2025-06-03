@@ -51,7 +51,7 @@ export const baseFilter = atom<Filter[]>((get) => {
 
   const tag = get(tagAtom);
 
-  if (tag !== "boyco") {
+  if (tag !== "boyco" && tag !== "plume") {
     filters.push({
       id: "fillableUsd",
       value: 0,
