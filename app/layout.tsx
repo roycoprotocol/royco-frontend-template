@@ -58,7 +58,7 @@ const ortica = localFont({
 });
 
 /**
- * @description Morion Font
+ * Morion Font
  */
 const morion = localFont({
   src: [
@@ -72,6 +72,15 @@ const morion = localFont({
   variable: "--font-morion",
 });
 
+const fontsVariables = [
+  inter.variable,
+  gt.variable,
+  shippori.variable,
+  fragmentMono.variable,
+  ortica.variable,
+  morion.variable,
+];
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -84,12 +93,7 @@ export default function RootLayout({
           <body
             suppressHydrationWarning
             className={cn(
-              inter.variable,
-              gt.variable,
-              morion.variable,
-              ortica.variable,
-              shippori.variable,
-              fragmentMono.variable,
+              ...fontsVariables,
               "hide-scrollbar overflow-x-hidden scroll-smooth font-gt",
               "bg-white"
             )}
@@ -99,11 +103,13 @@ export default function RootLayout({
               <AtomProvider />
               <ToasterSonner richColors={true} position="top-center" />
 
-              <NavigationWrapper />
+              <div className="flex min-h-screen flex-col">
+                <NavigationWrapper />
 
-              {children}
+                <div className="grow">{children}</div>
 
-              <FooterWrapper />
+                <FooterWrapper />
+              </div>
             </WalletProvider>
 
             <BrowserDetector />
