@@ -27,7 +27,7 @@ export const MarketTable = React.forwardRef<
 
   if (isLoading && !propsData) {
     return (
-      <div className="flex flex-col items-center p-20">
+      <div className="w-full">
         <LoadingIndicator />
       </div>
     );
