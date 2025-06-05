@@ -2,11 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, Table as TableInstance } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -17,23 +13,18 @@ import {
 } from "@/components/ui/table";
 import { AlertIndicator } from "@/components/common/alert-indicator";
 import Link from "next/link";
+import { DepositsColumnDataElement, depositsColumns } from "./deposits-columns";
 
-export const DepositTable = React.forwardRef<
+export const DepositsTable = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & {
-    data: any[];
-    columns: any[];
+    data: DepositsColumnDataElement[];
+    table: TableInstance<DepositsColumnDataElement>;
   }
->(({ className, data, columns, ...props }, ref) => {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
+>(({ className, data, table, ...props }, ref) => {
   return (
-    <div className="w-full">
-      <Table ref={ref} className={cn(className)} {...props}>
+    <div ref={ref} className={cn("w-full", className)} {...props}>
+      <Table className={cn("w-full")}>
         <TableHeader className={cn("sticky top-0 z-10 [&_tr]:border-b-0")}>
           {table.getHeaderGroups().map((item) => (
             <TableRow
@@ -70,7 +61,7 @@ export const DepositTable = React.forwardRef<
           {table.getRowModel().rows?.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
+                colSpan={depositsColumns.length}
                 className="h-24 border-l border-r border-t border-_divider_ text-center"
               >
                 <AlertIndicator className="py-10">
@@ -98,31 +89,29 @@ export const DepositTable = React.forwardRef<
                     >
                       {row.getVisibleCells().map((cell, cellIndex) => {
                         return (
-                          <>
-                            <TableCell
-                              key={`row:cell:${cell.id}`}
+                          <TableCell
+                            key={`row:cell:${cell.id}`}
+                            className={cn(
+                              "min-w-fit whitespace-nowrap px-0 py-4 pr-8 text-base font-normal text-primary",
+                              (cell.column.columnDef.meta as any).className
+                            )}
+                          >
+                            <div
                               className={cn(
-                                "min-w-fit whitespace-nowrap px-0 py-4 pr-8 text-base font-normal text-primary",
-                                (cell.column.columnDef.meta as any).className
+                                "flex items-center gap-1",
+                                (cell.column.columnDef.meta as any).align ===
+                                  "right" && "justify-end",
+                                (cell.column.columnDef.meta as any).align ===
+                                  "left" && "justify-start",
+                                (cell.column.columnDef.meta as any).align ===
+                                  "center" && "justify-center"
                               )}
                             >
-                              <div
-                                className={cn(
-                                  "flex items-center gap-1",
-                                  (cell.column.columnDef.meta as any).align ===
-                                    "right" && "justify-end",
-                                  (cell.column.columnDef.meta as any).align ===
-                                    "left" && "justify-start",
-                                  (cell.column.columnDef.meta as any).align ===
-                                    "center" && "justify-center"
-                                )}
-                              >
-                                {flexRender(cell.column.columnDef.cell, {
-                                  ...cell.getContext(),
-                                })}
-                              </div>
-                            </TableCell>
-                          </>
+                              {flexRender(cell.column.columnDef.cell, {
+                                ...cell.getContext(),
+                              })}
+                            </div>
+                          </TableCell>
                         );
                       })}
                     </TableRow>

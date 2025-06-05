@@ -23,7 +23,7 @@ export const TokenRewardsTable = React.forwardRef<
       className={cn("hide-scrollbar w-full overflow-x-auto", className)}
       {...props}
     >
-      <Table className={cn("w-full")} {...props}>
+      <Table className={cn("w-full")}>
         <TableBody
           className={cn("min-h-80 overflow-y-scroll [&_tr]:border-b-_divider_")}
         >

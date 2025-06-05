@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { TokenDisplayer } from "@/components/common";
@@ -8,18 +8,8 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { formatDate } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { GradientText } from "@/app/vault/common/gradient-text";
 import { BaseEnrichedTokenDataWithClaimInfo } from "royco/api";
-import { useAtom, useAtomValue } from "jotai";
-import { portfolioTransactionsAtom } from "@/store/portfolio";
-import {
-  claimRecipeIncentiveTokenTxOptions,
-  claimVaultIncentiveTokenTxOptions,
-} from "royco/transaction";
-import { accountAddressAtom } from "@/store/global";
 import { ContentFlow } from "@/components/animations/content-flow";
-import { DotIcon } from "lucide-react";
 
 export type PointRewardsColumnDataElement =
   BaseEnrichedTokenDataWithClaimInfo & {
