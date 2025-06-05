@@ -16,7 +16,7 @@ const Links = [
   {
     id: "documentation",
     link: "https://docs.royco.org/",
-    label: "Documentation",
+    label: "Docs",
     target: "_blank",
   },
 ];
@@ -51,7 +51,7 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
         )}
         {...props}
       >
-        <MaxWidthProvider className="flex items-center py-5">
+        <MaxWidthProvider className="flex h-16 items-center">
           <div className="flex flex-row flex-wrap items-center justify-between gap-5">
             <div className="flex shrink-0 items-center gap-10">
               {Links.map((item, index) => {
