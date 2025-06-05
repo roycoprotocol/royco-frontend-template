@@ -33,7 +33,7 @@ import { TypedRoycoTransactionType } from "royco/market";
 import { BoycoWithdrawalModal } from "./boyco-withdrawal-modal";
 import { ModalTxOption } from "@/types";
 import { lastRefreshTimestampAtom } from "@/store/global";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { api } from "@/app/api/royco";
 import formatNumber from "@/utils/numbers";
 import {
@@ -44,6 +44,8 @@ import { LoadingCircle } from "@/components/animations/loading-circle";
 import { SlideUpWrapper } from "@/components/animations";
 import { defaultQueryOptions } from "@/utils/query";
 import { Plume } from "royco/constants";
+import { loadableEnrichedMarketAtom } from "@/store/market";
+import { formatLockupTime } from "@/utils/lockup-time";
 
 export const TransactionModal = React.forwardRef<
   HTMLDivElement,
@@ -52,6 +54,8 @@ export const TransactionModal = React.forwardRef<
   const [lastRefreshTimestamp, setLastRefreshTimestamp] = useAtom(
     lastRefreshTimestampAtom
   );
+
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   const { chain } = useAccount();
   const chainId = chain?.id;
@@ -586,6 +590,18 @@ export const TransactionModal = React.forwardRef<
           <TransactionConfirmationModal
             isOpen={isConfirmationModalOpen}
             onOpenModal={(open) => setIsConfirmationModalOpen(open)}
+            warnings={
+              enrichedMarket?.rewardStyle === 2 ? (
+                <div className="space-y-2">
+                  <p>By selecting Confirm, I understand that:</p>
+                  <ul className="list-disc space-y-2 pl-6">
+                    <li>
+                      {`Withdrawing funds before ${formatLockupTime(enrichedMarket?.lockupTime).toLowerCase()} will result in forfeiture of all rewards earned during that period.`}
+                    </li>
+                  </ul>
+                </div>
+              ) : null
+            }
             onConfirm={() => {
               try {
                 if (!!currentTransaction) {
