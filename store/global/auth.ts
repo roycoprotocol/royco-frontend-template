@@ -6,8 +6,8 @@ import { accountAddressAtom } from "./atoms";
 import { userInfoAtom } from "./user";
 
 export const secureCookieConfig = {
-  secure: process.env.NEXT_PUBLIC_NODE_ENV === "development" ? false : true,
-  httpOnly: process.env.NEXT_PUBLIC_NODE_ENV === "development" ? false : true,
+  secure: process.env.NEXT_PUBLIC_API_ENV === "development" ? false : true,
+  httpOnly: process.env.NEXT_PUBLIC_API_ENV === "development" ? false : true,
   sameSite: "strict" as const,
   path: "/",
 };
