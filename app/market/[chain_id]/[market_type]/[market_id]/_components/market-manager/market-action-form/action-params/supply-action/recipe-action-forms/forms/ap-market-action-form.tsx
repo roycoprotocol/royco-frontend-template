@@ -9,7 +9,10 @@ import { SlideUpWrapper } from "@/components/animations";
 import { EnsoShortcutsWidget } from "../../components/enso-shortcuts-widget.tsx";
 import { SONIC_CHAIN_ID } from "royco/sonic";
 import { useAtom, useAtomValue } from "jotai";
-import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import {
+  isTemptestFeeApplicable,
+  loadableEnrichedMarketAtom,
+} from "@/store/market/atoms";
 import { useMarketManager } from "@/store/use-market-manager";
 import { InfoIcon } from "lucide-react";
 import { SecondaryLabel } from "../../../../../../composables";
@@ -105,6 +108,28 @@ export const APMarketActionForm = React.forwardRef<
                   }
                 )}
                 )
+              </SecondaryLabel>
+            </div>
+          </SlideUpWrapper>
+        </div>
+      )}
+
+      {/**
+       * Tempest Fees Indicator
+       */}
+      {isTemptestFeeApplicable(enrichedMarket?.id) && (
+        <div className="mt-3">
+          <SlideUpWrapper delay={0.3}>
+            <div className="rounded-xl border border-divider bg-z2 px-3 py-2 transition-all duration-200 ease-in-out hover:bg-focus">
+              <div className="flex flex-row items-center gap-2">
+                <InfoIcon className="h-4 w-4 text-secondary" />
+                <div className="text-sm font-semibold text-secondary">
+                  Tempest Fees
+                </div>
+              </div>
+
+              <SecondaryLabel className="mt-1 text-xs">
+                ALM Fee on deposits: 0.65% / Performance Fee: 10%
               </SecondaryLabel>
             </div>
           </SlideUpWrapper>

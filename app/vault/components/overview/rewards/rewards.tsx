@@ -96,32 +96,34 @@ export const Rewards = React.forwardRef<
                           return formatNumber(reward.yieldRate, {
                             type: "percent",
                           });
+                        } else {
+                          return formatNumber(0, {
+                            type: "percent",
+                          });
                         }
 
-                        if (reward.yieldRate === 0 && reward.tokenAmount) {
-                          return `${formatNumber(reward.tokenAmount, {
-                            type: "number",
-                          })} ${reward.symbol}`;
-                        }
+                        // if (reward.yieldRate === 0 && reward.tokenAmount) {
+                        //   return `${formatNumber(reward.tokenAmount, {
+                        //     type: "number",
+                        //   })} ${reward.symbol}`;
+                        // }
 
-                        if (reward.yieldText) {
-                          return reward.yieldText;
-                        }
+                        // if (reward.yieldText) {
+                        //   return reward.yieldText;
+                        // }
 
                         return;
                       })()}
                     </GradientText>
 
-                    {reward.yieldRate ? (
-                      <InfoTip>
-                        {`${formatNumber(data.yieldRate, {
-                          type: "percent",
-                        })} estimated APY is calculated on base assumption of
+                    <InfoTip>
+                      {`${formatNumber(reward.yieldRate ?? 0, {
+                        type: "percent",
+                      })} estimated APY is calculated on base assumption of
                         ${formatNumber(reward.fdv, {
                           type: "currency",
                         })} FDV`}
-                      </InfoTip>
-                    ) : null}
+                    </InfoTip>
                   </div>
                 </PrimaryLabel>
               </div>

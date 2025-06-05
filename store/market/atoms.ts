@@ -60,3 +60,14 @@ export const loadableEnrichedMarketAtom = atomWithQuery<EnrichedMarket>(
 );
 
 export const userTypeAtom = atom<0 | 1>(0);
+
+export const isTemptestFeeApplicable = (id: string | undefined) => {
+  const markets = [
+    "98866_0_0x40bb8b77686fdea111f3e5b369dacd049abb8224550b453b6308b1038638e355",
+    "98866_0_0xb52a7b315f1f0a83c6cdec526a72198c9c09c9e25d7a145a3a4086f114fbb91c",
+  ];
+  if (id && markets.includes(id)) {
+    return true;
+  }
+  return false;
+};
