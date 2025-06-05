@@ -8,6 +8,10 @@ import { TertiaryLabel } from "../../../../../../composables/common-labels";
 import { XIcon } from "lucide-react";
 import { useAtom, useAtomValue } from "jotai";
 import { showEnsoShortcutsWidgetAtom } from "@/store/global";
+import {
+  isCrossChainZapDisabled,
+  loadableEnrichedMarketAtom,
+} from "@/store/market";
 
 const ENSO_KEY = process.env.NEXT_PUBLIC_ENSO_API_KEY;
 
@@ -37,6 +41,7 @@ export const EnsoShortcutsWidget = React.forwardRef<
   const [showEnsoWidget, setShowEnsoWidget] = useAtom(
     showEnsoShortcutsWidgetAtom
   );
+  const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
   return (
     <div ref={ref} className={cn("mb-1", className)} {...props}>
@@ -68,7 +73,11 @@ export const EnsoShortcutsWidget = React.forwardRef<
                 obligateSelection
                 themeConfig={themeConfig}
                 apiKey={ENSO_KEY}
-                outChainId={chainId}
+                outChainId={
+                  isCrossChainZapDisabled(enrichedMarket?.id)
+                    ? undefined
+                    : chainId
+                }
                 chainId={chainId}
                 tokenOut={token}
               />
