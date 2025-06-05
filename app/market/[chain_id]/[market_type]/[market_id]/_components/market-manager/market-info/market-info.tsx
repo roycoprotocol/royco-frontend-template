@@ -15,6 +15,7 @@ import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { tagAtom } from "@/store/protector/protector";
 import { MarkdownRenderer } from "@/app/_components/common/markdown-renderer";
+import { Plume } from "royco/constants";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -103,7 +104,7 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Token Estimate
          */}
-        {tag !== "plume" && (
+        {enrichedMarket?.chainId !== Plume.id && (
           <div className="mt-2">
             <TokenEstimator
               defaultTokenId={pointTokenIds}
