@@ -16,7 +16,7 @@ const risk_framework = [
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description:
-      "Vault can only call functions whitelisted by both Se7en Seas and Royco.",
+      "Vault can only call functions whitelisted by both Seven Seas and Royco.",
   },
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
