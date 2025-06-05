@@ -32,11 +32,19 @@ const getDepositTokenIcon = (symbol: string) => {
   }
 };
 
-const VaultsCard = ({ data }: VaultsCardProps) => {
+const VaultsCard = ({
+  data,
+  className,
+}: VaultsCardProps & { className: string }) => {
   const depositToken = getDepositTokenIcon(data.depositTokens[0]?.symbol);
 
   return (
-    <div className="rounded-sm border border-_divider_ bg-_surface_">
+    <div
+      className={cn(
+        "flex flex-col rounded-sm border border-_divider_ bg-_surface_",
+        className
+      )}
+    >
       <div
         className="flex flex-col items-center justify-between gap-5 p-8"
         style={{
@@ -120,6 +128,7 @@ export const VaultsTable = React.forwardRef<
             symbol: "BTC",
           },
         ],
+        className: "hidden md:flex",
       },
       {
         id: "royco-eth",
@@ -130,6 +139,7 @@ export const VaultsTable = React.forwardRef<
             symbol: "ETH",
           },
         ],
+        className: "hidden md:flex",
       },
     ];
   }, [propsData]);
@@ -160,7 +170,13 @@ export const VaultsTable = React.forwardRef<
       )}
     >
       {data.map((vault) => {
-        return <VaultsCard key={vault.id} data={vault as EnrichedVault} />;
+        return (
+          <VaultsCard
+            key={vault.id}
+            data={vault as EnrichedVault}
+            className={(vault as any).className as string}
+          />
+        );
       })}
     </div>
   );
