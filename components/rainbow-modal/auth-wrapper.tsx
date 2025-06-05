@@ -10,9 +10,11 @@ import { createSiweMessage } from "viem/siwe";
 import { useAtom } from "jotai";
 import { authenticationStatusAtom, sessionAtom } from "@/store/global";
 import { api } from "@/app/api/royco";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { defaultQueryOptions } from "@/utils/query";
 import { isAuthEnabledAtom, parentSessionAtom } from "@/store/global";
+import { isEqual } from "lodash";
+import { queryClientAtom } from "jotai-tanstack-query";
 
 export default function WalletProvider({ children }: { children: ReactNode }) {
   const [authenticationStatus, setAuthenticationStatus] = useAtom(
@@ -24,6 +26,8 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
   const [isAuthEnabled, setIsAuthEnabled] = useAtom(isAuthEnabledAtom);
 
   const { address, isConnected } = useAccount();
+
+  const [queryClient] = useAtom(queryClientAtom);
 
   const authenticationAdapter = useMemo(() => {
     return createAuthenticationAdapter({
@@ -49,11 +53,12 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
           const response = await api.authControllerLogin({
             message,
             signature,
-            parentSession: parentSession ?? undefined,
+            // parentSession: parentSession ?? undefined,
           });
 
           setSession(response.data.session);
           setAuthenticationStatus("authenticated");
+          queryClient.refetchQueries({ queryKey: ["userInfo"] });
 
           return true;
         } catch (error) {
@@ -63,17 +68,15 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
       },
 
       signOut: async () => {
-        try {
-          if (!session?.id) {
-            throw new Error("No session found");
-          }
+        // try {
+        //   if (!session?.id) {
+        //     throw new Error("No session found");
+        //   }
 
-          await api.authControllerLogout({
-            id: session?.id,
-          });
-        } catch (error) {
-          console.error(error);
-        }
+        //   await api.authControllerLogout();
+        // } catch (error) {
+        //   console.error(error);
+        // }
         setAuthenticationStatus("unauthenticated");
       },
     });
@@ -92,13 +95,15 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
           throw new Error("No session id found");
         }
 
-        const response = await api.authControllerGetSession({
-          id: session?.id,
-        });
+        const response = await api.authControllerGetSession();
 
         if (response.data.isActive === false) {
           setSession(null);
           setAuthenticationStatus("unauthenticated");
+        } else {
+          if (!isEqual(session, response.data)) {
+            setSession(response.data);
+          }
         }
       } catch (error) {
         console.error(error);

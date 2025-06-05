@@ -13,6 +13,8 @@ import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/header/connect-wallet-button/connect-wallet-alert-modal";
 import { authenticationStatusAtom, sessionAtom } from "@/store/global";
 import { useAtom } from "jotai";
+import { queryClientAtom } from "jotai-tanstack-query";
+import { useAtomValue } from "jotai";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -30,6 +32,8 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const queryClient = useAtomValue(queryClientAtom);
+
   const [authenticationStatus, setAuthenticationStatus] = useAtom(
     authenticationStatusAtom
   );
@@ -91,6 +95,9 @@ export const ConnectWalletProvider = ({
       session.walletAddress === address.toLowerCase()
     ) {
       setAuthenticationStatus("authenticated");
+      queryClient.refetchQueries({
+        queryKey: ["userInfo"],
+      });
     }
   };
 

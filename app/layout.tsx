@@ -12,10 +12,10 @@ import WalletProvider from "@/components/rainbow-modal/context-provider";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 
 import { Analytics } from "@vercel/analytics/next";
-import { AtomProvider } from "./atom-provider";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
 import { NavigationWrapper } from "./_components/header/navigation-wrapper";
+import { DataProvider } from "./_containers/providers/data-provider";
 
 /**
  * Inter Font
@@ -94,8 +94,10 @@ export default function RootLayout({
             )}
           >
             <WalletProvider>
+              <DataProvider />
+
               <GeoDetector />
-              <AtomProvider />
+
               <ToasterSonner richColors={true} position="top-center" />
 
               <NavigationWrapper />

@@ -115,6 +115,10 @@ export const loadablePortfolioPositionsAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptions,
+    // staleTime: (query) => {
+    //   const params = query.queryKey[1] as any;
+    //   return params.address === get(accountAddressAtom) ? 30000 : 0;
+    // },
   }));
 
 export const portfolioTransactionsAtom = atom<{

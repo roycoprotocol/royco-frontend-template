@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { kv } from "@vercel/kv";
+import { cookies } from "next/headers";
 
 const SupabaseRoutes = [
   "/api/push/token",
@@ -224,7 +225,12 @@ export async function middleware(request: NextRequest) {
    */
   if (pathname.startsWith("/api/v1/")) {
     const headers = new Headers(request.headers);
+    const cookieStore = cookies();
+    const sessionToken = cookieStore.get("royco.session")?.value;
+
     headers.set("Authorization", `Bearer ${process.env.ROYCO_API_TOKEN}`);
+    headers.set("Cookie", `royco.session=${sessionToken}`);
+
     return NextResponse.next({
       request: {
         headers,
@@ -237,7 +243,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all paths except static files
-    "/((?!_next/static|favicon.ico).*)",
+    // Match all paths except static files and favicon
+    "/((?!_next/static|_next/image|favicon.ico|favicon-16x16.png|favicon-32x32.png|apple-touch-icon.png).*)",
   ],
 };

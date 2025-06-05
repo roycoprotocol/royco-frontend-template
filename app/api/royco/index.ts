@@ -1,10 +1,13 @@
-import { Api } from "royco/api";
+import { Api as ProductionApi } from "royco/api";
+import { Api as DevelopmentApi } from "./Api";
 
-// Create a new instance of the API client with the proxied base URL
-export const api = new Api({
-  baseURL: "/", // This will be proxied
-  headers: {
-    "Keep-Alive": "timeout=30",
-    Connection: "keep-alive",
-  },
-});
+export const api =
+  process.env.NEXT_PUBLIC_API_ENV === "development"
+    ? new DevelopmentApi({
+        baseURL: "http://localhost:8000",
+        withCredentials: true,
+      })
+    : new ProductionApi({
+        baseURL: "/",
+        withCredentials: true,
+      });
