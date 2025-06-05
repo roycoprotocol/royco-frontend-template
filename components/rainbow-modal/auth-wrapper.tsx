@@ -45,6 +45,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
           version: "1",
           chainId,
           nonce,
+          scheme: "https",
         });
       },
 
@@ -56,6 +57,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
             // parentSession: parentSession ?? undefined,
           });
 
+          setParentSession(null);
           setSession(response.data.session);
           setAuthenticationStatus("authenticated");
           queryClient.refetchQueries({ queryKey: ["userInfo"] });
