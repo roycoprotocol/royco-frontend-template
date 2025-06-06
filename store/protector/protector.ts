@@ -13,7 +13,7 @@ export const isTestnetAtom = atom((get) => {
 export const protectorAtom = atom((get) => {
   const tag = get(tagAtom);
 
-  if (tag === "internal" || tag === "testnet" || tag === "plume") {
+  if (tag === "internal" || tag === "testnet") {
     return true;
   }
 

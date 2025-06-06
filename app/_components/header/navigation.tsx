@@ -208,7 +208,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
                   as part of its Season 2 Incentive Campaign. Learn more about
                   the campaign{" "}
                 </span>
-                <span className="underline-offset-2 hover:underline">
+                <span className="underline underline-offset-2">
                   <a
                     href="https://plume.org/blog/royco-markets"
                     target="_blank"
@@ -240,7 +240,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
                   </span>
                   <span>
                     <img
-                      src="/sonic-token.png"
+                      src="/images/navigation/sonic-token.png"
                       alt="Sonic Logo"
                       className="inline-block h-4 w-4"
                     />{" "}

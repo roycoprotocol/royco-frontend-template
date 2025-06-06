@@ -15,6 +15,7 @@ import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { tagAtom } from "@/store/protector/protector";
 import { MarkdownRenderer } from "@/app/_components/common/markdown-renderer";
+import { Plume } from "royco/constants";
 
 export const MarketInfo = React.forwardRef<
   HTMLDivElement,
@@ -50,7 +51,12 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Market Description
          */}
-        <div className="mt-3 h-auto font-gt text-sm font-light text-black">
+        <div
+          className={cn(
+            "mt-3 h-auto font-gt text-sm font-light text-black",
+            !showDescription && "line-clamp-3"
+          )}
+        >
           <MarkdownRenderer>
             {enrichedMarket.description ?? ""}
           </MarkdownRenderer>
@@ -98,7 +104,7 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Token Estimate
          */}
-        {tag !== "plume" && (
+        {enrichedMarket?.chainId !== Plume.id && (
           <div className="mt-2">
             <TokenEstimator
               defaultTokenId={pointTokenIds}

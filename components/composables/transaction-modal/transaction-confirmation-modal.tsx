@@ -1,5 +1,6 @@
 "use client";
 
+import { SecondaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,10 +20,18 @@ export const TransactionConfirmationModal = React.forwardRef<
     isOpen: boolean;
     onOpenModal: (open: boolean) => void;
     onConfirm: () => void;
+    warnings?: React.ReactNode;
   }
 >((props, ref) => {
-  const { className, children, isOpen, onOpenModal, onConfirm, ...otherProps } =
-    props;
+  const {
+    className,
+    children,
+    isOpen,
+    onOpenModal,
+    onConfirm,
+    warnings,
+    ...otherProps
+  } = props;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenModal}>
@@ -38,6 +47,14 @@ export const TransactionConfirmationModal = React.forwardRef<
               Please confirm that you have reviewed the Offer & Market Action(s)
               and want to proceed. This action cannot be undone.
             </DialogDescription>
+
+            {warnings && (
+              <div className="mt-3 rounded-sm border border-_divider_ p-4">
+                <SecondaryLabel className="break-normal text-base">
+                  {warnings}
+                </SecondaryLabel>
+              </div>
+            )}
           </DialogHeader>
 
           <DialogClose asChild>

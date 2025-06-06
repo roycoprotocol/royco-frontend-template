@@ -15,6 +15,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
 import { NavigationWrapper } from "./_components/header/navigation-wrapper";
+import { FooterWrapper } from "./_components/footer/footer-wrapper";
 import { DataProvider } from "./_containers/providers/data-provider";
 import { headers } from "next/headers";
 import { WalletEditor } from "./_components/user/wallet-editor";
@@ -60,7 +61,7 @@ const ortica = localFont({
 });
 
 /**
- * @description Morion Font
+ * Morion Font
  */
 const morion = localFont({
   src: [
@@ -73,6 +74,15 @@ const morion = localFont({
   display: "swap",
   variable: "--font-morion",
 });
+
+const fontsVariables = [
+  inter.variable,
+  gt.variable,
+  shippori.variable,
+  fragmentMono.variable,
+  ortica.variable,
+  morion.variable,
+];
 
 export default function RootLayout({
   children,
@@ -88,12 +98,7 @@ export default function RootLayout({
           <body
             suppressHydrationWarning
             className={cn(
-              inter.variable,
-              gt.variable,
-              morion.variable,
-              ortica.variable,
-              shippori.variable,
-              fragmentMono.variable,
+              ...fontsVariables,
               "hide-scrollbar overflow-x-hidden scroll-smooth font-gt",
               "bg-white"
             )}
@@ -108,9 +113,13 @@ export default function RootLayout({
 
               <ToasterSonner richColors={true} position="top-center" />
 
-              <NavigationWrapper />
+              <div className="flex min-h-screen flex-col">
+                <NavigationWrapper />
 
-              {children}
+                <div className="grow">{children}</div>
+
+                <FooterWrapper />
+              </div>
             </WalletProvider>
 
             <BrowserDetector />

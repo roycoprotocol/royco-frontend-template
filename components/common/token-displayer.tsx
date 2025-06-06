@@ -34,6 +34,7 @@ type TokenDisplayerProps = {
     image: string;
     name?: string;
     type?: "token" | "point" | "lp";
+    label?: string;
   }>;
   symbols: boolean;
   hover?: boolean;
@@ -329,7 +330,7 @@ const TokenDisplayer = React.forwardRef<
               {name === true
                 ? tokens[0].name
                 : [
-                    tokens[0].symbol,
+                    tokens[0].label || tokens[0].symbol,
                     // tokens[0].type === "point" && "Points"
                   ]
                     .filter(Boolean)

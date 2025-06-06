@@ -12,6 +12,8 @@ import { DeleteTokenButton } from "./delete-token-button";
 import { parseTokenAmountToRawAmount } from "royco/utils";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { useAtomValue } from "jotai";
+import { useMarketManager } from "@/store/use-market-manager";
+import { MarketUserType } from "@/store";
 
 export const IncentivesAmountSelector = React.forwardRef<
   HTMLDivElement,
@@ -27,7 +29,7 @@ export const IncentivesAmountSelector = React.forwardRef<
   ) => {
     const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-    // const { userType } = useMarketManager();
+    const { userType } = useMarketManager();
 
     // const { marketMetadata, currentHighestOffers, currentMarketData } =
     //   useActiveMarket();
@@ -86,7 +88,11 @@ export const IncentivesAmountSelector = React.forwardRef<
                 marketActionForm.setValue("incentive_tokens", [token]);
               }
             }}
-            token_ids={enrichedMarket?.incentiveTokenIds}
+            token_ids={
+              userType === MarketUserType.ap.id
+                ? enrichedMarket?.incentiveTokenIds
+                : undefined
+            }
             // onSelect={(token) => {
             //   const incentiveTokens =
             //     marketActionForm.watch("incentive_tokens");

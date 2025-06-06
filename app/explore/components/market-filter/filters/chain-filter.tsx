@@ -37,15 +37,6 @@ export const ChainFilter = React.forwardRef<
   const selectOptions = useMemo(() => {
     return Object.values(exploreChains)
       .filter((item) => {
-        // Show Plume markets only on plume.royco.org, testnet and dev
-        if (item.id === Plume.id) {
-          if (tag === "plume" || tag === "dev" || tag === "testnet") {
-            return true;
-          } else {
-            return false;
-          }
-        }
-
         if (tag !== "dev" && tag !== "testnet") {
           if (item?.testnet === true) {
             return false;

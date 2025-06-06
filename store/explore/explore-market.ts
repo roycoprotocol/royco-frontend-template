@@ -51,7 +51,7 @@ export const baseFilter = atom<Filter[]>((get) => {
 
   const tag = get(tagAtom);
 
-  if (tag !== "boyco") {
+  if (tag !== "boyco" && tag !== "plume") {
     filters.push({
       id: "fillableUsd",
       value: 0,
@@ -173,24 +173,24 @@ export const loadableExploreAssetFilterOptionsAtom =
       filters.push(...baseFilters);
       filters.push(...baseChainFilters);
 
-      /**
-       * @todo PLUME -- Remove this on Plume launch
-       * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
-       */
-      const hidePlumeMarketsFilter: Filter[] =
-        frontendTag !== "testnet" &&
-        frontendTag !== "plume" &&
-        frontendTag !== "dev" &&
-        frontendTag !== "internal"
-          ? [
-              {
-                id: "chainId",
-                value: Plume.id,
-                condition: "ne",
-              },
-            ]
-          : [];
-      filters.push(...hidePlumeMarketsFilter);
+      // /**
+      //  * @todo PLUME -- Remove this on Plume launch
+      //  * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
+      //  */
+      // const hidePlumeMarketsFilter: Filter[] =
+      //   frontendTag !== "testnet" &&
+      //   frontendTag !== "plume" &&
+      //   frontendTag !== "dev" &&
+      //   frontendTag !== "internal"
+      //     ? [
+      //         {
+      //           id: "chainId",
+      //           value: Plume.id,
+      //           condition: "ne",
+      //         },
+      //       ]
+      //     : [];
+      // filters.push(...hidePlumeMarketsFilter);
 
       return api
         .marketControllerGetMarketSettings({
@@ -230,24 +230,24 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
       filters.push(...baseChainFilters);
       filters.push(...marketFilters);
 
-      /**
-       * @todo PLUME -- Remove this on Plume launch
-       * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
-       */
-      const hidePlumeMarketsFilter: Filter[] =
-        frontendTag !== "testnet" &&
-        frontendTag !== "plume" &&
-        frontendTag !== "dev" &&
-        frontendTag !== "internal"
-          ? [
-              {
-                id: "chainId",
-                value: Plume.id,
-                condition: "ne",
-              },
-            ]
-          : [];
-      filters.push(...hidePlumeMarketsFilter);
+      // /**
+      //  * @todo PLUME -- Remove this on Plume launch
+      //  * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
+      //  */
+      // const hidePlumeMarketsFilter: Filter[] =
+      //   frontendTag !== "testnet" &&
+      //   frontendTag !== "plume" &&
+      //   frontendTag !== "dev" &&
+      //   frontendTag !== "internal"
+      //     ? [
+      //         {
+      //           id: "chainId",
+      //           value: Plume.id,
+      //           condition: "ne",
+      //         },
+      //       ]
+      //     : [];
+      // filters.push(...hidePlumeMarketsFilter);
 
       // Remove empty filters
       filters = filters.filter((filter) => {

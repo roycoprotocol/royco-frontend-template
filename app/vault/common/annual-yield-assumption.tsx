@@ -39,7 +39,7 @@ export const AnnualYieldAssumption = React.forwardRef<
 
               <div>
                 <PrimaryLabel className="text-base font-normal text-_primary_">
-                  {item.name}
+                  {item.label || item.name}
                 </PrimaryLabel>
 
                 {showFdv && (
