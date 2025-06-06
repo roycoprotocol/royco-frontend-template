@@ -8,7 +8,11 @@ import {
   GlobalPositionResponse,
 } from "royco/api";
 import { baseChainFilter } from "../explore/explore-market";
-import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
+import {
+  accountAddressAtom,
+  isAuthenticatedAtom,
+  lastRefreshTimestampAtom,
+} from "../global";
 import { ModalTxOption } from "@/types";
 import { defaultQueryOptions } from "@/utils/query";
 
@@ -115,6 +119,7 @@ export const loadablePortfolioPositionsAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptions,
+    enabled: Boolean(get(accountAddressAtom)),
     // staleTime: (query) => {
     //   const params = query.queryKey[1] as any;
     //   return params.address === get(accountAddressAtom) ? 30000 : 0;

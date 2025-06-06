@@ -16,6 +16,9 @@ import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
 import { NavigationWrapper } from "./_components/header/navigation-wrapper";
 import { DataProvider } from "./_containers/providers/data-provider";
+import { headers } from "next/headers";
+import { WalletEditor } from "./_components/user/wallet-editor";
+import { EmailEditor } from "./_components/user/email-editor";
 
 /**
  * Inter Font
@@ -76,6 +79,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookie = headers().get("cookie");
+
   return (
     <RoycoClientProvider>
       <TooltipProvider delayDuration={0}>
@@ -93,8 +98,11 @@ export default function RootLayout({
               "bg-white"
             )}
           >
-            <WalletProvider>
+            <WalletProvider cookies={cookie}>
               <DataProvider />
+
+              <EmailEditor />
+              <WalletEditor />
 
               <GeoDetector />
 

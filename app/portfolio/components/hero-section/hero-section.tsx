@@ -8,12 +8,7 @@ import { CrownIcon } from "@/assets/icons/crown";
 import { NULL_ADDRESS } from "royco/constants";
 import Avatar from "boring-avatars";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  hasRoyaltyAccessAtom,
-  sessionAtom,
-  showUserInfoAtom,
-  userInfoAtom,
-} from "@/store/global";
+import { isAuthenticatedAtom, userInfoAtom } from "@/store/global";
 import { GradientText } from "@/app/vault/common/gradient-text";
 import { Input } from "@/components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,12 +38,11 @@ export const HeroSection = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { isConnected, address } = useAccount();
-  const showUserInfo = useAtomValue(showUserInfoAtom);
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
 
-  const [session, setSession] = useAtom(sessionAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [queryClient] = useAtom(queryClientAtom);
+  const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm<z.infer<typeof UsernameFormSchema>>({
     resolver: zodResolver(UsernameFormSchema),
@@ -56,8 +50,6 @@ export const HeroSection = React.forwardRef<
       name: userInfo?.name ?? "roycoRanger",
     },
   });
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const { mutate } = useMutation({
     mutationKey: ["userInfo"],
@@ -110,17 +102,24 @@ export const HeroSection = React.forwardRef<
     mutate({ name: data.name });
   };
 
-  const hasRoyaltyAccess = useAtomValue(hasRoyaltyAccessAtom);
+  useEffect(() => {
+    if (!isAuthenticated && isEditing) {
+      setIsEditing(false);
+      inputRef.current?.blur();
+    }
+  }, [isAuthenticated, isEditing]);
 
   useEffect(() => {
-    if (showUserInfo) {
-      if (!isEditing && form.watch("name") !== userInfo?.name) {
-        form.setValue("name", userInfo?.name ?? "roycoRanger");
+    if (!isEditing) {
+      if (isAuthenticated && userInfo) {
+        if (userInfo?.name !== form.watch("name")) {
+          form.setValue("name", userInfo?.name ?? "roycoRanger");
+        }
+      } else {
+        form.setValue("name", "roycoRanger");
       }
-    } else {
-      form.setValue("name", "roycoRanger");
     }
-  }, [isEditing, userInfo, showUserInfo]);
+  }, [isAuthenticated, userInfo, isEditing]);
 
   return (
     <div
@@ -131,7 +130,7 @@ export const HeroSection = React.forwardRef<
       <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-_surface_tertiary">
         <Avatar
           size={96}
-          name={showUserInfo ? (userInfo?.id ?? NULL_ADDRESS) : NULL_ADDRESS}
+          name={isAuthenticated ? (userInfo?.id ?? NULL_ADDRESS) : NULL_ADDRESS}
           variant="beam"
           colors={["#DA913E", "#101010", "#D4C5B4", "#B6B3AD", "#83715C"]}
         />
@@ -150,7 +149,7 @@ export const HeroSection = React.forwardRef<
             </div>
 
             <input
-              disabled={!hasRoyaltyAccess}
+              disabled={!isAuthenticated || !userInfo?.hasRoyaltyAccess}
               onFocus={() => setIsEditing(true)}
               ref={inputRef}
               type="text"
@@ -177,58 +176,66 @@ export const HeroSection = React.forwardRef<
           </div>
 
           <div className="mt-2 flex flex-row items-center gap-3">
-            {!showUserInfo && <GradientText>Wallet not connected</GradientText>}
+            {(!isAuthenticated || !userInfo) && (
+              <GradientText>Wallet not connected</GradientText>
+            )}
 
-            {showUserInfo && !hasRoyaltyAccess && (
+            {isAuthenticated && userInfo && !userInfo?.hasRoyaltyAccess && (
               <GradientText>
                 Add verified email to gain Royco Royalty access
               </GradientText>
             )}
 
-            {hasRoyaltyAccess && showUserInfo && !isEditing && (
-              <Button
-                variant="transparent"
-                onClick={() => inputRef.current?.focus()}
-              >
-                <GradientText>Edit Nickname</GradientText>
-              </Button>
-            )}
-
-            {hasRoyaltyAccess && showUserInfo && isEditing && (
-              <Fragment>
-                <Button
-                  type="submit"
-                  disabled={
-                    form.watch("name").length === 0 ||
-                    form.watch("name") === userInfo?.name
-                  }
-                  variant="transparent"
-                  onClick={() => {
-                    mutate({ name: form.watch("name") });
-                    setIsEditing(false);
-                    inputRef.current?.blur();
-                  }}
-                  className={cn(
-                    (form.watch("name").length === 0 ||
-                      form.watch("name") === userInfo?.name) &&
-                      "cursor-not-allowed",
-                    "hover:bg-gray-100 active:bg-gray-200"
-                  )}
-                >
-                  <GradientText>Save</GradientText>
-                </Button>
-
-                <div className="h-5 w-px bg-_divider_" />
-
+            {isAuthenticated &&
+              userInfo &&
+              userInfo?.hasRoyaltyAccess &&
+              !isEditing && (
                 <Button
                   variant="transparent"
-                  onClick={() => setIsEditing(false)}
-                  className={cn("")}
+                  onClick={() => inputRef.current?.focus()}
                 >
-                  <GradientText>Cancel</GradientText>
+                  <GradientText>Edit Nickname</GradientText>
                 </Button>
-              </Fragment>
-            )}
+              )}
+
+            {isAuthenticated &&
+              userInfo &&
+              userInfo?.hasRoyaltyAccess &&
+              isEditing && (
+                <Fragment>
+                  <Button
+                    type="submit"
+                    disabled={
+                      form.watch("name").length === 0 ||
+                      form.watch("name") === userInfo?.name
+                    }
+                    variant="transparent"
+                    onClick={() => {
+                      mutate({ name: form.watch("name") });
+                      setIsEditing(false);
+                      inputRef.current?.blur();
+                    }}
+                    className={cn(
+                      (form.watch("name").length === 0 ||
+                        form.watch("name") === userInfo?.name) &&
+                        "cursor-not-allowed",
+                      "hover:bg-gray-100 active:bg-gray-200"
+                    )}
+                  >
+                    <GradientText>Save</GradientText>
+                  </Button>
+
+                  <div className="h-5 w-px bg-_divider_" />
+
+                  <Button
+                    variant="transparent"
+                    onClick={() => setIsEditing(false)}
+                    className={cn("")}
+                  >
+                    <GradientText>Cancel</GradientText>
+                  </Button>
+                </Fragment>
+              )}
           </div>
         </form>
       </Form>

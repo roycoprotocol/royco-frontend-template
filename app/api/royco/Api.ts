@@ -22,6 +22,7 @@ import {
   CreateMarketBody,
   CreateMarketResponse,
   EditUserBody,
+  EditUserResponse,
   EnrichedMarket,
   EnrichedMarketV2,
   ExploreMarketBody,
@@ -35,6 +36,7 @@ import {
   InfoMarketBody,
   LoginBody,
   LoginResponse,
+  LogoutBody,
   LogoutResponse,
   NonceResponse,
   PointDirectoryRequestBody,
@@ -49,7 +51,7 @@ import {
   RecipeIPMarketActionResponse,
   RecipeOfferResponse,
   RecipePositionResponse,
-  Session,
+  RevalidateSessionResponse,
   SimulateTransactionBody,
   SimulateTransactionResponse,
   SpecificBoringPositionRequest,
@@ -82,8 +84,6 @@ import {
   VaultOfferResponse,
   VaultPositionResponse,
   VerifyUserEmailResponse,
-  WalletLinkConfirmBody,
-  WalletLinkInitBody,
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
@@ -949,23 +949,6 @@ export class Api<
       ...params,
     });
   /**
-   * @description Get session status
-   *
-   * @tags Auth
-   * @name AuthControllerGetSession
-   * @summary Get session
-   * @request POST:/api/v1/auth/session
-   * @secure
-   */
-  authControllerGetSession = (params: RequestParams = {}) =>
-    this.request<Session, any>({
-      path: `/api/v1/auth/session`,
-      method: "POST",
-      secure: true,
-      format: "json",
-      ...params,
-    });
-  /**
    * @description Login to the application
    *
    * @tags Auth
@@ -993,48 +976,31 @@ export class Api<
    * @request POST:/api/v1/auth/logout
    * @secure
    */
-  authControllerLogout = (params: RequestParams = {}) =>
+  authControllerLogout = (data: LogoutBody, params: RequestParams = {}) =>
     this.request<LogoutResponse, any>({
       path: `/api/v1/auth/logout`,
       method: "POST",
+      body: data,
       secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });
   /**
-   * No description
+   * @description Revalidate the session
    *
    * @tags Auth
-   * @name AuthControllerInitWalletLink
-   * @request POST:/api/v1/auth/verify/init
+   * @name AuthControllerRevalidateSession
+   * @summary Revalidate session
+   * @request POST:/api/v1/auth/revalidate
+   * @secure
    */
-  authControllerInitWalletLink = (
-    data: WalletLinkInitBody,
-    params: RequestParams = {},
-  ) =>
-    this.request<void, any>({
-      path: `/api/v1/auth/verify/init`,
+  authControllerRevalidateSession = (params: RequestParams = {}) =>
+    this.request<RevalidateSessionResponse, any>({
+      path: `/api/v1/auth/revalidate`,
       method: "POST",
-      body: data,
-      type: ContentType.Json,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags Auth
-   * @name AuthControllerConfirmWalletLink
-   * @request POST:/api/v1/auth/verify/confirm
-   */
-  authControllerConfirmWalletLink = (
-    data: WalletLinkConfirmBody,
-    params: RequestParams = {},
-  ) =>
-    this.request<void, any>({
-      path: `/api/v1/auth/verify/confirm`,
-      method: "POST",
-      body: data,
-      type: ContentType.Json,
+      secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1086,7 +1052,7 @@ export class Api<
    * @secure
    */
   userControllerEditUser = (data: EditUserBody, params: RequestParams = {}) =>
-    this.request<UserInfo, any>({
+    this.request<EditUserResponse, any>({
       path: `/api/v1/user/edit`,
       method: "POST",
       body: data,

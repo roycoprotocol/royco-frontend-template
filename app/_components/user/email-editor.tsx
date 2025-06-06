@@ -1,9 +1,10 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
-import { userInfoAtom } from "@/store/global";
+import { isEmailEditorOpenAtom, userInfoAtom } from "@/store/global";
 import { useAtom, useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import React, { Fragment, useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,13 +17,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
-  CheckCircleIcon,
   InboxIcon,
-  InfoIcon,
   MailIcon,
-  MailWarningIcon,
   ShieldCheckIcon,
-  TriangleAlert,
+  TriangleAlertIcon,
   UserIcon,
   XIcon,
 } from "lucide-react";
@@ -42,54 +40,51 @@ export const EmailEditorSchema = z.object({
 
 export const EmailEditor = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    isOpen: boolean;
-    onOpenChange: (open: boolean) => void;
-  }
->(({ className, isOpen, onOpenChange, ...props }, ref) => {
-  const userInfo = useAtomValue(userInfoAtom);
-
-  const queryClient = useAtomValue(queryClientAtom);
-
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const [step, setStep] = useState<
     | "info"
     | "delete"
-    | "change"
-    | "verify-email"
     | "delete-success"
-    | "change-success"
-    | "check-inbox"
+    | "change"
+    | "verify"
+    | "update-success"
   >("info");
+
+  const userInfo = useAtomValue(userInfoAtom);
+  const queryClient = useAtomValue(queryClientAtom);
+  const [isOpen, onOpenChange] = useAtom(isEmailEditorOpenAtom);
+
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const [isDeletingEmail, setIsDeletingEmail] = useState(false);
 
   const form = useForm<z.infer<typeof EmailEditorSchema>>({
     resolver: zodResolver(EmailEditorSchema),
     defaultValues: {
-      email: userInfo?.email ?? "",
+      email: "",
     },
   });
 
-  const [isSendingVerificationLink, setIsSendingVerificationLink] =
-    useState(false);
-  const [isDeletingEmail, setIsDeletingEmail] = useState(false);
-
-  const sendVerificationLink = async () => {
-    setIsSendingVerificationLink(true);
+  const updateEmail = async () => {
+    setIsUpdatingEmail(true);
 
     try {
       await api.userControllerEditUser({
         email: form.getValues("email"),
       });
 
-      if (step !== "check-inbox") {
-        setStep("check-inbox");
+      if (step !== "update-success") {
+        setStep("update-success");
       }
+
+      queryClient.refetchQueries({
+        queryKey: ["userInfo"],
+      });
     } catch (error: any) {
-      toast.error(
-        error.response.data.error.message ?? "Error sending verification link"
-      );
+      toast.error(error.response.data.error.message ?? "Error updating email");
     }
 
-    setIsSendingVerificationLink(false);
+    setIsUpdatingEmail(false);
   };
 
   const deleteEmail = async () => {
@@ -107,8 +102,10 @@ export const EmailEditor = React.forwardRef<
       queryClient.refetchQueries({
         queryKey: ["userInfo"],
       });
-    } catch (error: any) {
-      toast.error(error.response.data.error.message ?? "Error deleting email");
+    } catch (error) {
+      toast.error(
+        (error as any)?.response?.data?.error?.message ?? "Error deleting email"
+      );
     }
 
     setIsDeletingEmail(false);
@@ -116,19 +113,15 @@ export const EmailEditor = React.forwardRef<
 
   useEffect(() => {
     if (isOpen) {
-      if (userInfo?.email) {
-        if (userInfo?.verified) {
-          setStep("info");
-        } else {
-          setStep("verify-email");
-        }
-      } else {
-        setStep("change");
-      }
-
       form.reset({
         email: userInfo?.email ?? "",
       });
+
+      if (userInfo?.email) {
+        setStep("info");
+      } else {
+        setStep("change");
+      }
     }
   }, [isOpen]);
 
@@ -156,27 +149,27 @@ export const EmailEditor = React.forwardRef<
                   <UserIcon className="h-10 w-10 text-_primary_" />
 
                   <PrimaryLabel className="mt-6 text-2xl text-_primary_">
-                    Your Email
-                  </PrimaryLabel>
-                </Fragment>
-              )}
-
-              {step === "verify-email" && (
-                <Fragment>
-                  <ShieldCheckIcon className="h-10 w-10 text-_primary_" />
-
-                  <PrimaryLabel className="mt-6 text-2xl text-_primary_">
-                    Verify Your Email
+                    {userInfo?.email ? "Your Email" : "Add Email"}
                   </PrimaryLabel>
                 </Fragment>
               )}
 
               {step === "delete" && (
                 <Fragment>
-                  <TriangleAlert className="h-10 w-10 text-_primary_" />
+                  <TriangleAlertIcon className="h-10 w-10 text-_primary_" />
 
                   <PrimaryLabel className="mt-6 text-2xl text-_primary_">
                     Are you sure you want to delete your email?
+                  </PrimaryLabel>
+                </Fragment>
+              )}
+
+              {step === "delete-success" && (
+                <Fragment>
+                  <SuccessIcon className="h-10 w-10 text-success" />
+
+                  <PrimaryLabel className="mt-6 text-2xl text-_primary_">
+                    Email Deleted
                   </PrimaryLabel>
                 </Fragment>
               )}
@@ -191,7 +184,17 @@ export const EmailEditor = React.forwardRef<
                 </Fragment>
               )}
 
-              {step === "check-inbox" && (
+              {step === "verify" && (
+                <Fragment>
+                  <ShieldCheckIcon className="h-10 w-10 text-_primary_" />
+
+                  <PrimaryLabel className="mt-6 text-2xl text-_primary_">
+                    Verify Your Email
+                  </PrimaryLabel>
+                </Fragment>
+              )}
+
+              {step === "update-success" && (
                 <Fragment>
                   <InboxIcon className="h-10 w-10 text-_primary_" />
 
@@ -200,113 +203,95 @@ export const EmailEditor = React.forwardRef<
                   </PrimaryLabel>
                 </Fragment>
               )}
-
-              {step === "delete-success" && (
-                <Fragment>
-                  <SuccessIcon className="h-10 w-10 text-success" />
-
-                  <PrimaryLabel className="mt-6 text-2xl text-_primary_">
-                    Email Deleted
-                  </PrimaryLabel>
-                </Fragment>
-              )}
             </DialogTitle>
           </DialogHeader>
 
-          <DialogDescription>
+          <DialogDescription className="flex flex-col">
             {step === "info" && (
-              <div className="flex flex-col">
+              <Fragment>
                 <PrimaryLabel className="text-_secondary_">
                   {userInfo?.email}
                 </PrimaryLabel>
 
                 <SecondaryLabel className="mt-3 text-_secondary_">
-                  This email is verified and used to unify your activity on
-                  Royco.
+                  {userInfo?.verified
+                    ? "This email is verified and used to unify your activity on Royco."
+                    : "This email is not verified. Please verify to join Royco Royalty."}
                 </SecondaryLabel>
 
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
-                  <Button
-                    size="fixed"
-                    type="button"
-                    onClick={() => setStep("change")}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Change Email
-                  </Button>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {userInfo?.email && (
+                    <Button
+                      size="fixed"
+                      type="button"
+                      onClick={() => setStep("change")}
+                      variant="outline"
+                    >
+                      Change Email
+                    </Button>
+                  )}
+
+                  {!userInfo?.email && (
+                    <Button
+                      size="fixed"
+                      type="button"
+                      onClick={() => setStep("change")}
+                      variant="outline"
+                      className="bg-_primary_ text-white"
+                    >
+                      Add Email
+                    </Button>
+                  )}
+
+                  {userInfo?.email && !userInfo?.verified && (
+                    <Button
+                      size="fixed"
+                      type="button"
+                      onClick={() => setStep("verify")}
+                      variant="outline"
+                      className="bg-success text-white"
+                    >
+                      Verify Email
+                    </Button>
+                  )}
+
+                  {userInfo?.email && (
+                    <Button
+                      size="fixed"
+                      type="button"
+                      onClick={() => setStep("delete")}
+                      variant="outline"
+                      className="bg-error text-white"
+                    >
+                      Delete Email
+                    </Button>
+                  )}
 
                   <Button
                     size="fixed"
                     type="button"
-                    disabled={isDeletingEmail}
-                    onClick={deleteEmail}
+                    onClick={() => onOpenChange(false)}
                     variant="outline"
-                    className={cn(
-                      "w-full bg-error text-white",
-                      isDeletingEmail && "cursor-not-allowed"
-                    )}
+                    className="col-span-2"
                   >
-                    {isDeletingEmail ? <LoadingCircle /> : "Delete Email"}
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {step === "verify-email" && (
-              <div className="flex flex-col">
-                <SecondaryLabel className="mt-3 text-_secondary_">
-                  Click the below button to verify your email and join Royco
-                  Royalty.
-                </SecondaryLabel>
-
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
-                  <Button
-                    size="fixed"
-                    disabled={isSendingVerificationLink}
-                    type="button"
-                    onClick={sendVerificationLink}
-                    variant="outline"
-                    className={cn(
-                      "w-full",
-                      isSendingVerificationLink && "cursor-not-allowed"
-                    )}
-                  >
-                    {isSendingVerificationLink ? (
-                      <LoadingCircle />
-                    ) : (
-                      "Verify Email"
-                    )}
-                  </Button>
-
-                  <Button
-                    size="fixed"
-                    type="button"
-                    onClick={() => setStep("delete")}
-                    variant="outline"
-                    className={cn(
-                      "w-full bg-error text-white",
-                      isDeletingEmail && "cursor-not-allowed"
-                    )}
-                  >
-                    Delete Email
+                    Close
                   </Button>
                 </div>
-              </div>
+              </Fragment>
             )}
 
             {step === "delete" && (
-              <div className="flex flex-col">
+              <Fragment>
                 <SecondaryLabel className="mt-3 text-_secondary_">
                   Your email will be deleted immediately and you will lose all
-                  your access to Royco Royalty. You can't undo this action.
+                  your access to Royco Royalty. This action cannot be undone.
                 </SecondaryLabel>
 
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
+                <div className="mt-6 grid grid-cols-2 gap-3">
                   <Button
                     size="fixed"
                     type="button"
-                    onClick={() => setStep("info")}
+                    onClick={() => onOpenChange(false)}
                     variant="outline"
                     className="w-full"
                   >
@@ -314,41 +299,71 @@ export const EmailEditor = React.forwardRef<
                   </Button>
 
                   <Button
+                    aria-disabled={isDeletingEmail}
                     size="fixed"
                     type="button"
                     disabled={isDeletingEmail}
                     onClick={deleteEmail}
                     variant="outline"
-                    className={cn(
-                      "w-full bg-error text-white",
-                      isDeletingEmail && "cursor-not-allowed"
-                    )}
+                    className="bg-error text-white"
                   >
                     {isDeletingEmail ? <LoadingCircle /> : "Yes, delete it."}
                   </Button>
                 </div>
-              </div>
+              </Fragment>
             )}
 
             {step === "delete-success" && (
-              <div className="flex flex-col">
+              <Fragment>
                 <SecondaryLabel className="mt-3 text-_secondary_">
                   Your email has been deleted and your access to Royco Royalty
                   has been revoked. Link a new email to re-gain the access.
                 </SecondaryLabel>
 
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-3">
                   <Button
                     size="fixed"
                     type="button"
                     onClick={() => onOpenChange(false)}
                     variant="outline"
-                    className="w-full bg-_primary_ text-white"
+                    className="bg-_primary_ text-white"
                   >
                     Close
                   </Button>
                 </div>
-              </div>
+              </Fragment>
+            )}
+
+            {step === "verify" && (
+              <Fragment>
+                <SecondaryLabel className="mt-3 text-_secondary_">
+                  Click the below button to verify your email and join Royco
+                  Royalty.
+                </SecondaryLabel>
+
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <Button
+                    size="fixed"
+                    type="button"
+                    onClick={() => onOpenChange(false)}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    aria-disabled={isUpdatingEmail}
+                    size="fixed"
+                    disabled={isUpdatingEmail}
+                    type="button"
+                    onClick={updateEmail}
+                    variant="outline"
+                  >
+                    {isUpdatingEmail ? <LoadingCircle /> : "Verify Email"}
+                  </Button>
+                </div>
+              </Fragment>
             )}
 
             {step === "change" && (
@@ -362,67 +377,70 @@ export const EmailEditor = React.forwardRef<
                   {...form.register("email")}
                   containerClassName="mt-5 rounded-none"
                   type="email"
-                  placeholder="you@gmail.com"
+                  placeholder="you@email.com"
                   className="text-_primary_"
                 />
 
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
-                  <Button
-                    disabled={
-                      !form.formState.isValid || isSendingVerificationLink
-                    }
-                    size="fixed"
-                    type="button"
-                    onClick={sendVerificationLink}
-                    variant="outline"
-                    className={cn(
-                      "w-full bg-_primary_ text-white",
-                      !form.formState.isValid || isSendingVerificationLink
-                        ? "cursor-not-allowed"
-                        : ""
-                    )}
-                  >
-                    {isSendingVerificationLink ? <LoadingCircle /> : "Confirm"}
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {step === "check-inbox" && (
-              <div className="flex flex-col">
-                <SecondaryLabel className="mt-3 text-_secondary_">
-                  We sent a magic link to {form.watch("email")}. Please click
-                  the link to confirm your address. Note that mail might take a
-                  few mins to arrive.
-                </SecondaryLabel>
-
-                <div className="mt-6 flex flex-row items-center justify-between gap-3">
-                  <Button
-                    size="fixed"
-                    disabled={isSendingVerificationLink}
-                    type="button"
-                    onClick={sendVerificationLink}
-                    variant="outline"
-                    className={cn(
-                      "w-full",
-                      isSendingVerificationLink && "cursor-not-allowed"
-                    )}
-                  >
-                    {isSendingVerificationLink ? (
-                      <LoadingCircle />
-                    ) : (
-                      "Resend Link"
-                    )}
-                  </Button>
-
+                <div className="mt-6 grid grid-cols-2 gap-3">
                   <Button
                     size="fixed"
                     type="button"
                     onClick={() => onOpenChange(false)}
                     variant="outline"
-                    className={cn("w-full bg-_primary_ text-white")}
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    aria-disabled={!form.formState.isValid || isUpdatingEmail}
+                    disabled={!form.formState.isValid || isUpdatingEmail}
+                    size="fixed"
+                    type="button"
+                    onClick={updateEmail}
+                    variant="outline"
+                    className="bg-_primary_ text-white"
+                  >
+                    {isUpdatingEmail ? (
+                      <LoadingCircle />
+                    ) : userInfo?.email ? (
+                      "Change Email"
+                    ) : (
+                      "Add Email"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === "update-success" && (
+              <div className="flex flex-col">
+                <SecondaryLabel className="mt-3 text-_secondary_">
+                  We have sent a magic link to {form.watch("email")}. Please
+                  click the link to confirm your address. It might take a few
+                  minutes for the mail to arrive.
+                </SecondaryLabel>
+
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <Button
+                    size="fixed"
+                    type="button"
+                    onClick={() => onOpenChange(false)}
+                    variant="outline"
                   >
                     Close
+                  </Button>
+
+                  <Button
+                    aria-disabled={isUpdatingEmail}
+                    size="fixed"
+                    disabled={isUpdatingEmail}
+                    type="button"
+                    onClick={updateEmail}
+                    variant="outline"
+                    className="bg-_primary_ text-white"
+                  >
+                    {isUpdatingEmail ? <LoadingCircle /> : "Resend Link"}
                   </Button>
                 </div>
 

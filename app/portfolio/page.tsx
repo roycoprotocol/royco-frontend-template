@@ -11,6 +11,7 @@ import { UserPanel } from "./components/user-panel/user-panel";
 import { queryClientAtom } from "jotai-tanstack-query";
 import { useAtomValue } from "jotai";
 import { useEffect } from "react";
+import { PortfolioWrapper } from "./provider/portfolio-wrapper";
 
 const Page = () => {
   // const queryClient = useAtomValue(queryClientAtom);
@@ -25,29 +26,31 @@ const Page = () => {
     <ProtectorProvider>
       <div className="hide-scrollbar min-h-screen bg-_surface_">
         <MaxWidthProvider className="relative z-10 mb-5">
-          <div className="pt-14">
-            <HeroSection />
-          </div>
-
-          <div className=" flex flex-col items-start lg:flex-row lg:gap-x-16">
-            <div className="mt-14 w-full lg:w-2/3">
-              <div>
-                <Deposits />
-              </div>
-
-              <div className="mt-14">
-                <Rewards />
-              </div>
-
-              <div className="mt-14">
-                <Activity />
-              </div>
+          <PortfolioWrapper>
+            <div className="pt-14">
+              <HeroSection />
             </div>
 
-            <div className="mt-14 w-full lg:sticky lg:top-20 lg:w-1/3">
-              <UserPanel />
+            <div className=" flex flex-col items-start lg:flex-row lg:gap-x-16">
+              <div className="mt-14 w-full lg:w-2/3">
+                <div>
+                  <Deposits />
+                </div>
+
+                <div className="mt-14">
+                  <Rewards />
+                </div>
+
+                <div className="mt-14">
+                  <Activity />
+                </div>
+              </div>
+
+              <div className="mt-14 w-full lg:sticky lg:top-20 lg:w-1/3">
+                <UserPanel />
+              </div>
             </div>
-          </div>
+          </PortfolioWrapper>
 
           <TransactionModalV2 />
         </MaxWidthProvider>

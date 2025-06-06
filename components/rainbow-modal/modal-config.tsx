@@ -1,6 +1,6 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 // import { cookieStorage, createStorage, http } from "wagmi";
-import { fallback, http } from "wagmi";
+import { cookieStorage, createStorage, fallback, http } from "wagmi";
 import { unstable_connector } from "wagmi";
 import { injected } from "wagmi/connectors";
 
@@ -100,4 +100,7 @@ export const config = getDefaultConfig({
   batch: {
     multicall: true,
   },
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
 });

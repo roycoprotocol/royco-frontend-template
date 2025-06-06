@@ -3,38 +3,36 @@
 import {
   PrimaryLabel,
   SecondaryLabel,
-  TertiaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
-import { userInfoAtom } from "@/store/global";
-import { useAtomValue } from "jotai";
-import { useAccount } from "wagmi";
-import { EmailEditor } from "./email-editor";
+import React from "react";
 import {
-  ChevronRightIcon,
-  PlusIcon,
-  SquarePlayIcon,
-  SquarePlusIcon,
-  WalletIcon,
-} from "lucide-react";
-import { showUserInfoAtom } from "@/store/global";
+  isWalletEditorOpenAtom,
+  isEmailEditorOpenAtom,
+  userInfoAtom,
+  selectedWalletAtom,
+} from "@/store/global";
+import { useAtom, useAtomValue } from "jotai";
+import { ChevronRightIcon, SquarePlusIcon, WalletIcon } from "lucide-react";
 import { AlertIndicator } from "@/components/common";
-import { WalletEditor } from "./wallet-editor";
+import { isAuthenticatedAtom } from "@/store/global";
+import { linkWalletAtom } from "@/store/global";
 
 export const UserPanel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { isConnected } = useAccount();
-
-  const showUserInfo = useAtomValue(showUserInfoAtom);
-
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const userInfo = useAtomValue(userInfoAtom);
 
-  const [isEmailEditorOpen, setIsEmailEditorOpen] = useState(false);
-  const [isWalletEditorOpen, setIsWalletEditorOpen] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [isEmailEditorOpen, setIsEmailEditorOpen] = useAtom(
+    isEmailEditorOpenAtom
+  );
+  const [isWalletEditorOpen, setIsWalletEditorOpen] = useAtom(
+    isWalletEditorOpenAtom
+  );
+  const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
+  const [selectedWallet, setSelectedWallet] = useAtom(selectedWalletAtom);
 
   return (
     <div ref={ref} {...props} className={cn("", className)}>
@@ -42,13 +40,13 @@ export const UserPanel = React.forwardRef<
         Manage Account
       </PrimaryLabel>
 
-      {!showUserInfo && (
+      {!isAuthenticated && (
         <div className="mt-6">
           <AlertIndicator>Connect wallet to manage account</AlertIndicator>
         </div>
       )}
 
-      {showUserInfo && (
+      {isAuthenticated && (
         <div className="mt-6">
           <PrimaryLabel className="text-base font-medium text-_primary_">
             Email
@@ -73,7 +71,7 @@ export const UserPanel = React.forwardRef<
                   ? userInfo?.verified
                     ? "Verified"
                     : "Unverified"
-                  : "Unlock your Royco Royalty account"}
+                  : "Verified Email unlocks Royco Royalty features"}
               </SecondaryLabel>
             </div>
 
@@ -82,7 +80,7 @@ export const UserPanel = React.forwardRef<
             </div>
           </div>
 
-          {/* <PrimaryLabel className="mt-6 text-base font-medium text-_primary_">
+          <PrimaryLabel className="mt-6 text-base font-medium text-_primary_">
             Linked Wallets
           </PrimaryLabel>
 
@@ -90,7 +88,7 @@ export const UserPanel = React.forwardRef<
             {userInfo?.wallets.map((wallet) => (
               <div
                 onClick={() => {
-                  setSelectedWallet(wallet.id);
+                  setSelectedWallet(wallet);
                   setIsWalletEditorOpen(true);
                 }}
                 key={`${userInfo?.id}:${wallet.id}`}
@@ -113,7 +111,8 @@ export const UserPanel = React.forwardRef<
 
           <div
             onClick={() => {
-              setSelectedWallet(null);
+              setSelectedWallet(undefined);
+              setLinkWallet(true);
               setIsWalletEditorOpen(true);
             }}
             className="mt-3 flex flex-row items-center gap-3 transition-all duration-200 ease-in-out hover:cursor-pointer hover:opacity-60"
@@ -124,17 +123,6 @@ export const UserPanel = React.forwardRef<
               Add Wallet
             </SecondaryLabel>
           </div>
-
-          <EmailEditor
-            isOpen={isEmailEditorOpen}
-            onOpenChange={setIsEmailEditorOpen}
-          />
-
-          <WalletEditor
-            isOpen={isWalletEditorOpen}
-            onOpenChange={setIsWalletEditorOpen}
-            selectedWallet={selectedWallet}
-          /> */}
         </div>
       )}
     </div>

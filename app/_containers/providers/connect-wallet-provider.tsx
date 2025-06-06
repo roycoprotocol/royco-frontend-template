@@ -11,10 +11,12 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { SANCTIONED_ADDRESSES } from "@celo/compliance";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/header/connect-wallet-button/connect-wallet-alert-modal";
-import { authenticationStatusAtom, sessionAtom } from "@/store/global";
+import { authenticationStatusAtom } from "@/store/global";
 import { useAtom } from "jotai";
 import { queryClientAtom } from "jotai-tanstack-query";
 import { useAtomValue } from "jotai";
+import { api } from "@/app/api/royco";
+import { linkWalletAtom } from "@/store/global";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -33,12 +35,11 @@ export const ConnectWalletProvider = ({
   children: ReactNode;
 }) => {
   const queryClient = useAtomValue(queryClientAtom);
+  const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
 
   const [authenticationStatus, setAuthenticationStatus] = useAtom(
     authenticationStatusAtom
   );
-
-  const [session, setSession] = useAtom(sessionAtom);
 
   const { isConnected, address } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -87,40 +88,34 @@ export const ConnectWalletProvider = ({
     }
   };
 
-  const reconnectSession = () => {
-    if (
-      address &&
-      authenticationStatus === "unauthenticated" &&
-      session &&
-      session.walletAddress === address.toLowerCase()
-    ) {
-      setAuthenticationStatus("authenticated");
-      queryClient.refetchQueries({
-        queryKey: ["userInfo"],
-      });
-    }
-  };
+  const reconnectSession = async () => {
+    if (address && authenticationStatus === "unauthenticated") {
+      try {
+        const response = await api
+          .authControllerRevalidateSession()
+          .then((res) => res.data);
 
-  const promptSignIn = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (
-      address &&
-      authenticationStatus === "unauthenticated" &&
-      !connectModalOpen &&
-      (!session || session.walletAddress !== address.toLowerCase())
-    ) {
-      openConnectModal?.();
+        if (response.status) {
+          console.log("session reconnected");
+          setAuthenticationStatus("authenticated");
+        }
+      } catch (error: any) {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 403
+        ) {
+          if (isConnected) {
+            setAuthenticationStatus("unauthenticated");
+            openConnectModal?.();
+          }
+        }
+      }
     }
   };
 
   useEffect(() => {
     reconnectSession();
-  }, [address, authenticationStatus, session]);
-
-  useEffect(() => {
-    promptSignIn();
-  }, [isConnected, authenticationStatus, session, connectModalOpen]);
+  }, [address]);
 
   useEffect(() => {
     disconnectWalletIfSanctioned();
