@@ -12,16 +12,16 @@ import { PrimaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_com
 import { SecondaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
 
 const Page = () => {
-  /**
-   * @todo PLUME -- Remove this on Plume launch
-   * @note Hides Vaults from everywhere except testnet.royco.org and plume.royco.org
-   */
-  const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
-  const showVaults = ["testnet", "dev", "internal", "plume"];
+  // /**
+  //  * @todo PLUME -- Remove this on Plume launch
+  //  * @note Hides Vaults from everywhere except testnet.royco.org and plume.royco.org
+  //  */
+  // const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
+  // const showVaults = ["testnet", "dev", "internal", "plume"];
 
   return (
     <ProtectorProvider>
-      <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-24">
+      <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-10">
         {/**
          * Background
          */}
@@ -44,34 +44,31 @@ const Page = () => {
           </div>
 
           <ExploreWrapper>
-            {frontendTag && showVaults.includes(frontendTag) && (
-              <div className="mt-6">
-                <div>
-                  <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
-                    NEW
-                  </SecondaryLabel>
+            <div className="mt-6">
+              <div>
+                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
+                  NEW
+                </SecondaryLabel>
 
-                  <PrimaryLabel className="mt-2 text-2xl font-medium text-_primary_">
-                    Vaults
-                  </PrimaryLabel>
+                <PrimaryLabel className="mt-2 text-2xl font-medium text-_primary_">
+                  Vaults
+                </PrimaryLabel>
 
-                  <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-                    Eliminate the guesswork. Vaults rebalance your capital and
-                    negotiate incentives across Royco Markets — optimizing for
-                    risk-adjusted returns.
-                  </SecondaryLabel>
-                </div>
-
-                <div className="mt-6">
-                  <VaultsTable />
-                </div>
+                <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
+                  Eliminate the guesswork. Vaults rebalance your capital and
+                  negotiate incentives across Royco Markets — optimizing for
+                  risk-adjusted returns.
+                </SecondaryLabel>
               </div>
-            )}
+
+              <div className="mt-6">
+                <VaultsTable />
+              </div>
+            </div>
 
             <div className="mt-16">
               <MarketFilter />
             </div>
-
             <div className="mt-6">
               <MarketTable />
             </div>

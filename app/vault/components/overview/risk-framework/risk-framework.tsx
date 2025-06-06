@@ -11,12 +11,12 @@ const risk_framework = [
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description:
-      "Vault will not allocate >20% of funds into a single Royco Market.",
+      "Vault will diversify across various markets based on risk-adjusted yield",
   },
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description:
-      "Vault can only call functions whitelisted by both VEDA and Royco.",
+      "Vault can only call functions whitelisted by both Seven Seas and Royco.",
   },
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,

@@ -420,7 +420,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-44 w-52",
+      meta: "min-w-48 w-52",
       cell: ({ row }) => {
         const incentives = row.original.tokenIncentives;
 

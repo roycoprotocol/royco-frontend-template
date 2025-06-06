@@ -60,3 +60,28 @@ export const loadableEnrichedMarketAtom = atomWithQuery<EnrichedMarket>(
 );
 
 export const userTypeAtom = atom<0 | 1>(0);
+
+export const isTemptestFeeApplicable = (id: string | undefined) => {
+  const markets = [
+    "98866_0_0x40bb8b77686fdea111f3e5b369dacd049abb8224550b453b6308b1038638e355",
+    "98866_0_0xb52a7b315f1f0a83c6cdec526a72198c9c09c9e25d7a145a3a4086f114fbb91c",
+  ];
+  if (id && markets.includes(id)) {
+    return true;
+  }
+  return false;
+};
+
+export const isCrossChainZapDisabled = (id: string | undefined) => {
+  const markets = [
+    "98866_0_0x8e86bb8fa7870b7a13f30852e935b3438ebc199653678760290936bbcdfc685b",
+    "98866_0_0xa1d68accf80e16047bf8c609e9da79a7ad75576d7fec71f490d73ff1f7d1eee7",
+    "98866_0_0xc942455121a6ede593f9895b113bd23ec68633c9232e7bc727871e078adf8011",
+    "98866_0_0xa319c980c19e1843d5e5a03c955bf6fb40e8cd1355f75841cef2f0285029a136",
+    "98866_0_0xfbb15004ce294c5976ab911dc4f35b3ce07b2809ea9cbfe60bafe5751d81fefb",
+  ];
+  if (id && markets.includes(id)) {
+    return true;
+  }
+  return false;
+};

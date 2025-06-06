@@ -340,8 +340,8 @@ export const BoringVaultWrapper = React.forwardRef<
 
   if (isLoading) {
     return (
-      <div className="flex w-full flex-col place-content-center items-center pt-16">
-        <LoadingIndicator className="h-5 w-5" />
+      <div className="w-full ">
+        <LoadingIndicator />
       </div>
     );
   }

@@ -48,7 +48,7 @@ export const pointRewardsColumns: ColumnDef<PointRewardsColumnDataElement>[] = [
 
             <div>
               <PrimaryLabel className="text-base font-normal text-_primary_">
-                {`${formatNumber(row.original.tokenAmount, { type: "number" })} ${row.original.symbol}`}
+                {`${formatNumber(row.original.tokenAmount, { type: "number" })} ${row.original.label || row.original.symbol}`}
               </PrimaryLabel>
 
               <SecondaryLabel className="mt-1 flex flex-row items-center text-xs font-normal text-_secondary_">
