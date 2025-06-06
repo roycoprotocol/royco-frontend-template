@@ -227,9 +227,13 @@ export async function middleware(request: NextRequest) {
     const headers = new Headers(request.headers);
     const cookieStore = cookies();
     const sessionToken = cookieStore.get("royco.session")?.value;
+    const wagmiStore = cookieStore.get("wagmi.store")?.value;
 
     headers.set("Authorization", `Bearer ${process.env.ROYCO_API_TOKEN}`);
-    headers.set("Cookie", `royco.session=${sessionToken}`);
+    headers.set(
+      "Cookie",
+      `royco.session=${sessionToken}; wagmi.store=${wagmiStore}`
+    );
 
     return NextResponse.next({
       request: {
