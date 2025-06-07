@@ -2,11 +2,17 @@ import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 // import { cookieStorage, createStorage, http } from "wagmi";
 import { cookieStorage, createStorage, fallback, http } from "wagmi";
 import { unstable_connector } from "wagmi";
-import { injected } from "wagmi/connectors";
+import { injected, walletConnect } from "wagmi/connectors";
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import Cookies from "js-cookie";
 
-import { berachainTestnet } from "viem/chains";
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  coinbaseWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 
 import {
   EthereumSepolia,
@@ -55,7 +61,8 @@ const customCookieStorage = {
   },
 };
 
-export const config = defaultWagmiConfig({
+export const config = getDefaultConfig({
+  appName: "Royco",
   chains: [
     EthereumMainnet,
     ArbitrumOne,
@@ -69,9 +76,8 @@ export const config = defaultWagmiConfig({
     Hyperevm,
   ],
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
-  metadata,
   ssr: true,
-  multiInjectedProviderDiscovery: true,
+  multiInjectedProviderDiscovery: false,
   transports: {
     [EthereumMainnet.id]: fallback([
       unstable_connector(injected),
