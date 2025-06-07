@@ -113,7 +113,8 @@ export const WalletEditor = React.forwardRef<
       }
     } catch (error) {
       toast.error(
-        (error as any)?.response?.data?.error?.message ?? "Error adding wallet"
+        (error as any)?.response?.data?.error?.message ??
+          "Error deleting wallet"
       );
     }
 
@@ -122,10 +123,10 @@ export const WalletEditor = React.forwardRef<
 
   useEffect(() => {
     if (isOpen) {
-      if (linkWallet) {
-        setStep("add");
-      } else {
+      if (selectedWallet) {
         setStep("info");
+      } else {
+        setStep("add");
       }
     }
   }, [isOpen]);
