@@ -15,7 +15,13 @@ export default function WalletProvider({
   children: ReactNode;
   cookies: string | null;
 }) {
-  const initialState = cookieToInitialState(config as Config, cookies);
+  let initialState;
+  try {
+    initialState = cookieToInitialState(config as Config, cookies);
+  } catch (error) {
+    console.warn("Failed to parse wallet state from cookies:", error);
+    initialState = undefined;
+  }
 
   return (
     <WagmiProvider
