@@ -42,7 +42,9 @@ export const UserPanel = React.forwardRef<
 
       {!isAuthenticated && (
         <div className="mt-6">
-          <AlertIndicator>Connect wallet to manage account</AlertIndicator>
+          <AlertIndicator>
+            Connect & verify ownership of your wallet to manage account
+          </AlertIndicator>
         </div>
       )}
 
@@ -88,6 +90,7 @@ export const UserPanel = React.forwardRef<
             {userInfo?.wallets.map((wallet) => (
               <div
                 onClick={() => {
+                  setLinkWallet(undefined);
                   setSelectedWallet(wallet);
                   setIsWalletEditorOpen(true);
                 }}
@@ -112,7 +115,6 @@ export const UserPanel = React.forwardRef<
           <div
             onClick={() => {
               setSelectedWallet(undefined);
-              setLinkWallet(true);
               setIsWalletEditorOpen(true);
             }}
             className="mt-3 flex flex-row items-center gap-3 transition-all duration-200 ease-in-out hover:cursor-pointer hover:opacity-60"

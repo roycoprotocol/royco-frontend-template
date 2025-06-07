@@ -72,13 +72,7 @@ export const WalletEditor = React.forwardRef<
 
       onOpenChange(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      try {
-        connectWalletModal();
-      } catch (error) {
-        toast.error("Error connecting wallet.");
-      }
+      setLinkWallet(true);
     } catch (error) {
       toast.error(
         (error as any)?.response?.data?.error?.message ?? "Error adding wallet"
