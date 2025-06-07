@@ -5,7 +5,7 @@ import {
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useState } from "react";
 import {
   isWalletEditorOpenAtom,
   isEmailEditorOpenAtom,
@@ -13,15 +13,27 @@ import {
   selectedWalletAtom,
 } from "@/store/global";
 import { useAtom, useAtomValue } from "jotai";
-import { ChevronRightIcon, SquarePlusIcon, WalletIcon } from "lucide-react";
+import {
+  CheckCheckIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  SquarePlusIcon,
+  WalletIcon,
+} from "lucide-react";
 import { AlertIndicator } from "@/components/common";
 import { isAuthenticatedAtom } from "@/store/global";
 import { linkWalletAtom } from "@/store/global";
+import { CopyWrapper } from "@/app/_containers/wrappers/copy-wrapper";
+import { AnimatePresence, motion } from "framer-motion";
+import { useAccount } from "wagmi";
 
 export const UserPanel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { address } = useAccount();
+
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const userInfo = useAtomValue(userInfoAtom);
 
@@ -33,6 +45,8 @@ export const UserPanel = React.forwardRef<
   );
   const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
   const [selectedWallet, setSelectedWallet] = useAtom(selectedWalletAtom);
+
+  const [copied, setCopied] = useState<string | undefined>(undefined);
 
   return (
     <div ref={ref} {...props} className={cn("", className)}>
@@ -98,11 +112,77 @@ export const UserPanel = React.forwardRef<
                 className="flex flex-row items-center justify-between border-b border-divider py-3 transition-all duration-200 ease-in-out hover:cursor-pointer hover:opacity-60"
               >
                 <div className="flex flex-row items-center gap-3">
-                  <WalletIcon className="h-6 w-6 text-_primary_" />
+                  <WalletIcon
+                    strokeWidth={1.5}
+                    className={cn(
+                      "h-8 w-8",
+                      wallet.id === address?.toLowerCase()
+                        ? "text-success"
+                        : "text-_secondary_"
+                    )}
+                  />
 
-                  <SecondaryLabel className="text-base text-_primary_">
-                    {wallet.id.slice(0, 6)}...{wallet.id.slice(-4)}
-                  </SecondaryLabel>
+                  <div className="flex flex-col">
+                    <div className="flex flex-row items-center gap-2">
+                      <SecondaryLabel className="text-base text-_primary_">
+                        {wallet.id.slice(0, 6)}...{wallet.id.slice(-4)}
+                      </SecondaryLabel>
+                      {/* <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (copied === wallet.id) {
+                            return;
+                          }
+
+                          navigator.clipboard.writeText(wallet.id);
+
+                          setCopied(wallet.id);
+                          setTimeout(() => {
+                            setCopied(undefined);
+                          }, 3000);
+                        }}
+                        className="flex flex-row items-center justify-center hover:cursor-pointer"
+                      >
+                        <AnimatePresence mode="popLayout">
+                          {copied === wallet.id ? (
+                            <motion.div
+                              key="check"
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0 }}
+                              transition={{ duration: 0.2, ease: "easeInOut" }}
+                            >
+                              <CheckCheckIcon className="h-4 w-4 text-success" />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="copy"
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0 }}
+                              transition={{ duration: 0.2, ease: "easeInOut" }}
+                            >
+                              <CopyIcon className="h-4 w-4 text-_primary_" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div> */}
+                    </div>
+
+                    <SecondaryLabel
+                      className={cn(
+                        "text-base",
+                        wallet.id === address?.toLowerCase()
+                          ? "text-_tertiary_"
+                          : "text-_tertiary_"
+                      )}
+                    >
+                      {wallet.id === address?.toLowerCase()
+                        ? "Active"
+                        : "Inactive"}
+                    </SecondaryLabel>
+                  </div>
                 </div>
 
                 <div className="flex flex-row items-center justify-end">
@@ -119,7 +199,10 @@ export const UserPanel = React.forwardRef<
             }}
             className="mt-3 flex flex-row items-center gap-3 transition-all duration-200 ease-in-out hover:cursor-pointer hover:opacity-60"
           >
-            <SquarePlusIcon className="h-6 w-6 text-_primary_" />
+            <SquarePlusIcon
+              strokeWidth={1.5}
+              className="h-6 w-6 text-_primary_"
+            />
 
             <SecondaryLabel className="text-base text-_primary_">
               Add Wallet

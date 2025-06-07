@@ -17,7 +17,13 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { TriangleAlertIcon, WalletIcon, XIcon } from "lucide-react";
+import {
+  CopyIcon,
+  CheckCheckIcon,
+  TriangleAlertIcon,
+  WalletIcon,
+  XIcon,
+} from "lucide-react";
 import {
   PrimaryLabel,
   SecondaryLabel,
@@ -33,6 +39,7 @@ import { queryClientAtom } from "jotai-tanstack-query";
 import { SuccessIcon } from "@/assets/icons/success";
 import formatNumber from "@/utils/numbers";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const WalletEditor = React.forwardRef<
   HTMLDivElement,
@@ -62,6 +69,8 @@ export const WalletEditor = React.forwardRef<
 
   const [isAddingWallet, setIsAddingWallet] = useState(false);
   const [isDeletingWallet, setIsDeletingWallet] = useState(false);
+
+  const [copied, setCopied] = useState<string | undefined>(undefined);
 
   const addWallet = async () => {
     setIsAddingWallet(true);
@@ -185,10 +194,54 @@ export const WalletEditor = React.forwardRef<
           <DialogDescription>
             {step === "info" && (
               <Fragment>
-                <PrimaryLabel className="text-_secondary_">
-                  {selectedWallet?.id.slice(0, 6)}...
-                  {selectedWallet?.id.slice(-4)}
-                </PrimaryLabel>
+                <div className="flex flex-row items-center gap-3">
+                  <PrimaryLabel className="text-2xl text-_secondary_">
+                    {selectedWallet?.id.slice(0, 6)}...
+                    {selectedWallet?.id.slice(-4)}
+                  </PrimaryLabel>
+
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      if (copied === selectedWallet?.id) {
+                        return;
+                      }
+
+                      navigator.clipboard.writeText(selectedWallet?.id ?? "");
+
+                      setCopied(selectedWallet?.id);
+                      setTimeout(() => {
+                        setCopied(undefined);
+                      }, 1500);
+                    }}
+                    className="flex flex-row items-center justify-center hover:cursor-pointer"
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {copied === selectedWallet?.id ? (
+                        <motion.div
+                          key="check"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                        >
+                          <CheckCheckIcon className="h-6 w-6 text-success" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="copy"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                        >
+                          <CopyIcon className="h-6 w-6 text-_secondary_" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
 
                 <div className="mt-3 grid grid-cols-2 justify-between text-base text-_secondary_">
                   <div className="text-left ">Balance</div>
