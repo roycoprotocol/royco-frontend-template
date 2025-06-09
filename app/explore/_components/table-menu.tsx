@@ -26,6 +26,7 @@ import NumberFlow from "@number-flow/react";
 import { LoadingCircle } from "@/components/animations/loading-circle";
 import { ExploreMarketResponse } from "royco/api";
 import { produce } from "immer";
+import { InputTokenTagFilter } from "../components/market-filter/filters/input-token-tag-filter";
 
 type TableMenuProps = React.HTMLAttributes<HTMLDivElement> & {};
 
@@ -231,6 +232,16 @@ export const TableMenu = React.forwardRef<HTMLDivElement, TableMenuProps>(
 
               <div className="flex flex-wrap gap-2">
                 <AppTypeFilter />
+              </div>
+            </div>
+          )}
+
+          {process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume" && (
+            <div className="body-2 mt-4 flex flex-col gap-2 text-primary">
+              <h5 className="">Asset Type</h5>
+
+              <div className="flex flex-wrap gap-2">
+                <InputTokenTagFilter />
               </div>
             </div>
           )}

@@ -49,6 +49,7 @@ export const exploreColumnNames = {
   chain: "Chain",
   appType: "Gem Allocation",
   poolType: "Pool Type",
+  inputTokenTag: "Asset Type",
 };
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
@@ -456,8 +457,49 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     },
   ];
 
+export const plumeColumns: ColumnDef<ExploreMarketColumnDataElement>[] = [
+  // ...exploreMarketColumns,
+  {
+    accessorKey: "inputTokenTag",
+    enableResizing: true,
+    // header: exploreColumnNames.action,
+    enableSorting: true,
+    header: ({ column }: { column: any }) => {
+      return <HeaderWrapper column={column} className="justify-center" />;
+    },
+    meta: "min-w-44 w-44",
+    cell: ({ row }) => {
+      let value = "Unknown";
+
+      if (row.original.inputToken.tag === "stable") {
+        value = "Stable";
+      } else if (row.original.inputToken.tag === "volatile") {
+        value = "Volatile";
+      }
+
+      return (
+        <div key={`market:rewardStyle`} className={cn("flex h-fit w-fit")}>
+          <ContentFlow
+            customKey={`${value}`}
+            motionProps={{
+              transition: {
+                delay: 0.04 * row.index,
+              },
+            }}
+            className="w-44 text-center"
+          >
+            <div className={cn("body-2 text-black")}>
+              <span className="leading-5">{value}</span>
+            </div>
+          </ContentFlow>
+        </div>
+      );
+    },
+  },
+];
+
 export const boycoColumns: ColumnDef<ExploreMarketColumnDataElement>[] = [
-  ...(exploreMarketColumns as any).filter(
+  ...exploreMarketColumns.filter(
     (column: any) => column.accessorKey !== "market_type"
   ),
   {

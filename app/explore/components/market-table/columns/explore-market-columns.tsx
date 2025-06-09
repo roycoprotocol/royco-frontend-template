@@ -14,7 +14,9 @@ import {
   DatabaseIcon,
   MoveDownIcon,
   MoveUpIcon,
+  ScaleIcon,
   SparklesIcon,
+  LineChartIcon,
 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -83,6 +85,11 @@ export const exploreMarketColumnNames = {
   },
   appType: { label: "Gem Allocation", type: ["sonic"] },
   poolType: { label: "Pool Type", type: ["boyco"] },
+  inputTokenTag: {
+    label: "Asset Type",
+    icon: <LineChartIcon className="h-3 w-3" />,
+    type: ["plume"],
+  },
 };
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
@@ -679,7 +686,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "appType",
       enableResizing: false,
-      enableSorting: false,
+      enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
@@ -777,6 +784,34 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                   {marketMultiplier}x
                 </SecondaryLabel>
               )}
+            </div>
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "inputTokenTag",
+      enableResizing: false,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const inputTokenTag = row.original.inputToken.tag;
+
+        let formattedInputTokenTag = "-";
+
+        if (inputTokenTag === "stable") {
+          formattedInputTokenTag = "Stable";
+        } else if (inputTokenTag === "volatile") {
+          formattedInputTokenTag = "Volatile";
+        }
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            <div className={cn("flex flex-row items-center gap-2")}>
+              <span className="leading-5">{formattedInputTokenTag}</span>
             </div>
           </ContentFlow>
         );
