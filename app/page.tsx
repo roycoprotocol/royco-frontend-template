@@ -12,13 +12,6 @@ import { PrimaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_com
 import { SecondaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
 
 const Page = () => {
-  // /**
-  //  * @todo PLUME -- Remove this on Plume launch
-  //  * @note Hides Vaults from everywhere except testnet.royco.org and plume.royco.org
-  //  */
-  // const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
-  // const showVaults = ["testnet", "dev", "internal", "plume"];
-
   return (
     <ProtectorProvider>
       <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-10">

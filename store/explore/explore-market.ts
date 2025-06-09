@@ -1,5 +1,4 @@
 import {
-  CustomTokenDataElement,
   ExploreMarketResponse,
   ExploreSettingsMarketResponse,
   ExploreVaultResponse,
@@ -23,6 +22,7 @@ import { isTestnetAtom, tagAtom } from "../protector/protector";
 import { defaultQueryOptions } from "@/utils/query";
 import { atomWithLocation } from "jotai-location";
 import { atomWithStorage } from "jotai/vanilla/utils";
+import { customTokenDataAtom } from "../global";
 
 export const EXPLORE_PAGE_SIZE = 20;
 
@@ -136,10 +136,9 @@ export const marketSortAtom = atom<Sorting[]>([
 
 export const marketSearchAtom = atom<string>("");
 
-export const customTokenDataAtom = atom<CustomTokenDataElement[]>([]);
-
 export const marketPageAtom = atom<number>(1);
 
+// explore asset filter options
 export const loadableExploreAssetFilterOptionsAtom =
   atomWithQuery<ExploreSettingsMarketResponse>((get) => ({
     queryKey: [
@@ -185,6 +184,7 @@ export const loadableExploreAssetFilterOptionsAtom =
     ...defaultQueryOptions,
   }));
 
+// explore markets
 export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
   (get) => ({
     queryKey: [
@@ -246,6 +246,7 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
 
 export const vaultPageAtom = atom<number>(1);
 
+// explore vaults
 export const loadableExploreVaultAtom = atomWithQuery<ExploreVaultResponse>(
   (get) => ({
     queryKey: [
