@@ -20,6 +20,7 @@ import {
   boycoColumns,
   ExploreMarketColumnDataElement,
   exploreMarketColumns,
+  plumeColumns,
   sonicColumns,
 } from "./explore-market-columns";
 import { motion } from "framer-motion";
@@ -40,6 +41,10 @@ export const ExploreMarketTable = React.forwardRef<
 
     if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "sonic") {
       return sonicColumns;
+    }
+
+    if (process.env.NEXT_PUBLIC_FRONTEND_TAG === "plume") {
+      return plumeColumns;
     }
 
     return exploreMarketColumns;
