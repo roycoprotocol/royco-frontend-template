@@ -2,7 +2,7 @@ import { atomWithQuery } from "jotai-tanstack-query";
 import { enrichedMarketIdAtom } from "./atoms";
 import { api } from "@/app/api/royco";
 import { atom } from "jotai";
-import { MarketControllerGetMarketData } from "royco/api";
+import { EnrichedMarketV2, MarketControllerGetMarketData } from "royco/api";
 
 export const loadableMarketMetadataAtom =
   atomWithQuery<MarketControllerGetMarketData>((get) => ({
@@ -16,7 +16,7 @@ export const loadableMarketMetadataAtom =
     enabled: !!get(enrichedMarketIdAtom),
   }));
 
-export const marketMetadataAtom = atom<{ data: MarketControllerGetMarketData }>(
+export const marketMetadataAtom = atom<{ data: EnrichedMarketV2 }>(
   // @ts-ignore
   (get) => {
     const { data } = get(loadableMarketMetadataAtom);
