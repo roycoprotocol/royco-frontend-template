@@ -32,8 +32,6 @@ export const Rewards = React.forwardRef<
   const { data: propData } = useAtomValue(loadableCampaignMarketPositionAtom);
   const { setTransactions } = useMarketManager();
 
-  console.log({ propData });
-
   const { getClaimIncentiveTransaction } = useCampaignActions();
 
   const incentives = useMemo(() => {
@@ -43,68 +41,7 @@ export const Rewards = React.forwardRef<
           ?.unclaimedIncentiveTokens as unknown as BaseEnrichedTokenDataWithClaimInfo[]) ||
         [],
     };
-
-    return {
-      data: [
-        {
-          id: "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          fdv: 60979967658.32,
-          tag: null,
-          name: "USDC",
-          type: "token",
-          image: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
-          owner: null,
-          price: 0.9998079671270521,
-          source: "coinmarketcap",
-          symbol: "USDC",
-          chainId: 1,
-          issuers: [],
-          decimals: 6,
-          searchId: "3408",
-          rawAmount: "0",
-          yieldRate: 0.012437694470514115,
-          description: null,
-          lastUpdated: "2025-06-10 21:38:00",
-          rawMetadata: {
-            claimChainId: 1,
-            claimContract: "0xec3e31756ac393c1d8aac83d6401328d6baa3cff",
-            rewardPerHour: "160256410",
-            submissionChainId: 10,
-            submissionContract: "0x599ca18ff6a9122416e16ddf61ea520d6ad26ffe",
-          },
-          searchIndex:
-            "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 usdc usdc 1 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 token ethereum",
-          subTokenIds: null,
-          tokenAmount: 0,
-          totalSupply: 60991680065.86748,
-          endTimestamp: "1751041200",
-          perInputToken: 0,
-          startTimestamp: "1748794800",
-          tokenAmountUsd: 0,
-          annualTokenRate: 0,
-          contractAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          remainingRawAmount: "0",
-          remainingTokenAmount: 0,
-          remainingTokenAmountUsd: 0,
-          isUnlocked: true,
-          claimInfo: {
-            v2: {
-              rawMarketRefId: "1_2_3e184579c7529da3",
-              submissionChainId: 10,
-              submissionContract: "0x599ca18ff6a9122416e16ddf61ea520d6ad26ffe",
-              claimChainId: 1,
-              claimContract: "0xec3e31756ac393c1d8aac83d6401328d6baa3cff",
-              epoch: 0,
-              cumulativeAmounts: null,
-              proof: null,
-            },
-          },
-        },
-      ],
-    };
   }, [propData]);
-
-  console.log({ incentives });
 
   const handleClaimIncentive = async (
     incentive: BaseEnrichedTokenDataWithClaimInfo
