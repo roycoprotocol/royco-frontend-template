@@ -17,42 +17,42 @@ export const CampaignActionForm = React.forwardRef<
   const { data } = useAtomValue(marketMetadataAtom);
 
   return (
-    <div ref={ref} {...props} className={cn("", className)}>
+    <div
+      ref={ref}
+      {...props}
+      className={cn(
+        "flex flex-col rounded-sm border border-_divider_ bg-_surface_",
+        className
+      )}
+    >
       <div
-        className={cn(
-          "flex flex-col rounded-sm border border-_divider_ bg-_surface_",
-          className
-        )}
+        className="flex flex-col items-start justify-between p-8 py-20"
+        style={{
+          background: `linear-gradient(to bottom left, #1A6FBB0D, transparent, transparent)`,
+        }}
       >
-        <div
-          className="flex flex-col items-start justify-between p-8"
-          style={{
-            background: `linear-gradient(to bottom left, #1A6FBB0D, transparent, transparent)`,
-          }}
+        <PrimaryLabel className="text-2xl font-medium text-_primary_">
+          Deposit via Morpho
+        </PrimaryLabel>
+
+        <SecondaryLabel className="mt-2 text-xs font-medium tracking-wide text-_secondary_">
+          MORPHO.ORG
+        </SecondaryLabel>
+
+        <SecondaryLabel className="mt-2 text-sm font-normal text-_secondary_">
+          This is a Royco Turbo. This means positions created outside of Royco
+          are eligible for rewards.
+        </SecondaryLabel>
+
+        <a
+          target="_blank"
+          href={data.campaignMetadata?.depositLink}
+          className="w-full"
         >
-          <PrimaryLabel className="text-2xl font-medium text-_primary_">
+          <Button className="mt-4 h-10 w-full rounded-sm bg-_highlight_">
             Deposit via Morpho
-          </PrimaryLabel>
-
-          <SecondaryLabel className="mt-2 text-xs font-medium tracking-wide text-_secondary_">
-            MORPHO.ORG
-          </SecondaryLabel>
-
-          <SecondaryLabel className="mt-2 text-sm font-normal text-_secondary_">
-            This is a Royco Turbo. This means positions created outside of Royco
-            are eligible for rewards.
-          </SecondaryLabel>
-
-          <a
-            target="_blank"
-            href={data.campaignMetadata?.depositLink}
-            className="w-full"
-          >
-            <Button className="mt-4 h-10 w-full rounded-sm bg-_highlight_">
-              Deposit via Morpho
-            </Button>
-          </a>
-        </div>
+          </Button>
+        </a>
       </div>
     </div>
   );

@@ -16,13 +16,15 @@ import {
 } from "@/store/market/use-market-manager";
 import { Overview } from "./overview/overview";
 import { CampaignActionForm } from "./campaign-action-form/action-form";
+import { Positions } from "./positions/positions";
+import { CampaignActionProvider } from "../../provider/campaign-action-provider";
+import { TransactionModal } from "@/app/_components/transaction-modal/transaction-modal";
 
 export const CampaignManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { isLoading, isError, data } = useAtomValue(loadableMarketMetadataAtom);
-
   const { detailsOption, setDetailsOption } = useMarketManager();
 
   if (isLoading) {
@@ -49,52 +51,56 @@ export const CampaignManager = React.forwardRef<
   }
 
   return (
-    <div ref={ref} {...props} className={cn("py-8", className)}>
-      <div className="flex flex-col lg:flex-row lg:gap-x-10">
-        <div className="w-full lg:w-2/3">
-          <SlideUpWrapper>
-            <CampaignDetails />
-          </SlideUpWrapper>
+    <CampaignActionProvider>
+      <div ref={ref} {...props} className={cn("py-8", className)}>
+        <div className="flex flex-col lg:flex-row lg:gap-x-10">
+          <div className="w-full lg:w-2/3">
+            <SlideUpWrapper>
+              <CampaignDetails />
+            </SlideUpWrapper>
 
-          <SlideUpWrapper delay={0.1} className="mt-8">
-            <CustomHorizontalTabs
-              tabs={Object.values(MarketDetailsOptionMap).map((option) => ({
-                id: option.value,
-                label: option.label,
-              }))}
-              baseId="vault-details-option"
-              activeTab={detailsOption}
-              onTabChange={(id) =>
-                setDetailsOption(id as TypeMarketDetailsOption)
+            <SlideUpWrapper delay={0.1} className="mt-8">
+              <CustomHorizontalTabs
+                tabs={Object.values(MarketDetailsOptionMap).map((option) => ({
+                  id: option.value,
+                  label: option.label,
+                }))}
+                baseId="vault-details-option"
+                activeTab={detailsOption}
+                onTabChange={(id) =>
+                  setDetailsOption(id as TypeMarketDetailsOption)
+                }
+              />
+            </SlideUpWrapper>
+
+            {(() => {
+              if (detailsOption === TypeMarketDetailsOption.Overview) {
+                return (
+                  <div className="mt-8">
+                    <Overview />
+                  </div>
+                );
               }
-            />
-          </SlideUpWrapper>
 
-          {(() => {
-            if (detailsOption === TypeMarketDetailsOption.Overview) {
-              return (
-                <div className="mt-8">
-                  <Overview />
-                </div>
-              );
-            }
+              if (detailsOption === TypeMarketDetailsOption.Positions) {
+                return (
+                  <div className="mt-8">
+                    <Positions />
+                  </div>
+                );
+              }
+            })()}
+          </div>
 
-            // if (detailsOption === TypeMarketDetailsOption.Positions) {
-            //   return (
-            //     <div className="mt-8">
-            //       <Positions />
-            //     </div>
-            //   );
-            // }
-          })()}
+          <div className="mt-8 w-full lg:sticky lg:top-20 lg:mt-0 lg:w-1/3 lg:self-start">
+            <SlideUpWrapper>
+              <CampaignActionForm />
+            </SlideUpWrapper>
+          </div>
         </div>
 
-        <div className="mt-8 w-full lg:sticky lg:top-20 lg:mt-0 lg:w-1/3 lg:self-start">
-          <SlideUpWrapper>
-            <CampaignActionForm />
-          </SlideUpWrapper>
-        </div>
+        <TransactionModal />
       </div>
-    </div>
+    </CampaignActionProvider>
   );
 });
