@@ -9,6 +9,8 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
+import { DepositsColumnDataElement } from "./deposits-columns";
+import { Table as TableInstance } from "@tanstack/react-table";
 
 export const PaginationButtonMotionWrapper = React.forwardRef<
   HTMLDivElement,
@@ -62,29 +64,30 @@ const PaginationButton = React.forwardRef<
   );
 });
 
-export const DepositPagination = React.forwardRef<
+export const DepositsPagination = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    page: number;
-    pageSize: number;
-    count: number;
-    setPage: (page: number) => void;
+    table: TableInstance<DepositsColumnDataElement>;
   }
->(({ className, page, pageSize, count, setPage, ...props }, ref) => {
+>(({ className, table, ...props }, ref) => {
+  const page = table.getState().pagination.pageIndex;
+  const pageSize = table.getState().pagination.pageSize;
+  const count = table.getFilteredRowModel().rows.length;
+
   const total_pages = Math.ceil(count / pageSize);
 
-  const canPrevPage = page > 0;
-  const canNextPage = page < total_pages - 1;
+  const canPrevPage = table.getCanPreviousPage();
+  const canNextPage = table.getCanNextPage();
 
   const handlePrevPage = () => {
     if (canPrevPage) {
-      setPage(page - 1);
+      table.previousPage();
     }
   };
 
   const handleNextPage = () => {
     if (canNextPage) {
-      setPage(page + 1);
+      table.nextPage();
     }
   };
 

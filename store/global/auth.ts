@@ -1,22 +1,34 @@
 import { atom } from "jotai";
-import { accountAddressAtom } from "./atoms";
-import { atomWithStorage } from "jotai/utils";
 
-export const sessionTokenAtom = atomWithStorage<string | null>(
-  "sessionToken",
-  null
-);
-
-export const authenticationStatusAtom = atom<
-  "unauthenticated" | "authenticated" | "loading"
->((get) => {
-  const sessionToken = get(sessionTokenAtom);
-  const accountAddress = get(accountAddressAtom);
-
-  if (!sessionToken || !accountAddress) {
-    // if (!accountAddress) {
-    return "unauthenticated";
+const getCookieDomain = () => {
+  if (process.env.NEXT_PUBLIC_API_ENV === "development") {
+    return "localhost";
   }
 
-  return "authenticated";
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    const url = new URL(process.env.NEXT_PUBLIC_APP_URL);
+    return url.hostname;
+  }
+
+  return undefined;
+};
+
+export const secureCookieConfig = {
+  secure: process.env.NEXT_PUBLIC_API_ENV !== "development",
+  httpOnly: process.env.NEXT_PUBLIC_API_ENV !== "development",
+  sameSite: "strict" as const,
+  path: "/",
+  domain: getCookieDomain(),
+  maxAge: 60 * 60 * 24 * 30,
+};
+
+export const authenticationStatusAtom = atom<
+  "unauthenticated" | "loading" | "authenticated"
+>("unauthenticated");
+
+export const isAuthEnabledAtom = atom(true);
+
+export const isAuthenticatedAtom = atom((get) => {
+  const authenticationStatus = get(authenticationStatusAtom);
+  return authenticationStatus === "authenticated";
 });

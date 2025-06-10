@@ -1,10 +1,18 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 // import { cookieStorage, createStorage, http } from "wagmi";
-import { fallback, http } from "wagmi";
+import { cookieStorage, createStorage, fallback, http } from "wagmi";
 import { unstable_connector } from "wagmi";
-import { injected } from "wagmi/connectors";
+import { injected, walletConnect } from "wagmi/connectors";
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import Cookies from "js-cookie";
 
-import { berachainTestnet } from "viem/chains";
+import {
+  rainbowWallet,
+  metaMaskWallet,
+  coinbaseWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 
 import {
   EthereumSepolia,
@@ -23,14 +31,38 @@ export const metadata = {
   name: "Royco",
   description:
     "Royco is a marketplace for exclusive incentives from the best projects.",
-  // url: "http://localhost:3000", // origin must match your domain & subdomain
-  url: process.env.NEXT_PUBLIC_APP_URL, // origin must match your domain & subdomain
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://app.royco.org", // Ensure url is always a string
   icons: ["/icon.png"],
+};
+
+const customCookieStorage = {
+  getItem: (key: string) => {
+    return Cookies.get(key) ?? null;
+  },
+  setItem: (key: string, value: string) => {
+    Cookies.set(key, value, {
+      domain:
+        process.env.NEXT_PUBLIC_API_ENV === "development"
+          ? "localhost"
+          : ".royco.org",
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NEXT_PUBLIC_API_ENV !== "development",
+    });
+  },
+  removeItem: (key: string) => {
+    Cookies.remove(key, {
+      domain:
+        process.env.NEXT_PUBLIC_API_ENV === "development"
+          ? "localhost"
+          : ".royco.org",
+      path: "/",
+    });
+  },
 };
 
 export const config = getDefaultConfig({
   appName: "Royco",
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
   chains: [
     EthereumMainnet,
     ArbitrumOne,
@@ -43,8 +75,9 @@ export const config = getDefaultConfig({
     BerachainTestnet,
     Hyperevm,
   ],
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
   ssr: true,
-  multiInjectedProviderDiscovery: true,
+  multiInjectedProviderDiscovery: false,
   transports: {
     [EthereumMainnet.id]: fallback([
       unstable_connector(injected),
@@ -100,4 +133,7 @@ export const config = getDefaultConfig({
   batch: {
     multicall: true,
   },
+  storage: createStorage({
+    storage: customCookieStorage,
+  }),
 });

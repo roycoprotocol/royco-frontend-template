@@ -13,12 +13,14 @@ const buttonVariants = cva(
         destructive:
           "bg-red-500 text-slate-50 shadow-sm hover:bg-red-500/90 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90",
         outline:
-          "border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border rounded-none border-_divider_ bg-white shadow-sm hover:opacity-80 px-4 transition-all duration-200 ease-in-out text-center items-center justify-center",
         secondary:
           "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
         ghost:
-          "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 hover:opacity-80 transition-all duration-200 ease-in-out",
         link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
+        transparent:
+          "hover:bg-transparent hover:opacity-80 transition-all duration-200 ease-in-out bg-transparent disabled:bg-transparent focus:bg-transparent disabled:hover:bg-transparent",
         none: "",
       },
       size: {
@@ -27,6 +29,7 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
         none: "",
+        fixed: "h-10",
       },
     },
     defaultVariants: {
@@ -47,7 +50,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn("", buttonVariants({ variant, size, className }))}
+        className={cn(
+          "outline-none focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0",
+          buttonVariants({ variant, size, className })
+        )}
         ref={ref}
         {...props}
       />

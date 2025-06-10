@@ -1,7 +1,5 @@
 import React from "react";
-
 import { ColumnDef } from "@tanstack/react-table";
-
 import { cn } from "@/lib/utils";
 import formatNumber from "@/utils/numbers";
 import { formatDate } from "date-fns";
@@ -11,8 +9,11 @@ import { ContentFlow } from "@/components/animations/content-flow";
 import { ExternalLink } from "lucide-react";
 import { TokenDisplayer } from "@/components/common";
 import validator from "validator";
+import { Position } from "royco/api";
 
-export const depositColumns: ColumnDef<any>[] = [
+export type DepositsColumnDataElement = Position;
+
+export const depositsColumns: ColumnDef<DepositsColumnDataElement>[] = [
   {
     accessorKey: "name",
     enableResizing: true,

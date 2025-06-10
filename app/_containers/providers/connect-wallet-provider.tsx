@@ -11,6 +11,12 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { SANCTIONED_ADDRESSES } from "@celo/compliance";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/header/connect-wallet-button/connect-wallet-alert-modal";
+import { authenticationStatusAtom } from "@/store/global";
+import { useAtom } from "jotai";
+import { queryClientAtom } from "jotai-tanstack-query";
+import { useAtomValue } from "jotai";
+import { api } from "@/app/api/royco";
+import { linkWalletAtom } from "@/store/global";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -28,8 +34,15 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const queryClient = useAtomValue(queryClientAtom);
+  const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
+
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(
+    authenticationStatusAtom
+  );
+
   const { isConnected, address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { disconnect } = useDisconnect();
 
@@ -75,6 +88,35 @@ export const ConnectWalletProvider = ({
     }
   };
 
+  const reconnectSession = async () => {
+    if (address && authenticationStatus === "unauthenticated") {
+      try {
+        const response = await api
+          .authControllerRevalidateSession()
+          .then((res) => res.data);
+
+        if (response.status) {
+          console.log("session reconnected");
+          setAuthenticationStatus("authenticated");
+        }
+      } catch (error: any) {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 403
+        ) {
+          if (isConnected) {
+            setAuthenticationStatus("unauthenticated");
+            openConnectModal?.();
+          }
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    reconnectSession();
+  }, [address]);
+
   useEffect(() => {
     disconnectWalletIfSanctioned();
   }, [isConnected, address]);
@@ -86,6 +128,17 @@ export const ConnectWalletProvider = ({
         connectAccountModal,
       }}
     >
+      {/* <button
+        onClick={() => {
+          console.log("disconnecting");
+          disconnect();
+          // setAuthenticationStatus("unauthenticated");
+          // setSession(null);
+        }}
+      >
+        Click Me to disconnect
+      </button> */}
+
       {children}
 
       <ConnectWalletAlertModal

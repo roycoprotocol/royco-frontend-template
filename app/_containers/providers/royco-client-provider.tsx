@@ -4,6 +4,8 @@ import { RPC_API_KEYS } from "@/components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { RoycoProvider } from "royco";
+import { queryClient } from "./query";
+import JotaiProvider from "./jotai-provider";
 
 export const RoycoClientProvider = ({
   children,
@@ -12,21 +14,7 @@ export const RoycoClientProvider = ({
 }>) => {
   const [randomIndex, setRandomIndex] = useState(Math.floor(Math.random() * 5));
 
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: 3,
-            refetchOnWindowFocus: false,
-            refetchIntervalInBackground: true,
-            refetchOnReconnect: false,
-            staleTime: 1000 * 60 * 60, // 1 hour
-            gcTime: 1000 * 60 * 60 * 24, // 1 day
-          },
-        },
-      })
-  );
+  // const [queryClient] = useState(() => globalQueryClient);
 
   const getRandomOriginUrl = () => {
     if (randomIndex === 0) {
@@ -48,6 +36,7 @@ export const RoycoClientProvider = ({
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* <JotaiProvider> */}
       <RoycoProvider
         originUrl={process.env.NEXT_PUBLIC_ROYCO_ORIGIN_URL!}
         originKey={process.env.NEXT_PUBLIC_ROYCO_ORIGIN_KEY!}
@@ -56,6 +45,7 @@ export const RoycoClientProvider = ({
       >
         {children}
       </RoycoProvider>
+      {/* </JotaiProvider> */}
     </QueryClientProvider>
   );
 };
