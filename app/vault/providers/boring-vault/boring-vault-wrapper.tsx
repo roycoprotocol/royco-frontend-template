@@ -194,8 +194,6 @@ export const BoringVaultWrapper = React.forwardRef<
         };
       }
 
-      console.log({ rewards });
-
       return rewards;
     } catch (error) {
       toast.custom(<ErrorAlert message="Error: User rewards not found." />);
