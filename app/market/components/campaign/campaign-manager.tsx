@@ -23,8 +23,6 @@ export const CampaignManager = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { isLoading, isError, data } = useAtomValue(loadableMarketMetadataAtom);
 
-  console.log({ data });
-
   const { detailsOption, setDetailsOption } = useMarketManager();
 
   if (isLoading) {
