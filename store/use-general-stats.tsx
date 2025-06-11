@@ -28,33 +28,32 @@ export const GeoDetector = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { disconnect } = useDisconnect();
+  const { disconnect, disconnectAsync } = useDisconnect();
+
+  const checkRestriction = async () => {
+    const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
+
+    const nonGeoBlockedFrontendTags = ["dev", "testnet", "internal"];
+
+    if (!nonGeoBlockedFrontendTags.includes(frontendTag)) {
+      try {
+        const response = await fetch("https://freeipapi.com/api/json/");
+        const data = await response.json();
+
+        if (
+          !!data.countryCode &&
+          restrictedCountries.includes(data.countryCode)
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await disconnectAsync();
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
 
   useEffect(() => {
-    const checkRestriction = async () => {
-      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG ?? "default";
-
-      const nonGeoBlockedFrontendTags = ["dev", "testnet", "internal"];
-
-      if (!nonGeoBlockedFrontendTags.includes(frontendTag)) {
-        try {
-          const response = await fetch("https://freeipapi.com/api/json/");
-          const data = await response.json();
-
-          if (
-            !!data.countryCode &&
-            restrictedCountries.includes(data.countryCode)
-          ) {
-            setTimeout(() => {
-              disconnect();
-            }, 2000);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    };
-
     checkRestriction();
   }, []);
 
