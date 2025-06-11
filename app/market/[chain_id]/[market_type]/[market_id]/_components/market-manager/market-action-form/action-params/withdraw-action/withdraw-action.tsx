@@ -10,10 +10,11 @@ import { SlideUpWrapper } from "@/components/animations";
 import { BoycoWithdrawSection } from "./boyco-withdraw-section";
 import { loadableEnrichedMarketAtom } from "@/store/market";
 import { useAtomValue } from "jotai";
-import { MarketUserType, useMarketManager } from "@/store";
+import { MarketUserType, MarketWithdrawType, useMarketManager } from "@/store";
 import { AlertIndicator } from "@/components/common";
 import { WithdrawTypeSelector } from "./withdraw-type-selector";
 import { TriangleAlert } from "lucide-react";
+import { RecoverFundsSection } from "./recover-funds-section";
 
 export const WithdrawAction = React.forwardRef<
   HTMLDivElement,
@@ -23,7 +24,7 @@ export const WithdrawAction = React.forwardRef<
 >(({ className, marketActionForm, ...props }, ref) => {
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
 
-  const { userType } = useMarketManager();
+  const { userType, withdrawType } = useMarketManager();
 
   if (
     enrichedMarket?.id ===
@@ -68,6 +69,13 @@ export const WithdrawAction = React.forwardRef<
       {...props}
     >
       <SlideUpWrapper className="mt-5 flex flex-1 grow flex-col overflow-y-scroll">
+        {userType === MarketUserType.ap.id &&
+          withdrawType === MarketWithdrawType.input_token.id &&
+          enrichedMarket?.id ===
+            "98866_0_0xa1d68accf80e16047bf8c609e9da79a7ad75576d7fec71f490d73ff1f7d1eee7" && (
+            <RecoverFundsSection />
+          )}
+
         {userType === MarketUserType.ap.id ? (
           enrichedMarket?.category === "boyco" ? (
             <BoycoWithdrawSection />
