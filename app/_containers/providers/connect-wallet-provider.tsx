@@ -43,14 +43,21 @@ export const ConnectWalletProvider = ({
       const nonGeoBlockedFrontendTags = ["dev", "internal", "testnet"];
 
       if (!nonGeoBlockedFrontendTags.includes(frontendTag)) {
-        const response = await fetch("https://freeipapi.com/api/json/");
-        const data = await response.json();
+        try {
+          const response = await fetch("https://freeipapi.com/api/json/");
+          const data = await response.json();
 
-        if (
-          data.countryCode &&
-          restrictedCountries.includes(data.countryCode)
-        ) {
-          setIsConnectWalletAlertOpen(true);
+          if (
+            data.countryCode &&
+            restrictedCountries.includes(data.countryCode)
+          ) {
+            setIsConnectWalletAlertOpen(true);
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+
+          openConnectModal?.();
           return;
         }
       }
