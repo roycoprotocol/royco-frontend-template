@@ -99,8 +99,7 @@ export default function RootLayout({
             suppressHydrationWarning
             className={cn(
               ...fontsVariables,
-              "hide-scrollbar overflow-x-hidden scroll-smooth font-gt",
-              "bg-white"
+              "hide-scrollbar overflow-x-hidden scroll-smooth font-gt"
             )}
           >
             <WalletProvider cookies={cookie}>

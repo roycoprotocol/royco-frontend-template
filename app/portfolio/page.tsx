@@ -25,7 +25,7 @@ const Page = () => {
   return (
     <ProtectorProvider>
       <div className="hide-scrollbar min-h-screen bg-_surface_">
-        <MaxWidthProvider className="relative z-10 mb-5">
+        <MaxWidthProvider className="relative z-10 pb-5">
           <PortfolioWrapper>
             <div className="pt-14">
               <HeroSection />

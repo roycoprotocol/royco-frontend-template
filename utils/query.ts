@@ -1,19 +1,17 @@
 import { keepPreviousData } from "@tanstack/react-query";
-import { minutesToMilliseconds, secondsToMilliseconds } from "date-fns";
 
 export const defaultQueryOptions = {
-  refetchOnWindowFocus: false,
-  refetchIntervalInBackground: true,
-  refetchInterval: minutesToMilliseconds(1), // 1 minute
+  staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+  gcTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
   placeholderData: keepPreviousData, // Keep previous data while fetching new data
-  staleTime: minutesToMilliseconds(5), // 5 minutes
-  gcTime: minutesToMilliseconds(5), // 5 minutes
+  refetchOnWindowFocus: false, // Don't refetch on window focus
+  refetchIntervalInBackground: true, // Refetch in background
 } as const;
 
 export const defaultQueryOptionsFastRefresh = {
-  refetchOnWindowFocus: false,
-  refetchIntervalInBackground: true,
-  refetchInterval: secondsToMilliseconds(60), // 60 seconds
+  refetchInterval: 1000 * 60 * 1, // Refetch every 1 minute
+  gcTime: 1000 * 60 * 1, // Keep data in cache for 1 minute
   placeholderData: keepPreviousData, // Keep previous data while fetching new data
-  // staleTime: secondsToMilliseconds(10), // 10 seconds
+  refetchOnWindowFocus: false, // Don't refetch on window focus
+  refetchIntervalInBackground: true, // Refetch in background
 } as const;
