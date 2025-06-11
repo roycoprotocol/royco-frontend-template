@@ -17,6 +17,7 @@ import { queryClientAtom } from "jotai-tanstack-query";
 import { useAtomValue } from "jotai";
 import { api } from "@/app/api/royco";
 import { linkWalletAtom } from "@/store/global";
+import { connectedWalletsAtom } from "@/store/global";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -45,6 +46,7 @@ export const ConnectWalletProvider = ({
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { disconnect } = useDisconnect();
+  const [connectedWallets, setConnectedWallets] = useAtom(connectedWalletsAtom);
 
   const [isConnectWalletAlertOpen, setIsConnectWalletAlertOpen] =
     useState(false);
@@ -96,8 +98,24 @@ export const ConnectWalletProvider = ({
           .then((res) => res.data);
 
         if (response.status) {
-          console.log("session reconnected");
           setAuthenticationStatus("authenticated");
+
+          // Save wallet info
+          const existingWalletIndex = connectedWallets.findIndex(
+            (wallet) => wallet.id === response.walletInfo.id
+          );
+          let newConnectedWallets = connectedWallets;
+
+          if (existingWalletIndex !== -1) {
+            newConnectedWallets[existingWalletIndex].balanceUsd =
+              response.walletInfo.balanceUsd;
+          } else {
+            newConnectedWallets.push({
+              ...response.walletInfo,
+              signature: response.signature,
+            });
+          }
+          setConnectedWallets(newConnectedWallets);
         }
       } catch (error: any) {
         if (

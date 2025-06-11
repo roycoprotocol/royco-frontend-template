@@ -23,6 +23,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { NULL_USER_ID } from "@/constants";
+import { isAuthEnabledAtom } from "@/store/global";
 
 export const UsernameFormSchema = z.object({
   name: z
@@ -41,6 +42,7 @@ export const HeroSection = React.forwardRef<
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
 
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const isAuthEnabled = useAtomValue(isAuthEnabledAtom);
   const [queryClient] = useAtom(queryClientAtom);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -175,68 +177,74 @@ export const HeroSection = React.forwardRef<
             />
           </div>
 
-          <div className="mt-2 flex flex-row items-center gap-3">
-            {(!isAuthenticated || !userInfo) && (
-              <GradientText>Wallet not connected</GradientText>
-            )}
-
-            {isAuthenticated && userInfo && !userInfo?.hasRoyaltyAccess && (
-              <GradientText>
-                Add verified email to gain Royco Royalty access
-              </GradientText>
-            )}
-
-            {isAuthenticated &&
-              userInfo &&
-              userInfo?.hasRoyaltyAccess &&
-              !isEditing && (
-                <Button
-                  variant="transparent"
-                  onClick={() => inputRef.current?.focus()}
-                >
-                  <GradientText>Edit Nickname</GradientText>
-                </Button>
+          {isAuthEnabled ? (
+            <div className="mt-2 flex flex-row items-center gap-3">
+              {(!isAuthenticated || !userInfo) && (
+                <GradientText>Wallet not connected</GradientText>
               )}
 
-            {isAuthenticated &&
-              userInfo &&
-              userInfo?.hasRoyaltyAccess &&
-              isEditing && (
-                <Fragment>
-                  <Button
-                    type="submit"
-                    disabled={
-                      form.watch("name").length === 0 ||
-                      form.watch("name") === userInfo?.name
-                    }
-                    variant="transparent"
-                    onClick={() => {
-                      mutate({ name: form.watch("name") });
-                      setIsEditing(false);
-                      inputRef.current?.blur();
-                    }}
-                    className={cn(
-                      (form.watch("name").length === 0 ||
-                        form.watch("name") === userInfo?.name) &&
-                        "cursor-not-allowed",
-                      "hover:bg-gray-100 active:bg-gray-200"
-                    )}
-                  >
-                    <GradientText>Save</GradientText>
-                  </Button>
-
-                  <div className="h-5 w-px bg-_divider_" />
-
-                  <Button
-                    variant="transparent"
-                    onClick={() => setIsEditing(false)}
-                    className={cn("")}
-                  >
-                    <GradientText>Cancel</GradientText>
-                  </Button>
-                </Fragment>
+              {isAuthenticated && userInfo && !userInfo?.hasRoyaltyAccess && (
+                <GradientText>
+                  Add verified email to gain Royco Royalty access
+                </GradientText>
               )}
-          </div>
+
+              {isAuthenticated &&
+                userInfo &&
+                userInfo?.hasRoyaltyAccess &&
+                !isEditing && (
+                  <Button
+                    variant="transparent"
+                    onClick={() => inputRef.current?.focus()}
+                  >
+                    <GradientText>Edit Nickname</GradientText>
+                  </Button>
+                )}
+
+              {isAuthenticated &&
+                userInfo &&
+                userInfo?.hasRoyaltyAccess &&
+                isEditing && (
+                  <Fragment>
+                    <Button
+                      type="submit"
+                      disabled={
+                        form.watch("name").length === 0 ||
+                        form.watch("name") === userInfo?.name
+                      }
+                      variant="transparent"
+                      onClick={() => {
+                        mutate({ name: form.watch("name") });
+                        setIsEditing(false);
+                        inputRef.current?.blur();
+                      }}
+                      className={cn(
+                        (form.watch("name").length === 0 ||
+                          form.watch("name") === userInfo?.name) &&
+                          "cursor-not-allowed",
+                        "hover:bg-gray-100 active:bg-gray-200"
+                      )}
+                    >
+                      <GradientText>Save</GradientText>
+                    </Button>
+
+                    <div className="h-5 w-px bg-_divider_" />
+
+                    <Button
+                      variant="transparent"
+                      onClick={() => setIsEditing(false)}
+                      className={cn("")}
+                    >
+                      <GradientText>Cancel</GradientText>
+                    </Button>
+                  </Fragment>
+                )}
+            </div>
+          ) : (
+            <div className="mt-2 flex flex-row items-center gap-3">
+              <GradientText>Auth is disabled on this site.</GradientText>
+            </div>
+          )}
         </form>
       </Form>
     </div>

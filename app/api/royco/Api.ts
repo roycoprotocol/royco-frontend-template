@@ -31,6 +31,12 @@ import {
   ExploreSettingsMarketResponse,
   ExploreVaultBody,
   ExploreVaultResponse,
+  GetExpectedRankBody,
+  GetExpectedRankResponse,
+  GetUserBalanceBody,
+  GetUserBalanceResponse,
+  GetUserLeaderboardResponse,
+  GetUserStatsResponse,
   GlobalPositionRequestBody,
   GlobalPositionResponse,
   InfoMarketBody,
@@ -69,6 +75,7 @@ import {
   TokenQuoteRequestBody,
   TokenQuoteResponse,
   UserInfo,
+  V2PositionResponse,
   VaultAPLimitActionBody,
   VaultAPLimitActionResponse,
   VaultAPMarketActionBody,
@@ -272,6 +279,7 @@ export class Api<
    * @tags Addons
    * @name AddonsControllerRefreshIncentives
    * @request GET:/api/v1/addons/refresh/{id}
+   * @secure
    */
   addonsControllerRefreshIncentives = (
     id: string,
@@ -280,6 +288,7 @@ export class Api<
     this.request<void, any>({
       path: `/api/v1/addons/refresh/${id}`,
       method: "GET",
+      secure: true,
       ...params,
     });
   /**
@@ -615,6 +624,29 @@ export class Api<
   ) =>
     this.request<SpecificBoringPositionResponse, any>({
       path: `/api/v1/position/boring/${id}/${accountAddress}`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get positions for all v2 markets.
+   *
+   * @tags Position
+   * @name PositionControllerGetV2Positions
+   * @summary Get v2 positions
+   * @request POST:/api/v1/position/v2/{accountAddress}
+   * @secure
+   */
+  positionControllerGetV2Positions = (
+    accountAddress: string,
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<V2PositionResponse, any>({
+      path: `/api/v1/position/v2/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,
@@ -1075,6 +1107,89 @@ export class Api<
       path: `/api/v1/user/verify/${id}`,
       method: "POST",
       secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user balance
+   *
+   * @tags User
+   * @name UserControllerGetUserBalance
+   * @summary Get user balance
+   * @request POST:/api/v1/user/balance
+   * @secure
+   */
+  userControllerGetUserBalance = (
+    data: GetUserBalanceBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserBalanceResponse, any>({
+      path: `/api/v1/user/balance`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user leaderboard
+   *
+   * @tags User
+   * @name UserControllerGetUserLeaderboard
+   * @summary Get user leaderboard
+   * @request POST:/api/v1/user/leaderboard
+   * @secure
+   */
+  userControllerGetUserLeaderboard = (
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserLeaderboardResponse, any>({
+      path: `/api/v1/user/leaderboard`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user stats
+   *
+   * @tags User
+   * @name UserControllerGetUserStats
+   * @summary Get user stats
+   * @request POST:/api/v1/user/stats
+   * @secure
+   */
+  userControllerGetUserStats = (params: RequestParams = {}) =>
+    this.request<GetUserStatsResponse, any>({
+      path: `/api/v1/user/stats`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get expected rank
+   *
+   * @tags User
+   * @name UserControllerGetExpectedRank
+   * @summary Get expected rank
+   * @request POST:/api/v1/user/expected/rank
+   * @secure
+   */
+  userControllerGetExpectedRank = (
+    data: GetExpectedRankBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetExpectedRankResponse, any>({
+      path: `/api/v1/user/expected/rank`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: "json",
       ...params,
     });

@@ -27,6 +27,7 @@ import { linkWalletAtom } from "@/store/global";
 import { CopyWrapper } from "@/app/_containers/wrappers/copy-wrapper";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAccount } from "wagmi";
+import { isAuthEnabledAtom } from "@/store/global";
 
 export const UserPanel = React.forwardRef<
   HTMLDivElement,
@@ -35,6 +36,7 @@ export const UserPanel = React.forwardRef<
   const { address } = useAccount();
 
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+  const isAuthEnabled = useAtomValue(isAuthEnabledAtom);
   const userInfo = useAtomValue(userInfoAtom);
 
   const [isEmailEditorOpen, setIsEmailEditorOpen] = useAtom(
@@ -47,6 +49,21 @@ export const UserPanel = React.forwardRef<
   const [selectedWallet, setSelectedWallet] = useAtom(selectedWalletAtom);
 
   const [copied, setCopied] = useState<string | undefined>(undefined);
+
+  if (!isAuthEnabled) {
+    return (
+      <div ref={ref} {...props} className={cn("", className)}>
+        <PrimaryLabel className="text-2xl font-medium text-_primary_">
+          Manage Account
+        </PrimaryLabel>
+
+        <AlertIndicator className="mt-6">
+          Auth is disabled on this site. So you can't manage your account from
+          here.
+        </AlertIndicator>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} {...props} className={cn("", className)}>

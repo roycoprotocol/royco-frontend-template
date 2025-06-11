@@ -5,17 +5,24 @@ import React from "react";
 import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
 import { TwitterIcon } from "@/assets/icons/twitter";
 import { TelegramIcon } from "@/assets/icons/telegram";
+import { GLOBAL_LINKS } from "@/constants";
 
 const Links = [
   {
     id: "terms",
-    link: "https://docs.google.com/document/d/14TcJRR-MnJOVBsT_lGOaM0mfElhE_p9tYOwvSXU9kyQ/edit?tab=t.0",
+    link: GLOBAL_LINKS.TERMS_OF_SERVICE,
     label: "Terms",
     target: "_blank",
   },
   {
+    id: "privacy",
+    link: GLOBAL_LINKS.PRIVACY_POLICY,
+    label: "Privacy Policy",
+    target: "_blank",
+  },
+  {
     id: "documentation",
-    link: "https://docs.royco.org/",
+    link: GLOBAL_LINKS.DOCS,
     label: "Docs",
     target: "_blank",
   },
@@ -24,14 +31,14 @@ const Links = [
 const Socials = [
   {
     id: "twitter",
-    link: "https://x.com/roycoprotocol",
+    link: GLOBAL_LINKS.TWITTER,
     label: "Twitter",
     target: "_blank",
     icon: <TwitterIcon className="hover:fill-_primary_" />,
   },
   {
     id: "telegram",
-    link: "https://t.co/oUDKnVZUp3",
+    link: GLOBAL_LINKS.TELEGRAM,
     label: "Telegram",
     target: "_blank",
     icon: <TelegramIcon className="hover:fill-_primary_" />,

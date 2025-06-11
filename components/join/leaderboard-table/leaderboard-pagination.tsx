@@ -1,16 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
-import { LeaderboardStats } from "../leaderboard-stats";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RoyaltyFormSchema } from "../royalty-form/royalty-form-schema";
-import { z } from "zod";
-import { useGlobalStates } from "@/store";
-import { useTotalWalletsBalance } from "../hooks";
-import { isEqual } from "lodash";
-import { LeaderboardManager } from ".";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
@@ -70,134 +61,152 @@ const PaginationButton = React.forwardRef<
 export const LeaderboardPagination = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    page: number;
-    page_size: number;
     count: number;
+    page?: {
+      index: number;
+      total: number;
+      size: number;
+    };
     setPage: (page: number) => void;
   }
->(({ className, page, page_size, count, setPage, ...props }, ref) => {
-  const total_pages = Math.ceil(count / page_size);
+>(
+  (
+    {
+      className,
+      page = {
+        index: 1,
+        total: 1,
+        size: 20,
+      },
+      count = 0,
+      setPage,
+      ...props
+    },
+    ref
+  ) => {
+    const canPrevPage = page.index > 1;
+    const canNextPage = page.index < page.total;
 
-  const canPrevPage = page > 0;
-  const canNextPage = page < total_pages - 1;
+    const handlePrevPage = () => {
+      if (canPrevPage) {
+        setPage(page.index - 1);
+      }
+    };
 
-  const handlePrevPage = () => {
-    if (canPrevPage) {
-      setPage(page - 1);
-    }
-  };
+    const handleNextPage = () => {
+      if (canNextPage) {
+        setPage(page.index + 1);
+      }
+    };
 
-  const handleNextPage = () => {
-    if (canNextPage) {
-      setPage(page + 1);
-    }
-  };
-
-  return (
-    <div
-      ref={ref}
-      {...props}
-      className={cn(
-        "flex h-fit w-full flex-col items-center justify-center px-2 py-4",
-        className
-      )}
-    >
-      <div className="flex h-fit flex-row items-center gap-3">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {canPrevPage && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:prev`}
-              layoutId={`pagination-button:prev:${page - 1}`}
-            >
-              <PaginationButton
-                className="border-none bg-z2 shadow-none"
-                onClick={(e) => {
-                  handlePrevPage();
-                  e.preventDefault();
-                }}
+    return (
+      <div
+        ref={ref}
+        {...props}
+        className={cn(
+          "flex h-fit w-full flex-col items-center justify-center px-2 py-4",
+          className
+        )}
+      >
+        <div className="flex h-fit flex-row items-center gap-3">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {canPrevPage && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:prev`}
+                layoutId={`pagination-button:prev:${page.index - 1}`}
               >
-                <ChevronLeftIcon className="h-5 w-5" />
-                Prev
+                <PaginationButton
+                  className="border-none bg-z2 shadow-none"
+                  onClick={(e) => {
+                    handlePrevPage();
+                    e.preventDefault();
+                  }}
+                >
+                  <ChevronLeftIcon className="h-5 w-5" />
+                  Prev
+                </PaginationButton>
+              </PaginationButtonMotionWrapper>
+            )}
+
+            {canPrevPage && page.index - 1 > 1 && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:prev:dots`}
+                layoutId={`pagination-button:prev:dots`}
+              >
+                ...
+              </PaginationButtonMotionWrapper>
+            )}
+
+            {canPrevPage && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:${page.index - 1}`}
+                layoutId={`pagination-button:${page.index - 1}`}
+              >
+                <PaginationButton
+                  onClick={(e) => {
+                    handlePrevPage();
+                    e.preventDefault();
+                  }}
+                >
+                  {page.index - 1}
+                </PaginationButton>
+              </PaginationButtonMotionWrapper>
+            )}
+
+            <PaginationButtonMotionWrapper
+              key={`pagination-button:${page.index}`}
+              layoutId={`pagination-button:${page.index}`}
+            >
+              <PaginationButton className="bg-focus">
+                {page.index}
               </PaginationButton>
             </PaginationButtonMotionWrapper>
-          )}
 
-          {canPrevPage && page - 1 > 0 && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:prev:dots`}
-              layoutId={`pagination-button:prev:dots`}
-            >
-              ...
-            </PaginationButtonMotionWrapper>
-          )}
-
-          {canPrevPage && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:${page}`}
-              layoutId={`pagination-button:${page}`}
-            >
-              <PaginationButton
-                onClick={(e) => {
-                  handlePrevPage();
-                  e.preventDefault();
-                }}
+            {canNextPage && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:${page.index + 1}`}
+                layoutId={`pagination-button:${page.index + 1}`}
               >
-                {page}
-              </PaginationButton>
-            </PaginationButtonMotionWrapper>
-          )}
+                <PaginationButton
+                  onClick={(e) => {
+                    handleNextPage();
+                    e.preventDefault();
+                  }}
+                >
+                  {page.index + 1}
+                </PaginationButton>
+              </PaginationButtonMotionWrapper>
+            )}
 
-          <PaginationButtonMotionWrapper
-            key={`pagination-button:${page + 1}`}
-            layoutId={`pagination-button:${page + 1}`}
-          >
-            <PaginationButton className="bg-focus">{page + 1}</PaginationButton>
-          </PaginationButtonMotionWrapper>
-
-          {canNextPage && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:${page + 2}`}
-              layoutId={`pagination-button:${page + 2}`}
-            >
-              <PaginationButton
-                onClick={(e) => {
-                  handleNextPage();
-                  e.preventDefault();
-                }}
+            {canNextPage && page.index + 1 < page.total && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:next:dots`}
+                layoutId={`pagination-button:next:dots`}
               >
-                {page + 2}
-              </PaginationButton>
-            </PaginationButtonMotionWrapper>
-          )}
+                ...
+              </PaginationButtonMotionWrapper>
+            )}
 
-          {canNextPage && page + 2 < total_pages && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:next:dots`}
-              layoutId={`pagination-button:next:dots`}
-            >
-              ...
-            </PaginationButtonMotionWrapper>
-          )}
-
-          {canNextPage && (
-            <PaginationButtonMotionWrapper
-              key={`pagination-button:next`}
-              layoutId={`pagination-button:next:${page + 1}`}
-            >
-              <PaginationButton
-                className="border-none bg-z2 shadow-none"
-                onClick={(e) => {
-                  handleNextPage();
-                  e.preventDefault();
-                }}
+            {canNextPage && (
+              <PaginationButtonMotionWrapper
+                key={`pagination-button:next`}
+                layoutId={`pagination-button:next:${page.index + 1}`}
               >
-                Next
-                <ChevronRightIcon className="h-5 w-5" />
-              </PaginationButton>
-            </PaginationButtonMotionWrapper>
-          )}
-        </AnimatePresence>
+                <PaginationButton
+                  className="border-none bg-z2 shadow-none"
+                  onClick={(e) => {
+                    handleNextPage();
+                    e.preventDefault();
+                  }}
+                >
+                  Next
+                  <ChevronRightIcon className="h-5 w-5" />
+                </PaginationButton>
+              </PaginationButtonMotionWrapper>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);

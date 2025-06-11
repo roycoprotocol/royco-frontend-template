@@ -63,21 +63,7 @@ export const JoinHeader = React.forwardRef<
       )}
     >
       <h3 className="flex flex-row items-center text-center font-gt text-3xl font-normal sm:text-[40px]">
-        {!!user && !!placeholderUserPosition[1] ? (
-          <Fragment>
-            Position: #
-            <SpringNumber
-              previousValue={placeholderUserPosition[0] ?? 0}
-              currentValue={placeholderUserPosition[1] ?? 0}
-              numberFormatOptions={{
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }}
-            />
-          </Fragment>
-        ) : (
-          "Join the Royalty."
-        )}
+        Join the Royalty.
       </h3>
       <div className="my-5 w-full max-w-[400px] text-center font-gt text-base font-light text-secondary">
         Get priority access & benefits based on your wallets. Connect more
