@@ -13,6 +13,7 @@ import {
   authenticationStatusAtom,
   linkWalletAtom,
   isAuthenticatedAtom,
+  connectedWalletsAtom,
 } from "@/store/global";
 import { api } from "@/app/api/royco";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +29,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const [isAuthEnabled, setIsAuthEnabled] = useAtom(isAuthEnabledAtom);
+  const [connectedWallets, setConnectedWallets] = useAtom(connectedWalletsAtom);
 
   const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
 
@@ -64,15 +66,35 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 
       verify: async ({ message, signature }) => {
         try {
-          await api.authControllerLogin({
-            message,
-            signature,
-            linkWallet: linkWallet,
-          });
+          const response = await api
+            .authControllerLogin({
+              message,
+              signature,
+              linkWallet: linkWallet,
+            })
+            .then((res) => res.data);
 
           setAuthenticationStatus("authenticated");
           queryClient.refetchQueries({ queryKey: ["userInfo"] });
           setLinkWallet(undefined);
+
+          // Save wallet info
+          const existingWalletIndex = connectedWallets.findIndex(
+            (wallet) => wallet.id === response.walletInfo.id
+          );
+          let newConnectedWallets = connectedWallets;
+
+          if (existingWalletIndex !== -1) {
+            newConnectedWallets[existingWalletIndex].balanceUsd =
+              response.walletInfo.balanceUsd;
+          } else {
+            newConnectedWallets.push({
+              ...response.walletInfo,
+              signature: response.signature,
+            });
+          }
+          setConnectedWallets(newConnectedWallets);
+
           return true;
         } catch (error) {
           console.error(error);
@@ -94,6 +116,9 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
           const response = await api
             .authControllerRevalidateSession()
             .then((res: { data: any }) => res.data);
+
+          setAuthenticationStatus("authenticated");
+
           return response;
         } catch (error: any) {
           if (
@@ -110,7 +135,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
       }
     },
     ...defaultQueryOptions,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && isAuthEnabled,
   });
 
   return (

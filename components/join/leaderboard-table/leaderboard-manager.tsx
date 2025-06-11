@@ -7,91 +7,98 @@ import React, { useEffect, useState } from "react";
 import { useLeaderboard, useLeaderboardStats } from "royco/hooks";
 import { useImmer } from "use-immer";
 import { LeaderboardTable } from "./leaderboard-table";
-import { leaderboardColumns } from "./leaderboard-columns";
+import {
+  LeaderboardColumnDataElement,
+  leaderboardColumns,
+} from "./leaderboard-columns";
 import { LoadingSpinner } from "@/components/composables";
 import { LeaderboardPagination } from "./leaderboard-pagination";
 import { useInterval } from "../hooks";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { api } from "@/app/api/royco";
+import { defaultQueryOptions } from "@/utils/query";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { LoadingCircle } from "@/components/animations/loading-circle";
 
 export const LeaderboardManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const page_size = 20;
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
-  const propsLeaderboard = useLeaderboard({
-    page,
-    page_size,
+  const { data, isLoading } = useQuery({
+    queryKey: [
+      "leaderboard",
+      {
+        page,
+      },
+    ],
+    queryFn: () => {
+      return api.userControllerGetUserLeaderboard({
+        page: {
+          index: page,
+          size: 20,
+        },
+      });
+    },
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: true,
+    placeholderData: keepPreviousData,
   });
 
   const [placeholderLeaderboard, setPlaceholderLeaderboard] = useImmer<
-    Array<ReturnType<typeof useLeaderboard>["data"]>
-  >([undefined, undefined]);
+    Array<LeaderboardColumnDataElement>
+  >([]);
+
+  const table = useReactTable({
+    data: placeholderLeaderboard,
+    columns: leaderboardColumns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   useEffect(() => {
-    if (!isEqual(propsLeaderboard.data, placeholderLeaderboard[1])) {
-      setPlaceholderLeaderboard((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsLeaderboard.data)) {
-            draft[0] = draft[1] as typeof propsLeaderboard.data; // Set previous data to the current data
-            draft[1] = propsLeaderboard.data as typeof propsLeaderboard.data; // Set current data to the new data
-          }
-        });
-      });
+    if (data?.data?.data) {
+      setPlaceholderLeaderboard(
+        data.data.data.map((d) => ({
+          ...d,
+          prevBalanceUsd: d.balanceUsd,
+        })) ?? []
+      );
     }
-  }, [propsLeaderboard.data]);
+  }, [data?.data?.data]);
 
   const simulateBalanceIncrease = () => {
     setPlaceholderLeaderboard((draft) => {
-      if (
-        !draft[1]?.data ||
-        !Array.isArray(draft[1].data) ||
-        draft[1].data.length === 0
-      )
-        return draft;
-
-      // Store current data as previous
-      draft[0] = JSON.parse(JSON.stringify(draft[1]));
-
-      // Create new data with random increases
-      const newData = { ...draft[1] };
-      if (!newData.data) return draft;
-
-      const dataArray = newData.data;
+      if (!draft || draft.length === 0) {
+        return;
+      }
 
       // Randomly select how many rows to update (1 to 3)
-      const numRowsToUpdate = Math.floor(Math.random() * dataArray.length) + 1;
+      const numRowsToUpdate = Math.floor(Math.random() * draft.length) + 1;
 
       for (let i = 0; i < numRowsToUpdate; i++) {
-        const rowIndex = Math.floor(Math.random() * dataArray.length);
-        const currentBalance = parseFloat(
-          String(dataArray[rowIndex].balance || "0")
-        );
+        const rowIndex = Math.floor(Math.random() * draft.length);
+        const currentBalance = draft[rowIndex].balanceUsd || 0;
 
         // Calculate max allowed increase to maintain order
         let maxIncrease = Number.MAX_VALUE;
         if (rowIndex > 0) {
-          const prevRowBalance = parseFloat(
-            String(dataArray[rowIndex - 1].balance || "0")
-          );
+          const prevRowBalance = draft[rowIndex - 1].prevBalanceUsd || 0;
           maxIncrease = prevRowBalance - currentBalance - 0.01;
         }
 
         // Generate random increase (0.01 to maxIncrease or 100, whichever is smaller)
         const increase = Math.random() * Math.min(maxIncrease, 100) + 0.01;
-        dataArray[rowIndex].balance = currentBalance + increase;
+        draft[rowIndex].balanceUsd = currentBalance + increase;
+        draft[rowIndex].prevBalanceUsd = currentBalance;
       }
-
-      newData.data = dataArray;
-      draft[1] = newData;
     });
   };
 
   // Add interval to update balances
   useInterval(simulateBalanceIncrease, 1000);
 
-  if (propsLeaderboard.isLoading) {
+  if (isLoading) {
     return (
       <div
         className={cn(
@@ -99,7 +106,7 @@ export const LeaderboardManager = React.forwardRef<
           className
         )}
       >
-        <LoadingSpinner className="h-5 w-5" />
+        <LoadingCircle size={20} />
       </div>
     );
   }
@@ -107,28 +114,20 @@ export const LeaderboardManager = React.forwardRef<
   return (
     <div ref={ref} {...props} className={cn("w-full", className)}>
       <LeaderboardTable
-        data={
-          placeholderLeaderboard[1]?.data
-            ? placeholderLeaderboard[1].data.map((item, index) => ({
-                ...item,
-                prev:
-                  placeholderLeaderboard[0] &&
-                  Array.isArray(placeholderLeaderboard[0].data) &&
-                  index < placeholderLeaderboard[0].data.length
-                    ? placeholderLeaderboard[0].data[index]
-                    : null,
-              }))
-            : []
-        }
-        columns={leaderboardColumns}
+        data={placeholderLeaderboard}
+        table={table}
+        className="w-full"
       />
 
       {/* <div className="h-[1px] w-full bg-divider" /> */}
 
       <LeaderboardPagination
-        page={page}
-        page_size={page_size}
-        count={propsLeaderboard.data?.count || 0}
+        page={{
+          index: page,
+          size: 20,
+          total: data?.data?.count || 0,
+        }}
+        count={data?.data?.count || 0}
         setPage={setPage}
         className="border-t border-divider"
       />

@@ -9,43 +9,48 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useLeaderboardStats } from "royco/hooks";
 import { useImmer } from "use-immer";
 import { useInterval } from "../hooks";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { api } from "@/app/api/royco";
+import { defaultQueryOptions } from "@/utils/query";
 
 export const LeaderboardStats = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [placeholderLeaderboardStats, setPlaceholderLeaderboardStats] =
-    useImmer<
-      Array<
-        | {
-            users: number | null | undefined;
-            balance: number | null | undefined;
-          }
-        | null
-        | undefined
-      >
-    >([null, null]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["leaderboard-stats"],
+    queryFn: async () => {
+      return api.userControllerGetUserStats().then((res) => res.data);
+    },
+    ...defaultQueryOptions,
+  });
 
-  const propsLeaderboardStats = useLeaderboardStats();
+  const [placeholderLeaderboardStats, setPlaceholderLeaderboardStats] =
+    useImmer<{
+      prevUsers: number;
+      users: number;
+      balanceUsd: number;
+      prevBalanceUsd: number;
+    }>({
+      prevUsers: 0,
+      users: 0,
+      balanceUsd: 0,
+      prevBalanceUsd: 0,
+    });
 
   // Add simulation function
   const simulateBalanceIncrease = () => {
     setPlaceholderLeaderboardStats((draft) => {
-      if (!draft[1]?.balance) return draft;
+      if (!draft.balanceUsd) return draft;
 
       // Store current data as previous
-      draft[0] = JSON.parse(JSON.stringify(draft[1]));
+      draft.prevBalanceUsd = draft.balanceUsd;
 
       // Create new data with random increase
-      const currentBalance = draft[1].balance;
-
-      // Random increase between 0.01 and 100
       const increase = Math.random() * 100 + 0.01;
 
-      draft[1] = {
-        ...draft[1],
-        balance: currentBalance + increase,
-      };
+      // Random increase between 0.01 and 100
+      draft.balanceUsd = draft.balanceUsd + increase;
     });
   };
 
@@ -53,23 +58,17 @@ export const LeaderboardStats = React.forwardRef<
   useInterval(simulateBalanceIncrease, 1000);
 
   useEffect(() => {
-    if (
-      propsLeaderboardStats.isLoading === false &&
-      propsLeaderboardStats.isRefetching === false &&
-      !isEqual(propsLeaderboardStats.data, placeholderLeaderboardStats[1])
-    ) {
-      setPlaceholderLeaderboardStats((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsLeaderboardStats.data)) {
-            draft[0] = draft[1] as typeof propsLeaderboardStats.data; // Set previous data to the current data
-            draft[1] =
-              propsLeaderboardStats.data as typeof propsLeaderboardStats.data; // Set current data to the new data
-          }
-        });
+    if (data) {
+      setPlaceholderLeaderboardStats((draft) => {
+        draft.prevUsers = draft.users;
+        draft.users = data.users;
+
+        if (draft.balanceUsd !== 0 || draft.balanceUsd < data.balanceUsd) {
+          draft.balanceUsd = data.balanceUsd;
+        }
       });
     }
-  }, [propsLeaderboardStats.data]);
+  }, [data]);
 
   return (
     <div
@@ -80,14 +79,14 @@ export const LeaderboardStats = React.forwardRef<
       )}
     >
       <div className="flex h-32 flex-col items-center justify-center p-7 md:p-9">
-        {propsLeaderboardStats.isLoading ? (
+        {isLoading ? (
           <LoadingSpinner className="h-5 w-5" />
         ) : (
           <Fragment>
             <h4 className="text-4xl font-normal text-black">
               <SpringNumber
-                previousValue={placeholderLeaderboardStats[0]?.users || 0}
-                currentValue={placeholderLeaderboardStats[1]?.users || 0}
+                previousValue={placeholderLeaderboardStats.prevUsers || 0}
+                currentValue={placeholderLeaderboardStats.users || 0}
                 numberFormatOptions={{
                   maximumFractionDigits: 0,
                   minimumFractionDigits: 0,
@@ -102,14 +101,14 @@ export const LeaderboardStats = React.forwardRef<
       </div>
 
       <div className="flex h-32 flex-col items-center justify-center p-7 md:p-9">
-        {propsLeaderboardStats.isLoading ? (
+        {isLoading ? (
           <LoadingSpinner className="h-5 w-5" />
         ) : (
           <Fragment>
             <h4 className="text-right text-4xl font-normal text-black">
               <SpringNumber
-                previousValue={placeholderLeaderboardStats[0]?.balance || 0}
-                currentValue={placeholderLeaderboardStats[1]?.balance || 0}
+                previousValue={placeholderLeaderboardStats.prevBalanceUsd || 0}
+                currentValue={placeholderLeaderboardStats.balanceUsd || 0}
                 numberFormatOptions={{
                   maximumFractionDigits: 2,
                   minimumFractionDigits: 2,

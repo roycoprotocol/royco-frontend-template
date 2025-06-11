@@ -1,49 +1,33 @@
 "use client";
 
 import React from "react";
-
-import { cn } from "@/lib/utils";
-
-import { z } from "zod";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { type UseFormReturn } from "react-hook-form";
-
+import { FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { FormInputLabel } from "@/components/composables";
+import { useAtom } from "jotai";
+import { royaltyUsernameAtom } from "@/store/royalty";
+import { cn } from "@/lib/utils";
 
 export const FormUsername = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
-  }
->(({ className, royaltyForm, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const [username, setUsername] = useAtom(royaltyUsernameAtom);
+
   return (
-    <FormField
-      control={royaltyForm.control}
-      name="username"
-      render={({ field }) => (
-        <FormItem className={cn("", className)}>
-          <FormInputLabel className="mb-2" label="Nickname" />
+    <div ref={ref} className={cn("", className)} {...props}>
+      <FormInputLabel className="mb-2" label="Nickname" />
 
-          <FormControl>
-            <Input className="" placeholder="BigRoycoFan" {...field} />
-          </FormControl>
+      <Input
+        placeholder="BigRoycoFan"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="w-full"
+      />
 
-          <FormDescription className="mt-2">
-            This will be public.
-          </FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+      <FormDescription className="mt-2">This will be public.</FormDescription>
+    </div>
   );
 });
+
+FormUsername.displayName = "FormUsername";

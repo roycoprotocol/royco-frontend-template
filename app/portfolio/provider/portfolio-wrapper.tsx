@@ -14,6 +14,7 @@ import { useAccount } from "wagmi";
 import { ConnectWalletButton } from "@/app/_components/header/connect-wallet-button/connect-wallet-button";
 import { isAuthenticatedAtom } from "@/store/global";
 import { linkWalletAtom } from "@/store/global";
+import { isAuthEnabledAtom } from "@/store/global";
 
 export const PortfolioWrapper = React.forwardRef<
   HTMLDivElement,
@@ -21,6 +22,7 @@ export const PortfolioWrapper = React.forwardRef<
 >(({ children, className, ...props }, ref) => {
   const { isConnected } = useAccount();
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+  const isAuthEnabled = useAtomValue(isAuthEnabledAtom);
   const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
   const { data, isLoading, isError } = useAtomValue(
     loadablePortfolioPositionsAtom
@@ -37,7 +39,7 @@ export const PortfolioWrapper = React.forwardRef<
     );
   }
 
-  if (!isAuthenticated) {
+  if (isAuthEnabled && !isAuthenticated) {
     return (
       <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
         <AlertIndicator
@@ -66,12 +68,10 @@ export const PortfolioWrapper = React.forwardRef<
             "h-96 w-full rounded-2xl border border-divider bg-white"
           )}
         >
-          {!isAuthenticated ? (
+          {!isConnected ? (
             <div className="flex flex-col items-center gap-5">
               <p>
-                {linkWallet
-                  ? "Connect another wallet and it will be auto-linked to your royalty account"
-                  : "Please connect and verify your wallet to view your portfolio"}
+                Please connect and verify your wallet to view your portfolio
               </p>
               <ConnectWalletButton className="h-10 w-fit rounded-sm" />
             </div>

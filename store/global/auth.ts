@@ -26,7 +26,9 @@ export const authenticationStatusAtom = atom<
   "unauthenticated" | "loading" | "authenticated"
 >("unauthenticated");
 
-export const isAuthEnabledAtom = atom(true);
+export const isAuthEnabledAtom = atom(
+  process.env.NEXT_PUBLIC_IS_AUTH_ENABLED === "false" ? false : true
+);
 
 export const isAuthenticatedAtom = atom((get) => {
   const authenticationStatus = get(authenticationStatusAtom);

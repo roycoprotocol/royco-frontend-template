@@ -1,70 +1,20 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
-
+import React from "react";
 import { cn } from "@/lib/utils";
-
 import { z } from "zod";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormDescription, FormMessage } from "@/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
-
-import { Input } from "@/components/ui/input";
-
 import { RoyaltyFormSchema } from "./royalty-form-schema";
-import {
-  ErrorAlert,
-  FormInputLabel,
-  LoadingSpinner,
-} from "@/components/composables";
+import { FormInputLabel } from "@/components/composables";
 import { Button } from "@/components/ui/button";
 import { useAccount, useDisconnect } from "wagmi";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useGlobalStates, useJoin } from "@/store";
-import { useSignMessage } from "wagmi";
-import { OwnershipProofMessage } from "@/components/constants";
-import { isEqual } from "lodash";
 import { WalletListTable } from "./wallet-list-table";
 import { PlusIcon } from "lucide-react";
-// import toast from "react-hot-toast";
-import { useTotalWalletsBalance } from "../hooks";
-
-import { motion, AnimatePresence } from "framer-motion";
-import { SignMessageInfoCard } from "./sign-message-info-card";
-import { toast } from "sonner";
 import { useConnectWallet } from "@/app/_containers/providers/connect-wallet-provider";
-
-export const WalletConnectionLabel = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  return (
-    <FormDescription className="mt-5">
-      By connecting your wallet(s) you agree to the{" "}
-      <a
-        href="https://drive.google.com/file/d/1PQsptyBUtX8v0U1w3mgJ3tup6r0NbhUM/view?usp=sharing"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Terms of Use
-      </a>{" "}
-      &{" "}
-      <a
-        href="https://drive.google.com/file/d/15ArmJFXqZVE42rTeGyhMcvfRd5KnFK3N/view?usp=sharing"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Privacy Policy
-      </a>
-    </FormDescription>
-  );
-});
+import { authenticationStatusAtom, connectedWalletsAtom } from "@/store/global";
+import { useAtom } from "jotai";
+import { useEffect } from "react";
 
 export const FormWallets = React.forwardRef<
   HTMLDivElement,
@@ -72,208 +22,77 @@ export const FormWallets = React.forwardRef<
     royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
   }
 >(({ className, royaltyForm, ...props }, ref) => {
-  const { address: account_address, isConnected } = useAccount();
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(
+    authenticationStatusAtom
+  );
+  const [connectedWallets, setConnectedWallets] = useAtom(connectedWalletsAtom);
+
+  const { isConnected } = useAccount();
 
   const { disconnect, disconnectAsync } = useDisconnect();
 
   const { connectWalletModal } = useConnectWallet();
 
-  const {
-    signMessage,
-    data: dataSignMessage,
-    isPending: isPendingSignMessage,
-    isSuccess: isSuccessSignMessage,
-    isError: isErrorSignMessage,
-  } = useSignMessage();
-
-  const addWallet = async () => {
-    if (
-      isConnected &&
-      !!account_address &&
-      !royaltyForm
-        .watch("wallets")
-        .some(
-          (wallet) =>
-            wallet.account_address.toLowerCase() ===
-            account_address.toLowerCase()
-        )
-    ) {
-      royaltyForm.setValue("wallets", [
-        ...royaltyForm.getValues("wallets"),
-        {
-          account_address: account_address.toLowerCase(),
-          proof: "",
-          balance: undefined,
-        },
-      ]);
-    }
-
-    // if (
-    //   isConnected &&
-    //   !!account_address &&
-    //   royaltyForm
-    //     .watch("wallets")
-    //     .some(
-    //       (wallet) =>
-    //         wallet.account_address.toLowerCase() ===
-    //         account_address.toLowerCase()
-    //     )
-    // ) {
-    //   toast.error("Wallet already added");
-    // }
-  };
-
-  const addProof = async () => {
-    if (
-      isSuccessSignMessage === true &&
-      !!account_address &&
-      royaltyForm
-        .watch("wallets")
-        .some(
-          (wallet) =>
-            wallet.account_address.toLowerCase() ===
-            account_address.toLowerCase()
-        )
-    ) {
-      const index = royaltyForm
-        .watch("wallets")
-        .findIndex(
-          (wallet) =>
-            wallet.account_address.toLowerCase() ===
-            account_address.toLowerCase()
-        );
-
-      let newWallets = royaltyForm.getValues("wallets");
-      newWallets[index].proof = dataSignMessage;
-      royaltyForm.setValue("wallets", newWallets);
-
-      // await disconnectAsync();
+  const disconnectWallet = async () => {
+    try {
+      await disconnectAsync();
+      setAuthenticationStatus("unauthenticated");
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    addProof();
-  }, [dataSignMessage]);
-
-  useEffect(() => {
-    addWallet();
-  }, [account_address]);
+    if (authenticationStatus === "authenticated") {
+      disconnectWallet();
+    }
+  }, [authenticationStatus]);
 
   return (
-    <FormField
-      control={royaltyForm.control}
-      name="wallets"
-      render={({ field }) => (
-        <FormItem className={cn("", className)}>
-          <div className="flex flex-row items-center gap-2">
-            <FormInputLabel className="w-fit" label="Proof of funds" />
+    <div ref={ref} className={cn("", className)} {...props}>
+      <div className="flex flex-row items-center gap-2">
+        <FormInputLabel className="w-fit" label="Proof of funds" />
 
-            {royaltyForm.watch("wallets").length > 0 &&
-              royaltyForm
-                .watch("wallets")
-                .some((wallet) => wallet.proof !== "") && (
-                <Button
-                  onClick={async () => {
-                    await disconnectAsync();
+        {connectedWallets.length > 0 && (
+          <Button
+            onClick={async () => {
+              await disconnectAsync();
+              setAuthenticationStatus("unauthenticated");
 
-                    connectWalletModal();
-                  }}
-                  type="button"
-                  className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
-                >
-                  <PlusIcon
-                    strokeWidth={1.5}
-                    className="h-4 w-4 stroke-black"
-                  />
-                </Button>
-              )}
-          </div>
+              connectWalletModal();
+            }}
+            type="button"
+            className="flex h-6 w-6 flex-col items-center justify-center rounded-full border border-divider bg-z2 p-0"
+          >
+            <PlusIcon strokeWidth={1.5} className="h-4 w-4 stroke-black" />
+          </Button>
+        )}
+      </div>
 
-          {royaltyForm.watch("wallets") && (
-            <WalletListTable className="mt-3" royaltyForm={royaltyForm} />
-          )}
+      <WalletListTable className="mt-3" />
 
-          <FormDescription className="mt-3">
-            Prove ownership of wallets to get priority access & benefits. Total
-            assets will be public.&nbsp;
-            <span className="font-medium text-black">
-              Connect more assets to get in first.
-            </span>
-          </FormDescription>
+      <FormDescription className="mt-3">
+        Prove ownership of wallets to get priority access & benefits. Total
+        assets will be public.&nbsp;
+        <span className="font-medium text-black">
+          Connect more assets to get in first.
+        </span>
+      </FormDescription>
 
-          {royaltyForm.watch("wallets").length === 0 && !isConnected && (
-            <Fragment>
-              <Button
-                type="button"
-                onClick={(e) => {
-                  connectWalletModal();
-                  e.stopPropagation();
-                }}
-                className="mt-5 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
-              >
-                Connect Wallet
-              </Button>
-              <WalletConnectionLabel />
-            </Fragment>
-          )}
-
-          {isConnected &&
-            royaltyForm
-              .getValues("wallets")
-              .some((wallet) => wallet.proof === "") && (
-              <Fragment>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    signMessage({
-                      message: OwnershipProofMessage,
-                    });
-                  }}
-                  className={cn(
-                    "mt-5 h-12 w-full rounded-lg font-inter text-sm font-normal shadow-none hover:bg-opacity-90",
-                    isPendingSignMessage
-                      ? "border border-divider bg-z2"
-                      : "bg-mint"
-                  )}
-                >
-                  {isPendingSignMessage ? (
-                    <LoadingSpinner className="h-5 w-5" />
-                  ) : (
-                    "Prove Funds"
-                  )}
-                </Button>
-
-                <SignMessageInfoCard
-                  show={isPendingSignMessage ? true : false}
-                />
-
-                {/* {isConnected &&
-                  royaltyForm
-                    .getValues("wallets")
-                    .some((wallet) => wallet.proof === "") && (
-                    <Button
-                      type="button"
-                      onClick={async (e) => {
-                        await disconnectAsync();
-
-                        const newWallets = royaltyForm.getValues("wallets");
-                        newWallets.pop();
-                        royaltyForm.setValue("wallets", newWallets);
-                        e.stopPropagation();
-                      }}
-                      className="mt-2 h-12 w-full rounded-lg bg-error font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
-                    >
-                      Disconnect Wallet
-                    </Button>
-                  )} */}
-
-                <WalletConnectionLabel />
-              </Fragment>
-            )}
-
-          <FormMessage />
-        </FormItem>
+      {connectedWallets.length === 0 && !isConnected && (
+        <Button
+          type="button"
+          onClick={(e) => {
+            connectWalletModal();
+            e.stopPropagation();
+          }}
+          className="mt-5 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+        >
+          Connect Wallet
+        </Button>
       )}
-    />
+
+      <FormMessage />
+    </div>
   );
 });

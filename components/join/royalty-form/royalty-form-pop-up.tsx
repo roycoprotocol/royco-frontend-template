@@ -119,11 +119,9 @@ export const RoyaltyFormPopUp = React.forwardRef<
         </div>
 
         <div className="w-full !bg-white px-7 pb-8 pt-6">
-          <FormEmail royaltyForm={royaltyForm} />
+          <FormEmail />
 
-          <FormUsername className="mt-6" royaltyForm={royaltyForm} />
-
-          {/* <FormTelegram className="mt-6" royaltyForm={royaltyForm} /> */}
+          <FormUsername className="mt-6" />
 
           <FormWallets className="mt-6" royaltyForm={royaltyForm} />
 
