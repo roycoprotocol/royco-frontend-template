@@ -23,8 +23,7 @@ import {
   CreateMarketResponse,
   EditUserBody,
   EditUserResponse,
-  EnrichedMarket,
-  EnrichedMarketV2,
+  EnrichedMarketMerged,
   ExploreMarketBody,
   ExploreMarketResponse,
   ExploreSettingsMarketBody,
@@ -57,6 +56,8 @@ import {
   RecipeIPMarketActionResponse,
   RecipeOfferResponse,
   RecipePositionResponse,
+  RegisterUserBody,
+  RegisterUserResponse,
   RevalidateSessionResponse,
   SimulateTransactionBody,
   SimulateTransactionResponse,
@@ -305,7 +306,7 @@ export class Api<
     data?: InfoMarketBody,
     params: RequestParams = {},
   ) =>
-    this.request<EnrichedMarket | EnrichedMarketV2, any>({
+    this.request<EnrichedMarketMerged, any>({
       path: `/api/v1/market/info/${id}`,
       method: "POST",
       body: data,
@@ -1186,6 +1187,28 @@ export class Api<
   ) =>
     this.request<GetExpectedRankResponse, any>({
       path: `/api/v1/user/expected/rank`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Register user
+   *
+   * @tags User
+   * @name UserControllerRegisterUser
+   * @summary Register user
+   * @request POST:/api/v1/user/register
+   * @secure
+   */
+  userControllerRegisterUser = (
+    data: RegisterUserBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<RegisterUserResponse, any>({
+      path: `/api/v1/user/register`,
       method: "POST",
       body: data,
       secure: true,

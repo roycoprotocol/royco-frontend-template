@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
+import { cn } from "@/lib/utils";
 import { FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FormInputLabel } from "@/components/composables";
 import { useAtom } from "jotai";
 import { royaltyUsernameAtom } from "@/store/royalty";
-import { cn } from "@/lib/utils";
 
 export const FormUsername = React.forwardRef<
   HTMLDivElement,
@@ -25,7 +25,7 @@ export const FormUsername = React.forwardRef<
         className="w-full"
       />
 
-      <FormDescription className="mt-2">This will be public.</FormDescription>
+      <div className="caption mt-2 text-tertiary">This will be public.</div>
     </div>
   );
 });

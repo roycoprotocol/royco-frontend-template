@@ -1,17 +1,14 @@
 "use client";
 
-import { LoadingSpinner, SpringNumber } from "@/components/composables";
+import { SpringNumber } from "@/components/composables";
 import { cn } from "@/lib/utils";
-import { useGlobalStates } from "@/store";
-import { produce } from "immer";
-import { isEqual } from "lodash";
-import React, { Fragment, useEffect, useState } from "react";
-import { useLeaderboardStats } from "royco/hooks";
+import React, { Fragment, useEffect } from "react";
 import { useImmer } from "use-immer";
 import { useInterval } from "../hooks";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/app/api/royco";
 import { defaultQueryOptions } from "@/utils/query";
+import { LoadingCircle } from "@/components/animations/loading-circle";
 
 export const LeaderboardStats = React.forwardRef<
   HTMLDivElement,
@@ -80,7 +77,7 @@ export const LeaderboardStats = React.forwardRef<
     >
       <div className="flex h-32 flex-col items-center justify-center p-7 md:p-9">
         {isLoading ? (
-          <LoadingSpinner className="h-5 w-5" />
+          <LoadingCircle className="h-5 w-5" />
         ) : (
           <Fragment>
             <h4 className="text-4xl font-normal text-black">
@@ -102,7 +99,7 @@ export const LeaderboardStats = React.forwardRef<
 
       <div className="flex h-32 flex-col items-center justify-center p-7 md:p-9">
         {isLoading ? (
-          <LoadingSpinner className="h-5 w-5" />
+          <LoadingCircle className="h-5 w-5" />
         ) : (
           <Fragment>
             <h4 className="text-right text-4xl font-normal text-black">

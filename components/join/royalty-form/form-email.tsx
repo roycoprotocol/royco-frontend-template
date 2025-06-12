@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
+import { cn } from "@/lib/utils";
 import { FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FormInputLabel } from "@/components/composables";
 import { useAtom } from "jotai";
 import { royaltyEmailAtom } from "@/store/royalty";
-import { cn } from "@/lib/utils";
 
 export const FormEmail = React.forwardRef<
   HTMLDivElement,
@@ -25,30 +25,11 @@ export const FormEmail = React.forwardRef<
         className="w-full"
       />
 
-      <FormDescription className="mt-2">
+      <div className="caption mt-2 text-tertiary">
         This is private. We'll reach out when it's your time.
-      </FormDescription>
+      </div>
     </div>
   );
 });
 
 FormEmail.displayName = "FormEmail";
-
-// <FormField
-//   control={royaltyForm.control}
-//   name="email"
-//   render={({ field }) => (
-//     <FormItem className={cn("", className)}>
-//       <FormInputLabel className="mb-2" label="Email" />
-
-//       <FormControl>
-
-//       </FormControl>
-
-//       <FormDescription className="mt-2">
-//         This is private. We'll reach out when it's your time.
-//       </FormDescription>
-//       <FormMessage />
-//     </FormItem>
-//   )}
-// />

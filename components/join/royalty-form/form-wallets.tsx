@@ -2,10 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { z } from "zod";
 import { FormDescription, FormMessage } from "@/components/ui/form";
-import { type UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "./royalty-form-schema";
 import { FormInputLabel } from "@/components/composables";
 import { Button } from "@/components/ui/button";
 import { useAccount, useDisconnect } from "wagmi";
@@ -18,10 +15,8 @@ import { useEffect } from "react";
 
 export const FormWallets = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
-  }
->(({ className, royaltyForm, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const [authenticationStatus, setAuthenticationStatus] = useAtom(
     authenticationStatusAtom
   );
@@ -71,13 +66,13 @@ export const FormWallets = React.forwardRef<
 
       <WalletListTable className="mt-3" />
 
-      <FormDescription className="mt-3">
+      <div className="caption mt-3 text-tertiary">
         Prove ownership of wallets to get priority access & benefits. Total
         assets will be public.&nbsp;
         <span className="font-medium text-black">
           Connect more assets to get in first.
         </span>
-      </FormDescription>
+      </div>
 
       {connectedWallets.length === 0 && !isConnected && (
         <Button
@@ -91,8 +86,6 @@ export const FormWallets = React.forwardRef<
           Connect Wallet
         </Button>
       )}
-
-      <FormMessage />
     </div>
   );
 });
