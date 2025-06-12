@@ -417,8 +417,8 @@ export const EmailEditor = React.forwardRef<
               <div className="flex flex-col">
                 <SecondaryLabel className="mt-3 text-_secondary_">
                   We have sent a magic link to {form.watch("email")}. Please
-                  click the link to confirm your address. It might take a few
-                  minutes for the mail to arrive.
+                  click the link to confirm your email address. It might take a
+                  few minutes for the mail to arrive.
                 </SecondaryLabel>
 
                 <div className="mt-6 grid grid-cols-2 gap-3">
@@ -445,7 +445,7 @@ export const EmailEditor = React.forwardRef<
                 </div>
 
                 <SecondaryLabel className="mt-6 text-center italic text-_secondary_">
-                  Please check your spam folder if you don't see the mail in
+                  Please check your spam folder if you don't see the email in
                   your inbox. The verification link will auto-expire in 24
                   hours.
                 </SecondaryLabel>

@@ -1,19 +1,14 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "./royalty-form-schema";
-import { z } from "zod";
+import { cn } from "@/lib/utils";
 import { lodableExpectedRankAtom } from "@/store/royalty";
 import { useAtomValue } from "jotai";
 
 export const ExpectedSpot = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
-  }
->(({ className, royaltyForm, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const { data, isLoading } = useAtomValue(lodableExpectedRankAtom);
 
   return (

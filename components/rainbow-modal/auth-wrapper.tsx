@@ -135,6 +135,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
       }
     },
     ...defaultQueryOptions,
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
     enabled: isAuthenticated && isAuthEnabled,
   });
 

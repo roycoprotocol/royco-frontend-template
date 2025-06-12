@@ -133,7 +133,7 @@ export const ConnectWalletProvider = ({
 
   useEffect(() => {
     reconnectSession();
-  }, [address]);
+  }, [address, isConnected]);
 
   useEffect(() => {
     disconnectWalletIfSanctioned();

@@ -1,87 +1,74 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
-import { useWeb3Modal } from "@web3modal/wagmi/react";
-
-import clsx from "clsx";
-
-import { useAccount, useDisconnect } from "wagmi";
-import { useSignMessage, useVerifyMessage } from "wagmi";
-import { verifyMessage } from "@wagmi/core";
-
-import { switchChain } from "@wagmi/core";
-import { mainnet } from "@wagmi/core/chains";
-
-import { useSwitchChain } from "wagmi";
-
-import { useWeb3ModalState } from "@web3modal/wagmi/react";
-import { CaretRightIcon, CaretDownIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
-import { matcher } from "./matcher";
-import { RoyaltyFormSchema } from "./royalty-form-schema";
+import { useState } from "react";
 import { FormEmail } from "./form-email";
 import { FormUsername } from "./form-username";
 import { FormWallets } from "./form-wallets";
 import { ExpectedSpot } from "./expected-spot";
-import { FormTelegram } from "./form-telegram";
 import { useJoin } from "@/store";
 import { toast } from "sonner";
-import { LoadingSpinner } from "@/components/composables";
+import { Button } from "@/components/ui/button";
+import { LoadingCircle } from "@/components/animations/loading-circle";
+import { api } from "@/app/api/royco";
+import { royaltyEmailAtom } from "@/store/royalty";
+import { royaltyUsernameAtom } from "@/store/royalty";
+import { useAtomValue } from "jotai";
+import { connectedWalletsAtom } from "@/store/global";
+import { isAlphanumeric, isEmail } from "validator";
 
 export const RoyaltyFormPopUp = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
-  }
->(({ className, royaltyForm, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
   const [submitLoading, setSubmitLoading] = useState(false);
-  const { step, setStep, setToken } = useJoin();
+  const { step, setStep } = useJoin();
 
-  const onSubmit = async (data: z.infer<typeof RoyaltyFormSchema>) => {
+  const email = useAtomValue(royaltyEmailAtom);
+  const name = useAtomValue(royaltyUsernameAtom);
+  const wallets = useAtomValue(connectedWalletsAtom);
+
+  const { openRoyaltyForm } = useJoin();
+
+  const onSubmit = async () => {
     setSubmitLoading(true);
 
     try {
-      const req = await fetch("/api/users/register", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const res = await req.json();
-
-      if (!req.ok) {
-        throw new Error(res.status);
+      if (!isEmail(email)) {
+        toast.error("Invalid email address");
+        return;
       }
 
-      const { token } = res;
+      if (name.length < 1 || name.length > 50) {
+        toast.error("Name must be between 1 and 50 characters");
+        return;
+      } else if (!isAlphanumeric(name)) {
+        toast.error("Name must be alphanumeric: [a-zA-Z0-9]");
+        return;
+      }
 
-      setToken(token);
-      setStep("otp");
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to submit form";
+      const signatures = wallets.map((wallet) => wallet.signature);
 
-      toast.error(message);
+      if (signatures.length === 0) {
+        toast.error("At least one wallet is required to join Royco Royalty.");
+        return;
+      }
+
+      const response = await api
+        .userControllerRegisterUser({
+          email,
+          name,
+          signatures,
+        })
+        .then((res) => res.data);
+
+      setStep("success");
+    } catch (error) {
+      toast.error(
+        (error as any)?.response?.data?.error?.message ??
+          "Failed to submit form"
+      );
 
       console.error(error);
     } finally {
@@ -89,60 +76,40 @@ export const RoyaltyFormPopUp = React.forwardRef<
     }
   };
 
-  const { openRoyaltyForm } = useJoin();
-
-  const { disconnectAsync } = useDisconnect();
-
-  const disconnectWalletIfProofNotRequired = async () => {
-    if (
-      !openRoyaltyForm &&
-      !royaltyForm
-        .getValues("wallets")
-        .some((wallet) => wallet.proof.length === 0)
-    ) {
-      await disconnectAsync();
-    }
-  };
-
-  useEffect(() => {
-    disconnectWalletIfProofNotRequired();
-  }, [openRoyaltyForm]);
-
   return (
-    <Form {...royaltyForm}>
-      <form
-        onSubmit={royaltyForm.handleSubmit(onSubmit)}
-        className="flex w-full flex-col bg-[#FBFBF8]"
-      >
-        <div className="sticky top-0 border-b border-divider bg-[#FBFBF8] px-[25px] py-2 text-lg font-semibold text-black">
-          Join the Royco Royalty
-        </div>
+    <div
+      ref={ref}
+      className={cn("flex w-full flex-col bg-[#FBFBF8]", className)}
+      {...props}
+    >
+      <div className="sticky top-0 border-b border-divider bg-[#FBFBF8] px-[25px] py-2 text-lg font-semibold text-black">
+        Join the Royco Royalty
+      </div>
 
-        <div className="w-full !bg-white px-7 pb-8 pt-6">
-          <FormEmail />
+      <div className="w-full !bg-white px-7 pb-8 pt-6">
+        <FormEmail />
 
-          <FormUsername className="mt-6" />
+        <FormUsername className="mt-6" />
 
-          <FormWallets className="mt-6" royaltyForm={royaltyForm} />
+        <FormWallets className="mt-6" />
 
-          <ExpectedSpot className="mt-6" royaltyForm={royaltyForm} />
+        <ExpectedSpot className="mt-6" />
 
-          <Button
-            disabled={submitLoading}
-            type="submit"
-            onClick={() => {
-              royaltyForm.handleSubmit(onSubmit)();
-            }}
-            className={cn(
-              "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90",
-              "transition-all duration-300 ease-in-out",
-              submitLoading && "border border-divider bg-focus"
-            )}
-          >
-            {submitLoading ? <LoadingSpinner className="h-4 w-4" /> : "Submit"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+        <Button
+          disabled={submitLoading}
+          type="submit"
+          onClick={async () => {
+            await onSubmit();
+          }}
+          className={cn(
+            "mt-8 h-12 w-full rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90",
+            "transition-all duration-300 ease-in-out",
+            submitLoading && "border border-divider bg-focus"
+          )}
+        >
+          {submitLoading ? <LoadingCircle className="h-4 w-4" /> : "Submit"}
+        </Button>
+      </div>
+    </div>
   );
 });
