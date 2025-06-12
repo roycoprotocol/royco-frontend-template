@@ -227,7 +227,7 @@ const Page = () => {
       >
         {isLoading &&
           "Please wait, this might take a while. We are verifying your account."}
-        {isSuccess && "You will be redirected to /portfolio page shortly."}
+        {isSuccess && "You will be redirected to Portfolio page shortly."}
         {(isError && (error as any)?.response?.data?.error?.message) ??
           "Verification failed"}
       </div>

@@ -91,7 +91,13 @@ export const ConnectWalletProvider = ({
   };
 
   const reconnectSession = async () => {
-    if (address && authenticationStatus === "unauthenticated") {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    if (
+      address &&
+      authenticationStatus === "unauthenticated" &&
+      !connectModalOpen
+    ) {
       try {
         const response = await api
           .authControllerRevalidateSession()
