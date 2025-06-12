@@ -38,7 +38,7 @@ import NumberFlow from "@number-flow/react";
 import { ContentFlow } from "@/components/animations/content-flow";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 import { CustomProgress } from "@/app/vault/common/custom-progress";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
 import formatNumber from "@/utils/numbers";
 import { TokenDisplayer } from "@/app/_components/common/token-displayer";
@@ -46,6 +46,7 @@ import {
   formatLockupTime,
   formatLockupTimeAbbreviated,
 } from "@/utils/lockup-time";
+import { tagAtom } from "@/store/protector/protector";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
@@ -429,6 +430,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-48 w-52",
       cell: ({ row }) => {
+        const tag = useAtomValue(tagAtom);
         const incentives = row.original.tokenIncentives;
 
         return (
@@ -440,7 +442,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      {"+ "}
+                      {tag === "plume" ? "" : "+"}
                       {formatNumber(
                         row.original.tokenYieldRate,
                         {
