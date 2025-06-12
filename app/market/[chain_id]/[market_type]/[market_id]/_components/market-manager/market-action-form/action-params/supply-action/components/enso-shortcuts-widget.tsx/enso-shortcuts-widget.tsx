@@ -73,11 +73,7 @@ export const EnsoShortcutsWidget = React.forwardRef<
                 obligateSelection
                 themeConfig={themeConfig}
                 apiKey={ENSO_KEY}
-                outChainId={
-                  isCrossChainZapDisabled(enrichedMarket?.id)
-                    ? undefined
-                    : chainId
-                }
+                outChainId={chainId}
                 chainId={chainId}
                 tokenOut={token}
               />
