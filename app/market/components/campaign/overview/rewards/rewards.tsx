@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useAtomValue } from "jotai";
-
 import { cn } from "@/lib/utils";
 import {
   PrimaryLabel,
@@ -27,9 +26,6 @@ export const Rewards = React.forwardRef<
         Rewards
       </PrimaryLabel>
 
-      {/**
-       * Estimated APY
-       */}
       <div className="mt-4">
         <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           ESTIMATED APY
@@ -44,9 +40,6 @@ export const Rewards = React.forwardRef<
         </PrimaryLabel>
       </div>
 
-      {/**
-       * Rewards
-       */}
       <div className="mt-4 grid grid-cols-1 gap-x-6 sm:grid-cols-2">
         {data.incentiveTokens && data.incentiveTokens.length > 0 ? (
           data.incentiveTokens.map((reward, index) => (
@@ -65,23 +58,13 @@ export const Rewards = React.forwardRef<
                 <PrimaryLabel className="text-sm font-normal text-success">
                   <div className="flex items-center gap-1">
                     <GradientText>
-                      {(() => {
-                        if (reward.yieldRate) {
-                          return formatNumber(reward.yieldRate, {
-                            type: "percent",
-                          });
-                        } else {
-                          return formatNumber(0, {
-                            type: "percent",
-                          });
-                        }
-
-                        return;
-                      })()}
+                      {formatNumber(reward.yieldRate || 0, {
+                        type: "percent",
+                      })}
                     </GradientText>
 
                     <InfoTip>
-                      {`${formatNumber(reward.yieldRate ?? 0, {
+                      {`${formatNumber(reward.yieldRate || 0, {
                         type: "percent",
                       })} estimated APY is calculated on base assumption of
                         ${formatNumber(reward.fdv, {

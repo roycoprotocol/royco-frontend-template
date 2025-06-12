@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/accordion";
 import { ChevronDownIcon } from "lucide-react";
 
-const campaign_faq = [
+const faq = [
   {
     question: "How can I view the UMA Query?",
     answer: "Hello World",
@@ -30,7 +30,7 @@ const campaign_faq = [
   },
 ];
 
-export const CampaignFAQ = React.forwardRef<
+export const Faq = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -42,10 +42,10 @@ export const CampaignFAQ = React.forwardRef<
 
       <div className="mt-3">
         <Accordion type="single" collapsible className="w-full">
-          {campaign_faq.map((faq, index) => (
+          {faq.map((item, index) => (
             <SlideUpWrapper key={index} delay={0.5 + index * 0.1}>
               <AccordionItem
-                value={faq.question}
+                value={item.question}
                 className="border-b border-_divider_"
               >
                 <AccordionTrigger
@@ -54,11 +54,12 @@ export const CampaignFAQ = React.forwardRef<
                     <ChevronDownIcon className="h-5 w-5 shrink-0 text-_secondary_ transition-transform duration-200" />
                   }
                 >
-                  {faq.question}
+                  {item.question}
                 </AccordionTrigger>
+
                 <AccordionContent>
                   <SecondaryLabel className="break-normal text-base">
-                    {faq.answer}
+                    {item.answer}
                   </SecondaryLabel>
                 </AccordionContent>
               </AccordionItem>

@@ -4,10 +4,9 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SlideUpWrapper } from "@/components/animations";
-
 import { Check } from "lucide-react";
 
-const risk_framework = [
+const requirements = [
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description: "Hold TacUSD on Ethereum Mainnet",
@@ -24,19 +23,19 @@ const risk_framework = [
   },
 ];
 
-export const RiskFramework = React.forwardRef<
+export const Requirements = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={cn("", className)}>
       <PrimaryLabel className="text-2xl font-medium text-_primary_">
-        Risk Framework
+        Requirements
       </PrimaryLabel>
 
       <div className="mt-3">
         <div className="w-full">
-          {risk_framework.map((item, index) => (
+          {requirements.map((item, index) => (
             <SlideUpWrapper key={index} delay={0.4 + index * 0.01}>
               <div className="flex items-center gap-3 border-b border-_divider_ py-4">
                 {item.icon}

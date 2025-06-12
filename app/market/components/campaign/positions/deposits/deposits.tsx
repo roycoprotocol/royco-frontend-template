@@ -10,12 +10,15 @@ import formatNumber from "@/utils/numbers";
 import { useAtomValue } from "jotai";
 import { loadableCampaignMarketPositionAtom } from "@/store/market/market";
 import { BaseEnrichedTokenDataWithWithdrawStatus } from "@/app/api/royco/data-contracts";
+import { LoadingPluseIndicator } from "@/app/_components/common/loading-pluse-indicator";
 
-export const DepositsManager = React.forwardRef<
+export const Deposits = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data: propData } = useAtomValue(loadableCampaignMarketPositionAtom);
+  const { isLoading, data: propData } = useAtomValue(
+    loadableCampaignMarketPositionAtom
+  );
 
   const totalDeposits = useMemo(() => {
     return (
@@ -32,16 +35,18 @@ export const DepositsManager = React.forwardRef<
         Deposits
       </PrimaryLabel>
 
-      <div className="mt-7">
+      <div className="mt-4">
         <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           TOTAL DEPOSITS
         </SecondaryLabel>
 
-        <PrimaryLabel className="mt-2 text-2xl font-normal">
-          {formatNumber(totalDeposits, {
-            type: "currency",
-          })}
-        </PrimaryLabel>
+        <LoadingPluseIndicator isLoading={isLoading} className="mt-2 h-8 w-40">
+          <PrimaryLabel className="mt-2 text-2xl font-normal">
+            {formatNumber(totalDeposits, {
+              type: "currency",
+            })}
+          </PrimaryLabel>
+        </LoadingPluseIndicator>
       </div>
     </div>
   );

@@ -10,8 +10,8 @@ import { SlideUpWrapper } from "@/components/animations";
 import { CampaignDetails } from "./details/campaign-details";
 import { CustomHorizontalTabs } from "@/app/vault/common/custom-horizontal-tabs";
 import {
-  MarketDetailsOptionMap,
-  TypeMarketDetailsOption,
+  MarketDetailOptionMap,
+  TypeMarketDetailOption,
   useMarketManager,
 } from "@/store/market/use-market-manager";
 import { Overview } from "./overview/overview";
@@ -24,12 +24,13 @@ export const CampaignManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { isLoading, isError, data } = useAtomValue(loadableMarketMetadataAtom);
-  const { detailsOption, setDetailsOption } = useMarketManager();
+  const { data, isLoading, isError } = useAtomValue(loadableMarketMetadataAtom);
+
+  const { detailOption, setDetailOption } = useMarketManager();
 
   if (isLoading) {
     return (
-      <div className="w-full ">
+      <div className="w-full">
         <LoadingIndicator />
       </div>
     );
@@ -37,14 +38,12 @@ export const CampaignManager = React.forwardRef<
 
   if (isError || !data) {
     return (
-      <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
+      <SlideUpWrapper className="w-full pt-16">
         <AlertIndicator
-          className={cn(
-            "h-96 w-full rounded-2xl border border-divider bg-white"
-          )}
+          className={cn("h-96 rounded-2xl border border-_divider_ bg-white")}
         >
-          Unable to load campaign data. Please check your connection and try
-          again, or contact support if the issue persists.
+          Campaign data failed to load. Please try again, and if the issue
+          persists, our support team is here to assist you.
         </AlertIndicator>
       </SlideUpWrapper>
     );
@@ -61,20 +60,20 @@ export const CampaignManager = React.forwardRef<
 
             <SlideUpWrapper delay={0.1} className="mt-8">
               <CustomHorizontalTabs
-                tabs={Object.values(MarketDetailsOptionMap).map((option) => ({
+                tabs={Object.values(MarketDetailOptionMap).map((option) => ({
                   id: option.value,
                   label: option.label,
                 }))}
                 baseId="vault-details-option"
-                activeTab={detailsOption}
+                activeTab={detailOption}
                 onTabChange={(id) =>
-                  setDetailsOption(id as TypeMarketDetailsOption)
+                  setDetailOption(id as TypeMarketDetailOption)
                 }
               />
             </SlideUpWrapper>
 
             {(() => {
-              if (detailsOption === TypeMarketDetailsOption.Overview) {
+              if (detailOption === TypeMarketDetailOption.Overview) {
                 return (
                   <div className="mt-8">
                     <Overview />
@@ -82,7 +81,7 @@ export const CampaignManager = React.forwardRef<
                 );
               }
 
-              if (detailsOption === TypeMarketDetailsOption.Positions) {
+              if (detailOption === TypeMarketDetailOption.Positions) {
                 return (
                   <div className="mt-8">
                     <Positions />
