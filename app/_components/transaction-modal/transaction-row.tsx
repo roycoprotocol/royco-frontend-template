@@ -13,18 +13,18 @@ import {
   waitForTransactionReceipt,
 } from "@wagmi/core";
 import { config } from "@/components/rainbow-modal/modal-config";
-import { useMarketManager } from "@/store/market/use-market-manager";
-import { useAtomValue } from "jotai";
-import { marketMetadataAtom } from "@/store/market/market";
+import { useTransactionManager } from "@/store/global/use-transaction-manager";
 
 export const TransactionRow = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     isSelected: boolean;
     transactionIndex: number;
-    transaction: any & {
+    transaction: Record<string, any> & {
+      id: string;
       type: string;
       label: string;
+      chainId: number;
       txStatus?: "loading" | "error" | "success";
       txHash?: string;
     };
@@ -47,9 +47,7 @@ export const TransactionRow = React.forwardRef<
     const { address, chainId } = useAccount();
     const { connectWalletModal } = useConnectWallet();
 
-    const { data } = useAtomValue(marketMetadataAtom);
-
-    const { transactions, setTransactions } = useMarketManager();
+    const { transactions, setTransactions } = useTransactionManager();
 
     const handleAction = async () => {
       if (!address) {
@@ -65,8 +63,8 @@ export const TransactionRow = React.forwardRef<
       try {
         setTransactions({
           ...transactions,
-          steps: transactions.steps.map((step: any) => {
-            if (step.type === transaction.type) {
+          steps: transactions?.steps.map((step: any) => {
+            if (step.id === transaction.id) {
               return {
                 ...step,
                 txStatus: "loading",
@@ -86,8 +84,8 @@ export const TransactionRow = React.forwardRef<
 
         setTransactions({
           ...transactions,
-          steps: transactions.steps.map((step: any) => {
-            if (step.type === transaction.type) {
+          steps: transactions?.steps.map((step: any) => {
+            if (step.id === transaction.id) {
               return {
                 ...step,
                 txStatus: "success",
@@ -100,12 +98,10 @@ export const TransactionRow = React.forwardRef<
 
         onSuccess?.();
       } catch (error: any) {
-        console.log({ error });
-
         setTransactions({
           ...transactions,
-          steps: transactions.steps.map((step: any) => {
-            if (step.type === transaction.type) {
+          steps: transactions?.steps.map((step: any) => {
+            if (step.id === transaction.id) {
               return {
                 ...step,
                 txStatus: "error",
@@ -177,14 +173,14 @@ export const TransactionRow = React.forwardRef<
             );
           }
 
-          if (chainId !== data.chainId) {
+          if (chainId !== transaction.chainId) {
             return (
               <Button
                 onClick={async () => {
                   try {
                     // @ts-ignore
                     await switchChain(config, {
-                      chainId: data.chainId,
+                      chainId: transaction.chainId,
                     });
                   } catch (error) {
                     toast.custom(

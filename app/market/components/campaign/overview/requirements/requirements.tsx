@@ -2,9 +2,9 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import { SlideUpWrapper } from "@/components/animations";
 import { Check } from "lucide-react";
+import { PrimaryLabel } from "@/app/_components/common/custom-labels";
 
 const requirements = [
   {
@@ -23,31 +23,30 @@ const requirements = [
   },
 ];
 
-export const Requirements = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  return (
-    <div ref={ref} {...props} className={cn("", className)}>
-      <PrimaryLabel className="text-2xl font-medium text-_primary_">
-        Requirements
-      </PrimaryLabel>
+interface RequirementsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-      <div className="mt-3">
-        <div className="w-full">
-          {requirements.map((item, index) => (
-            <SlideUpWrapper key={index} delay={0.4 + index * 0.01}>
-              <div className="flex items-center gap-3 border-b border-_divider_ py-4">
-                {item.icon}
+export const Requirements = React.forwardRef<HTMLDivElement, RequirementsProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <div ref={ref} {...props} className={cn("", className)}>
+        <PrimaryLabel>Requirements</PrimaryLabel>
 
-                <div className="text-base text-_primary_">
-                  {item.description}
+        <div className="mt-3">
+          <div className="w-full">
+            {requirements.map((item, index) => (
+              <SlideUpWrapper key={index} delay={0.4 + index * 0.01}>
+                <div className="flex items-center gap-3 border-b border-_divider_ py-4">
+                  {item.icon}
+
+                  <PrimaryLabel className="text-base font-normal">
+                    {item.description}
+                  </PrimaryLabel>
                 </div>
-              </div>
-            </SlideUpWrapper>
-          ))}
+              </SlideUpWrapper>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);

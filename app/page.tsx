@@ -8,8 +8,7 @@ import { MarketFilter } from "./explore/components/market-filter/market-filter";
 import { MarketTable } from "./explore/components/market-table/market-table";
 import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 import { ExploreWrapper } from "./explore/provider/explore-wrapper";
-import { PrimaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
-import { SecondaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
+import { VaultsFilter } from "./explore/components/vaults-filter/vaults-filter";
 
 const Page = () => {
   return (
@@ -39,31 +38,20 @@ const Page = () => {
           <ExploreWrapper>
             <div className="mt-6">
               <div>
-                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
-                  NEW
-                </SecondaryLabel>
-
-                <PrimaryLabel className="mt-2 text-2xl font-medium text-_primary_">
-                  Vaults
-                </PrimaryLabel>
-
-                <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-                  Eliminate the guesswork. Vaults rebalance your capital and
-                  negotiate incentives across Royco Markets — optimizing for
-                  risk-adjusted returns.
-                </SecondaryLabel>
+                <VaultsFilter />
               </div>
-
               <div className="mt-6">
                 <VaultsTable />
               </div>
             </div>
 
             <div className="mt-16">
-              <MarketFilter />
-            </div>
-            <div className="mt-6">
-              <MarketTable />
+              <div>
+                <MarketFilter />
+              </div>
+              <div className="mt-6">
+                <MarketTable />
+              </div>
             </div>
           </ExploreWrapper>
         </MaxWidthProvider>

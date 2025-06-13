@@ -7,7 +7,7 @@ import { useAtomValue } from "jotai";
 import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
 import { AlertIndicator } from "@/components/common/alert-indicator";
 import { SlideUpWrapper } from "@/components/animations";
-import { CampaignDetails } from "./details/campaign-details";
+import { Details } from "./details/details";
 import { CustomHorizontalTabs } from "@/app/vault/common/custom-horizontal-tabs";
 import {
   MarketDetailOptionMap,
@@ -15,14 +15,16 @@ import {
   useMarketManager,
 } from "@/store/market/use-market-manager";
 import { Overview } from "./overview/overview";
-import { CampaignActionForm } from "./campaign-action-form/action-form";
+import { ActionForm } from "./action-form/action-form";
 import { Positions } from "./positions/positions";
 import { CampaignActionProvider } from "../../provider/campaign-action-provider";
 import { TransactionModal } from "@/app/_components/transaction-modal/transaction-modal";
 
+interface CampaignManagerProps extends React.HTMLAttributes<HTMLDivElement> {}
+
 export const CampaignManager = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  CampaignManagerProps
 >(({ className, ...props }, ref) => {
   const { data, isLoading, isError } = useAtomValue(loadableMarketMetadataAtom);
 
@@ -55,7 +57,7 @@ export const CampaignManager = React.forwardRef<
         <div className="flex flex-col lg:flex-row lg:gap-x-10">
           <div className="w-full lg:w-2/3">
             <SlideUpWrapper>
-              <CampaignDetails />
+              <Details />
             </SlideUpWrapper>
 
             <SlideUpWrapper delay={0.1} className="mt-8">
@@ -93,7 +95,7 @@ export const CampaignManager = React.forwardRef<
 
           <div className="mt-8 w-full lg:sticky lg:top-20 lg:mt-0 lg:w-1/3 lg:self-start">
             <SlideUpWrapper>
-              <CampaignActionForm />
+              <ActionForm />
             </SlideUpWrapper>
           </div>
         </div>
