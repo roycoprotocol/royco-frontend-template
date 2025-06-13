@@ -9,17 +9,22 @@ import { PrimaryLabel } from "@/app/_components/common/custom-labels";
 const requirements = [
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
-    description: "Hold TacUSD on Ethereum Mainnet",
+    description:
+      "Maintain a minimum time-weighted average balance of required tokens",
+  },
+  {
+    icon: <Check className="h-5 w-5 text-_primary_" />,
+    description: "Provide liquidity in designated concentrated liquidity pools",
   },
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description:
-      "Vault can only call functions whitelisted by both VEDA and Royco.",
+      "Participate in lending or borrowing activities on supported protocols",
   },
   {
     icon: <Check className="h-5 w-5 text-_primary_" />,
     description:
-      "Vault will never swap into assets that are not 1:1 with principle.",
+      "Meet the minimum duration requirement for campaign participation",
   },
 ];
 
