@@ -56,7 +56,7 @@ export const MarketFilter = React.forwardRef<
 
           <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
             Take control. Royco Markets empower you to allocate and directly
-            negotiate better rates—on your terms.
+            negotiate better rates — on your terms.
           </SecondaryLabel>
         </div>
 

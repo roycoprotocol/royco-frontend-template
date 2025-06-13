@@ -6,6 +6,8 @@ import { MarketTable } from "../components/market-table/market-table";
 import { MarketFilter } from "../components/market-filter/market-filter";
 import { VaultsTable } from "../components/vaults-table/vaults-table";
 import { HeroSection } from "../components/hero-section/hero-section";
+import { VaultsFilter } from "../components/vaults-filter/vaults-filter";
+import { ExploreWrapper } from "../provider/explore-wrapper";
 
 const Page = () => {
   return (
@@ -32,17 +34,26 @@ const Page = () => {
             <HeroSection />
           </div>
 
-          <div className="mt-12">
-            <VaultsTable />
-          </div>
+          <ExploreWrapper>
+            <div className="mt-6">
+              <div>
+                <VaultsFilter />
+              </div>
 
-          <div className="mt-12">
-            <MarketFilter />
-          </div>
+              <div className="mt-6">
+                <VaultsTable />
+              </div>
+            </div>
 
-          <div className="mt-6">
-            <MarketTable />
-          </div>
+            <div className="mt-16">
+              <div>
+                <MarketFilter />
+              </div>
+              <div className="mt-6">
+                <MarketTable />
+              </div>
+            </div>
+          </ExploreWrapper>
         </MaxWidthProvider>
       </div>
     </ProtectorProvider>

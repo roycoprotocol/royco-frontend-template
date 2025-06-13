@@ -13,12 +13,12 @@ const Page = () => {
   const { market_type } = useParams();
 
   return (
-    <MarketManagerStoreProvider>
-      <div className="hide-scrollbar min-h-screen bg-_surface_">
-        <MaxWidthProvider className="relative z-10 pb-5">
-          {Number(market_type) === 2 ? (
-            <CampaignManager />
-          ) : (
+    <div className="hide-scrollbar min-h-screen bg-_surface_">
+      <MaxWidthProvider className="relative z-10 pb-5">
+        {Number(market_type) === 2 ? (
+          <CampaignManager />
+        ) : (
+          <MarketManagerStoreProvider>
             <div
               className={cn(
                 "flex min-h-screen w-full flex-col items-center p-12",
@@ -27,12 +27,12 @@ const Page = () => {
             >
               <MarketManager />
             </div>
-          )}
 
-          <TransactionModal />
-        </MaxWidthProvider>
-      </div>
-    </MarketManagerStoreProvider>
+            <TransactionModal />
+          </MarketManagerStoreProvider>
+        )}
+      </MaxWidthProvider>
+    </div>
   );
 };
 

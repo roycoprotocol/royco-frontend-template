@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,33 +19,7 @@ import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
 import { SuccessIcon } from "@/assets/icons/success";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMarketManager } from "@/store/market/use-market-manager";
-
-const DropdownAnimationWrapper = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ children, className, ...props }, ref) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      style={{ overflow: "hidden" }}
-    >
-      <motion.div
-        initial={{ y: -10 }}
-        animate={{ y: 0 }}
-        exit={{ y: -10 }}
-        transition={{ duration: 0.3 }}
-        ref={ref}
-        className={cn(className)}
-      >
-        {children}
-      </motion.div>
-    </motion.div>
-  );
-});
+import { useTransactionManager } from "@/store/global/use-transaction-manager";
 
 interface TransactionModalProps extends React.HTMLAttributes<HTMLDivElement> {
   onSuccess?: () => void;
@@ -58,11 +31,12 @@ export const TransactionModal = React.forwardRef<
   TransactionModalProps
 >(({ className, onSuccess, onError, ...props }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { transactions, setTransactions } = useMarketManager();
+  const { transactions, setTransactions } = useTransactionManager();
 
   useEffect(() => {
-    setIsOpen(transactions !== null && transactions !== undefined);
-
+    if (transactions !== null && transactions !== undefined) {
+      setIsOpen(true);
+    }
     if (transactions === null || transactions === undefined) {
       setIsOpen(false);
     }
@@ -72,11 +46,9 @@ export const TransactionModal = React.forwardRef<
     if (transactions === null || transactions === undefined) {
       return null;
     }
-
     if (transactions.steps && transactions.steps.length === 0) {
       return null;
     }
-
     return transactions.steps.find((step: any) => step.txStatus !== "success");
   }, [transactions]);
 
@@ -127,9 +99,6 @@ export const TransactionModal = React.forwardRef<
           }}
         >
           <ScrollArea className="max-h-[90vh] p-4">
-            {/**
-             * Transaction Header
-             */}
             <DialogHeader>
               <div className={cn("flex flex-col items-start gap-2")}>
                 {isTxSuccess && (
@@ -144,59 +113,55 @@ export const TransactionModal = React.forwardRef<
                   layoutId={`transaction-modal-title-${isTxSuccess}`}
                 >
                   <DialogTitle className="text-2xl font-medium">
-                    {isTxSuccess
-                      ? transactions?.successTitle
-                      : transactions?.title}
+                    {!isTxSuccess && (transactions?.title || "Transaction")}
+                    {isTxSuccess &&
+                      (transactions?.successTitle || "Transaction Success")}
                   </DialogTitle>
                 </SlideUpWrapper>
 
-                <SlideUpWrapper
-                  layoutId={`transaction-modal-token-displayer-${isTxSuccess}`}
-                >
-                  <div className="flex items-center gap-1">
-                    <TokenDisplayer
-                      size={6}
-                      tokens={[transactions?.token.data]}
-                      symbols={false}
-                    />
+                {transactions?.token && (
+                  <SlideUpWrapper
+                    layoutId={`transaction-modal-token-displayer-${isTxSuccess}`}
+                  >
+                    <div className="flex items-center gap-1">
+                      <TokenDisplayer
+                        size={6}
+                        tokens={[transactions?.token.data]}
+                        symbols={false}
+                      />
 
-                    <span className="text-2xl font-medium text-_primary_">
-                      {formatNumber(transactions?.token.amount, {
-                        type: "number",
-                      })}
-                    </span>
+                      <span className="text-2xl font-medium text-_primary_">
+                        {formatNumber(transactions?.token.amount, {
+                          type: "number",
+                        })}
+                      </span>
 
-                    <span className="text-2xl font-medium text-_primary_">
-                      {transactions?.token.data.symbol}
-                    </span>
-                  </div>
-                </SlideUpWrapper>
+                      <span className="text-2xl font-medium text-_primary_">
+                        {transactions?.token.data.symbol}
+                      </span>
+                    </div>
+                  </SlideUpWrapper>
+                )}
               </div>
             </DialogHeader>
 
-            {/**
-             * Transaction Description
-             */}
             {transactions?.description && (
               <SecondaryLabel className="mt-3 break-normal text-base font-normal text-_secondary_">
                 {transactions?.description}
               </SecondaryLabel>
             )}
 
-            {/**
-             * Transaction Metadata
-             */}
             {!isTxSuccess &&
-              transactions?.metadata &&
-              transactions?.metadata.length > 0 && (
+              transactions?.info &&
+              transactions?.info.length > 0 && (
                 <div className="mt-6">
                   <SecondaryLabel className="text-xs font-medium tracking-wide">
                     DETAILS
                   </SecondaryLabel>
 
                   <div className="mt-3 flex flex-col gap-3">
-                    {transactions?.metadata?.map((item: any) => (
-                      <div className="flex justify-between gap-1">
+                    {transactions.info.map((item, index) => (
+                      <div key={index} className="flex justify-between gap-1">
                         <SecondaryLabel className="text-base font-normal text-_secondary_">
                           {item.label}
                         </SecondaryLabel>
@@ -210,50 +175,39 @@ export const TransactionModal = React.forwardRef<
                 </div>
               )}
 
-            {transactions && transactions.warnings && (
+            {!isTxSuccess && transactions?.warning && (
               <div className="mt-3 rounded-sm border border-_divider_ p-4">
                 <SecondaryLabel className="break-normal text-base">
-                  {transactions.warnings}
+                  {transactions.warning}
                 </SecondaryLabel>
               </div>
             )}
 
-            {/**
-             * Transaction Breakdown
-             */}
-            {transactions &&
-              transactions.steps &&
-              transactions.steps.length > 0 && (
-                <div className="mt-6">
-                  <SecondaryLabel className="text-xs font-medium tracking-wide">
-                    TRANSACTION STEPS
-                  </SecondaryLabel>
+            {transactions?.steps && transactions?.steps.length > 0 && (
+              <div className="mt-6">
+                <SecondaryLabel className="text-xs font-medium tracking-wide">
+                  TRANSACTION STEPS
+                </SecondaryLabel>
 
-                  <DropdownAnimationWrapper>
-                    <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
-                      <div className={cn("flex flex-col gap-2")}>
-                        {transactions.steps.map(
-                          (txOptions: any, txIndex: any) => {
-                            const key = `transaction:${txOptions.id}`;
-                            return (
-                              <TransactionRow
-                                key={key}
-                                transactionIndex={txIndex + 1}
-                                isSelected={
-                                  transaction?.type === txOptions.type
-                                }
-                                transaction={txOptions}
-                                onSuccess={onSuccess}
-                                onError={onError}
-                              />
-                            );
-                          }
-                        )}
-                      </div>
-                    </div>
-                  </DropdownAnimationWrapper>
+                <div className="mt-3 flex max-h-[50vh] flex-col gap-2 overflow-y-scroll">
+                  <div className={cn("flex flex-col gap-2")}>
+                    {transactions.steps.map((txOptions: any, txIndex: any) => {
+                      const key = `transaction:${txOptions.id}`;
+                      return (
+                        <TransactionRow
+                          key={key}
+                          transactionIndex={txIndex + 1}
+                          isSelected={transaction?.type === txOptions.type}
+                          transaction={txOptions}
+                          onSuccess={onSuccess}
+                          onError={onError}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
+              </div>
+            )}
 
             {isTxSuccess && (
               <Button
@@ -266,9 +220,6 @@ export const TransactionModal = React.forwardRef<
               </Button>
             )}
 
-            {/**
-             * Transaction Keep Window Open
-             */}
             {!isTxSuccess && (
               <SecondaryLabel className="mt-6 justify-center text-xs font-normal">
                 Keep window open until complete.
