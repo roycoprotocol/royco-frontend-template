@@ -75,8 +75,8 @@ export const ConnectWalletProvider = ({
       }
 
       openConnectModal?.();
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 

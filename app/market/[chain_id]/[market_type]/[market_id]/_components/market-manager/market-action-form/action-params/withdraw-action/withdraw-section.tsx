@@ -11,6 +11,7 @@ import { WithdrawTypeSelector } from "./withdraw-type-selector";
 import { VaultWithdrawModal } from "./vault-withdraw-modal";
 import {
   loadableEnrichedMarketAtom,
+  loadableRecipePositionsAtom,
   loadableSpecificRecipePositionAtom,
   loadableSpecificVaultPositionAtom,
 } from "@/store/market";
@@ -175,11 +176,13 @@ export const WithdrawSection = React.forwardRef<
                               !position.isUnlocked
                             ) {
                               txOptions = forfeitRecipePositionTxOptions({
+                                rawMarketRefId: enrichedMarket.id,
                                 chainId: position.chainId,
                                 weirollWallet: position.weirollWallet,
                               });
                             } else {
                               txOptions = withdrawRecipeInputTokenTxOptions({
+                                rawMarketRefId: enrichedMarket.id,
                                 chainId: position.chainId,
                                 weirollWallet: position.weirollWallet,
                               });
