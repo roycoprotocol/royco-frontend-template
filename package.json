@@ -130,6 +130,7 @@
     "react-use-measure": "^2.1.1",
     "react-waypoint": "^10.3.0",
     "recharts": "^2.12.7",
+    "rehype-raw": "^7.0.0",
     "resend": "^4.1.1",
     "royco": "^0.10.239",
     "sonner": "^1.7.2",

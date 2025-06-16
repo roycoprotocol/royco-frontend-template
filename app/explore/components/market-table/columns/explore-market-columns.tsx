@@ -14,7 +14,9 @@ import {
   DatabaseIcon,
   MoveDownIcon,
   MoveUpIcon,
+  ScaleIcon,
   SparklesIcon,
+  LineChartIcon,
 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -36,7 +38,7 @@ import NumberFlow from "@number-flow/react";
 import { ContentFlow } from "@/components/animations/content-flow";
 import { AnnualYieldAssumption } from "@/app/vault/common/annual-yield-assumption";
 import { CustomProgress } from "@/app/vault/common/custom-progress";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { marketSortAtom } from "@/store/explore/explore-market";
 import formatNumber from "@/utils/numbers";
 import { TokenDisplayer } from "@/app/_components/common/token-displayer";
@@ -44,6 +46,7 @@ import {
   formatLockupTime,
   formatLockupTimeAbbreviated,
 } from "@/utils/lockup-time";
+import { tagAtom } from "@/store/protector/protector";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
@@ -83,6 +86,11 @@ export const exploreMarketColumnNames = {
   },
   appType: { label: "Gem Allocation", type: ["sonic"] },
   poolType: { label: "Pool Type", type: ["boyco"] },
+  inputTokenTag: {
+    label: "Asset Type",
+    icon: <LineChartIcon className="h-3 w-3" />,
+    type: ["plume"],
+  },
 };
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
@@ -422,6 +430,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       },
       meta: "min-w-48 w-52",
       cell: ({ row }) => {
+        const tag = useAtomValue(tagAtom);
         const incentives = row.original.tokenIncentives;
 
         return (
@@ -433,7 +442,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                 >
                   <div className="flex items-center gap-1">
                     <PrimaryLabel className="text-base font-normal text-_primary_">
-                      {"+ "}
+                      {tag === "plume" ? "" : "+"}
                       {formatNumber(
                         row.original.tokenYieldRate,
                         {
@@ -679,7 +688,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
     {
       accessorKey: "appType",
       enableResizing: false,
-      enableSorting: false,
+      enableSorting: true,
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
@@ -777,6 +786,34 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                   {marketMultiplier}x
                 </SecondaryLabel>
               )}
+            </div>
+          </ContentFlow>
+        );
+      },
+    },
+    {
+      accessorKey: "inputTokenTag",
+      enableResizing: false,
+      enableSorting: false,
+      header: ({ column }: { column: any }) => {
+        return <HeaderWrapper column={column} />;
+      },
+      meta: "min-w-40 w-52",
+      cell: ({ row }) => {
+        const inputTokenTag = row.original.inputToken.tag;
+
+        let formattedInputTokenTag = "-";
+
+        if (inputTokenTag === "stable") {
+          formattedInputTokenTag = "Stable";
+        } else if (inputTokenTag === "volatile") {
+          formattedInputTokenTag = "Volatile";
+        }
+
+        return (
+          <ContentFlow customKey={row.original.id}>
+            <div className={cn("flex flex-row items-center gap-2")}>
+              <span className="leading-5">{formattedInputTokenTag}</span>
             </div>
           </ContentFlow>
         );

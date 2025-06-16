@@ -68,6 +68,7 @@ export const exploreColumnNames = {
   pool_type: "Pool Type",
   app_type: "Gem Allocation",
   quantity_ip_usd: "Fillable",
+  inputTokenTag: "Asset Type",
 };
 
 export const exploreColumnTooltips = {

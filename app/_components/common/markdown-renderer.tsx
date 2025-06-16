@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 export const MdxComponents: Components = {
   p: ({ node, ...props }) => <p {...props} className="text-inherit" />,
@@ -41,11 +42,14 @@ export const MdxComponents: Components = {
       );
     }
   },
+  br: ({ node, ...props }) => <br {...props} className="" />,
 };
 
 export const MarkdownRenderer = ({ children }: { children: string }) => {
   return (
-    <ReactMarkdown components={MdxComponents}>{String(children)}</ReactMarkdown>
+    <ReactMarkdown components={MdxComponents} rehypePlugins={[rehypeRaw]}>
+      {String(children)}
+    </ReactMarkdown>
   );
 };
 

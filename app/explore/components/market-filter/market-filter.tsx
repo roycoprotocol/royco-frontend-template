@@ -25,6 +25,7 @@ import { HideColumnsSelector } from "./hide-columns-selector";
 import { IncentiveAssetFilter } from "./filters/incentive-asset-filter";
 import { Switch } from "@/components/ui/switch";
 import { usePathname } from "next/navigation";
+import { InputTokenTagFilter } from "./filters/input-token-tag-filter";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
@@ -93,6 +94,8 @@ export const MarketFilter = React.forwardRef<
           {tag === "boyco" && <PoolTypeFilter />}
 
           {tag === "sonic" && <AppTypeFilter />}
+
+          {tag === "plume" && <InputTokenTagFilter />}
 
           <HideColumnsSelector />
 
