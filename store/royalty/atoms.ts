@@ -11,7 +11,9 @@ export const lodableExpectedRankAtom = atomWithQuery((get) => ({
   queryKey: [
     "expected-rank",
     {
-      wallets: get(connectedWalletsAtom).map((wallet) => wallet.id),
+      balanceUsd: get(connectedWalletsAtom).reduce((acc, curr) => {
+        return acc + curr.balanceUsd;
+      }, 0),
     },
   ],
   queryFn: async () => {
