@@ -264,6 +264,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                           type: "percent",
                         },
                         {
+                          average: false,
                           mantissa: 2,
                         }
                       )}
@@ -373,6 +374,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                           type: "percent",
                         },
                         {
+                          average: false,
                           mantissa: 2,
                         }
                       )}
@@ -428,7 +430,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
       header: ({ column }: { column: any }) => {
         return <HeaderWrapper column={column} />;
       },
-      meta: "min-w-48 w-52",
+      meta: "min-w-52 w-52",
       cell: ({ row }) => {
         const tag = useAtomValue(tagAtom);
         const incentives = row.original.tokenIncentives;
@@ -449,6 +451,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                           type: "percent",
                         },
                         {
+                          average: false,
                           mantissa: 2,
                         }
                       )}
@@ -524,6 +527,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
                           type: "percent",
                         },
                         {
+                          average: false,
                           mantissa: 2,
                         }
                       )}
