@@ -43,6 +43,30 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
     return createAuthenticationAdapter({
       getNonce: async () => {
         const response = await api.authControllerGetNonce();
+
+        if (response.data.isAlreadyLoggedIn) {
+          setAuthenticationStatus("authenticated");
+          queryClient.refetchQueries({ queryKey: ["userInfo"] });
+          setLinkWallet(undefined);
+
+          // Save wallet info
+          const existingWalletIndex = connectedWallets.findIndex(
+            (wallet) => wallet.id === response.data.walletInfo.id
+          );
+          let newConnectedWallets = connectedWallets;
+
+          if (existingWalletIndex !== -1) {
+            newConnectedWallets[existingWalletIndex].balanceUsd =
+              response.data.walletInfo.balanceUsd;
+          } else {
+            newConnectedWallets.push({
+              ...response.data.walletInfo,
+              signature: response.data.signature,
+            });
+          }
+          setConnectedWallets(newConnectedWallets);
+        }
+
         return response.data.nonce;
       },
 
