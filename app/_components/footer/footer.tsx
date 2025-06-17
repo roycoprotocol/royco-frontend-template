@@ -51,7 +51,7 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
         )}
         {...props}
       >
-        <MaxWidthProvider className="flex h-16 items-center">
+        <MaxWidthProvider className="flex min-h-16 items-center py-3">
           <div className="flex flex-row flex-wrap items-center justify-between gap-5">
             <div className="flex shrink-0 items-center gap-10">
               {Links.map((item, index) => {
