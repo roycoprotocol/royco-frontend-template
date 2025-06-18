@@ -18,9 +18,9 @@ export const marketIdAtom = atom((get) => {
 
   // market url: /market/[chain_id]/[market_type]/[market_id]
   if (segments.length >= 4 && segments[0] === "market") {
-    const chainId = segments[1];
-    const marketType = segments[2];
-    const marketId = segments[3];
+    const chainId = Number(segments[1]);
+    const marketType = Number(segments[2]);
+    const marketId = segments[3].toLowerCase();
 
     return `${chainId}_${marketType}_${marketId}`;
   }
