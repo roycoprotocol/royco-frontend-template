@@ -152,11 +152,11 @@ export const MarketDetails = React.forwardRef<
                   symbolClassName="text-xs font-medium"
                   size={4}
                 />
-                <span>
+                {/* <span>
                   {shortAddress(
                     enrichedMarket?.inputToken?.contractAddress ?? ""
                   )}
-                </span>
+                </span> */}
                 <ExternalLinkIcon
                   strokeWidth={1.5}
                   className={cn("h-[18px] w-[18px] text-secondary")}
