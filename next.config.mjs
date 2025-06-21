@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  i18n: {
+    locales: ["en-US"],
+    defaultLocale: "en-US",
+  },
+
   /**
    * @description Web3Modal requirement for SSR
    * @see {@link https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration}

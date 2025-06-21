@@ -1,5 +1,6 @@
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { TextReplacer } from "@/components/composables/text-replacer";
 
 import { Inter, Shippori_Mincho_B1, Fragment_Mono } from "next/font/google";
 import localFont from "next/font/local";
@@ -94,7 +95,7 @@ export default function RootLayout({
   return (
     <RoycoClientProvider>
       <TooltipProvider delayDuration={0}>
-        <html lang="en">
+        <html lang="en-US">
           <body
             suppressHydrationWarning
             className={cn(
@@ -126,6 +127,8 @@ export default function RootLayout({
             <Toaster />
 
             <Analytics />
+
+            <TextReplacer />
           </body>
         </html>
       </TooltipProvider>
