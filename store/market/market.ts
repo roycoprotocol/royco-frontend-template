@@ -6,7 +6,7 @@ import {
   EnrichedMarketV2,
   V2PositionResponse,
 } from "royco/api";
-import { accountAddressAtom } from "../global";
+import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
 import { atomWithLocation } from "jotai-location";
 import { defaultQueryOptions } from "@/utils/query";
 
@@ -18,9 +18,9 @@ export const marketIdAtom = atom((get) => {
 
   // market url: /market/[chain_id]/[market_type]/[market_id]
   if (segments.length >= 4 && segments[0] === "market") {
-    const chainId = segments[1];
-    const marketType = segments[2];
-    const marketId = segments[3];
+    const chainId = Number(segments[1]);
+    const marketType = Number(segments[2]);
+    const marketId = segments[3].toLowerCase();
 
     return `${chainId}_${marketType}_${marketId}`;
   }
@@ -58,7 +58,11 @@ export const loadableCampaignMarketPositionAtom =
   atomWithQuery<V2PositionResponse>((get) => ({
     queryKey: [
       "market-position",
-      { address: get(accountAddressAtom), marketId: get(marketIdAtom) },
+      {
+        address: get(accountAddressAtom),
+        marketId: get(marketIdAtom),
+        refresh: get(lastRefreshTimestampAtom),
+      },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
       const _params = params as any;

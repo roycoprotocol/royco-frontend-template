@@ -173,7 +173,7 @@ export const IncentiveTokenDetails = React.forwardRef<
         ) : (
           <>
             {category === "base" ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-start justify-end gap-1">
                 <Tooltip>
                   <TooltipTrigger className={cn("cursor-pointer")}>
                     {(() => {
@@ -185,7 +185,9 @@ export const IncentiveTokenDetails = React.forwardRef<
                         return (
                           <SparkleIcon
                             className="h-5 w-5"
-                            style={{ fill: tokenColor || DEFAULT_TOKEN_COLOR }}
+                            style={{
+                              fill: tokenColor || DEFAULT_TOKEN_COLOR,
+                            }}
                           />
                         );
                       }
@@ -219,8 +221,8 @@ export const IncentiveTokenDetails = React.forwardRef<
                   )}
                 </Tooltip>
 
-                <span
-                  className="flex h-5 items-center font-medium"
+                <div
+                  className="whitespace-nowrap text-right font-medium"
                   style={{ color: tokenColor || DEFAULT_TOKEN_COLOR }}
                 >
                   {token_data.yieldRate >= 0 ? "+" : "-"}
@@ -228,7 +230,7 @@ export const IncentiveTokenDetails = React.forwardRef<
                     type: "percent",
                   })}
                   {" APY"}
-                </span>
+                </div>
               </div>
             ) : (
               <div className="flex gap-1">

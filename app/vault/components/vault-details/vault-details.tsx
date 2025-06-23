@@ -42,7 +42,7 @@ export const VaultDetails = React.forwardRef<
             {data.description}
           </SecondaryLabel>
 
-          <div className="mt-4 flex items-center divide-x divide-_divider_">
+          <div className="mt-4 flex flex-wrap items-center gap-y-3 divide-x divide-_divider_">
             {data.managers &&
               data.managers.length > 0 &&
               data.managers.map((manager, index) => {
