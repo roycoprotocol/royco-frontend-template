@@ -20,6 +20,8 @@ import { SlideUpWrapper } from "@/components/animations";
 import { SuccessIcon } from "@/assets/icons/success";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTransactionManager } from "@/store/global/use-transaction-manager";
+import { useSetAtom } from "jotai";
+import { lastRefreshTimestampAtom } from "@/store/global";
 
 interface TransactionModalProps extends React.HTMLAttributes<HTMLDivElement> {
   onSuccess?: () => void;
@@ -32,6 +34,8 @@ export const TransactionModal = React.forwardRef<
 >(({ className, onSuccess, onError, ...props }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const { transactions, setTransactions } = useTransactionManager();
+
+  const setLastRefreshTimestamp = useSetAtom(lastRefreshTimestampAtom);
 
   useEffect(() => {
     if (transactions !== null && transactions !== undefined) {
@@ -199,8 +203,14 @@ export const TransactionModal = React.forwardRef<
                           transactionIndex={txIndex + 1}
                           isSelected={transaction?.type === txOptions.type}
                           transaction={txOptions}
-                          onSuccess={onSuccess}
-                          onError={onError}
+                          onSuccess={() => {
+                            setLastRefreshTimestamp(Date.now());
+                            onSuccess?.();
+                          }}
+                          onError={() => {
+                            setLastRefreshTimestamp(Date.now());
+                            onError?.();
+                          }}
                         />
                       );
                     })}
