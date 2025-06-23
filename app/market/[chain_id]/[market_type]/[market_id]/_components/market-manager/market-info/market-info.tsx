@@ -104,7 +104,7 @@ export const MarketInfo = React.forwardRef<
         {/**
          * Token Estimate
          */}
-        {enrichedMarket?.chainId !== Plume.id && (
+        {enrichedMarket?.chainId !== Plume.id && pointTokenIds.length > 0 && (
           <div className="mt-2">
             <TokenEstimator
               defaultTokenId={pointTokenIds}
