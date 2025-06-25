@@ -1,10 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useState } from "react";
 import { MaxWidthProvider } from "@/app/_containers/providers/max-width-provider";
 import { TwitterIcon } from "@/assets/icons/twitter";
 import { TelegramIcon } from "@/assets/icons/telegram";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { LifeBuoyIcon, MailIcon } from "lucide-react";
 
 const Links = [
   {
@@ -42,6 +48,8 @@ interface FooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
   ({ className, ...props }, ref) => {
+    const [isSupportTooltipOpen, setIsSupportTooltipOpen] = useState(false);
+
     return (
       <div
         ref={ref}
@@ -72,7 +80,7 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
               })}
             </div>
 
-            <div className="flex shrink-0  items-center gap-6">
+            <div className="flex shrink-0 items-center gap-6">
               {Socials.map((item, index) => {
                 return (
                   <a
@@ -89,6 +97,68 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
                   </a>
                 );
               })}
+
+              <Tooltip
+                delayDuration={0}
+                open={isSupportTooltipOpen}
+                onOpenChange={setIsSupportTooltipOpen}
+              >
+                <TooltipTrigger asChild>
+                  <span>
+                    <LifeBuoyIcon
+                      onClick={() =>
+                        setIsSupportTooltipOpen(!isSupportTooltipOpen)
+                      }
+                      className={cn(
+                        "h-5 w-5 cursor-pointer text-_tertiary_ hover:text-_primary_",
+                        "transition-all duration-200 ease-in-out"
+                      )}
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  align="end"
+                  className="flex min-w-[220px] flex-col gap-1 rounded-sm border border-divider bg-_surface_ p-2 shadow-lg"
+                >
+                  <a
+                    href="mailto:support@royco.org"
+                    className={cn(
+                      "group flex items-center gap-3 rounded p-2 hover:bg-gray-100",
+                      "transition-all duration-200 ease-in-out"
+                    )}
+                  >
+                    <MailIcon className="h-4 w-6 text-_tertiary_" />
+                    <span
+                      className={cn(
+                        "text-sm font-normal text-_tertiary_ group-hover:text-_primary_",
+                        "transition-all duration-200 ease-in-out"
+                      )}
+                    >
+                      support@royco.org
+                    </span>
+                  </a>
+                  <a
+                    href="https://t.me/royco_support_bot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "group flex items-center gap-3 rounded p-2 hover:bg-gray-100",
+                      "transition-all duration-200 ease-in-out"
+                    )}
+                  >
+                    <TelegramIcon className="h-6 w-6 text-_tertiary_" />
+                    <span
+                      className={cn(
+                        "text-sm font-normal text-_tertiary_ group-hover:text-_primary_",
+                        "transition-all duration-200 ease-in-out"
+                      )}
+                    >
+                      Support Bot
+                    </span>
+                  </a>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </MaxWidthProvider>
