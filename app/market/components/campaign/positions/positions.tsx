@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SlideUpWrapper } from "@/components/animations";
 import { Rewards } from "./rewards/rewards";
-import { DepositsManager } from "./deposits/deposits-manager";
+import { Deposits } from "./deposits/deposits";
 
 export const Positions = React.forwardRef<
   HTMLDivElement,
@@ -12,16 +12,10 @@ export const Positions = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <div ref={ref} {...props} className={cn("", className)}>
-      {/**
-       * Deposits
-       */}
       <SlideUpWrapper delay={0.2}>
-        <DepositsManager />
+        <Deposits />
       </SlideUpWrapper>
 
-      {/**
-       * Rewards
-       */}
       <SlideUpWrapper className="mt-12" delay={0.3}>
         <Rewards />
       </SlideUpWrapper>

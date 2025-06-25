@@ -221,7 +221,7 @@ export const exploreMarketColumns: ColumnDef<ExploreMarketColumnDataElement>[] =
             <div className={cn("flex items-center gap-3")}>
               <TokenDisplayer
                 size={6}
-                tokens={[row.original.inputToken]}
+                tokens={row.original.inputTokens}
                 showSymbol={false}
                 showChain={true}
               />

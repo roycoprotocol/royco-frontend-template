@@ -2,12 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useAtomValue } from "jotai";
-
 import { cn } from "@/lib/utils";
-import {
-  PrimaryLabel,
-  SecondaryLabel,
-} from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { SlideUpWrapper } from "@/components/animations";
 import { AlertIndicator, TokenDisplayer } from "@/components/common";
@@ -15,91 +10,64 @@ import { Button } from "@/components/ui/button";
 import { loadableCampaignMarketPositionAtom } from "@/store/market/market";
 import { GradientText } from "@/app/vault/common/gradient-text";
 import { BaseEnrichedTokenDataWithClaimInfo } from "royco/api";
-import { accountAddressAtom } from "@/store/global";
 import { useCampaignActions } from "@/app/market/provider/campaign-action-provider";
-import { ErrorAlert } from "@/components/composables";
-import toast from "react-hot-toast";
 import {
-  MarketTransactionType,
-  useMarketManager,
-} from "@/store/market/use-market-manager";
+  PrimaryLabel,
+  TertiaryLabel,
+} from "@/app/_components/common/custom-labels";
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
+import { useTransactionManager } from "@/store/global/use-transaction-manager";
 
-export const Rewards = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const accountAddress = useAtomValue(accountAddressAtom);
-  const { data: propData } = useAtomValue(loadableCampaignMarketPositionAtom);
-  const { setTransactions } = useMarketManager();
+interface RewardsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-  const { getClaimIncentiveTransaction } = useCampaignActions();
+export const Rewards = React.forwardRef<HTMLDivElement, RewardsProps>(
+  ({ className, ...props }, ref) => {
+    const { setTransactions } = useTransactionManager();
 
-  const incentives = useMemo(() => {
-    return {
-      data:
-        (propData?.data[0]
-          ?.unclaimedIncentiveTokens as unknown as BaseEnrichedTokenDataWithClaimInfo[]) ||
-        [],
-    };
-  }, [propData]);
+    const { isLoading, data: propData } = useAtomValue(
+      loadableCampaignMarketPositionAtom
+    );
 
-  const handleClaimIncentive = async (
-    incentive: BaseEnrichedTokenDataWithClaimInfo
-  ) => {
-    if (accountAddress) {
-      if (!incentive) {
-        toast.custom(<ErrorAlert message="Incentive is required" />);
-        return;
-      }
+    const { getClaimIncentiveTransaction } = useCampaignActions();
 
-      const claimIncentiveTransactions =
+    const incentives = useMemo(() => {
+      return {
+        data: propData?.data[0]?.unclaimedIncentiveTokens || [],
+      };
+    }, [propData]);
+
+    const handleClaimIncentive = async (
+      incentive: BaseEnrichedTokenDataWithClaimInfo
+    ) => {
+      const claimIncentiveTransaction =
         await getClaimIncentiveTransaction(incentive);
 
-      if (
-        claimIncentiveTransactions &&
-        claimIncentiveTransactions.steps.length > 0
-      ) {
-        const transactions = {
-          type: MarketTransactionType.ClaimIncentives,
-          title: "Claim Incentive",
-          successTitle: "Incentive Claimed",
-          description: claimIncentiveTransactions.description,
-          steps: claimIncentiveTransactions.steps,
-          metadata: claimIncentiveTransactions.metadata,
-          warnings: claimIncentiveTransactions.warnings,
-          token: {
-            data: incentive,
-            amount: incentive.tokenAmount,
-          },
-        };
-
-        setTransactions(transactions);
+      if (claimIncentiveTransaction) {
+        setTransactions({ ...claimIncentiveTransaction });
       }
-    }
-  };
+    };
 
-  return (
-    <div ref={ref} {...props} className={cn(className)}>
-      <PrimaryLabel className="text-2xl font-medium  text-_primary_">
-        Rewards
-      </PrimaryLabel>
+    return (
+      <div ref={ref} {...props} className={cn(className)}>
+        <PrimaryLabel>Rewards</PrimaryLabel>
 
-      {/**
-       * Token Rewards
-       */}
+        {isLoading ? (
+          <div className="mt-4 rounded-sm border border-_divider_">
+            <LoadingIndicator />
+          </div>
+        ) : !incentives.data || incentives.data.length === 0 ? (
+          <AlertIndicator className="mt-4 rounded-sm border border-_divider_ py-10">
+            <span className="text-base">No reward distributions yet.</span>
+          </AlertIndicator>
+        ) : (
+          <div className="mt-4">
+            <TertiaryLabel>TOKENS</TertiaryLabel>
 
-      {incentives.data.length ? (
-        <div>
-          {(incentives.data && incentives.data.length) > 0 && (
-            <div className="mt-7">
-              <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
-                TOKENS
-              </SecondaryLabel>
-
+            <div className="mt-2">
               {incentives.data.map((incentive, index) => (
                 <SlideUpWrapper key={index} delay={0.2 + index * 0.1}>
                   <div className="flex items-center justify-between border-b border-_divider_ py-4">
-                    <PrimaryLabel className="text-base font-normal text-_primary_">
+                    <PrimaryLabel className="text-base font-normal">
                       <div className="flex items-center gap-3">
                         <TokenDisplayer
                           size={6}
@@ -147,13 +115,9 @@ export const Rewards = React.forwardRef<
                 </SlideUpWrapper>
               ))}
             </div>
-          )}
-        </div>
-      ) : (
-        <AlertIndicator className="mt-7 rounded-sm border border-_divider_ py-10">
-          <span className="text-base">No reward distributions yet.</span>
-        </AlertIndicator>
-      )}
-    </div>
-  );
-});
+          </div>
+        )}
+      </div>
+    );
+  }
+);

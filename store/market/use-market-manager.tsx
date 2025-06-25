@@ -1,17 +1,17 @@
 import { create } from "zustand";
 
-export enum TypeMarketDetailsOption {
+export enum TypeMarketDetailOption {
   Overview = "overview",
   Positions = "positions",
 }
 
-export const MarketDetailsOptionMap = {
-  [TypeMarketDetailsOption.Overview]: {
-    value: TypeMarketDetailsOption.Overview,
+export const MarketDetailOptionMap = {
+  [TypeMarketDetailOption.Overview]: {
+    value: TypeMarketDetailOption.Overview,
     label: "Overview",
   },
-  [TypeMarketDetailsOption.Positions]: {
-    value: TypeMarketDetailsOption.Positions,
+  [TypeMarketDetailOption.Positions]: {
+    value: TypeMarketDetailOption.Positions,
     label: "Your Position",
   },
 };
@@ -38,8 +38,8 @@ export type TypeMarketTransaction = {
 };
 
 export interface MarketManagerState {
-  detailsOption: TypeMarketDetailsOption;
-  setDetailsOption: (detailsOption: TypeMarketDetailsOption) => void;
+  detailOption: TypeMarketDetailOption;
+  setDetailOption: (detailOption: TypeMarketDetailOption) => void;
 
   transactions: TypeMarketTransaction;
   setTransactions: (transactions: TypeMarketTransaction) => void;
@@ -49,9 +49,9 @@ export interface MarketManagerState {
 }
 
 export const useMarketManager = create<MarketManagerState>((set) => ({
-  detailsOption: TypeMarketDetailsOption.Overview,
-  setDetailsOption: (detailsOption: TypeMarketDetailsOption) =>
-    set({ detailsOption }),
+  detailOption: TypeMarketDetailOption.Overview,
+  setDetailOption: (detailOption: TypeMarketDetailOption) =>
+    set({ detailOption }),
 
   // @ts-ignore
   transactions: null,

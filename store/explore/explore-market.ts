@@ -58,6 +58,13 @@ export const baseFilter = atom<Filter[]>((get) => {
       id: "fillableUsd",
       value: 0,
       condition: "gt",
+      join: "or",
+    });
+
+    filters.push({
+      id: "marketType",
+      value: 2,
+      join: "or",
     });
   }
 

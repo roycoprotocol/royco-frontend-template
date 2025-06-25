@@ -1,27 +1,51 @@
 import { atomWithQuery } from "jotai-tanstack-query";
-import { enrichedMarketIdAtom } from "./atoms";
 import { api } from "@/app/api/royco";
 import { atom } from "jotai";
 import {
+  EnrichedMarket,
   EnrichedMarketV2,
-  MarketControllerGetMarketData,
   V2PositionResponse,
 } from "royco/api";
-import { accountAddressAtom } from "../global";
+import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
+import { atomWithLocation } from "jotai-location";
+import { defaultQueryOptions } from "@/utils/query";
 
-export const loadableMarketMetadataAtom =
-  atomWithQuery<MarketControllerGetMarketData>((get) => ({
-    queryKey: ["market-metadata", get(enrichedMarketIdAtom)],
-    queryFn: async ({ queryKey: [, params] }) => {
-      const marketId = get(enrichedMarketIdAtom);
+// Market ID
+const locationAtom = atomWithLocation();
+export const marketIdAtom = atom((get) => {
+  const location = get(locationAtom);
+  const segments = (location.pathname || "").split("/").filter(Boolean);
 
-      const response = await api.marketControllerGetMarket(marketId as string);
-      return response.data;
-    },
-    enabled: !!get(enrichedMarketIdAtom),
-  }));
+  // market url: /market/[chain_id]/[market_type]/[market_id]
+  if (segments.length >= 4 && segments[0] === "market") {
+    const chainId = Number(segments[1]);
+    const marketType = Number(segments[2]);
+    const marketId = segments[3].toLowerCase();
 
-export const marketMetadataAtom = atom<{ data: EnrichedMarketV2 }>(
+    return `${chainId}_${marketType}_${marketId}`;
+  }
+
+  return null;
+});
+
+// Market Metadata
+export const loadableMarketMetadataAtom = atomWithQuery<
+  EnrichedMarket | EnrichedMarketV2
+>((get) => ({
+  queryKey: ["market-metadata", { marketId: get(marketIdAtom) }],
+  queryFn: async ({ queryKey: [, params] }) => {
+    const _params = params as any;
+
+    const response = await api.marketControllerGetMarket(_params.marketId);
+    return response.data;
+  },
+  enabled: !!get(marketIdAtom),
+  ...defaultQueryOptions,
+}));
+
+export const marketMetadataAtom = atom<{
+  data: EnrichedMarket | EnrichedMarketV2;
+}>(
   // @ts-ignore
   (get) => {
     const { data } = get(loadableMarketMetadataAtom);
@@ -29,11 +53,16 @@ export const marketMetadataAtom = atom<{ data: EnrichedMarketV2 }>(
   }
 );
 
+// Market Positions
 export const loadableCampaignMarketPositionAtom =
   atomWithQuery<V2PositionResponse>((get) => ({
     queryKey: [
       "market-position",
-      { address: get(accountAddressAtom), marketId: get(enrichedMarketIdAtom) },
+      {
+        address: get(accountAddressAtom),
+        marketId: get(marketIdAtom),
+        refresh: get(lastRefreshTimestampAtom),
+      },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
       const _params = params as any;
@@ -55,5 +84,6 @@ export const loadableCampaignMarketPositionAtom =
 
       return response.data;
     },
-    enabled: !!get(accountAddressAtom),
+    enabled: !!get(accountAddressAtom) && !!get(marketIdAtom),
+    ...defaultQueryOptions,
   }));
