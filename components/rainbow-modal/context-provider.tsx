@@ -45,7 +45,7 @@ export default function WalletProvider({
   try {
     initialState = cookieToInitialState(config as Config, cookies);
   } catch (error) {
-    console.warn("Failed to parse wallet state from cookies:", error);
+    // console.warn("Failed to parse wallet state from cookies:", error);
     initialState = undefined;
   }
 
