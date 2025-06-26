@@ -1,0 +1,31 @@
+diff --git a/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js b/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
+index 9b15452..068f6a4 100644
+--- a/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
++++ b/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
+@@ -29,10 +29,10 @@ var en_US_default = `{
+   },
+ 
+   "sign_in": {
+-    "label": "Verify your account",
+-    "description": "To finish connecting, you must sign a message in your wallet to verify that you are the owner of this account.",
++    "label": "Terms of Use, Privacy Policy, and Cookie Policy",
++    "description": "To proceed, review and accept the following: \n\n&#8226; You acknowledge that you have read, understood, and agreed to the Terms of Use and Privacy Policy. This site uses cookies to ensure the best user experience. These cookies are strictly necessary or essential for optimal functionality. \n&#8226; By using this site, you agree to the cookie policy.",
+     "message": {
+-      "send": "Sign message",
++      "send": "Accept",
+       "preparing": "Preparing message...",
+       "cancel": "Cancel",
+       "preparing_error": "Error preparing message, please retry!"
+diff --git a/node_modules/@rainbow-me/rainbowkit/dist/index.js b/node_modules/@rainbow-me/rainbowkit/dist/index.js
+index e401ccd..3ba87f0 100644
+--- a/node_modules/@rainbow-me/rainbowkit/dist/index.js
++++ b/node_modules/@rainbow-me/rainbowkit/dist/index.js
+@@ -2422,7 +2422,7 @@ function SignIn({
+           {
+             color: "modalTextSecondary",
+             size: mobile ? "16" : "14",
+-            textAlign: "center"
++            textAlign: "left"
+           },
+           i18n2.t("sign_in.description")
+         ),

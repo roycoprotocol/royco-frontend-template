@@ -128,7 +128,7 @@ export default function RootLayout({
 
             <Analytics />
 
-            <TextReplacer />
+            {/* <TextReplacer /> */}
           </body>
         </html>
       </TooltipProvider>

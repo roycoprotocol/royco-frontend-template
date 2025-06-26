@@ -2480,6 +2480,8 @@ export interface CampaignMetadata {
   depositLink: string;
   rewardAddress?: string;
   rewardPerHour?: string;
+  incentiveLocker?: string;
+  lastRewardAttestationTime?: string;
 }
 
 export interface EnrichedMarketV2 {
@@ -4151,6 +4153,7 @@ export interface GlobalPositionIncentiveTokenClaimInfoV2 {
   submissionContract: string;
   claimChainId: string;
   claimContract: string;
+  incentiveLocker: string;
 }
 
 export interface GlobalPositionIncentiveTokenClaimInfo {
@@ -7002,19 +7005,17 @@ export interface V2Position {
    * @example "Swap USDC to stkGHO for 1 mo"
    */
   name: string;
-  /**
-   * Input Token
-   * The input token for the position with withdraw status
-   */
-  inputToken: BaseEnrichedTokenDataWithWithdrawStatus;
-  unclaimedIncentiveTokens: BaseEnrichedTokenDataWithClaimInfo;
-  claimedIncentiveTokens: BaseEnrichedTokenData;
+  inputTokens: BaseEnrichedTokenDataWithWithdrawStatus[];
+  unclaimedIncentiveTokens: BaseEnrichedTokenDataWithClaimInfo[];
+  claimedIncentiveTokens: BaseEnrichedTokenData[];
   /**
    * Yield Rate
    * Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.
    * @example "0.1"
    */
   yieldRate: number;
+  type: string;
+  campaignMetadata: CampaignMetadata;
 }
 
 export interface V2PositionResponse {
@@ -8537,6 +8538,11 @@ export interface SimulateTransactionResponse {
   simulatedTxns: SimulatedTransaction[];
 }
 
+export interface WalletInfo {
+  id: string;
+  balanceUsd: number;
+}
+
 export interface NonceResponse {
   /**
    * Nonce for SIWE message
@@ -8553,6 +8559,15 @@ export interface NonceResponse {
    * @example "2024-03-20T12:05:00Z"
    */
   expiresAt: string;
+  /**
+   * Whether the user is already logged in
+   * @example false
+   */
+  isAlreadyLoggedIn?: boolean;
+  /** Session signature */
+  signature: string;
+  /** Wallet info */
+  walletInfo: WalletInfo;
 }
 
 export interface LoginBody {
@@ -8568,11 +8583,6 @@ export interface LoginBody {
    * @example true
    */
   linkWallet?: boolean;
-}
-
-export interface WalletInfo {
-  id: string;
-  balanceUsd: number;
 }
 
 export interface LoginResponse {
@@ -8807,4 +8817,173 @@ export interface RegisterUserBody {
 
 export interface RegisterUserResponse {
   status: boolean;
+}
+
+export interface EnrichedUserSafeInfoBody {
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+}
+
+export interface EnrichedSafeTokenizedPosition {
+  /**
+   * Raw Metadata
+   * Raw metadata
+   */
+  rawMetadata?: object;
+  /**
+   * Token ID
+   * Unique identifier for the token: chainId-contractAddress
+   * @example "1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  id: string;
+  /**
+   * Chain ID
+   * Network ID of the blockchain
+   * @example 1
+   */
+  chainId: number;
+  /**
+   * Contract Address
+   * Deployment address of the contract
+   * @example "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   */
+  contractAddress: string;
+  /**
+   * Name
+   * The name of the token
+   * @example "USDC"
+   */
+  name: string;
+  label?: string;
+  description?: string;
+  /**
+   * Symbol
+   * The symbol of the token
+   * @example "USDC"
+   */
+  symbol: string;
+  /**
+   * Image
+   * The logo of the token
+   * @example "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+   */
+  image: string;
+  /**
+   * Decimals
+   * The number of decimals of the token
+   * @example 6
+   */
+  decimals: number;
+  /**
+   * Source
+   * The source for the price feed of the token
+   * @example "coinmarketcap"
+   */
+  source:
+    | "coinmarketcap"
+    | "coingecko"
+    | "lp"
+    | "enso"
+    | "pendle"
+    | "plume"
+    | "external";
+  /**
+   * Search ID
+   * The search id for the token on the source price feed: for CoinmarketCap, it's UCID (found under metadata section of the token page) -- for Coingecko, it's token slug (found in the URL of the token page) -- for all other sources, we have a custom search id according to their price feed API schema
+   * @example "3408"
+   */
+  searchId: string;
+  /**
+   * Type
+   * The type of the token
+   * @example "token"
+   */
+  type: "token" | "point" | "lp";
+  /**
+   * Price
+   * The price of the token
+   * @example 0.99999999
+   */
+  price: number;
+  /**
+   * FDV
+   * The fully diluted valuation of the token
+   * @example 59689964490.12
+   */
+  fdv: number;
+  /**
+   * Total Supply
+   * The total supply of the token
+   * @example 59689963893.2
+   */
+  totalSupply: number;
+  /**
+   * Owner
+   * The owner of the point program token
+   * @example "0x77777cc68b333a2256b436d675e8d257699aa667"
+   */
+  owner?: string;
+  /**
+   * Issuers
+   * Authorized issuers of the point program token
+   */
+  issuers?: string[];
+  /**
+   * Sub Tokens
+   * Array of sub tokens
+   */
+  subTokens?: TokenQuote[];
+  /**
+   * Custom Token Data
+   * Array of custom token assumptions --  if not provided, the default quote data will be used.
+   */
+  customTokenData?: CustomTokenDataElement[];
+  /**
+   * Search Index
+   * Search index for the entity
+   * @example "0x6e1fcdd01bec1ac68a1a510408c844702c5793ffaf6f3117f7c42a9c555bc13d"
+   */
+  searchIndex?: string;
+  /**
+   * Last Updated
+   * The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format
+   * @example "2025-03-17 17:52:10"
+   */
+  lastUpdated: string;
+  tag?: string;
+  /**
+   * Raw Amount
+   * Amount in wei
+   * @example "10000000000"
+   */
+  rawAmount: string;
+  /**
+   * Token Amount
+   * Normalized raw amount in token decimals
+   * @example 1000
+   */
+  tokenAmount: number;
+  /**
+   * Token Amount USD
+   * Normalized raw amount in USD
+   * @example 999.99
+   */
+  tokenAmountUsd: number;
+}
+
+export interface EnrichedSafe {
+  id: string;
+  chainId: number;
+  safeAddress: string;
+  threshold: number;
+  owners: string[];
+  tokenizedPositions: EnrichedSafeTokenizedPosition[];
+}
+
+export interface EnrichedUserSafeInfo {
+  id: string;
+  safes: EnrichedSafe[];
 }
