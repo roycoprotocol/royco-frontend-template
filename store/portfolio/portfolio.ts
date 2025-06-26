@@ -37,7 +37,15 @@ export const loadableActivityAtom = atomWithQuery<ActivityResponse>((get) => ({
         : get(baseChainFilter);
 
     if (!accountAddress) {
-      throw new Error("Wallet not connected");
+      return {
+        page: {
+          index: 1,
+          size: 1,
+          total: 1,
+        },
+        count: 0,
+        data: [],
+      };
     }
 
     let filters: Filter[] = [
@@ -87,7 +95,15 @@ export const loadablePortfolioPositionsAtom =
           : get(baseChainFilter);
 
       if (!accountAddress) {
-        throw new Error("Wallet not connected");
+        return {
+          balanceUsd: 0,
+          depositBalanceUsd: 0,
+          incentiveBalanceUsd: 0,
+          incentiveTokens: [],
+          positions: [],
+          unclaimedPointTokens: [],
+          claimedPointTokens: [],
+        };
       }
 
       const _params = params as any;
@@ -119,7 +135,7 @@ export const loadablePortfolioPositionsAtom =
         .then((res) => res.data);
     },
     ...defaultQueryOptions,
-    enabled: Boolean(get(accountAddressAtom)),
+    // enabled: Boolean(get(accountAddressAtom)),
     // staleTime: (query) => {
     //   const params = query.queryKey[1] as any;
     //   return params.address === get(accountAddressAtom) ? 30000 : 0;
