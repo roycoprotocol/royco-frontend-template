@@ -41,12 +41,12 @@ export const ExploreMarketPagination = React.forwardRef<
         Page {pageIndex} of {totalPages}
       </Button>
 
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex w-fit flex-row items-center gap-2">
         {canPrevPage && (
           <Button
             disabled={!canPrevPage}
             onClick={handlePrevPage}
-            className="rounded-sm px-2"
+            className="w-fit rounded-sm px-2"
           >
             <ChevronLeftIcon
               strokeWidth={1.5}
@@ -58,7 +58,7 @@ export const ExploreMarketPagination = React.forwardRef<
         <Button
           disabled={!canNextPage}
           onClick={handleNextPage}
-          className="rounded-sm pl-4 pr-2"
+          className="w-fit rounded-sm pl-4 pr-2"
         >
           <span className="text-sm">View More Markets</span>
           <ChevronRightIcon strokeWidth={1.5} className="h-6 w-6 p-[0.15rem]" />
