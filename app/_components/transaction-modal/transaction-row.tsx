@@ -98,6 +98,8 @@ export const TransactionRow = React.forwardRef<
 
         onSuccess?.();
       } catch (error: any) {
+        console.log("error executing transaction", error);
+
         setTransactions({
           ...transactions,
           steps: transactions?.steps.map((step: any) => {

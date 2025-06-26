@@ -16,7 +16,7 @@ export const SecondaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit items-center font-gt text-sm font-normal text-secondary",
+        "flex h-fit items-center font-gt text-sm font-normal text-_secondary_",
         className
       )}
       {...props}
@@ -34,7 +34,7 @@ export const TertiaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit items-center font-gt text-xs font-light text-tertiary",
+        "flex h-fit items-center font-gt text-xs font-light text-_tertiary_",
         className
       )}
       {...props}
@@ -54,7 +54,7 @@ export const PrimaryLabel = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-fit w-fit max-w-full flex-row items-start font-gt text-lg font-medium text-black",
+        "flex h-fit w-fit max-w-full flex-row items-start font-gt text-lg font-medium text-_primary_",
         className
       )}
       {...props}

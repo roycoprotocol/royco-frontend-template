@@ -8836,12 +8836,44 @@ paths:
         - api-key-query: []
       summary: Register user
       tags: *ref_11
+  /api/v1/safe/info/{accountAddress}:
+    post:
+      description: Get user safe info by account address
+      operationId: SafeController_getEnrichedUserSafeInfo
+      parameters:
+        - name: accountAddress
+          required: true
+          in: path
+          description: Wallet address of the account
+          schema:
+            title: Account Address
+            example: '0x77777cc68b333a2256b436d675e8d257699aa667'
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichedUserSafeInfoBody'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichedUserSafeInfo'
+      security:
+        - bearer: []
+        - x-api-key: []
+        - api-key-query: []
+      summary: Get user safe info
+      tags:
+        - Safe
 info:
   title: Royco API
   description: >-
     APIs for interacting with the Royco protocol. For testing purposes, you can
-    use this public API Key:
-    8efbdc2513f31866c6f5e6aa7d1ae3506843e2a874eb9284dcb3dbb8969c77de
+    use this public API Key: ROYCO_DEMO
   version: '1.0'
   contact: {}
 tags:
@@ -11641,6 +11673,10 @@ components:
           type: string
         rewardPerHour:
           type: string
+        incentiveLocker:
+          type: string
+        lastRewardAttestationTime:
+          type: string
       required:
         - campaignId
         - protocol
@@ -13767,6 +13803,8 @@ components:
           type: string
         claimContract:
           type: string
+        incentiveLocker:
+          type: string
       required:
         - rawMarketRefId
         - cumulativeAmounts
@@ -13776,6 +13814,7 @@ components:
         - submissionContract
         - claimChainId
         - claimContract
+        - incentiveLocker
     GlobalPositionIncentiveTokenClaimInfo:
       type: object
       properties:
@@ -16919,20 +16958,27 @@ components:
           title: Name
           description: The name of the market
           example: Swap USDC to stkGHO for 1 mo
-        inputToken:
-          title: Input Token
-          description: The input token for the position with withdraw status
-          allOf:
-            - $ref: '#/components/schemas/BaseEnrichedTokenDataWithWithdrawStatus'
+        inputTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseEnrichedTokenDataWithWithdrawStatus'
         unclaimedIncentiveTokens:
-          $ref: '#/components/schemas/BaseEnrichedTokenDataWithClaimInfo'
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseEnrichedTokenDataWithClaimInfo'
         claimedIncentiveTokens:
-          $ref: '#/components/schemas/BaseEnrichedTokenData'
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseEnrichedTokenData'
         yieldRate:
           type: number
           title: Yield Rate
           description: 'Yield rate as a ratio: 0.1 = 10%, 1 = 100%, etc.'
           example: '0.1'
+        type:
+          type: string
+        campaignMetadata:
+          $ref: '#/components/schemas/CampaignMetadata'
       required:
         - id
         - rawMarketRefId
@@ -16945,10 +16991,12 @@ components:
         - blockNumber
         - blockTimestamp
         - name
-        - inputToken
+        - inputTokens
         - unclaimedIncentiveTokens
         - claimedIncentiveTokens
         - yieldRate
+        - type
+        - campaignMetadata
     V2PositionResponse:
       type: object
       properties:
@@ -18940,6 +18988,16 @@ components:
             $ref: '#/components/schemas/SimulatedTransaction'
       required:
         - simulatedTxns
+    WalletInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        balanceUsd:
+          type: number
+      required:
+        - id
+        - balanceUsd
     NonceResponse:
       type: object
       properties:
@@ -18955,10 +19013,23 @@ components:
           type: string
           description: When the nonce expires
           example: '2024-03-20T12:05:00Z'
+        isAlreadyLoggedIn:
+          type: boolean
+          description: Whether the user is already logged in
+          example: false
+        signature:
+          type: string
+          description: Session signature
+        walletInfo:
+          description: Wallet info
+          allOf:
+            - $ref: '#/components/schemas/WalletInfo'
       required:
         - nonce
         - issuedAt
         - expiresAt
+        - signature
+        - walletInfo
     LoginBody:
       type: object
       properties:
@@ -18976,16 +19047,6 @@ components:
       required:
         - message
         - signature
-    WalletInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        balanceUsd:
-          type: number
-      required:
-        - id
-        - balanceUsd
     LoginResponse:
       type: object
       properties:
@@ -19354,3 +19415,205 @@ components:
           type: boolean
       required:
         - status
+    EnrichedUserSafeInfoBody:
+      type: object
+      properties:
+        customTokenData:
+          title: Custom Token Data
+          description: >-
+            Array of custom token assumptions --  if not provided, the default
+            quote data will be used.
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomTokenDataElement'
+    EnrichedSafeTokenizedPosition:
+      type: object
+      properties:
+        rawMetadata:
+          type: object
+          title: Raw Metadata
+          description: Raw metadata
+        id:
+          type: string
+          title: Token ID
+          description: 'Unique identifier for the token: chainId-contractAddress'
+          example: 1-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        chainId:
+          type: number
+          title: Chain ID
+          description: Network ID of the blockchain
+          example: 1
+        contractAddress:
+          type: string
+          title: Contract Address
+          description: Deployment address of the contract
+          example: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+        name:
+          type: string
+          title: Name
+          description: The name of the token
+          example: USDC
+        label:
+          type: string
+        description:
+          type: string
+        symbol:
+          type: string
+          title: Symbol
+          description: The symbol of the token
+          example: USDC
+        image:
+          type: string
+          title: Image
+          description: The logo of the token
+          example: https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png
+        decimals:
+          type: number
+          title: Decimals
+          description: The number of decimals of the token
+          example: 6
+        source:
+          type: string
+          title: Source
+          description: The source for the price feed of the token
+          example: coinmarketcap
+          enum: *ref_12
+        searchId:
+          type: string
+          title: Search ID
+          description: >-
+            The search id for the token on the source price feed: for
+            CoinmarketCap, it's UCID (found under metadata section of the token
+            page) -- for Coingecko, it's token slug (found in the URL of the
+            token page) -- for all other sources, we have a custom search id
+            according to their price feed API schema
+          example: '3408'
+        type:
+          type: string
+          title: Type
+          description: The type of the token
+          example: token
+          enum: *ref_13
+        price:
+          type: number
+          title: Price
+          description: The price of the token
+          example: 0.99999999
+        fdv:
+          type: number
+          title: FDV
+          description: The fully diluted valuation of the token
+          example: 59689964490.12
+        totalSupply:
+          type: number
+          title: Total Supply
+          description: The total supply of the token
+          example: 59689963893.2
+        owner:
+          type: string
+          title: Owner
+          description: The owner of the point program token
+          example: '0x77777cc68b333a2256b436d675e8d257699aa667'
+        issuers:
+          title: Issuers
+          description: Authorized issuers of the point program token
+          type: array
+          items:
+            type: string
+        subTokens:
+          title: Sub Tokens
+          description: Array of sub tokens
+          type: array
+          items:
+            $ref: '#/components/schemas/TokenQuote'
+        customTokenData:
+          title: Custom Token Data
+          description: >-
+            Array of custom token assumptions --  if not provided, the default
+            quote data will be used.
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomTokenDataElement'
+        searchIndex:
+          type: string
+          title: Search Index
+          description: Search index for the entity
+          example: '0x6e1fcdd01bec1ac68a1a510408c844702c5793ffaf6f3117f7c42a9c555bc13d'
+        lastUpdated:
+          type: string
+          title: Last Updated
+          description: The last updated timestamp of the data in YYYY-MM-DD HH:MM:SS format
+          example: '2025-03-17 17:52:10'
+        tag:
+          type: string
+        rawAmount:
+          type: string
+          title: Raw Amount
+          description: Amount in wei
+          example: '10000000000'
+        tokenAmount:
+          type: number
+          title: Token Amount
+          description: Normalized raw amount in token decimals
+          example: 1000
+        tokenAmountUsd:
+          type: number
+          title: Token Amount USD
+          description: Normalized raw amount in USD
+          example: 999.99
+      required:
+        - id
+        - chainId
+        - contractAddress
+        - name
+        - symbol
+        - image
+        - decimals
+        - source
+        - searchId
+        - type
+        - price
+        - fdv
+        - totalSupply
+        - lastUpdated
+        - rawAmount
+        - tokenAmount
+        - tokenAmountUsd
+    EnrichedSafe:
+      type: object
+      properties:
+        id:
+          type: string
+        chainId:
+          type: number
+        safeAddress:
+          type: string
+        threshold:
+          type: number
+        owners:
+          type: array
+          items:
+            type: string
+        tokenizedPositions:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrichedSafeTokenizedPosition'
+      required:
+        - id
+        - chainId
+        - safeAddress
+        - threshold
+        - owners
+        - tokenizedPositions
+    EnrichedUserSafeInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        safes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrichedSafe'
+      required:
+        - id
+        - safes

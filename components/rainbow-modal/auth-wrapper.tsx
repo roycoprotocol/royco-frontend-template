@@ -79,7 +79,8 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
         return createSiweMessage({
           domain,
           address,
-          statement: "Sign in with Ethereum to Royco app.",
+          statement:
+            "Sign in with Ethereum to Royco app. Primary Type: Royco:AcceptTerms",
           uri: window.location.origin,
           version: "1",
           chainId,

@@ -22,6 +22,21 @@ const buttonVariants = cva(
         transparent:
           "hover:bg-transparent hover:opacity-80 transition-all duration-200 ease-in-out bg-transparent disabled:bg-transparent focus:bg-transparent disabled:hover:bg-transparent",
         none: "",
+        base: "hover:opacity-95 transition-all duration-200 ease-in-out rounded-none flex flex-col items-center justify-center",
+      },
+      colorScheme: {
+        surface_primary: "bg-_surface_primary text-_primary_",
+        surface_secondary: "bg-_surface_secondary text-_primary_",
+        surface_tertiary: "bg-_surface_tertiary text-_primary_",
+        highlight: "bg-_highlight_ text-white",
+        error: "bg-error text-white",
+        disabled: "bg-_disabled_ text-white",
+        success: "bg-success text-white",
+        warning: "bg-warning text-white",
+        tertiary: "bg-_tertiary_ text-white",
+      },
+      border: {
+        divider: "border border-_divider_",
       },
       size: {
         default: "py-2",
@@ -30,6 +45,11 @@ const buttonVariants = cva(
         icon: "h-9 w-9",
         none: "",
         fixed: "h-10",
+        small: "text-sm",
+      },
+      height: {
+        small: "h-7",
+        medium: "h-9",
       },
     },
     defaultVariants: {
@@ -46,13 +66,32 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      height,
+      colorScheme,
+      border,
+      asChild = false,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={cn(
-          "outline-none focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0",
-          buttonVariants({ variant, size, className })
+          "shrink-0 outline-none focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50",
+          buttonVariants({
+            variant,
+            size,
+            height,
+            colorScheme,
+            border,
+            className,
+          })
         )}
         ref={ref}
         {...props}

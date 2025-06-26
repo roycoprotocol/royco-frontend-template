@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export enum MarketTransactionType {
   ClaimIncentives = "claimIncentives",
+  CreateSafe = "createSafe",
 }
 
 export type TypeTransactionDetail = {

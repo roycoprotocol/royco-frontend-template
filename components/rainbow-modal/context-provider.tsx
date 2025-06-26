@@ -1,6 +1,6 @@
 "use client";
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme, Theme } from "@rainbow-me/rainbowkit";
 import { config } from "./modal-config";
 import { ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider } from "wagmi";
@@ -8,6 +8,31 @@ import { ConnectWalletProvider } from "@/app/_containers/providers/connect-walle
 import AuthWrapper from "./auth-wrapper";
 import { Config } from "wagmi";
 import { GLOBAL_LINKS } from "@/constants";
+import merge from "lodash.merge";
+
+export const roycoLightTheme: Theme = merge(
+  lightTheme({
+    accentColor: "#101010",
+    borderRadius: "none",
+    accentColorForeground: "#FFFFFF",
+  }),
+  {
+    colors: {
+      modalBackground: "#FFFFFF",
+      menuItemBackground: "#FBF6ED", // Color on hover of "Metamask"
+    },
+    radii: {
+      actionButton: "0px",
+      connectButton: "0px",
+      menuButton: "0px",
+      modal: "0px",
+      modalMobile: "0px",
+    },
+    fonts: {
+      body: "Inter, system-ui, sans-serif",
+    },
+  } as Theme
+);
 
 export default function WalletProvider({
   children,
@@ -32,6 +57,8 @@ export default function WalletProvider({
     >
       <AuthWrapper>
         <RainbowKitProvider
+          theme={roycoLightTheme}
+          locale="en-US"
           appInfo={{
             appName: "Royco",
             disclaimer: ({ Text, Link }) => (

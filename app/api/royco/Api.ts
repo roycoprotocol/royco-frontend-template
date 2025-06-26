@@ -24,6 +24,8 @@ import {
   EditUserBody,
   EditUserResponse,
   EnrichedMarketMerged,
+  EnrichedUserSafeInfo,
+  EnrichedUserSafeInfoBody,
   ExploreMarketBody,
   ExploreMarketResponse,
   ExploreSettingsMarketBody,
@@ -1209,6 +1211,29 @@ export class Api<
   ) =>
     this.request<RegisterUserResponse, any>({
       path: `/api/v1/user/register`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user safe info by account address
+   *
+   * @tags Safe
+   * @name SafeControllerGetEnrichedUserSafeInfo
+   * @summary Get user safe info
+   * @request POST:/api/v1/safe/info/{accountAddress}
+   * @secure
+   */
+  safeControllerGetEnrichedUserSafeInfo = (
+    accountAddress: string,
+    data?: EnrichedUserSafeInfoBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<EnrichedUserSafeInfo, any>({
+      path: `/api/v1/safe/info/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,
