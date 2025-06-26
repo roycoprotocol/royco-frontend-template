@@ -8,17 +8,9 @@ import { MarketFilter } from "./explore/components/market-filter/market-filter";
 import { MarketTable } from "./explore/components/market-table/market-table";
 import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 import { ExploreWrapper } from "./explore/provider/explore-wrapper";
-import { PrimaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
-import { SecondaryLabel } from "./market/[chain_id]/[market_type]/[market_id]/_components/composables/common-labels";
+import { VaultsFilter } from "./explore/components/vaults-filter/vaults-filter";
 
 const Page = () => {
-  // /**
-  //  * @todo PLUME -- Remove this on Plume launch
-  //  * @note Hides Vaults from everywhere except testnet.royco.org and plume.royco.org
-  //  */
-  // const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
-  // const showVaults = ["testnet", "dev", "internal", "plume"];
-
   return (
     <ProtectorProvider>
       <div className="hide-scrollbar relative min-h-screen bg-_surface_ pb-10">
@@ -38,7 +30,7 @@ const Page = () => {
         {/**
          * Hero Section
          */}
-        <MaxWidthProvider className="relative z-10 mb-5">
+        <MaxWidthProvider className="relative z-10">
           <div className="pt-16">
             <HeroSection />
           </div>
@@ -46,31 +38,20 @@ const Page = () => {
           <ExploreWrapper>
             <div className="mt-6">
               <div>
-                <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
-                  NEW
-                </SecondaryLabel>
-
-                <PrimaryLabel className="mt-2 text-2xl font-medium text-_primary_">
-                  Vaults
-                </PrimaryLabel>
-
-                <SecondaryLabel className="mt-2 text-base font-normal text-_secondary_">
-                  Eliminate the guesswork. Vaults rebalance your capital and
-                  negotiate incentives across Royco Markets — optimizing for
-                  risk-adjusted returns.
-                </SecondaryLabel>
+                <VaultsFilter />
               </div>
-
               <div className="mt-6">
                 <VaultsTable />
               </div>
             </div>
 
             <div className="mt-16">
-              <MarketFilter />
-            </div>
-            <div className="mt-6">
-              <MarketTable />
+              <div>
+                <MarketFilter />
+              </div>
+              <div className="mt-6">
+                <MarketTable />
+              </div>
             </div>
           </ExploreWrapper>
         </MaxWidthProvider>

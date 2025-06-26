@@ -23,7 +23,7 @@ import { AdvanceMarketManager } from "./advance-market-manager";
 import { useAtom, useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { userTypeAtom } from "@/store/market/atoms";
-import { get } from "lodash";
+import Link from "next/link";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
@@ -122,19 +122,20 @@ export const MarketManager = React.forwardRef<
           viewType === MarketViewType.simple.id ? "max-w-lg" : MAX_SCREEN_WIDTH
         )}
       >
-        <SecondaryLabel
-          onClick={() => window.open("/", "_self", "noopener noreferrer")}
-          className={cn(
-            "flex cursor-pointer items-center font-light",
-            "transition-all duration-200 ease-in-out hover:opacity-80"
-          )}
-        >
-          <ChevronLeftIcon
-            strokeWidth={1.5}
-            className="-ml-2 h-6 w-6 text-secondary"
-          />
-          <span>Explore</span>
-        </SecondaryLabel>
+        <Link href="/">
+          <SecondaryLabel
+            className={cn(
+              "flex cursor-pointer items-center font-light",
+              "transition-all duration-200 ease-in-out hover:opacity-80"
+            )}
+          >
+            <ChevronLeftIcon
+              strokeWidth={1.5}
+              className="-ml-2 h-6 w-6 text-secondary"
+            />
+            <span>Explore</span>
+          </SecondaryLabel>
+        </Link>
 
         {viewType === MarketViewType.advanced.id && (
           <div

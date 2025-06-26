@@ -1,5 +1,6 @@
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { TextReplacer } from "@/components/composables/text-replacer";
 
 import { Inter, Shippori_Mincho_B1, Fragment_Mono } from "next/font/google";
 import localFont from "next/font/local";
@@ -12,11 +13,14 @@ import WalletProvider from "@/components/rainbow-modal/context-provider";
 import { Toaster as ToasterSonner } from "@/components/ui/sonner";
 
 import { Analytics } from "@vercel/analytics/next";
-import { AtomProvider } from "./atom-provider";
 import { BrowserDetector } from "@/store/use-general-stats";
 import { GeoDetector } from "@/store/use-general-stats";
 import { NavigationWrapper } from "./_components/header/navigation-wrapper";
 import { FooterWrapper } from "./_components/footer/footer-wrapper";
+import { DataProvider } from "./_containers/providers/data-provider";
+import { headers } from "next/headers";
+import { WalletEditor } from "./_components/user/wallet-editor";
+import { EmailEditor } from "./_components/user/email-editor";
 
 /**
  * Inter Font
@@ -86,21 +90,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookie = headers().get("cookie");
+
   return (
     <RoycoClientProvider>
       <TooltipProvider delayDuration={0}>
-        <html lang="en">
+        <html lang="en-US">
           <body
             suppressHydrationWarning
             className={cn(
               ...fontsVariables,
-              "hide-scrollbar overflow-x-hidden scroll-smooth font-gt",
-              "bg-white"
+              "hide-scrollbar overflow-x-hidden scroll-smooth font-gt"
             )}
           >
-            <WalletProvider>
+            <WalletProvider cookies={cookie}>
+              <DataProvider />
+
+              <EmailEditor />
+              <WalletEditor />
+
               <GeoDetector />
-              <AtomProvider />
+
               <ToasterSonner richColors={true} position="top-center" />
 
               <div className="flex min-h-screen flex-col">
@@ -117,6 +127,8 @@ export default function RootLayout({
             <Toaster />
 
             <Analytics />
+
+            {/* <TextReplacer /> */}
           </body>
         </html>
       </TooltipProvider>

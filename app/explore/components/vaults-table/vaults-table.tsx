@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import formatNumber from "@/utils/numbers";
 import { BtcCoinIcon } from "@/assets/icons/btc";
 import { EthCoinIcon } from "@/assets/icons/eth";
+import Link from "next/link";
 
 interface VaultsCardProps {
   data: EnrichedVault;
@@ -90,7 +91,7 @@ const VaultsCard = ({
             Deposit
           </Button>
         ) : (
-          <a href={`/vault/boring/${data.chainId}/${data.vaultAddress}`}>
+          <Link href={`/vault/boring/${data.chainId}/${data.vaultAddress}`}>
             <Button
               variant="outline"
               size="sm"
@@ -99,7 +100,7 @@ const VaultsCard = ({
             >
               Deposit
             </Button>
-          </a>
+          </Link>
         )}
       </div>
     </div>

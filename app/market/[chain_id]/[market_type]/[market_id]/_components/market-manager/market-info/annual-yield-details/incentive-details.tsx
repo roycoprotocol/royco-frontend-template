@@ -434,7 +434,9 @@ export const IncentiveDetails = React.forwardRef<
                           />
 
                           <TertiaryLabel className="ml-5">
-                            Real Yields
+                            {token_data.type === "point"
+                              ? "Est. Points"
+                              : "Real Yields"}
                           </TertiaryLabel>
                         </InfoCard.Row.Key>
 

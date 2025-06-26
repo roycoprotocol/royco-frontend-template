@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import {
@@ -9,33 +9,17 @@ import {
 } from "@/app/market/[chain_id]/[market_type]/[market_id]/_components/composables";
 import formatNumber from "@/utils/numbers";
 import { loadablePortfolioPositionsAtom } from "@/store/portfolio/portfolio";
-import { DepositTable } from "./deposit-table";
-import { depositColumns } from "./deposit-column";
-import { DepositPagination } from "./deposit-pagination";
-import { ScrollBar } from "@/components/ui/scroll-area";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-export const DEFAULT_PAGE_SIZE = 5;
+import { LoadingIndicator } from "@/app/_components/common/loading-indicator";
+import { DepositsManager } from "./deposits-manager";
+import { AlertIndicator } from "@/components/common";
+import { useAccount } from "wagmi";
 
 export const Deposits = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { data } = useAtomValue(loadablePortfolioPositionsAtom);
-
-  const [page, setPage] = useState(0);
-
-  const depositPositions = useMemo(() => {
-    if (data?.positions) {
-      return data.positions.slice(
-        page * DEFAULT_PAGE_SIZE,
-        (page + 1) * DEFAULT_PAGE_SIZE
-      );
-    }
-    return [];
-  }, [data?.positions, page]);
-
-  const count = data?.positions?.length || 0;
+  const { isConnected } = useAccount();
+  const { data, isLoading } = useAtomValue(loadablePortfolioPositionsAtom);
 
   return (
     <div ref={ref} {...props} className={cn(className)}>
@@ -43,9 +27,6 @@ export const Deposits = React.forwardRef<
         Deposits
       </PrimaryLabel>
 
-      {/**
-       * Total Deposits
-       */}
       <div className="mt-6">
         <SecondaryLabel className="text-xs font-medium tracking-wide text-_secondary_">
           TOTAL DEPOSITS
@@ -54,7 +35,7 @@ export const Deposits = React.forwardRef<
         <PrimaryLabel className="mt-2 font-fragmentMono text-2xl font-normal">
           <div className="flex items-center gap-2">
             <span>
-              {formatNumber(data?.depositBalanceUsd || 0, {
+              {formatNumber(isConnected ? data?.depositBalanceUsd || 0 : 0, {
                 type: "currency",
               })}
             </span>
@@ -63,19 +44,16 @@ export const Deposits = React.forwardRef<
       </div>
 
       <div className="mt-6">
-        <ScrollArea className={cn("mt-6 w-full overflow-hidden")}>
-          <DepositTable data={depositPositions} columns={depositColumns} />
-
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-
-        <DepositPagination
-          page={page}
-          pageSize={DEFAULT_PAGE_SIZE}
-          count={count}
-          setPage={setPage}
-        />
+        {!isConnected ? (
+          <AlertIndicator>Connect wallet to view your deposits</AlertIndicator>
+        ) : isLoading ? (
+          <LoadingIndicator className="h-5 w-5" />
+        ) : (
+          <DepositsManager data={data?.positions ?? []} />
+        )}
       </div>
     </div>
   );
 });
+
+Deposits.displayName = "Deposits";

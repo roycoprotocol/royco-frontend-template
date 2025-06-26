@@ -27,7 +27,7 @@ export const ConnectWalletButton = React.forwardRef<
     <Button
       ref={ref}
       className={cn(
-        "flex h-10 items-center rounded-sm px-4",
+        "flex h-10 items-center rounded-none px-4",
         isConnected && !isChainSupported && "bg-error",
         className
       )}

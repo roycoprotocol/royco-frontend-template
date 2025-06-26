@@ -11,6 +11,13 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { SANCTIONED_ADDRESSES } from "@celo/compliance";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectWalletAlertModal } from "@/app/_components/header/connect-wallet-button/connect-wallet-alert-modal";
+import { authenticationStatusAtom } from "@/store/global";
+import { useAtom } from "jotai";
+import { queryClientAtom } from "jotai-tanstack-query";
+import { useAtomValue } from "jotai";
+import { api } from "@/app/api/royco";
+import { linkWalletAtom } from "@/store/global";
+import { connectedWalletsAtom } from "@/store/global";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -28,10 +35,18 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const queryClient = useAtomValue(queryClientAtom);
+  const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
+
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(
+    authenticationStatusAtom
+  );
+
   const { isConnected, address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { disconnect } = useDisconnect();
+  const [connectedWallets, setConnectedWallets] = useAtom(connectedWalletsAtom);
 
   const [isConnectWalletAlertOpen, setIsConnectWalletAlertOpen] =
     useState(false);
@@ -54,17 +69,14 @@ export const ConnectWalletProvider = ({
             setIsConnectWalletAlertOpen(true);
             return;
           }
-        } catch (error) {
-          console.log(error);
-
-          openConnectModal?.();
-          return;
+        } catch (e) {
+          console.log("error", e);
         }
       }
 
       openConnectModal?.();
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
@@ -82,6 +94,57 @@ export const ConnectWalletProvider = ({
     }
   };
 
+  const reconnectSession = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    if (
+      address &&
+      authenticationStatus === "unauthenticated" &&
+      !connectModalOpen
+    ) {
+      try {
+        const response = await api
+          .authControllerRevalidateSession()
+          .then((res) => res.data);
+
+        if (response.status) {
+          setAuthenticationStatus("authenticated");
+
+          // Save wallet info
+          const existingWalletIndex = connectedWallets.findIndex(
+            (wallet) => wallet.id === response.walletInfo.id
+          );
+          let newConnectedWallets = connectedWallets;
+
+          if (existingWalletIndex !== -1) {
+            newConnectedWallets[existingWalletIndex].balanceUsd =
+              response.walletInfo.balanceUsd;
+          } else {
+            newConnectedWallets.push({
+              ...response.walletInfo,
+              signature: response.signature,
+            });
+          }
+          setConnectedWallets(newConnectedWallets);
+        }
+      } catch (error: any) {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 403
+        ) {
+          if (isConnected) {
+            setAuthenticationStatus("unauthenticated");
+            openConnectModal?.();
+          }
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    reconnectSession();
+  }, [address, isConnected]);
+
   useEffect(() => {
     disconnectWalletIfSanctioned();
   }, [isConnected, address]);
@@ -93,6 +156,17 @@ export const ConnectWalletProvider = ({
         connectAccountModal,
       }}
     >
+      {/* <button
+        onClick={() => {
+          console.log("disconnecting");
+          disconnect();
+          // setAuthenticationStatus("unauthenticated");
+          // setSession(null);
+        }}
+      >
+        Click Me to disconnect
+      </button> */}
+
       {children}
 
       <ConnectWalletAlertModal

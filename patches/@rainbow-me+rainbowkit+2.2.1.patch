@@ -1,0 +1,18 @@
+diff --git a/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js b/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
+index 9b15452..3984512 100644
+--- a/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
++++ b/node_modules/@rainbow-me/rainbowkit/dist/chunk-X4GSACNW.js
+@@ -29,10 +29,10 @@ var en_US_default = `{
+   },
+ 
+   "sign_in": {
+-    "label": "Verify your account",
+-    "description": "To finish connecting, you must sign a message in your wallet to verify that you are the owner of this account.",
++    "label": "Terms of Use & Privacy Policy",
++    "description": "To proceed, review and accept the following: You acknowledge that you have read, understood, and agreed to the Terms of Use and Privacy Policy.",
+     "message": {
+-      "send": "Sign message",
++      "send": "Accept",
+       "preparing": "Preparing message...",
+       "cancel": "Cancel",
+       "preparing_error": "Error preparing message, please retry!"

@@ -1,57 +1,15 @@
 "use client";
 
-import React, { Fragment, useEffect } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { RoyaltyForm } from "../royalty-form";
-import { useUserPosition } from "royco/hooks";
-import { useAccount } from "wagmi";
-import { useImmer } from "use-immer";
-import { isEqual } from "lodash";
-import { produce } from "immer";
-import { SpringNumber } from "@/components/composables";
-import { useGlobalStates } from "@/store";
-import { UseFormReturn } from "react-hook-form";
-import { RoyaltyFormSchema } from "../royalty-form/royalty-form-schema";
-import { z } from "zod";
+import { useJoin } from "@/store";
+import { Button } from "@/components/ui/button";
 
 export const JoinHeader = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    royaltyForm: UseFormReturn<z.infer<typeof RoyaltyFormSchema>>;
-  }
->(({ className, royaltyForm, ...props }, ref) => {
-  const { address: account_address, isConnected } = useAccount();
-  const { user } = useGlobalStates();
-
-  const [placeholderUserPosition, setPlaceholderUserPosition] = useImmer<
-    Array<number | null | undefined>
-  >([null, null]);
-
-  const propsUserPosition = useUserPosition({
-    account_address: account_address?.toLowerCase(),
-  });
-
-  useEffect(() => {
-    if (
-      propsUserPosition.isLoading === false &&
-      propsUserPosition.isRefetching === false &&
-      !isEqual(propsUserPosition.data, placeholderUserPosition[1])
-    ) {
-      setPlaceholderUserPosition((prevDatas) => {
-        return produce(prevDatas, (draft) => {
-          // Prevent overwriting previous data with the same object reference
-          if (!isEqual(draft[1], propsUserPosition.data)) {
-            draft[0] = draft[1] as typeof propsUserPosition.data; // Set previous data to the current data
-            draft[1] = propsUserPosition.data as typeof propsUserPosition.data; // Set current data to the new data
-          }
-        });
-      });
-    }
-  }, [
-    propsUserPosition.isLoading,
-    propsUserPosition.isRefetching,
-    propsUserPosition.data,
-  ]);
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const { setOpenRoyaltyForm } = useJoin();
 
   return (
     <div
@@ -63,31 +21,24 @@ export const JoinHeader = React.forwardRef<
       )}
     >
       <h3 className="flex flex-row items-center text-center font-gt text-3xl font-normal sm:text-[40px]">
-        {!!user && !!placeholderUserPosition[1] ? (
-          <Fragment>
-            Position: #
-            <SpringNumber
-              previousValue={placeholderUserPosition[0] ?? 0}
-              currentValue={placeholderUserPosition[1] ?? 0}
-              numberFormatOptions={{
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }}
-            />
-          </Fragment>
-        ) : (
-          "Join the Royalty."
-        )}
+        Join the Royalty.
       </h3>
       <div className="my-5 w-full max-w-[400px] text-center font-gt text-base font-light text-secondary">
         Get priority access & benefits based on your wallets. Connect more
         assets to get in first.
       </div>
 
-      <RoyaltyForm royaltyForm={royaltyForm} />
+      <Button
+        onClick={() => {
+          setOpenRoyaltyForm(true);
+        }}
+        className="h-12 w-full max-w-xs rounded-lg bg-mint font-inter text-sm font-normal shadow-none hover:bg-opacity-90"
+      >
+        Create Account
+      </Button>
 
       <img
-        className={cn(user ? "mt-0" : "mt-10")}
+        className={cn("mt-10")}
         src="/join/partners.png"
         alt="Partners"
         width={180}

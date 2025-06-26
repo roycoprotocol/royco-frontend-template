@@ -1,90 +1,95 @@
 "use client";
 
-import {
-  createAuthenticationAdapter,
-  RainbowKitAuthenticationProvider,
-  RainbowKitProvider,
-} from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme, Theme } from "@rainbow-me/rainbowkit";
 import { config } from "./modal-config";
-import { ReactNode, useMemo } from "react";
-import { WagmiProvider } from "wagmi";
+import { ReactNode } from "react";
+import { cookieToInitialState, WagmiProvider } from "wagmi";
 import { ConnectWalletProvider } from "@/app/_containers/providers/connect-wallet-provider";
-import { createSiweMessage } from "viem/siwe";
-import { useAtom, useAtomValue } from "jotai";
-import { authenticationStatusAtom, sessionTokenAtom } from "@/store/global";
+import AuthWrapper from "./auth-wrapper";
+import { Config } from "wagmi";
+import { GLOBAL_LINKS } from "@/constants";
+import merge from "lodash.merge";
 
-export default function WalletProvider({ children }: { children: ReactNode }) {
-  const authenticationStatus = useAtomValue(authenticationStatusAtom);
+export const roycoLightTheme: Theme = merge(
+  lightTheme({
+    accentColor: "#101010",
+    borderRadius: "none",
+    accentColorForeground: "#FFFFFF",
+  }),
+  {
+    colors: {
+      modalBackground: "#FFFFFF",
+      menuItemBackground: "#FBF6ED", // Color on hover of "Metamask"
+    },
+    radii: {
+      actionButton: "0px",
+      connectButton: "0px",
+      menuButton: "0px",
+      modal: "0px",
+      modalMobile: "0px",
+    },
+    fonts: {
+      body: "Inter, system-ui, sans-serif",
+    },
+  } as Theme
+);
 
-  const [sessionToken, setSessionToken] = useAtom(sessionTokenAtom);
-
-  const authenticationAdapter = useMemo(() => {
-    return createAuthenticationAdapter({
-      getNonce: async () => {
-        // const response = await fetch("/api/nonce");
-        // return await response.text();
-
-        return "asdsadsafdsafsaf";
-      },
-
-      createMessage: ({ nonce, address, chainId }) => {
-        return createSiweMessage({
-          domain: window.location.host,
-          address,
-          statement: "Sign in with Ethereum to the app.",
-          uri: window.location.origin,
-          version: "1",
-          chainId,
-          nonce,
-        });
-      },
-
-      verify: async ({ message, signature }) => {
-        // const verifyRes = await fetch("/api/verify", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ message, signature }),
-        // });
-
-        // return Boolean(verifyRes.ok);
-
-        setSessionToken(signature);
-
-        return true;
-      },
-
-      signOut: async () => {
-        setSessionToken(null);
-        // await fetch("/api/logout");
-      },
-    });
-  }, []);
+export default function WalletProvider({
+  children,
+  cookies,
+}: {
+  children: ReactNode;
+  cookies: string | null;
+}) {
+  let initialState;
+  try {
+    initialState = cookieToInitialState(config as Config, cookies);
+  } catch (error) {
+    // console.warn("Failed to parse wallet state from cookies:", error);
+    initialState = undefined;
+  }
 
   return (
     <WagmiProvider
       reconnectOnMount={true}
       config={config}
-      // initialState={initialState}
+      initialState={initialState}
     >
-      {/* <RainbowKitAuthenticationProvider
-        adapter={authenticationAdapter}
-        status={authenticationStatus}
-      > */}
-      <RainbowKitProvider
-        appInfo={{
-          appName: "Royco",
-          // disclaimer: ({ Text, Link }) => (
-          //   <div>
-          //     By connecting your wallet, you agree to Royco's terms of service
-          //     and privacy policy.
-          //   </div>
-          // ),
-          learnMoreUrl: "https://royco.org",
-        }}
-      >
-        <ConnectWalletProvider>{children}</ConnectWalletProvider>
-      </RainbowKitProvider>
-      {/* </RainbowKitAuthenticationProvider> */}
+      <AuthWrapper>
+        <RainbowKitProvider
+          theme={roycoLightTheme}
+          locale="en-US"
+          appInfo={{
+            appName: "Royco",
+            disclaimer: ({ Text, Link }) => (
+              <div className="text-sm text-secondary">
+                By connecting your wallet, you agree to our{" "}
+                <a
+                  className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
+                  href={GLOBAL_LINKS.TERMS_OF_SERVICE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  terms of service
+                </a>{" "}
+                and{" "}
+                <a
+                  className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
+                  href={GLOBAL_LINKS.PRIVACY_POLICY}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  privacy policy
+                </a>
+                .
+              </div>
+            ),
+            learnMoreUrl: "https://royco.org",
+          }}
+        >
+          <ConnectWalletProvider>{children}</ConnectWalletProvider>
+        </RainbowKitProvider>
+      </AuthWrapper>
     </WagmiProvider>
   );
 }

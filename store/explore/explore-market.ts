@@ -1,5 +1,4 @@
 import {
-  CustomTokenDataElement,
   ExploreMarketResponse,
   ExploreSettingsMarketResponse,
   ExploreVaultResponse,
@@ -20,10 +19,10 @@ import {
   Sonic,
 } from "royco/constants";
 import { isTestnetAtom, tagAtom } from "../protector/protector";
-import { keepPreviousData } from "@tanstack/react-query";
 import { defaultQueryOptions } from "@/utils/query";
 import { atomWithLocation } from "jotai-location";
 import { atomWithStorage } from "jotai/vanilla/utils";
+import { customTokenDataAtom } from "../global";
 
 export const EXPLORE_PAGE_SIZE = 20;
 
@@ -38,11 +37,13 @@ export const baseFilter = atom<Filter[]>((get) => {
 
   const location = get(locationAtom);
   if (location.pathname === "/explore/all") {
+    // show all markets (verified and unverified) on explore/all page
     filters.push({
       id: "isVerified",
       value: get(marketFiltersVerifiedAtom),
     });
   } else {
+    // or show only verified markets on home page
     filters.push({
       id: "isVerified",
       value: true,
@@ -51,14 +52,23 @@ export const baseFilter = atom<Filter[]>((get) => {
 
   const tag = get(tagAtom);
 
+  // hide markets with fillableUsd less than 0 on all frontend except "boyco" and "plume"
   if (tag !== "boyco" && tag !== "plume") {
     filters.push({
       id: "fillableUsd",
       value: 0,
       condition: "gt",
+      join: "or",
+    });
+
+    filters.push({
+      id: "marketType",
+      value: 2,
+      join: "or",
     });
   }
 
+  // show only "boyco" markets on "boyco" frontend
   if (tag === "boyco") {
     filters.push({
       id: "category",
@@ -70,10 +80,8 @@ export const baseFilter = atom<Filter[]>((get) => {
 });
 
 export const baseChainFilter = atom<Filter[]>((get) => {
-  const tag = get(tagAtom);
-
-  const filters: Filter[] = [];
   const chainIds: number[] = [];
+  const tag = get(tagAtom);
 
   switch (tag) {
     case "ethereum":
@@ -101,6 +109,8 @@ export const baseChainFilter = atom<Filter[]>((get) => {
       break;
   }
 
+  const filters: Filter[] = [];
+
   if (chainIds.length > 0) {
     filters.push({
       id: "chainId",
@@ -109,6 +119,7 @@ export const baseChainFilter = atom<Filter[]>((get) => {
     });
   }
 
+  // remove sepolia if it is not testnet frontend
   const isTestnet = get(isTestnetAtom);
   if (!isTestnet) {
     filters.push({
@@ -132,75 +143,55 @@ export const marketSortAtom = atom<Sorting[]>([
 
 export const marketSearchAtom = atom<string>("");
 
-export const customTokenDataAtom = atom<CustomTokenDataElement[]>([]);
-
 export const marketPageAtom = atom<number>(1);
 
+// explore asset filter options
 export const loadableExploreAssetFilterOptionsAtom =
   atomWithQuery<ExploreSettingsMarketResponse>((get) => ({
     queryKey: [
       "explore-asset-filter-options",
       {
-        marketFilters: get(marketFiltersAtom),
-        baseFilters: get(baseFilter),
-        baseChainFilters: get(baseChainFilter),
+        filters: [
+          ...get(baseFilter),
+          ...get(baseChainFilter),
+          ...get(marketFiltersAtom),
+        ],
       },
     ],
-    queryFn: async () => {
-      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
+    queryFn: async ({ queryKey: [, params] }) => {
+      const _params = params as any;
 
-      const filters: Filter[] = [];
+      const body: any = {};
 
-      const baseFilters = get(baseFilter);
-      const baseChainFilters = get(baseChainFilter);
-      const marketFilters = get(marketFiltersAtom);
+      if (_params.filters.length > 0) {
+        body.filters = _params.filters.filter((filter: Filter) => {
+          if (
+            filter.condition === "inArray" &&
+            Array.isArray(filter.value) &&
+            filter.value.length === 0
+          ) {
+            return false;
+          }
 
-      for (let i = 0; i < marketFilters.length; i++) {
-        const newFilter = marketFilters[i];
+          if (
+            filter.id === "incentiveTokenIds" ||
+            filter.id === "inputTokenId"
+          ) {
+            return false;
+          }
 
-        if (Array.isArray(newFilter.value) && newFilter.value.length === 0) {
-          // skip
-        } else if (
-          newFilter.id === "incentiveTokenIds" ||
-          newFilter.id === "inputTokenId"
-        ) {
-          // skip
-        } else {
-          filters.push(newFilter);
-        }
+          return true;
+        });
       }
 
-      filters.push(...baseFilters);
-      filters.push(...baseChainFilters);
+      const response = await api.marketControllerGetMarketSettings(body);
 
-      // /**
-      //  * @todo PLUME -- Remove this on Plume launch
-      //  * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
-      //  */
-      // const hidePlumeMarketsFilter: Filter[] =
-      //   frontendTag !== "testnet" &&
-      //   frontendTag !== "plume" &&
-      //   frontendTag !== "dev" &&
-      //   frontendTag !== "internal"
-      //     ? [
-      //         {
-      //           id: "chainId",
-      //           value: Plume.id,
-      //           condition: "ne",
-      //         },
-      //       ]
-      //     : [];
-      // filters.push(...hidePlumeMarketsFilter);
-
-      return api
-        .marketControllerGetMarketSettings({
-          filters,
-        })
-        .then((res) => res.data);
+      return response.data;
     },
     ...defaultQueryOptions,
   }));
 
+// explore markets
 export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
   (get) => ({
     queryKey: [
@@ -218,60 +209,41 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
       },
     ],
     queryFn: async ({ queryKey: [, params] }) => {
-      const frontendTag = process.env.NEXT_PUBLIC_FRONTEND_TAG;
+      const _params = params as any;
 
-      let filters: Filter[] = [];
+      const body: any = {};
 
-      const baseFilters = get(baseFilter);
-      const baseChainFilters = get(baseChainFilter);
-      const marketFilters = get(marketFiltersAtom);
+      if (_params.searchKey.length > 0) {
+        body.searchKey = _params.searchKey;
+      }
 
-      filters.push(...baseFilters);
-      filters.push(...baseChainFilters);
-      filters.push(...marketFilters);
+      if (_params.filters.length > 0) {
+        body.filters = _params.filters.filter((filter: Filter) => {
+          if (
+            filter.condition === "inArray" &&
+            Array.isArray(filter.value) &&
+            filter.value.length === 0
+          ) {
+            return false;
+          }
+          return true;
+        });
+      }
 
-      // /**
-      //  * @todo PLUME -- Remove this on Plume launch
-      //  * @note Hides Plume markets from everywhere except testnet.royco.org and plume.royco.org
-      //  */
-      // const hidePlumeMarketsFilter: Filter[] =
-      //   frontendTag !== "testnet" &&
-      //   frontendTag !== "plume" &&
-      //   frontendTag !== "dev" &&
-      //   frontendTag !== "internal"
-      //     ? [
-      //         {
-      //           id: "chainId",
-      //           value: Plume.id,
-      //           condition: "ne",
-      //         },
-      //       ]
-      //     : [];
-      // filters.push(...hidePlumeMarketsFilter);
+      if (_params.sorting.length > 0) {
+        body.sorting = _params.sorting;
+      }
 
-      // Remove empty filters
-      filters = filters.filter((filter) => {
-        if (Array.isArray(filter.value) && filter.value.length === 0) {
-          return false;
-        }
-        return true;
-      });
+      if (_params.customTokenData.length > 0) {
+        body.customTokenData = _params.customTokenData;
+      }
 
-      const customTokenData = get(customTokenDataAtom);
-      const sorting = get(marketSortAtom);
-      const page = get(marketPageAtom) ?? 1;
-      const searchKey = get(marketSearchAtom);
+      body.page = {
+        index: _params.page,
+        size: EXPLORE_PAGE_SIZE,
+      };
 
-      const response = await api.marketControllerGetMarkets({
-        filters,
-        sorting,
-        customTokenData,
-        page: {
-          index: page,
-          size: EXPLORE_PAGE_SIZE,
-        },
-        searchKey,
-      });
+      const response = await api.marketControllerGetMarkets(body);
 
       return response.data;
     },
@@ -281,6 +253,7 @@ export const loadableExploreMarketAtom = atomWithQuery<ExploreMarketResponse>(
 
 export const vaultPageAtom = atom<number>(1);
 
+// explore vaults
 export const loadableExploreVaultAtom = atomWithQuery<ExploreVaultResponse>(
   (get) => ({
     queryKey: [
@@ -322,10 +295,6 @@ export const loadableExploreVaultAtom = atomWithQuery<ExploreVaultResponse>(
 
       return response.data;
     },
-    refetchOnWindowFocus: false, // Don't refetch on window focus
-    refetchIntervalInBackground: true, // Refetch in background
-    placeholderData: keepPreviousData, // Keep previous data while fetching new data
-    staleTime: 1000 * 60, // Consider data fresh for 1 minute
-    cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
+    ...defaultQueryOptions,
   })
 );

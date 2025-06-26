@@ -11,6 +11,8 @@
  */
 
 import {
+  ActivityBody,
+  ActivityResponse,
   BaseRequestBody,
   BoringPositionResponse,
   BoycoPositionResponse,
@@ -19,12 +21,33 @@ import {
   ContractResponse,
   CreateMarketBody,
   CreateMarketResponse,
+  EditUserBody,
+  EditUserResponse,
+  EnrichedMarketMerged,
+  EnrichedUserSafeInfo,
+  EnrichedUserSafeInfoBody,
   ExploreMarketBody,
   ExploreMarketResponse,
   ExploreSettingsMarketBody,
   ExploreSettingsMarketResponse,
+  ExploreVaultBody,
+  ExploreVaultResponse,
+  GetExpectedRankBody,
+  GetExpectedRankResponse,
+  GetUserBalanceBody,
+  GetUserBalanceResponse,
+  GetUserLeaderboardResponse,
+  GetUserStatsResponse,
+  GlobalPositionRequestBody,
+  GlobalPositionResponse,
   InfoMarketBody,
-  InfoMarketResponse,
+  LoginBody,
+  LoginResponse,
+  LogoutBody,
+  LogoutResponse,
+  NonceResponse,
+  PointDirectoryRequestBody,
+  PointDirectoryResponse,
   RecipeAPLimitActionBody,
   RecipeAPLimitActionResponse,
   RecipeAPMarketActionBody,
@@ -33,7 +56,13 @@ import {
   RecipeIPLimitActionResponse,
   RecipeIPMarketActionBody,
   RecipeIPMarketActionResponse,
+  RecipeOfferResponse,
   RecipePositionResponse,
+  RegisterUserBody,
+  RegisterUserResponse,
+  RevalidateSessionResponse,
+  SimulateTransactionBody,
+  SimulateTransactionResponse,
   SpecificBoringPositionRequest,
   SpecificBoringPositionResponse,
   SpecificBoycoPositionRequest,
@@ -42,19 +71,29 @@ import {
   SpecificRecipePositionResponse,
   SpecificVaultPositionRequest,
   SpecificVaultPositionResponse,
-  StatsFinalResponse,
-  StatsRequestBody,
+  SubscribeBoycoBody,
+  SubscribeBoycoResponse,
   TokenDirectoryRequestBody,
   TokenDirectoryResponse,
   TokenQuoteRequestBody,
   TokenQuoteResponse,
+  UserInfo,
+  V2PositionResponse,
   VaultAPLimitActionBody,
   VaultAPLimitActionResponse,
   VaultAPMarketActionBody,
   VaultAPMarketActionResponse,
   VaultInfoRequestBody,
   VaultInfoResponse,
+  VaultIPAddIncentivesActionBody,
+  VaultIPAddIncentivesActionResponse,
+  VaultIPExtendIncentivesActionBody,
+  VaultIPExtendIncentivesActionResponse,
+  VaultIPRefundIncentivesActionBody,
+  VaultIPRefundIncentivesActionResponse,
+  VaultOfferResponse,
   VaultPositionResponse,
+  VerifyUserEmailResponse,
 } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
@@ -147,7 +186,7 @@ export class Api<
     chainId: number,
     contractAddress: string,
     data?: TokenQuoteRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<TokenQuoteResponse, any>({
       path: `/api/v1/token/quote/${chainId}/${contractAddress}`,
@@ -169,10 +208,54 @@ export class Api<
    */
   tokenControllerGetTokenDirectory = (
     data?: TokenDirectoryRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<TokenDirectoryResponse, any>({
       path: `/api/v1/token/directory`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get offers for all recipe markets.
+   *
+   * @tags Offer
+   * @name OfferControllerGetRecipeOffers
+   * @summary Get recipe offers
+   * @request POST:/api/v1/offer/recipe
+   * @secure
+   */
+  offerControllerGetRecipeOffers = (
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<RecipeOfferResponse, any>({
+      path: `/api/v1/offer/recipe`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get offers for all vault markets.
+   *
+   * @tags Offer
+   * @name OfferControllerGetVaultOffers
+   * @summary Get vault offers
+   * @request POST:/api/v1/offer/vault
+   * @secure
+   */
+  offerControllerGetVaultOffers = (
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<VaultOfferResponse, any>({
+      path: `/api/v1/offer/vault`,
       method: "POST",
       body: data,
       secure: true,
@@ -199,14 +282,16 @@ export class Api<
    * @tags Addons
    * @name AddonsControllerRefreshIncentives
    * @request GET:/api/v1/addons/refresh/{id}
+   * @secure
    */
   addonsControllerRefreshIncentives = (
     id: string,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<void, any>({
       path: `/api/v1/addons/refresh/${id}`,
       method: "GET",
+      secure: true,
       ...params,
     });
   /**
@@ -221,9 +306,9 @@ export class Api<
   marketControllerGetMarket = (
     id: string,
     data?: InfoMarketBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
-    this.request<InfoMarketResponse, any>({
+    this.request<EnrichedMarketMerged, any>({
       path: `/api/v1/market/info/${id}`,
       method: "POST",
       body: data,
@@ -243,7 +328,7 @@ export class Api<
    */
   marketControllerGetMarkets = (
     data?: ExploreMarketBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<ExploreMarketResponse, any>({
       path: `/api/v1/market/explore`,
@@ -264,7 +349,7 @@ export class Api<
    */
   marketControllerGetMarketSettings = (
     data?: ExploreSettingsMarketBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<ExploreSettingsMarketResponse, any>({
       path: `/api/v1/market/explore/settings`,
@@ -286,7 +371,7 @@ export class Api<
    */
   marketControllerCreateMarket = (
     data: CreateMarketBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<CreateMarketResponse, any>({
       path: `/api/v1/market/create`,
@@ -309,10 +394,55 @@ export class Api<
   vaultControllerGetVaultInfo = (
     id: string,
     data?: VaultInfoRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<VaultInfoResponse, any>({
       path: `/api/v1/vault/info/${id}`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get all vaults. Use filters property in body to filter out by vault id, chain id, etc. Since response is paginated, use pagination properties in body to get next page based on size property of page. Do note: max page size for response is 500.
+   *
+   * @tags Vault
+   * @name VaultControllerGetVaults
+   * @summary Get all vaults
+   * @request POST:/api/v1/vault/explore
+   * @secure
+   */
+  vaultControllerGetVaults = (
+    data?: ExploreVaultBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<ExploreVaultResponse, any>({
+      path: `/api/v1/vault/explore`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get total assets for an account
+   *
+   * @tags Position
+   * @name PositionControllerGetGlobalPositions
+   * @summary Get total assets for an account
+   * @request POST:/api/v1/position/global/{accountAddress}
+   * @secure
+   */
+  positionControllerGetGlobalPositions = (
+    accountAddress: string,
+    data?: GlobalPositionRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GlobalPositionResponse, any>({
+      path: `/api/v1/position/global/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,
@@ -331,7 +461,7 @@ export class Api<
    */
   positionControllerGetRecipePositions = (
     data?: BaseRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<RecipePositionResponse, any>({
       path: `/api/v1/position/recipe`,
@@ -355,7 +485,7 @@ export class Api<
     id: string,
     accountAddress: string,
     data?: SpecificRecipePositionRequest,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<SpecificRecipePositionResponse, any>({
       path: `/api/v1/position/recipe/${id}/${accountAddress}`,
@@ -377,7 +507,7 @@ export class Api<
    */
   positionControllerGetVaultPositions = (
     data?: BaseRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<VaultPositionResponse, any>({
       path: `/api/v1/position/vault`,
@@ -401,7 +531,7 @@ export class Api<
     id: string,
     accountAddress: string,
     data?: SpecificVaultPositionRequest,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<SpecificVaultPositionResponse, any>({
       path: `/api/v1/position/vault/${id}/${accountAddress}`,
@@ -423,7 +553,7 @@ export class Api<
    */
   positionControllerGetBoycoPositions = (
     data?: BaseRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<BoycoPositionResponse, any>({
       path: `/api/v1/position/boyco`,
@@ -447,7 +577,7 @@ export class Api<
     id: string,
     accountAddress: string,
     data?: SpecificBoycoPositionRequest,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<SpecificBoycoPositionResponse, any>({
       path: `/api/v1/position/boyco/${id}/${accountAddress}`,
@@ -469,7 +599,7 @@ export class Api<
    */
   positionControllerGetBoringPositions = (
     data?: BaseRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<BoringPositionResponse, any>({
       path: `/api/v1/position/boring`,
@@ -493,10 +623,33 @@ export class Api<
     id: string,
     accountAddress: string,
     data?: SpecificBoringPositionRequest,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<SpecificBoringPositionResponse, any>({
       path: `/api/v1/position/boring/${id}/${accountAddress}`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get positions for all v2 markets.
+   *
+   * @tags Position
+   * @name PositionControllerGetV2Positions
+   * @summary Get v2 positions
+   * @request POST:/api/v1/position/v2/{accountAddress}
+   * @secure
+   */
+  positionControllerGetV2Positions = (
+    accountAddress: string,
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<V2PositionResponse, any>({
+      path: `/api/v1/position/v2/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,
@@ -516,7 +669,7 @@ export class Api<
   contractControllerGetContract = (
     chainId: number,
     contractAddress: string,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<ContractResponse, any>({
       path: `/api/v1/contract/${chainId}/${contractAddress}`,
@@ -537,33 +690,10 @@ export class Api<
   chartControllerGetMarketChart = (
     id: string,
     data?: ChartRequestBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<ChartResponse, any>({
       path: `/api/v1/chart/${id}`,
-      method: "POST",
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
-  /**
-   * @description Get total assets for an account
-   *
-   * @tags Stats
-   * @name StatsControllerGetStats
-   * @summary Get total assets for an account
-   * @request POST:/api/v1/stats/assets/{accountAddress}
-   * @secure
-   */
-  statsControllerGetStats = (
-    accountAddress: string,
-    data?: StatsRequestBody,
-    params: RequestParams = {}
-  ) =>
-    this.request<StatsFinalResponse, any>({
-      path: `/api/v1/stats/assets/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,
@@ -582,7 +712,7 @@ export class Api<
    */
   actionControllerRecipeApMarketAction = (
     data: RecipeAPMarketActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<RecipeAPMarketActionResponse, any>({
       path: `/api/v1/action/recipe/ap/market`,
@@ -604,7 +734,7 @@ export class Api<
    */
   actionControllerRecipeIpMarketAction = (
     data: RecipeIPMarketActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<RecipeIPMarketActionResponse, any>({
       path: `/api/v1/action/recipe/ip/market`,
@@ -626,7 +756,7 @@ export class Api<
    */
   actionControllerRecipeIpLimitAction = (
     data: RecipeIPLimitActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<RecipeIPLimitActionResponse, any>({
       path: `/api/v1/action/recipe/ip/limit`,
@@ -648,7 +778,7 @@ export class Api<
    */
   actionControllerRecipeApLimitAction = (
     data: RecipeAPLimitActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<RecipeAPLimitActionResponse, any>({
       path: `/api/v1/action/recipe/ap/limit`,
@@ -670,7 +800,7 @@ export class Api<
    */
   actionControllerVaultApMarketAction = (
     data: VaultAPMarketActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<VaultAPMarketActionResponse, any>({
       path: `/api/v1/action/vault/ap/market`,
@@ -692,10 +822,418 @@ export class Api<
    */
   actionControllerVaultApLimitAction = (
     data: VaultAPLimitActionBody,
-    params: RequestParams = {}
+    params: RequestParams = {},
   ) =>
     this.request<VaultAPLimitActionResponse, any>({
       path: `/api/v1/action/vault/ap/limit`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Vault IP Add Incentives Action
+   *
+   * @tags Action
+   * @name ActionControllerVaultIpAddIncentivesAction
+   * @summary Vault IP Add Incentives Action
+   * @request POST:/api/v1/action/vault/ip/add
+   * @secure
+   */
+  actionControllerVaultIpAddIncentivesAction = (
+    data: VaultIPAddIncentivesActionBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<VaultIPAddIncentivesActionResponse, any>({
+      path: `/api/v1/action/vault/ip/add`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Vault IP Extend Incentives Action
+   *
+   * @tags Action
+   * @name ActionControllerVaultIpExtendIncentivesAction
+   * @summary Vault IP Extend Incentives Action
+   * @request POST:/api/v1/action/vault/ip/extend
+   * @secure
+   */
+  actionControllerVaultIpExtendIncentivesAction = (
+    data: VaultIPExtendIncentivesActionBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<VaultIPExtendIncentivesActionResponse, any>({
+      path: `/api/v1/action/vault/ip/extend`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Vault IP Refund Incentives Action
+   *
+   * @tags Action
+   * @name ActionControllerVaultIpRefundIncentivesAction
+   * @summary Vault IP Refund Incentives Action
+   * @request POST:/api/v1/action/vault/ip/refund
+   * @secure
+   */
+  actionControllerVaultIpRefundIncentivesAction = (
+    data: VaultIPRefundIncentivesActionBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<VaultIPRefundIncentivesActionResponse, any>({
+      path: `/api/v1/action/vault/ip/refund`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get point directory based on the filters and page
+   *
+   * @tags Point
+   * @name PointControllerGetPointDirectory
+   * @summary Get point directory
+   * @request POST:/api/v1/point/directory
+   * @secure
+   */
+  pointControllerGetPointDirectory = (
+    data?: PointDirectoryRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<PointDirectoryResponse, any>({
+      path: `/api/v1/point/directory`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Subscribe to Royco Updates
+   *
+   * @tags Subscribe
+   * @name SubscribeControllerSubscribeBoyco
+   * @summary Subscribe to Royco Updates
+   * @request POST:/api/v1/subscribe/boyco
+   * @secure
+   */
+  subscribeControllerSubscribeBoyco = (
+    data: SubscribeBoycoBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<SubscribeBoycoResponse, any>({
+      path: `/api/v1/subscribe/boyco`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Simulate a series of transactions to determine their effects
+   *
+   * @tags Simulate
+   * @name SimulateControllerSimulateTransactions
+   * @summary Simulate transactions
+   * @request POST:/api/v1/simulate/{accountAddress}
+   * @secure
+   */
+  simulateControllerSimulateTransactions = (
+    accountAddress: string,
+    data: SimulateTransactionBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<SimulateTransactionResponse, any>({
+      path: `/api/v1/simulate/${accountAddress}`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get nonce for authentication
+   *
+   * @tags Auth
+   * @name AuthControllerGetNonce
+   * @summary Get nonce
+   * @request POST:/api/v1/auth/nonce
+   * @secure
+   */
+  authControllerGetNonce = (params: RequestParams = {}) =>
+    this.request<NonceResponse, any>({
+      path: `/api/v1/auth/nonce`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Login to the application
+   *
+   * @tags Auth
+   * @name AuthControllerLogin
+   * @summary Login
+   * @request POST:/api/v1/auth/login
+   * @secure
+   */
+  authControllerLogin = (data: LoginBody, params: RequestParams = {}) =>
+    this.request<LoginResponse, any>({
+      path: `/api/v1/auth/login`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Logout from the application
+   *
+   * @tags Auth
+   * @name AuthControllerLogout
+   * @summary Logout
+   * @request POST:/api/v1/auth/logout
+   * @secure
+   */
+  authControllerLogout = (data: LogoutBody, params: RequestParams = {}) =>
+    this.request<LogoutResponse, any>({
+      path: `/api/v1/auth/logout`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Revalidate the session
+   *
+   * @tags Auth
+   * @name AuthControllerRevalidateSession
+   * @summary Revalidate session
+   * @request POST:/api/v1/auth/revalidate
+   * @secure
+   */
+  authControllerRevalidateSession = (params: RequestParams = {}) =>
+    this.request<RevalidateSessionResponse, any>({
+      path: `/api/v1/auth/revalidate`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get activities given filters and sorting
+   *
+   * @tags Activity
+   * @name ActivityControllerGetActivities
+   * @summary Get activities
+   * @request POST:/api/v1/activity
+   * @secure
+   */
+  activityControllerGetActivities = (
+    data?: ActivityBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<ActivityResponse, any>({
+      path: `/api/v1/activity`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user info
+   *
+   * @tags User
+   * @name UserControllerGetUserInfo
+   * @summary Get user info
+   * @request POST:/api/v1/user/info
+   * @secure
+   */
+  userControllerGetUserInfo = (params: RequestParams = {}) =>
+    this.request<UserInfo, any>({
+      path: `/api/v1/user/info`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Edit user
+   *
+   * @tags User
+   * @name UserControllerEditUser
+   * @summary Edit user
+   * @request POST:/api/v1/user/edit
+   * @secure
+   */
+  userControllerEditUser = (data: EditUserBody, params: RequestParams = {}) =>
+    this.request<EditUserResponse, any>({
+      path: `/api/v1/user/edit`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Verify user email
+   *
+   * @tags User
+   * @name UserControllerVerifyUserEmail
+   * @summary Verify user email
+   * @request POST:/api/v1/user/verify/{id}
+   * @secure
+   */
+  userControllerVerifyUserEmail = (id: string, params: RequestParams = {}) =>
+    this.request<VerifyUserEmailResponse, any>({
+      path: `/api/v1/user/verify/${id}`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user balance
+   *
+   * @tags User
+   * @name UserControllerGetUserBalance
+   * @summary Get user balance
+   * @request POST:/api/v1/user/balance
+   * @secure
+   */
+  userControllerGetUserBalance = (
+    data: GetUserBalanceBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserBalanceResponse, any>({
+      path: `/api/v1/user/balance`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user leaderboard
+   *
+   * @tags User
+   * @name UserControllerGetUserLeaderboard
+   * @summary Get user leaderboard
+   * @request POST:/api/v1/user/leaderboard
+   * @secure
+   */
+  userControllerGetUserLeaderboard = (
+    data?: BaseRequestBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetUserLeaderboardResponse, any>({
+      path: `/api/v1/user/leaderboard`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user stats
+   *
+   * @tags User
+   * @name UserControllerGetUserStats
+   * @summary Get user stats
+   * @request POST:/api/v1/user/stats
+   * @secure
+   */
+  userControllerGetUserStats = (params: RequestParams = {}) =>
+    this.request<GetUserStatsResponse, any>({
+      path: `/api/v1/user/stats`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get expected rank
+   *
+   * @tags User
+   * @name UserControllerGetExpectedRank
+   * @summary Get expected rank
+   * @request POST:/api/v1/user/expected/rank
+   * @secure
+   */
+  userControllerGetExpectedRank = (
+    data: GetExpectedRankBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<GetExpectedRankResponse, any>({
+      path: `/api/v1/user/expected/rank`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Register user
+   *
+   * @tags User
+   * @name UserControllerRegisterUser
+   * @summary Register user
+   * @request POST:/api/v1/user/register
+   * @secure
+   */
+  userControllerRegisterUser = (
+    data: RegisterUserBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<RegisterUserResponse, any>({
+      path: `/api/v1/user/register`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get user safe info by account address
+   *
+   * @tags Safe
+   * @name SafeControllerGetEnrichedUserSafeInfo
+   * @summary Get user safe info
+   * @request POST:/api/v1/safe/info/{accountAddress}
+   * @secure
+   */
+  safeControllerGetEnrichedUserSafeInfo = (
+    accountAddress: string,
+    data?: EnrichedUserSafeInfoBody,
+    params: RequestParams = {},
+  ) =>
+    this.request<EnrichedUserSafeInfo, any>({
+      path: `/api/v1/safe/info/${accountAddress}`,
       method: "POST",
       body: data,
       secure: true,

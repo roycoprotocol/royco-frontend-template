@@ -65,7 +65,8 @@ export const FilterSelector = React.forwardRef<
 
     const searchData = useMemo(() => {
       if (!search) {
-        return data.sort((a, b) =>
+        const sortedData = [...data];
+        return sortedData.sort((a, b) =>
           selected?.includes(a.value) ? -1 : selected?.includes(b.value) ? 1 : 0
         );
       }
@@ -98,7 +99,7 @@ export const FilterSelector = React.forwardRef<
               side="bottom"
               align="end"
               className={cn(
-                "mx-3 flex h-fit max-h-[300px] flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
+                "mx-3 flex h-fit max-h-[340px] w-[320px] flex-col rounded-sm border border-_divider_ bg-_surface_ p-0 shadow-none",
                 containerClassName
               )}
             >
@@ -138,8 +139,8 @@ export const FilterSelector = React.forwardRef<
                             onSelect?.(item.value);
                           }}
                           className={cn(
-                            "flex cursor-pointer items-center gap-1 rounded-sm bg-_surface_tertiary px-2 py-1 hover:bg-_surface_secondary",
-                            isSelected && "border border-_primary_"
+                            "flex cursor-pointer items-center gap-1 rounded-sm border border-_surface_tertiary bg-_surface_tertiary px-2 py-1 hover:bg-_surface_secondary",
+                            isSelected && "border-_primary_"
                           )}
                         >
                           <SecondaryLabel
