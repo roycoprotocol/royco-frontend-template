@@ -18,7 +18,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "patch-package && next build",
     "start": "next start",
     "lint": "next lint",
     "generate-anon-key": "tsx scripts/generate-anon-key/index.tsx",
