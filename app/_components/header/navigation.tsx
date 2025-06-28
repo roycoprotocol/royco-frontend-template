@@ -13,6 +13,7 @@ import { tagAtom } from "@/store/protector/protector";
 import { useAtomValue } from "jotai";
 import { PlumeLogo } from "@/assets/logo/plume/plume";
 import Link from "next/link";
+import { loadablePortfolioPositionsAtom } from "@/store/portfolio";
 
 const Links = [
   {
@@ -43,6 +44,10 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
     const tag = useAtomValue(tagAtom);
 
     const [open, setOpen] = React.useState(false);
+
+    const { data: portfolioPositions } = useAtomValue(
+      loadablePortfolioPositionsAtom
+    );
 
     return (
       <div
@@ -175,6 +180,42 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
             </motion.div>
           )}
         </AnimatePresence>
+
+        {portfolioPositions &&
+          portfolioPositions.positions.some(
+            (position) =>
+              position.marketLink.startsWith("vault/boring") &&
+              position.depositToken.rawAmount !== "0"
+          ) && (
+            <div className="flex w-full justify-center bg-_primary_/80 py-2">
+              <a
+                href="https://paragraph.xyz/@royco/sonic-is-partnering-with-royco-to-help-distribute-200,000,000-dollars-to-boost-its-thriving-defi-ecosystem-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="text-center text-xs text-_surface_">
+                  <span>
+                    <span className="font-semibold underline underline-offset-2">
+                      Update on Royco Vault: Temporary Pause - Please Withdraw
+                      Funds{" "}
+                    </span>
+                    <span>
+                      Due to a change in partner participation, we're
+                      temporarily pausing the Royco Vault. <br /> Your funds
+                      remain secure, and we kindly ask that you withdraw at your
+                      earliest convenience. For support please email:{" "}
+                    </span>
+                    <a
+                      href="mailto:support@royco.org"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      support@royco.org
+                    </a>
+                  </span>
+                </div>
+              </a>
+            </div>
+          )}
 
         {tag === "boyco" && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
