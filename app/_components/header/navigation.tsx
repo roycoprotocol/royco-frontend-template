@@ -189,7 +189,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
           ) && (
             <div className="flex w-full justify-center bg-_primary_/80 py-2">
               <a
-                href="https://paragraph.xyz/@royco/sonic-is-partnering-with-royco-to-help-distribute-200,000,000-dollars-to-boost-its-thriving-defi-ecosystem-1"
+                href="https://app.royco.org/vault/boring/1/0x74d1fafa4e0163b2f1035f1b052137f3f9bad5cc"
                 target="_blank"
                 rel="noopener noreferrer"
               >
