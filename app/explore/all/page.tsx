@@ -35,7 +35,7 @@ const Page = () => {
           </div>
 
           <ExploreWrapper>
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <div>
                 <VaultsFilter />
               </div>
@@ -43,7 +43,7 @@ const Page = () => {
               <div className="mt-6">
                 <VaultsTable />
               </div>
-            </div>
+            </div> */}
 
             <div className="mt-16">
               <div>
