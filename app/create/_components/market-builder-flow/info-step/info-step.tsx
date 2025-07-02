@@ -63,7 +63,10 @@ export const InfoStep = React.forwardRef<
         />
       </MotionWrapper>
 
-      {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
+      {/**
+       * Vault markets are deprecated, so all markets are recipe markets now
+       */}
+      {/* {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
         <MotionWrapper delay={0.2}>
           <FormActionType
             className="mt-9"
@@ -79,7 +82,7 @@ export const InfoStep = React.forwardRef<
             marketBuilderForm={marketBuilderForm}
           />
         </MotionWrapper>
-      )}
+      )} */}
 
       {process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco" && (
         <MotionWrapper delay={0.3}>

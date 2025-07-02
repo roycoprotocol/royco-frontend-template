@@ -109,17 +109,21 @@ export const IncentiveScheduleMap: Record<
     icon: RssIcon,
     type: "recipe",
   },
-  streaming: {
-    index: 4,
-    id: "streaming",
-    label: "Streaming",
-    tag: "",
-    //TODO: change description
-    description:
-      "Payment is streamed until users withdraw from the ERC4626 Vault.",
-    icon: ActivityIcon,
-    type: "vault",
-  },
+  /**
+   * @note Vault markets are deprecated, so all markets are recipe markets now
+   * and therefore, there is no streaming incentive schedule
+   */
+  // streaming: {
+  //   index: 4,
+  //   id: "streaming",
+  //   label: "Streaming",
+  //   tag: "",
+  //   //TODO: change description
+  //   description:
+  //     "Payment is streamed until users withdraw from the ERC4626 Vault.",
+  //   icon: ActivityIcon,
+  //   type: "vault",
+  // },
 };
 
 export const CreateActionsMap: Record<
