@@ -1,6 +1,6 @@
 "use client";
 
-import { initMixpanel } from "@/utils/mixpanel-client";
+import Mixpanel from "./mixpanel";
 import React, { useEffect } from "react";
 
 interface MixpanelWrapperProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -10,7 +10,7 @@ export const MixpanelWrapper = React.forwardRef<
   MixpanelWrapperProps
 >(({ children, ...props }, ref) => {
   useEffect(() => {
-    initMixpanel(); // Initialize Mixpanel
+    Mixpanel.getInstance();
   }, []);
 
   return <>{children}</>;

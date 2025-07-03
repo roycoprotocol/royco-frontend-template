@@ -8,11 +8,13 @@ import { useMarketManager } from "@/store/use-market-manager";
 import { SecondaryLabel } from "../composables/common-labels";
 import { motion } from "framer-motion";
 import { RoycoLogoWhiteIcon } from "@/assets/logo/royco-logo-white";
+import { useMixpanel } from "@/services/mixpanel";
 
 export const SimpleMarketManager = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackMarketAdvancedModeToggled } = useMixpanel();
   const { marketStep, viewType, setViewType } = useMarketManager();
 
   return (
@@ -77,6 +79,9 @@ export const SimpleMarketManager = forwardRef<
               }
 
               setViewType(updateViewType);
+              trackMarketAdvancedModeToggled({
+                advanced_mode: updateViewType === MarketViewType.advanced.id,
+              });
             }}
           />
         </SecondaryLabel>

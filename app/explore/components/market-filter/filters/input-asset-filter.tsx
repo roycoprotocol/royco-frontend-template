@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
@@ -12,6 +12,7 @@ import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/
 import { ListFilter } from "lucide-react";
 import { FilterSelector } from "@/app/explore/common/filter-selector";
 import { TokenDisplayer } from "@/components/common";
+import { useMixpanel } from "@/services/mixpanel/use-mixpanel";
 
 const FILTER_ID = "inputTokenId";
 
@@ -19,6 +20,7 @@ export const InputAssetFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackExploreInputAssetChanged } = useMixpanel();
   const { data } = useAtomValue(loadableExploreAssetFilterOptionsAtom);
 
   const [filters, setFilters] = useAtom(marketFiltersAtom);
@@ -123,6 +125,12 @@ export const InputAssetFilter = React.forwardRef<
   const selectedOptions = useMemo(() => {
     return allOptions.filter((option) => doFilterExists(option.value));
   }, [allOptions, filters]);
+
+  useEffect(() => {
+    trackExploreInputAssetChanged({
+      input_assets: selectedOptions.map((option) => option.label),
+    });
+  }, [selectedOptions]);
 
   return (
     <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>

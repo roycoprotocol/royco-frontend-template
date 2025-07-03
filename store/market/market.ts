@@ -9,6 +9,7 @@ import {
 import { accountAddressAtom, lastRefreshTimestampAtom } from "../global";
 import { atomWithLocation } from "jotai-location";
 import { defaultQueryOptions } from "@/utils/query";
+import { Mixpanel } from "@/services/mixpanel";
 
 // Market ID
 const locationAtom = atomWithLocation();
@@ -21,6 +22,13 @@ export const marketIdAtom = atom((get) => {
     const chainId = Number(segments[1]);
     const marketType = Number(segments[2]);
     const marketId = segments[3].toLowerCase();
+
+    Mixpanel.getInstance().marketViewed({
+      market_id: marketId,
+      market_type:
+        marketType === 0 ? "recipe" : marketType === 1 ? "vault" : "campaign",
+      chain_id: chainId,
+    });
 
     return `${chainId}_${marketType}_${marketId}`;
   }

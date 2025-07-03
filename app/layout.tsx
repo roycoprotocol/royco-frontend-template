@@ -20,7 +20,7 @@ import { DataProvider } from "./_containers/providers/data-provider";
 import { headers } from "next/headers";
 import { WalletEditor } from "./_components/user/wallet-editor";
 import { EmailEditor } from "./_components/user/email-editor";
-import { MixpanelWrapper } from "./_containers/wrappers/mixpanel-wrapper";
+import { MixpanelWrapper } from "../services/mixpanel/mixpanel-wrapper";
 
 /**
  * Inter Font
