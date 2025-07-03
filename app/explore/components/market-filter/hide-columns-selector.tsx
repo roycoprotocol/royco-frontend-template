@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -18,6 +18,7 @@ import { useAtomValue } from "jotai";
 import { tagAtom } from "@/store/protector/protector";
 import { exploreMarketColumnNames } from "../market-table/columns/explore-market-columns";
 import { useExploreMarket } from "@/store/explore/use-explore-market";
+import { useMixpanel } from "@/services/mixpanel/use-mixpanel";
 
 export const HideColumnsSelector = React.forwardRef<
   HTMLDivElement,
@@ -25,6 +26,7 @@ export const HideColumnsSelector = React.forwardRef<
     containerClassName?: string;
   }
 >(({ children, className, containerClassName, ...props }, ref) => {
+  const { trackExploreVisiblePropertiesChanged } = useMixpanel();
   const tag = useAtomValue(tagAtom);
 
   const { hiddenTableColumns, setHiddenTableColumns } = useExploreMarket();
@@ -80,6 +82,14 @@ export const HideColumnsSelector = React.forwardRef<
       setHiddenTableColumns([...hiddenTableColumns, value]);
     }
   };
+
+  useEffect(() => {
+    trackExploreVisiblePropertiesChanged({
+      visible_properties: columns
+        .filter((column) => !hiddenTableColumns.includes(column.value))
+        .map((column) => column.label),
+    });
+  }, [hiddenTableColumns]);
 
   return (
     <div ref={ref} className={cn("", className)} {...props}>

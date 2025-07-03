@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
@@ -21,6 +21,7 @@ import { PrimaryLabel } from "@/app/market/[chain_id]/[market_type]/[market_id]/
 import { ListFilter } from "lucide-react";
 import { FilterSelector } from "@/app/explore/common/filter-selector";
 import { tagAtom } from "@/store/protector/protector";
+import { useMixpanel } from "@/services/mixpanel/use-mixpanel";
 
 const FILTER_ID = "chainId";
 
@@ -30,6 +31,8 @@ export const ChainFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackExploreChainChanged } = useMixpanel();
+
   const tag = useAtomValue(tagAtom);
   const [filters, setFilters] = useAtom(marketFiltersAtom);
   const setExploreMarketPage = useSetAtom(marketPageAtom);
@@ -123,6 +126,12 @@ export const ChainFilter = React.forwardRef<
   const selectedOptions = useMemo(() => {
     return allOptions.filter((option) => doFilterExists(option.value));
   }, [allOptions, filters]);
+
+  useEffect(() => {
+    trackExploreChainChanged({
+      chains: selectedOptions.map((option) => option.value),
+    });
+  }, [selectedOptions]);
 
   return (
     <div ref={ref} className={cn("flex flex-wrap gap-2", className)} {...props}>
