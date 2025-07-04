@@ -1,0 +1,228 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "uintValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int256",
+        "name": "intValue",
+        "type": "int256"
+      },
+      {
+        "internalType": "bool",
+        "name": "boolValue",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "addressValue",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "stringValue",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "bytesValue",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "bytes32Value",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "uintArray",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "stringArray",
+        "type": "string[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "addressArray",
+        "type": "address[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TestContract.User",
+        "name": "userStruct",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TestContract.Item[]",
+        "name": "itemArray",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "mapping(address => uint256)",
+        "name": "balanceMapping",
+        "type": "mapping(address => uint256)"
+      },
+      {
+        "internalType": "mapping(address => mapping(uint256 => bool))",
+        "internalType": "nestedMapping",
+        "type": "mapping(address => mapping(uint256 => bool))"
+      },
+      {
+        "internalType": "enum TestContract.Status",
+        "name": "statusEnum",
+        "type": "uint8"
+      }
+    ],
+    "name": "testAllTypes",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "payableFunction",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "viewFunction",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "pureFunction",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "fallback",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "message",
+        "type": "string"
+      }
+    ],
+    "name": "receive",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "receive"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "TestEvent",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "constructor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  }
+]

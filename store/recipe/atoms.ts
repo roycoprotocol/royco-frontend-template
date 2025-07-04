@@ -1,8 +1,14 @@
 import { atom } from "jotai";
 import { isAddress, toFunctionSignature } from "viem";
 import { Abi } from "abitype/zod";
+import { RecipeAction, RecipeFunction } from "./types";
+import { testAbi } from "@/weiroll/test-abi";
 
-export const recipeContractAddressAtom = atom<string>("");
+export const recipeChainIdAtom = atom<number>(1);
+
+export const recipeContractAddressAtom = atom<string>(
+  "0x136205a9148F40F7D7D78f59B35560421b41277e"
+);
 export const recipeContractAddressStatusAtom = atom<{
   status: "empty" | "valid" | "invalid";
   message: string;
@@ -25,7 +31,7 @@ export const recipeContractAddressStatusAtom = atom<{
   };
 });
 
-export const recipeContractAbiAtom = atom<string>("");
+export const recipeContractAbiAtom = atom<string>(JSON.stringify(testAbi));
 export const recipeContractAbiStatusAtom = atom<{
   status: "empty" | "valid" | "invalid";
   message: string;
@@ -53,23 +59,9 @@ export const recipeContractAbiStatusAtom = atom<{
   }
 });
 
-export const recipeContractFunctionsAtom = atom<
-  {
-    id: string;
-    address: string;
-    name: string;
-    inputs: {
-      name: string;
-      type: string;
-    }[];
-    outputs: {
-      name: string;
-      type: string;
-    }[];
-    stateMutability: "pure" | "view" | "nonpayable" | "payable";
-    type: "function" | "constructor" | "event" | "error";
-  }[]
->((get) => {
+export const recipeContractFunctionsAtom = atom<RecipeFunction[]>((get) => {
+  const chainId = get(recipeChainIdAtom);
+
   const contractAddressStatus = get(recipeContractAddressStatusAtom);
   if (contractAddressStatus.status !== "valid") return [];
 
@@ -85,10 +77,11 @@ export const recipeContractFunctionsAtom = atom<
     .map((item, itemIndex) => {
       const functionSignature = toFunctionSignature(item);
 
-      const id = `${functionSignature}_${itemIndex}`;
+      const id = `${itemIndex}_${functionSignature}`;
 
       return {
         id,
+        chainId,
         address: contractAddress,
         name: item.name,
         inputs: item.inputs.map((input) => ({
@@ -108,25 +101,4 @@ export const recipeContractFunctionsAtom = atom<
   return functions;
 });
 
-export const recipeActionsAtom = atom<
-  {
-    id: string;
-    callType: 0 | 1 | 2; // 0: delegatecall, 1: call, 2: staticcall/callwithvalue
-    callValue: string;
-    address: string;
-    name: string;
-    inputs: {
-      name: string;
-      type: string;
-      inputType: "fixed" | "dynamic";
-      fixedValue: string;
-      dynamicValue: number;
-    }[];
-    outputs: {
-      name: string;
-      type: string;
-    }[];
-    stateMutability: "pure" | "view" | "nonpayable" | "payable";
-    type: "function" | "constructor" | "event" | "error";
-  }[]
->([]);
+export const recipeActionsAtom = atom<RecipeAction[]>([]);
