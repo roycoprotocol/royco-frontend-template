@@ -26,6 +26,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "size-8 rounded-lg [&_svg]:size-4",
+        xs: "size-5 [&_svg]:size-3",
         sm: "size-6 [&_svg]:size-3",
         md: "size-10 rounded-lg [&_svg]:size-5",
         lg: "size-12 rounded-xl [&_svg]:size-6",
@@ -103,7 +104,7 @@ function CopyButton({
       onClick={handleCopy}
       {...props}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false} mode="wait">
         <motion.span
           key={localIsCopied ? "check" : "copy"}
           data-slot="copy-button-icon"
