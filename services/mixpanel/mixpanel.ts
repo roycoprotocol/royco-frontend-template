@@ -49,7 +49,9 @@ class Mixpanel {
       mixpanel.init(MIXPANEL_TOKEN, {
         autocapture: true,
         debug: process.env.NODE_ENV === "development",
-        record_sessions_percent: 1,
+        record_sessions_percent: 10,
+        record_mask_text_selector: "",
+        record_block_selector: "",
       });
       this.initialized = true;
     } catch (error) {
