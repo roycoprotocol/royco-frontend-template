@@ -14,16 +14,24 @@ export const loadableUserInfoAtom = atomWithQuery<UserInfo>((get) => ({
     const response = await api.userControllerGetUserInfo();
     const data = response.data;
 
-    Mixpanel.getInstance().setUserProfile({
-      email: data.email,
-      name: data.name,
-      description: data.description,
-      pfpUrl: data.pfpUrl,
-      wallets: data.wallets,
-      subscribed: data.subscribed,
-      verified: data.verified,
-      hasRoyaltyAccess: data.hasRoyaltyAccess,
-    });
+    if (data) {
+      Mixpanel.getInstance().setUserProfile({
+        email: data.email,
+        name: data.name,
+        description: data.description,
+        pfpUrl: data.pfpUrl,
+        balance: data.wallets.reduce(
+          (acc, wallet) => acc + wallet.balanceUsd,
+          0
+        ),
+        wallets: data.wallets.map((wallet) => ({
+          address: wallet.id,
+        })),
+        subscribed: data.subscribed,
+        verified: data.verified,
+        hasRoyaltyAccess: data.hasRoyaltyAccess,
+      });
+    }
 
     return data;
   },
