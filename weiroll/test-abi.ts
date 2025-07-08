@@ -71,4 +71,44 @@ export const testAbi = [
     outputs: [],
     stateMutability: "view",
   },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "tuple_type",
+        internalType: "(address,uint256,bool,string,bytes)",
+        type: "tuple",
+        components: [
+          {
+            name: "address_type",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "int_type",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          {
+            name: "bool_type",
+            internalType: "bool",
+            type: "bool",
+          },
+          {
+            name: "string_type",
+            internalType: "string",
+            type: "string",
+          },
+          {
+            name: "bytes_type",
+            internalType: "bytes",
+            type: "bytes",
+          },
+        ],
+      },
+    ],
+    name: "array_function",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
 ] as const;

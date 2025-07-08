@@ -75,6 +75,8 @@ export const RecipeActionRow = React.forwardRef<
   ) => {
     const [recipeActions, setRecipeActions] = useAtom(recipeActionsAtom);
 
+    console.log("recipeActions", recipeActions);
+
     const functionSignature = toFunctionSignature({
       ...action,
       type: "function" as const,
@@ -214,76 +216,72 @@ export const RecipeActionRow = React.forwardRef<
         {/**
          * @note Call Type Selector
          */}
-        <div className="mt-3 flex h-fit w-fit flex-row items-start gap-1">
-          <div className="flex h-6 w-16 shrink-0 flex-col items-center justify-center bg-_secondary_ text-center text-white">
+        <div className="mt-3 flex h-6 w-fit flex-row items-center gap-1">
+          <div className="flex h-6 w-16 flex-col items-center justify-center bg-_secondary_ text-center text-white">
             CALL
           </div>
 
-          <div className="flex flex-col gap-1">
-            <div className="flex h-6 flex-row gap-1">
-              {[
-                {
-                  id: RecipeActionCallType.CALL,
-                  name: "Regular",
-                },
-                {
-                  id: RecipeActionCallType.STATICCALL,
-                  name: "Static",
-                },
-                {
-                  id: RecipeActionCallType.DELEGATECALL,
-                  name: "Delegate",
-                },
-              ].map((callType) => (
-                <div
-                  key={`${action.id}-callType-${callType.id}`}
-                  onClick={() => changeActionCallType(actionIndex, callType.id)}
-                  className={cn(
-                    "flex h-6 w-28 shrink-0 cursor-pointer flex-col items-center justify-center bg-_surface_tertiary px-2 hover:opacity-80",
-                    action.callType === callType.id &&
-                      "bg-_brand_custom_blue_ text-white"
-                  )}
-                >
-                  {callType.name}
-                </div>
-              ))}
-            </div>
-
-            {action.callType === RecipeActionCallType.CALL &&
-              action.stateMutability === "payable" && (
-                <Input
-                  containerClassName="bg-_surface_tertiary rounded-none h-6 text-xs w-full px-2 border-none h-6"
-                  className=""
-                  placeholder="Call Value"
-                  value={action.callValue ?? ""}
-                  onChange={(e) => {
-                    if (isNumeric(e.target.value)) {
-                      setRecipeActions(
-                        recipeActions.map((action, index) =>
-                          index === actionIndex
-                            ? {
-                                ...action,
-                                callValue: e.target.value,
-                              }
-                            : action
-                        )
-                      );
-                    } else if (e.target.value === "") {
-                      setRecipeActions(
-                        recipeActions.map((action, index) =>
-                          index === actionIndex
-                            ? {
-                                ...action,
-                                callValue: "",
-                              }
-                            : action
-                        )
-                      );
-                    }
-                  }}
-                />
+          {[
+            {
+              id: RecipeActionCallType.CALL,
+              name: "Regular",
+            },
+            {
+              id: RecipeActionCallType.STATICCALL,
+              name: "Static",
+            },
+            {
+              id: RecipeActionCallType.DELEGATECALL,
+              name: "Delegate",
+            },
+          ].map((callType) => (
+            <div
+              key={`${action.id}-callType-${callType.id}`}
+              onClick={() => changeActionCallType(actionIndex, callType.id)}
+              className={cn(
+                "flex h-6 w-20 cursor-pointer flex-col items-center justify-center bg-_surface_tertiary hover:opacity-80",
+                action.callType === callType.id &&
+                  "bg-_brand_custom_blue_ text-white"
               )}
-          </div>
+            >
+              {callType.name}
+            </div>
+          ))}
+
+          {action.callType === RecipeActionCallType.CALL &&
+            action.stateMutability === "payable" && (
+              <Input
+                containerClassName="bg-_surface_tertiary rounded-none h-6 text-xs w-96 px-2 border-none"
+                className=""
+                placeholder="Call Value"
+                value={action.callValue ?? ""}
+                onChange={(e) => {
+                  if (isNumeric(e.target.value)) {
+                    setRecipeActions(
+                      recipeActions.map((action, index) =>
+                        index === actionIndex
+                          ? {
+                              ...action,
+                              callValue: e.target.value,
+                            }
+                          : action
+                      )
+                    );
+                  } else if (e.target.value === "") {
+                    setRecipeActions(
+                      recipeActions.map((action, index) =>
+                        index === actionIndex
+                          ? {
+                              ...action,
+                              callValue: "",
+                            }
+                          : action
+                      )
+                    );
+                  }
+                }}
+              />
+            )}
         </div>
 
         <div className="mt-3 flex w-full flex-col items-center justify-between gap-1">
@@ -293,41 +291,103 @@ export const RecipeActionRow = React.forwardRef<
                 INPUTS
               </div>
 
-              <ScrollArea className="flex h-auto w-12 flex-1 grow flex-col overflow-x-hidden ">
-                <div className="flex h-fit w-fit flex-1 grow flex-col gap-1">
-                  {action.inputs.map((input, inputIndex) => (
-                    <div
-                      key={inputIndex}
-                      className="flex flex-row items-center gap-1"
+              <div className="flex h-fit w-fit flex-1 grow flex-col gap-1">
+                {action.inputs.map((input, inputIndex) => (
+                  <div
+                    key={inputIndex}
+                    className="flex flex-row items-center gap-1"
+                  >
+                    {/* <div className="flex h-6 w-fit shrink-0 flex-col items-center justify-center bg-_surface_tertiary px-2 font-mono text-_primary_">
+                      .{inputIndex + 1}
+                    </div> */}
+
+                    {/* <div className="h-6 w-20 shrink-0 place-content-center overflow-hidden truncate text-ellipsis bg-_surface_tertiary px-2 text-center text-_primary_">
+                      {input.type}
+                    </div> */}
+
+                    {/* <div
+                      onClick={() => {
+                        setRecipeActions(
+                          recipeActions.map((action, index) =>
+                            index === actionIndex
+                              ? {
+                                  ...action,
+                                  inputs: action.inputs.map(
+                                    (input, subIndex) =>
+                                      subIndex === inputIndex
+                                        ? {
+                                            ...input,
+                                            valueType:
+                                              input.valueType ===
+                                              RecipeActionValueType.STATIC
+                                                ? RecipeActionValueType.DYNAMIC
+                                                : RecipeActionValueType.STATIC,
+                                          }
+                                        : input
+                                  ),
+                                }
+                              : action
+                          )
+                        );
+                      }}
+                      className="flex h-6 w-24 shrink-0 cursor-pointer flex-row items-center justify-between bg-_secondary_ px-2 text-white transition-all duration-200 ease-in-out hover:bg-_secondary_/80"
                     >
-                      <ActionInput
-                        accessPath={[
-                          {
-                            type: "action_index",
-                            value: actionIndex,
-                          },
-                          {
-                            type: "input_index",
-                            value: inputIndex,
-                          },
-                        ]}
+                      <div className="flex w-fit flex-col items-center justify-center">
+                        {input.valueType === RecipeActionValueType.STATIC
+                          ? "Static"
+                          : "Dynamic"}
+                      </div>
+
+                      <ArrowLeftRightIcon
+                        strokeWidth={1.5}
+                        className="h-4 w-4"
                       />
                     </div>
-                  ))}
-                </div>
 
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+                    <div
+                      className={cn(
+                        "flex h-6 w-6 shrink-0 flex-col items-center justify-center",
+                        input.status === ActionInputStatus.VALID
+                          ? "bg-success text-white"
+                          : "bg-error text-white"
+                      )}
+                    >
+                      {input.status === ActionInputStatus.VALID ? (
+                        <CheckIcon className="text-_success_ h-4 w-4" />
+                      ) : (
+                        <XIcon className="text-_error_ h-4 w-4" />
+                      )}
+                    </div>
+
+                    <div className="h-6 w-fit shrink-0 place-content-center overflow-hidden truncate text-ellipsis bg-_surface_secondary px-2 text-center font-normal text-_primary_">
+                      {input.name ?? "Unknown"}
+                    </div> */}
+
+                    <ActionInput
+                      accessPath={[
+                        {
+                          type: "action",
+                          value: actionIndex,
+                        },
+                        {
+                          type: "input",
+                          value: inputIndex,
+                        },
+                      ]}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {action.outputs.length > 0 && (
-            <div className="flex w-full flex-row items-center gap-1">
-              <div className=" flex h-6 w-16 flex-col items-center justify-center bg-_brand_gold_ text-center text-white">
+            <div className="grid w-full grid-cols-12 items-start gap-1">
+              <div className="col-span-1 flex h-6 flex-col items-center justify-center bg-_brand_gold_ text-center text-white">
                 OUTPUT
               </div>
 
-              <div className="flex h-6 w-fit flex-row items-center gap-1 bg-_surface_tertiary px-2">
+              <div className="col-span-11 flex h-6 w-fit flex-row items-center gap-1 bg-_surface_tertiary px-2">
                 <GripIcon
                   strokeWidth={1}
                   className="h-4 w-4 cursor-pointer text-_tertiary_"
@@ -439,6 +499,8 @@ export const ActionEditor = React.forwardRef<
         className
       )}
     >
+      <div>Recipe Actions</div>
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -447,7 +509,7 @@ export const ActionEditor = React.forwardRef<
         onDragEnd={handleDragEnd}
       >
         <ScrollArea className="h-[70vh] px-2 drop-shadow-sm">
-          <div ref={setNodeRef} className="flex w-full flex-col gap-1">
+          <div ref={setNodeRef} className="flex flex-col gap-1">
             <SortableContext
               items={recipeActions}
               strategy={verticalListSortingStrategy}
