@@ -127,7 +127,7 @@ export default function RootLayout({
 
               <Toaster />
 
-              <Analytics />
+              {process.env.NODE_ENV !== "development" && <Analytics />}
 
               {/* <TextReplacer /> */}
             </body>

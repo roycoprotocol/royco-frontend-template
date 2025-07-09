@@ -1,0 +1,36 @@
+"use client";
+
+import React from "react";
+import { Input } from "@/components/ui/input";
+
+// Custom integer validation function that allows negative values and partial input
+const isValidInt = (value: string): boolean => {
+  if (value === "") return true;
+  // Allow integers (positive and negative), including partial input like just "-"
+  return /^-?\d*$/.test(value);
+};
+
+export const InputInt = React.forwardRef<
+  HTMLInputElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    value: string;
+    onChange: (value: string) => void;
+  }
+>(({ value, onChange, ...props }, ref) => {
+  return (
+    <Input
+      {...props}
+      ref={ref}
+      newHeight="h-6"
+      placeholder="123"
+      containerClassName="w-full rounded-none bg-_surface_ border-_divider_ text-xs bg-_surface_tertiary px-0 border-none w-96"
+      className="px-2"
+      value={value}
+      onChange={(e) => {
+        if (isValidInt(e.target.value)) {
+          onChange(e.target.value);
+        }
+      }}
+    />
+  );
+});

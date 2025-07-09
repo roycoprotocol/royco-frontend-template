@@ -90,6 +90,15 @@ const config = {
         _highlight_: "#83715C",
 
         _primary_text_: "#6C4315",
+
+        _brand_ash_: "#D4C5B4",
+        _brand_silver_: "#B6B3AD",
+        _brand_gold_: "#DA913E",
+        _brand_bronze_: "#83715C",
+        _brand_white_: "#FBF6ED",
+
+        _brand_custom_blue_: "#3DA0D9",
+        _brand_custom_cherry_: "#D93D6C",
       },
       keyframes: {
         "accordion-down": {

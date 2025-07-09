@@ -1,5 +1,6 @@
 import { FunctionSelector } from "./_components/function-selector/function-selector";
 import { ActionEditor } from "./_components/action-editor/action-editor";
+import { ActionsValidator } from "./_components/actions-validator";
 
 export default function Page() {
   return (
@@ -10,6 +11,8 @@ export default function Page() {
 
         <ActionEditor className="col-span-8" />
       </div>
+
+      <ActionsValidator />
     </div>
   );
 }
