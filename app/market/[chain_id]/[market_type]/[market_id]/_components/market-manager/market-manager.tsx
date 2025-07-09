@@ -24,11 +24,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
 import { userTypeAtom } from "@/store/market/atoms";
 import Link from "next/link";
+import { useMixpanel } from "@/services/mixpanel";
 
 export const MarketManager = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackMarketAdvancedModeToggled, trackMarketUserTypeToggled } =
+    useMixpanel();
   const { viewType, setViewType, userType, setUserType } = useMarketManager();
 
   const { data: enrichedMarket, isLoading } = useAtomValue(
@@ -154,8 +157,14 @@ export const MarketManager = React.forwardRef<
                 onCheckedChange={() => {
                   if (userType === MarketUserType.ap.id) {
                     setUserType(MarketUserType.ip.id);
+                    trackMarketUserTypeToggled({
+                      user_type: "ip",
+                    });
                   } else {
                     setUserType(MarketUserType.ap.id);
+                    trackMarketUserTypeToggled({
+                      user_type: "ap",
+                    });
                   }
                 }}
               />
@@ -184,6 +193,10 @@ export const MarketManager = React.forwardRef<
                   }
 
                   setViewType(updateViewType);
+                  trackMarketAdvancedModeToggled({
+                    advanced_mode:
+                      updateViewType === MarketViewType.advanced.id,
+                  });
                 }}
               />
             </SecondaryLabel>

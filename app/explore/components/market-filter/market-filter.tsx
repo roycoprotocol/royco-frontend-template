@@ -26,11 +26,14 @@ import { IncentiveAssetFilter } from "./filters/incentive-asset-filter";
 import { Switch } from "@/components/ui/switch";
 import { usePathname } from "next/navigation";
 import { InputTokenTagFilter } from "./filters/input-token-tag-filter";
+import { useMixpanel } from "@/services/mixpanel/use-mixpanel";
 
 export const MarketFilter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackExploreSearchChanged } = useMixpanel();
+
   const pathname = usePathname();
   const filterVerifiedMarketOption = useMemo(
     () => (pathname === "/explore/all" ? true : false),
@@ -112,7 +115,12 @@ export const MarketFilter = React.forwardRef<
                   <Input
                     placeholder="Search"
                     value={marketSearch}
-                    onChange={(e) => setMarketSearch(e.target.value)}
+                    onChange={(e) => {
+                      setMarketSearch(e.target.value);
+                      trackExploreSearchChanged({
+                        search_query: e.target.value,
+                      });
+                    }}
                     className="text-sm font-medium text-_primary_"
                     containerClassName="px-4 border border-_secondary_ rounded-sm bg-transparent"
                   />
