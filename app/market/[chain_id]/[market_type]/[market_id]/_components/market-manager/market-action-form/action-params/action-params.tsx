@@ -9,6 +9,7 @@ import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import { HorizontalTabs } from "@/components/composables";
 import { SupplyAction } from "./supply-action";
 import { WithdrawAction } from "./withdraw-action";
+import { useMixpanel } from "@/services/mixpanel";
 
 export const ActionParams = React.forwardRef<
   HTMLDivElement,
@@ -16,6 +17,7 @@ export const ActionParams = React.forwardRef<
     marketActionForm: UseFormReturn<z.infer<typeof MarketActionFormSchema>>;
   }
 >(({ className, marketActionForm, ...props }, ref) => {
+  const { trackMarketFromActionChanged } = useMixpanel();
   const { actionType, setActionType, userType } = useMarketManager();
 
   return (
@@ -30,7 +32,19 @@ export const ActionParams = React.forwardRef<
               baseId="market:action-type"
               tabs={Object.values(MarketActionType)}
               activeTab={actionType}
-              setter={setActionType}
+              setter={(value: any) => {
+                setActionType(value);
+
+                if (value === MarketActionType.supply.id) {
+                  trackMarketFromActionChanged({
+                    from_action: "supply",
+                  });
+                } else {
+                  trackMarketFromActionChanged({
+                    from_action: "withdraw",
+                  });
+                }
+              }}
             />
           </SlideUpWrapper>
         </div>

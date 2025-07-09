@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { SecondaryLabel, TertiaryLabel } from "../../../../../composables";
 import { useAtomValue } from "jotai";
 import { loadableEnrichedMarketAtom } from "@/store/market/atoms";
+import { useMixpanel } from "@/services/mixpanel";
 
 export const OfferTypeSelector = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  const { trackMarketOfferTypeChanged } = useMixpanel();
   const { offerType, setOfferType, userType } = useMarketManager();
 
   const { data: enrichedMarket } = useAtomValue(loadableEnrichedMarketAtom);
@@ -84,6 +86,16 @@ export const OfferTypeSelector = React.forwardRef<
                 variant="ghost"
                 onClick={() => {
                   setOfferType(option.id);
+
+                  if (option.id === MarketOfferType.limit.id) {
+                    trackMarketOfferTypeChanged({
+                      offer_type: "limit",
+                    });
+                  } else {
+                    trackMarketOfferTypeChanged({
+                      offer_type: "market",
+                    });
+                  }
                 }}
                 disabled={isOfferTypeDisabled(option)}
                 className={cn(

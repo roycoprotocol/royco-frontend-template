@@ -14,7 +14,6 @@ import {
   DatabaseIcon,
   MoveDownIcon,
   MoveUpIcon,
-  ScaleIcon,
   SparklesIcon,
   LineChartIcon,
 } from "lucide-react";
@@ -47,6 +46,7 @@ import {
   formatLockupTimeAbbreviated,
 } from "@/utils/lockup-time";
 import { tagAtom } from "@/store/protector/protector";
+import { useMixpanel } from "@/services/mixpanel/use-mixpanel";
 
 export const exploreMarketColumnNames = {
   name: { label: "Market", type: ["default", "boyco", "sonic", "plume"] },
@@ -95,6 +95,7 @@ export const exploreMarketColumnNames = {
 
 export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
   ({ className, column, ...props }, ref) => {
+    const { trackExploreMarketSortChanged } = useMixpanel();
     const columnName = (exploreMarketColumnNames as any)[column.id];
 
     if (!columnName) {
@@ -119,6 +120,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
                 desc: true,
               },
             ]);
+            trackExploreMarketSortChanged({
+              sort_id: columnName.sortId,
+              order: "desc",
+            });
             return;
           }
 
@@ -129,6 +134,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
                 desc: false,
               },
             ]);
+            trackExploreMarketSortChanged({
+              sort_id: columnName.sortId,
+              order: "asc",
+            });
             return;
           }
 
@@ -138,6 +147,10 @@ export const HeaderWrapper = React.forwardRef<HTMLDivElement, any>(
               desc: true,
             },
           ]);
+          trackExploreMarketSortChanged({
+            sort_id: columnName.sortId,
+            order: "desc",
+          });
         }}
         className={cn(
           "group flex cursor-pointer items-center gap-1",

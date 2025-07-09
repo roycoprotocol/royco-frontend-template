@@ -4,13 +4,36 @@ import { UserInfo, WalletInfo } from "royco/api";
 import { api } from "@/app/api/royco";
 import { defaultQueryOptions } from "@/utils/query";
 import { isAuthenticatedAtom } from "./auth";
+import { Mixpanel } from "@/services/mixpanel";
 
 export const userInfoAtom = atom<UserInfo | null>(null);
 
 export const loadableUserInfoAtom = atomWithQuery<UserInfo>((get) => ({
   queryKey: ["userInfo"],
   queryFn: async () => {
-    return api.userControllerGetUserInfo().then((res) => res.data);
+    const response = await api.userControllerGetUserInfo();
+    const data = response.data;
+
+    if (data) {
+      Mixpanel.getInstance().setUserProfile({
+        email: data.email,
+        name: data.name,
+        description: data.description,
+        pfpUrl: data.pfpUrl,
+        balance: data.wallets.reduce(
+          (acc, wallet) => acc + wallet.balanceUsd,
+          0
+        ),
+        wallets: data.wallets.map((wallet) => ({
+          address: wallet.id,
+        })),
+        subscribed: data.subscribed,
+        verified: data.verified,
+        hasRoyaltyAccess: data.hasRoyaltyAccess,
+      });
+    }
+
+    return data;
   },
   ...defaultQueryOptions,
   enabled: Boolean(get(isAuthenticatedAtom)),

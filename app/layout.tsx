@@ -1,6 +1,5 @@
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { TextReplacer } from "@/components/composables/text-replacer";
 
 import { Inter, Shippori_Mincho_B1, Fragment_Mono } from "next/font/google";
 import localFont from "next/font/local";
@@ -21,6 +20,7 @@ import { DataProvider } from "./_containers/providers/data-provider";
 import { headers } from "next/headers";
 import { WalletEditor } from "./_components/user/wallet-editor";
 import { EmailEditor } from "./_components/user/email-editor";
+import { MixpanelWrapper } from "../services/mixpanel/mixpanel-wrapper";
 
 /**
  * Inter Font
@@ -95,42 +95,44 @@ export default function RootLayout({
   return (
     <RoycoClientProvider>
       <TooltipProvider delayDuration={0}>
-        <html lang="en-US">
-          <body
-            suppressHydrationWarning
-            className={cn(
-              ...fontsVariables,
-              "hide-scrollbar overflow-x-hidden scroll-smooth font-gt"
-            )}
-          >
-            <WalletProvider cookies={cookie}>
-              <DataProvider />
+        <MixpanelWrapper>
+          <html lang="en-US">
+            <body
+              suppressHydrationWarning
+              className={cn(
+                ...fontsVariables,
+                "hide-scrollbar overflow-x-hidden scroll-smooth font-gt"
+              )}
+            >
+              <WalletProvider cookies={cookie}>
+                <DataProvider />
 
-              <EmailEditor />
-              <WalletEditor />
+                <EmailEditor />
+                <WalletEditor />
 
-              <GeoDetector />
+                <GeoDetector />
 
-              <ToasterSonner richColors={true} position="top-center" />
+                <ToasterSonner richColors={true} position="top-center" />
 
-              <div className="flex min-h-screen flex-col">
-                <NavigationWrapper />
+                <div className="flex min-h-screen flex-col">
+                  <NavigationWrapper />
 
-                <div className="grow">{children}</div>
+                  <div className="grow">{children}</div>
 
-                <FooterWrapper />
-              </div>
-            </WalletProvider>
+                  <FooterWrapper />
+                </div>
+              </WalletProvider>
 
-            <BrowserDetector />
+              <BrowserDetector />
 
-            <Toaster />
+              <Toaster />
 
-            {process.env.NODE_ENV !== "development" && <Analytics />}
+              {process.env.NODE_ENV !== "development" && <Analytics />}
 
-            {/* <TextReplacer /> */}
-          </body>
-        </html>
+              {/* <TextReplacer /> */}
+            </body>
+          </html>
+        </MixpanelWrapper>
       </TooltipProvider>
     </RoycoClientProvider>
   );

@@ -18,6 +18,7 @@ import { useAtomValue } from "jotai";
 import { api } from "@/app/api/royco";
 import { linkWalletAtom } from "@/store/global";
 import { connectedWalletsAtom } from "@/store/global";
+import { useMixpanel } from "@/services/mixpanel";
 
 export const restrictedCountries = ["US", "CU", "IR", "KP", "RU", "SY", "IQ"];
 
@@ -35,6 +36,7 @@ export const ConnectWalletProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const { trackWalletConnected, identify, reset } = useMixpanel();
   const queryClient = useAtomValue(queryClientAtom);
   const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
 
@@ -42,7 +44,7 @@ export const ConnectWalletProvider = ({
     authenticationStatusAtom
   );
 
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chainId } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { disconnect } = useDisconnect();
@@ -148,6 +150,18 @@ export const ConnectWalletProvider = ({
   useEffect(() => {
     disconnectWalletIfSanctioned();
   }, [isConnected, address]);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      identify(address);
+      trackWalletConnected({
+        address: address,
+        chain_id: chainId,
+      });
+    } else {
+      reset();
+    }
+  }, [isConnected, address, chainId]);
 
   return (
     <ConnectWalletContext.Provider
