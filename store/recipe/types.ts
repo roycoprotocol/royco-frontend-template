@@ -61,7 +61,8 @@ export type RecipeActionInput = {
   type: string; // input type (e.g. address, int, bool, string, bytes, etc.)
   internalType: string; // internal type (e.g. address, uint256, bool, string, bytes, etc.)
   valueType: RecipeActionValueType; // value type
-  staticValue: string | string[] | RecipeActionInput[] | RecipeActionInput[][]; // if valueType is static, this will be the value
+  components?: RecipeActionInput[]; // if type is tuple, this will be the components
+  staticValue: string | RecipeActionInput[] | RecipeActionInput[][]; // if valueType is static, this will be the value
   dynamicValue: number; // if valueType is dynamic, this will be the index of some action
   status: RecipeActionStatus; // status codes like VALID, INVALID_INT, etc. -- tbd, on what all the status codes will be, so we can just use a string for now
   isArray: boolean;

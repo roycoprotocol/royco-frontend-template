@@ -87,11 +87,15 @@ export const recipeContractFunctionsAtom = atom<RecipeFunction[]>((get) => {
         inputs: item.inputs.map((input) => ({
           name: input.name || "",
           type: input.type,
+          internalType: input.internalType || "",
+          components: (input as any)?.components,
         })),
         outputs:
           item.outputs?.map((output) => ({
             name: output.name || "",
             type: output.type,
+            internalType: output.internalType || "",
+            components: (output as any)?.components,
           })) || [],
         stateMutability: item.stateMutability,
         type: item.type,

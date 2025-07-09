@@ -2,15 +2,9 @@
 
 import React from "react";
 import { Input } from "@/components/ui/input";
+import { isAlphanumeric } from "validator";
 
-// Custom integer validation function that allows negative values and partial input
-const isValidInt = (value: string): boolean => {
-  if (value === "") return true;
-  // Allow integers (positive and negative), including partial input like just "-"
-  return /^-?\d*$/.test(value);
-};
-
-export const InputInt = React.forwardRef<
+export const InputBytes = React.forwardRef<
   HTMLInputElement,
   React.HTMLAttributes<HTMLDivElement> & {
     value: string;
@@ -22,13 +16,15 @@ export const InputInt = React.forwardRef<
       {...props}
       ref={ref}
       newHeight="h-6"
-      placeholder="123"
+      placeholder="54776f20f09f90ad20616e64206120f09f909820706c6179656420e29abdefb88f2e"
       containerClassName="w-full rounded-none bg-_surface_ border-_divider_ text-xs bg-_surface_tertiary px-0 border-none w-96"
       className="px-2"
       value={value}
       onChange={(e) => {
-        if (isValidInt(e.target.value)) {
-          onChange(e.target.value);
+        if (isAlphanumeric(e.target.value)) {
+          onChange(e.target.value.toLowerCase());
+        } else if (e.target.value === "") {
+          onChange("");
         }
       }}
     />

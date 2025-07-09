@@ -77,11 +77,7 @@ export const getRecipeFunctionInput = (
 ): RecipeActionInput => {
   const [baseType, isArray] = findBaseInputType(input.type);
 
-  let staticValue:
-    | string
-    | string[]
-    | RecipeActionInput[]
-    | RecipeActionInput[][] = "";
+  let staticValue: string | RecipeActionInput[] | RecipeActionInput[][] = "";
 
   if (isArray) {
     if (baseType === "tuple") {
@@ -91,7 +87,12 @@ export const getRecipeFunctionInput = (
         }),
       ];
     } else {
-      staticValue = [""];
+      staticValue = [
+        getRecipeFunctionInput({
+          ...input,
+          type: baseType,
+        }),
+      ];
     }
   } else {
     if (baseType === "tuple") {

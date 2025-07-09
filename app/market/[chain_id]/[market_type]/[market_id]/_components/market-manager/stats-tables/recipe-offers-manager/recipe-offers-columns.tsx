@@ -192,13 +192,18 @@ export const recipeOffersColumns: ColumnDef<RecipeOffersColumnDataElement>[] = [
     header: "Expiration",
     meta: "",
     cell: ({ row }) => {
+      console.log("expiry", row.original.expiry);
+
       return (
         <div className={cn("")}>
           {row.original.expiry === "0"
             ? "Never"
-            : formatDistanceToNow(new Date(row.original.expiry), {
-                addSuffix: true,
-              })}
+            : formatDistanceToNow(
+                new Date(parseInt(row.original.expiry) * 1000),
+                {
+                  addSuffix: true,
+                }
+              )}
         </div>
       );
     },
