@@ -21,6 +21,8 @@ import {
   ContractResponse,
   CreateMarketBody,
   CreateMarketResponse,
+  DecodeActionsRequestDto,
+  DecodedRecipeResponseDto,
   EditUserBody,
   EditUserResponse,
   EnrichedMarketMerged,
@@ -45,6 +47,10 @@ import {
   LoginResponse,
   LogoutBody,
   LogoutResponse,
+  MerkleClaimInfoRequest,
+  MerkleClaimInfoResponse,
+  MerkleMetadataRequest,
+  MerkleMetadataResponse,
   NonceResponse,
   PointDirectoryRequestBody,
   PointDirectoryResponse,
@@ -1219,6 +1225,28 @@ export class Api<
       ...params,
     });
   /**
+   * @description Decode hex commands into readable contract actions with function signatures and contract names
+   *
+   * @tags Decoder
+   * @name DecoderControllerDecodeActions
+   * @summary Decode Weiroll script actions
+   * @request POST:/api/v1/decoder/decode
+   * @secure
+   */
+  decoderControllerDecodeActions = (
+    data: DecodeActionsRequestDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<DecodedRecipeResponseDto, any>({
+      path: `/api/v1/decoder/decode`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
    * @description Get user safe info by account address
    *
    * @tags Safe
@@ -1234,6 +1262,50 @@ export class Api<
   ) =>
     this.request<EnrichedUserSafeInfo, any>({
       path: `/api/v1/safe/info/${accountAddress}`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get merkle metadata for a given batch ID.
+   *
+   * @tags Merkle
+   * @name MerkleControllerGetMerkleMetadata
+   * @summary Get merkle metadata
+   * @request POST:/api/v1/merkle/metadata
+   * @secure
+   */
+  merkleControllerGetMerkleMetadata = (
+    data?: MerkleMetadataRequest,
+    params: RequestParams = {},
+  ) =>
+    this.request<MerkleMetadataResponse, any>({
+      path: `/api/v1/merkle/metadata`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Get merkle claim info for a given batch ID and account address.
+   *
+   * @tags Merkle
+   * @name MerkleControllerGetMerkleClaimInfo
+   * @summary Get merkle claim info
+   * @request POST:/api/v1/merkle/claim
+   * @secure
+   */
+  merkleControllerGetMerkleClaimInfo = (
+    data?: MerkleClaimInfoRequest,
+    params: RequestParams = {},
+  ) =>
+    this.request<MerkleClaimInfoResponse, any>({
+      path: `/api/v1/merkle/claim`,
       method: "POST",
       body: data,
       secure: true,
