@@ -36,19 +36,19 @@ export const DepositsManager = React.forwardRef<
 
   const { data: enrichedVault } = useAtomValue(loadableEnrichedVaultAtom);
 
-  const accountAddress = useAtomValue(accountAddressAtom);
+  // const accountAddress = useAtomValue(accountAddressAtom);
 
-  const table = useReactTable({
-    data: data ? [data] : [],
-    columns: depositsColumns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 20,
-      },
-    },
-  });
+  // const table = useReactTable({
+  //   data: data ? [data] : [],
+  //   columns: depositsColumns,
+  //   getCoreRowModel: getCoreRowModel(),
+  //   getPaginationRowModel: getPaginationRowModel(),
+  //   initialState: {
+  //     pagination: {
+  //       pageSize: 20,
+  //     },
+  //   },
+  // });
 
   return (
     <div ref={ref} {...props} className={cn("", className)}>
@@ -88,7 +88,7 @@ export const DepositsManager = React.forwardRef<
         </SecondaryLabel> */}
       </div>
 
-      {!accountAddress ? (
+      {/* {!accountAddress ? (
         <div className="mt-7 w-full border border-_divider_ text-center">
           <AlertIndicator className="py-10">
             <span className="text-base">Wallet not connected</span>
@@ -110,7 +110,7 @@ export const DepositsManager = React.forwardRef<
 
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      )}
+      )} */}
     </div>
   );
 });
