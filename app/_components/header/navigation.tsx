@@ -263,7 +263,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
           </div>
         )}
 
-        {tag === "sonic" && (
+        {/* {tag === "sonic" && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
             <a
               href="https://paragraph.xyz/@royco/sonic-is-partnering-with-royco-to-help-distribute-200,000,000-dollars-to-boost-its-thriving-defi-ecosystem-1"
@@ -293,7 +293,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
               </div>
             </a>
           </div>
-        )}
+        )} */}
 
         {tag === "hyperliquid" && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
@@ -310,6 +310,34 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
                 </span>
               </span>
             </div>
+          </div>
+        )}
+
+        {(!tag || tag === "default" || tag === "sonic") && (
+          <div className="flex w-full justify-center bg-_primary_/80 py-2">
+            <Link href="/merkle/royco-gem-bonus-1">
+              <div className="text-center text-xs text-_surface_">
+                <span>
+                  <span className="font-semibold underline underline-offset-2">
+                    ROYCO GEM BONUS
+                  </span>
+                  <span className="ml-1">
+                    50% of Gems claimable NOW. 50% locked in Sonic's Vesting
+                    contract, and will be made claimable in early November.
+                  </span>
+                  <span className="ml-1">
+                    <img
+                      src="/images/navigation/sonic-token.png"
+                      alt="Sonic Logo"
+                      className="inline-block h-4 w-4"
+                    />
+                  </span>
+                  <span className="ml-1 font-semibold underline underline-offset-2">
+                    Claim Now.
+                  </span>
+                </span>
+              </div>
+            </Link>
           </div>
         )}
       </div>

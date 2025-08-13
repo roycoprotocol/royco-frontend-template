@@ -7,5 +7,5 @@ export const GLOBAL_LINKS = {
     "https://docs.google.com/document/d/1WhR0K9MNIoEP90WhV7XOcvM9h6nbj-7yDviwJYKuaCU/edit?usp=sharing",
   DOCS: "https://docs.royco.org/",
   TWITTER: "https://x.com/roycoprotocol",
-  TELEGRAM: "https://t.co/oUDKnVZUp3",
+  TELEGRAM: "https://t.me/roycogroup",
 };
