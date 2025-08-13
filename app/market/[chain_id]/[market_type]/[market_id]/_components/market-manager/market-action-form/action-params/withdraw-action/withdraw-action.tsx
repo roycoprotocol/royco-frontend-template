@@ -48,12 +48,12 @@ export const WithdrawAction = React.forwardRef<
           <div className="text-light text-secondary">
             Withdrawals have been disabled for this market. Get in touch with{" "}
             <a
-              href="https://t.me/SGOliveio"
+              href="https://t.me/SGYield"
               target="_blank"
               rel="noopener noreferrer"
               className="font-normal text-black underline underline-offset-2"
             >
-              @SGOliveio
+              @SGYield
             </a>{" "}
             on Telegram from YieldFi for next steps.
           </div>
