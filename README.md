@@ -38,7 +38,7 @@ npm run start
 
 ### Environment Variables
 
-Start by copying the example file and modify all the access urls and keys in order to build a fully functional front-end. The sample variables are present in `.env.SAMPLE` file in the root directory.
+Start by copying the example file and modify all the access urls and keys in order to build a fully functional front-end. The sample variables are present in `.env.SAMPLE` file in the root directory
 
 ### Resources
 
