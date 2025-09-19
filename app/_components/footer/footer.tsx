@@ -42,13 +42,6 @@ const Socials = [
     target: "_blank",
     icon: <TwitterIcon className="hover:fill-_primary_" />,
   },
-  {
-    id: "telegram",
-    link: GLOBAL_LINKS.TELEGRAM,
-    label: "Telegram",
-    target: "_blank",
-    icon: <TelegramIcon className="hover:fill-_primary_" />,
-  },
 ];
 
 interface FooterProps extends React.HTMLAttributes<HTMLDivElement> {}
