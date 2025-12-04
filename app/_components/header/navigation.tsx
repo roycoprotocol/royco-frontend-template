@@ -315,29 +315,38 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
 
         {(!tag || tag === "default" || tag === "sonic") && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
-            <Link href="/merkle/royco-gem-bonus-1">
-              <div className="text-center text-xs text-_surface_">
-                <span>
-                  <span className="font-semibold underline underline-offset-2">
-                    ROYCO GEM BONUS
-                  </span>
-                  <span className="ml-1">
-                    50% of Gems claimable NOW. 50% locked in Sonic's Vesting
-                    contract, and will be made claimable in early November.
-                  </span>
-                  <span className="ml-1">
-                    <img
-                      src="/images/navigation/sonic-token.png"
-                      alt="Sonic Logo"
-                      className="inline-block h-4 w-4"
-                    />
-                  </span>
+            <div className="text-center text-xs text-_surface_">
+              <span>
+                <span className="font-semibold underline underline-offset-2">
+                  ROYCO GEM BONUS
+                </span>
+                <span className="ml-1">
+                  Sonic Labs has made the remaining 50% of Gems available to
+                  claim.
+                </span>
+                <span className="ml-1">
+                  <img
+                    src="/images/navigation/sonic-token.png"
+                    alt="Sonic Logo"
+                    className="inline-block h-4 w-4"
+                  />
+                </span>
+                <Link href="/merkle/royco-gem-bonus-2">
                   <span className="ml-1 font-semibold underline underline-offset-2">
                     Claim Now.
                   </span>
+                </Link>
+                <span className="ml-1">
+                  If you haven't claimed first 50% of Gems, they are available
+                  from here,
                 </span>
-              </div>
-            </Link>
+                <Link href="/merkle/royco-gem-bonus-1">
+                  <span className="ml-1 font-semibold underline underline-offset-2">
+                    Claim Now.
+                  </span>
+                </Link>
+              </span>
+            </div>
           </div>
         )}
       </div>
