@@ -115,7 +115,7 @@
     "lucide-react": "^0.378.0",
     "mixpanel-browser": "^2.65.0",
     "motion": "^12.19.1",
-    "next": "^14.2.3",
+    "next": "^14.2.33",
     "next-intl": "^4.1.0",
     "next-themes": "^0.3.0",
     "node-telegram-bot-api": "^0.66.0",

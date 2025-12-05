@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,7 +22,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "target": "ES2017"
   },
@@ -30,7 +36,11 @@
     "scripts/data/generate-markets.mts",
     "app/create/_components/market-form",
     "components/composables/simulation-box",
-    "app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/supply-action/components/funding-source-selector"
+    "app/market/[chain_id]/[market_type]/[market_id]/_components/market-manager/market-action-form/action-params/supply-action/components/funding-source-selector",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "bin"]
+  "exclude": [
+    "node_modules",
+    "bin"
+  ]
 }
