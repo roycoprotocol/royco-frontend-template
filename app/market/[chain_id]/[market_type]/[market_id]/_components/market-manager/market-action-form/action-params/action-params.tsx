@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
@@ -10,6 +10,7 @@ import { HorizontalTabs } from "@/components/composables";
 import { SupplyAction } from "./supply-action";
 import { WithdrawAction } from "./withdraw-action";
 import { useMixpanel } from "@/services/mixpanel";
+import { TriangleAlert } from "lucide-react";
 
 export const ActionParams = React.forwardRef<
   HTMLDivElement,
@@ -61,7 +62,22 @@ export const ActionParams = React.forwardRef<
        * Withdraw Action
        */}
       {actionType === MarketActionType.withdraw.id && (
-        <WithdrawAction marketActionForm={marketActionForm} />
+        <Fragment>
+          <div className="flex w-full flex-col gap-1 rounded-xl border border-divider bg-z2 p-3 text-xs text-black transition-all duration-200 ease-in-out hover:bg-focus">
+            <div className="flex flex-row items-center gap-2">
+              <TriangleAlert className="h-4 w-4 text-blue-500" />
+              <div className="font-bold text-blue-500">INFO</div>
+            </div>
+
+            <div className="text-light text-secondary">
+              Please check on Etherscan to confirm that you received your funds.
+              Already withdrawn positions may still show on the Royco site.
+              Reach out on Telegram with any questions.
+            </div>
+          </div>
+
+          <WithdrawAction marketActionForm={marketActionForm} />
+        </Fragment>
       )}
     </div>
   );
