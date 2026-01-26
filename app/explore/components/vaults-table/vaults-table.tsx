@@ -15,6 +15,8 @@ import formatNumber from "@/utils/numbers";
 import { BtcCoinIcon } from "@/assets/icons/btc";
 import { EthCoinIcon } from "@/assets/icons/eth";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { ErrorAlert } from "@/components/composables";
 
 interface VaultsCardProps {
   data: EnrichedVault;
@@ -91,16 +93,24 @@ const VaultsCard = ({
             Deposit
           </Button>
         ) : (
-          <Link href={`/vault/boring/${data.chainId}/${data.vaultAddress}`}>
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toast.custom(<ErrorAlert message="New deposits have been disabled." />);
+            }}
+            className="cursor-pointer"
+          >
             <Button
               variant="outline"
               size="sm"
               className="h-9 rounded-sm border-_divider_ px-4 text-center font-medium sm:h-10"
               style={{ color: depositToken.color }}
+              disabled={true}
             >
               Deposit
             </Button>
-          </Link>
+          </div>
         )}
       </div>
     </div>

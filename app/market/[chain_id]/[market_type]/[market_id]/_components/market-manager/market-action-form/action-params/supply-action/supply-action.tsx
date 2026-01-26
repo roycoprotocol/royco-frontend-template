@@ -178,62 +178,95 @@ export const SupplyAction = React.forwardRef<
               }
 
               return (
-                <Button
-                  onClick={() => {
-                    try {
-                      if (propsAction.isSuccess) {
-                        setMarketStep(MarketSteps.preview.id);
-                      } else if (propsAction.isError) {
-                        const error = propsAction.error as any;
-
-                        toast.custom(
-                          <ErrorAlert
-                            message={
-                              error.response.data.error.message ||
-                              "Error submitting offer"
-                            }
-                          />
-                        );
-                      } else {
-                        throw new Error("Unknown error");
-                      }
-                    } catch (error) {
-                      toast.custom(
-                        <ErrorAlert message="Error submitting offer" />
-                      );
-                    }
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toast.custom(<ErrorAlert message="New deposits have been disabled." />);
                   }}
-                  size="sm"
-                  className="w-full"
+                  className="cursor-pointer"
                 >
-                  {offerType === MarketOfferType.market.id ? (
-                    userType === MarketUserType.ap.id &&
-                    highestIncentiveToken &&
-                    marketActionForm.watch("quantity.amount") ? (
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    disabled={true}
+                  >
+                    {offerType === MarketOfferType.market.id ? (
+                      userType === MarketUserType.ap.id &&
+                      highestIncentiveToken &&
+                      marketActionForm.watch("quantity.amount") ? (
+                        <>
+                          {highestIncentiveToken && (
+                            <div className="ml-1 flex items-center gap-1">
+                              <span>Supply</span>
+
+                              <span>for</span>
+
+                              <span>
+                                {highestIncentiveToken.yieldRate === 0 &&
+                                highestIncentiveToken.type === "point"
+                                  ? formatNumber(
+                                      parseFloat(
+                                        marketActionForm.watch(
+                                          "quantity.amount"
+                                        ) || "0"
+                                      ) *
+                                        (isNaN(
+                                          highestIncentiveToken.perInputToken
+                                        )
+                                          ? 0
+                                          : highestIncentiveToken.perInputToken)
+                                    )
+                                  : formatNumber(
+                                      highestIncentiveToken.yieldRate || 0,
+                                      {
+                                        type: "percent",
+                                      }
+                                    )}
+                              </span>
+
+                              <span className="font-regular text-white">
+                                {highestIncentiveToken?.symbol}
+                              </span>
+
+                              <span className="mb-px">
+                                <TokenDisplayer
+                                  size={4}
+                                  tokens={[highestIncentiveToken] as any}
+                                  symbols={false}
+                                  symbolClassName="text-white font-regular"
+                                />
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span>Supply Now</span>
+                      )
+                    ) : userType === MarketUserType.ap.id &&
+                      selectedIncentiveToken &&
+                      marketActionForm.watch("quantity.amount") ? (
                       <>
-                        {highestIncentiveToken && (
+                        {selectedIncentiveToken && (
                           <div className="ml-1 flex items-center gap-1">
-                            <span>Supply</span>
+                            <span>Bid</span>
 
                             <span>for</span>
 
                             <span>
-                              {highestIncentiveToken.yieldRate === 0 &&
-                              highestIncentiveToken.type === "point"
+                              {selectedIncentiveToken.yieldRate === 0 &&
+                              selectedIncentiveToken.type === "point"
                                 ? formatNumber(
                                     parseFloat(
-                                      marketActionForm.watch(
-                                        "quantity.amount"
-                                      ) || "0"
+                                      marketActionForm.watch("quantity.amount") ||
+                                        "0"
                                     ) *
-                                      (isNaN(
-                                        highestIncentiveToken.perInputToken
-                                      )
+                                      (isNaN(selectedIncentiveToken.perInputToken)
                                         ? 0
-                                        : highestIncentiveToken.perInputToken)
+                                        : selectedIncentiveToken.perInputToken)
                                   )
                                 : formatNumber(
-                                    highestIncentiveToken.yieldRate || 0,
+                                    selectedIncentiveToken.yieldRate || 0,
                                     {
                                       type: "percent",
                                     }
@@ -241,13 +274,13 @@ export const SupplyAction = React.forwardRef<
                             </span>
 
                             <span className="font-regular text-white">
-                              {highestIncentiveToken?.symbol}
+                              {selectedIncentiveToken.symbol}
                             </span>
 
                             <span className="mb-px">
                               <TokenDisplayer
                                 size={4}
-                                tokens={[highestIncentiveToken] as any}
+                                tokens={[selectedIncentiveToken]}
                                 symbols={false}
                                 symbolClassName="text-white font-regular"
                               />
@@ -257,56 +290,9 @@ export const SupplyAction = React.forwardRef<
                       </>
                     ) : (
                       <span>Supply Now</span>
-                    )
-                  ) : userType === MarketUserType.ap.id &&
-                    selectedIncentiveToken &&
-                    marketActionForm.watch("quantity.amount") ? (
-                    <>
-                      {selectedIncentiveToken && (
-                        <div className="ml-1 flex items-center gap-1">
-                          <span>Bid</span>
-
-                          <span>for</span>
-
-                          <span>
-                            {selectedIncentiveToken.yieldRate === 0 &&
-                            selectedIncentiveToken.type === "point"
-                              ? formatNumber(
-                                  parseFloat(
-                                    marketActionForm.watch("quantity.amount") ||
-                                      "0"
-                                  ) *
-                                    (isNaN(selectedIncentiveToken.perInputToken)
-                                      ? 0
-                                      : selectedIncentiveToken.perInputToken)
-                                )
-                              : formatNumber(
-                                  selectedIncentiveToken.yieldRate || 0,
-                                  {
-                                    type: "percent",
-                                  }
-                                )}
-                          </span>
-
-                          <span className="font-regular text-white">
-                            {selectedIncentiveToken.symbol}
-                          </span>
-
-                          <span className="mb-px">
-                            <TokenDisplayer
-                              size={4}
-                              tokens={[selectedIncentiveToken]}
-                              symbols={false}
-                              symbolClassName="text-white font-regular"
-                            />
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <span>Supply Now</span>
-                  )}
-                </Button>
+                    )}
+                  </Button>
+                </div>
               );
             })()}
 
