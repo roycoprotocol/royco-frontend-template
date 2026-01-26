@@ -10,6 +10,8 @@ import {
   SecondaryLabel,
   TertiaryLabel,
 } from "@/app/_components/common/custom-labels";
+import toast from "react-hot-toast";
+import { ErrorAlert } from "@/components/composables";
 
 interface ActionFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -41,15 +43,21 @@ export const ActionForm = React.forwardRef<HTMLDivElement, ActionFormProps>(
             are eligible for rewards.
           </SecondaryLabel>
 
-          <a
-            target="_blank"
-            href={data.campaignMetadata?.depositLink}
-            className="w-full"
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toast.custom(<ErrorAlert message="New deposits have been disabled." />);
+            }}
+            className="w-full cursor-pointer"
           >
-            <Button className="mt-4 h-10 w-full rounded-sm bg-_highlight_">
+            <Button
+              className="mt-4 h-10 w-full rounded-sm bg-_highlight_"
+              disabled={true}
+            >
               Deposit via Morpho
             </Button>
-          </a>
+          </div>
         </div>
       </div>
     );

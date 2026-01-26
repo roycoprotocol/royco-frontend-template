@@ -137,20 +137,22 @@ export const DepositAction = React.forwardRef<
           }
 
           return (
-            <Button
-              onClick={() => {
-                try {
-                  handleDeposit();
-                } catch (error) {
-                  toast.custom(<ErrorAlert message="Error submitting offer" />);
-                }
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toast.custom(<ErrorAlert message="New deposits have been disabled." />);
               }}
-              size="sm"
-              className="h-10 w-full rounded-sm bg-_highlight_"
-              disabled={data.capacity.ratio >= 1}
+              className="cursor-pointer"
             >
-              Deposit
-            </Button>
+              <Button
+                size="sm"
+                className="h-10 w-full rounded-sm bg-_highlight_"
+                disabled={true}
+              >
+                Deposit
+              </Button>
+            </div>
           );
         })()}
       </div>
