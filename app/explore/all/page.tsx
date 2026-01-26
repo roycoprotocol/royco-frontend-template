@@ -8,6 +8,10 @@ import { VaultsTable } from "../components/vaults-table/vaults-table";
 import { HeroSection } from "../components/hero-section/hero-section";
 import { VaultsFilter } from "../components/vaults-filter/vaults-filter";
 import { ExploreWrapper } from "../provider/explore-wrapper";
+import { cn } from "@/lib/utils";
+import { MAX_SCREEN_WIDTH } from "@/components/constants/constants";
+import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
+import { AlertIndicator } from "@/components/common/alert-indicator";
 
 const Page = () => {
   return (
@@ -34,7 +38,18 @@ const Page = () => {
             <HeroSection />
           </div>
 
-          <ExploreWrapper>
+          <SlideUpWrapper className="relative z-10 mt-8 flex w-full flex-col place-content-center items-center">
+        <AlertIndicator
+          className={cn(
+            "h-96 w-full rounded-2xl border border-divider bg-white",
+            MAX_SCREEN_WIDTH
+          )}
+        >
+          Coming soon.
+        </AlertIndicator>
+      </SlideUpWrapper>
+
+          {/* <ExploreWrapper> */}
             {/* <div className="mt-6">
               <div>
                 <VaultsFilter />
@@ -45,15 +60,15 @@ const Page = () => {
               </div>
             </div> */}
 
-            <div className="mt-16">
+            {/* <div className="mt-16">
               <div>
                 <MarketFilter />
               </div>
               <div className="mt-6">
                 <MarketTable />
               </div>
-            </div>
-          </ExploreWrapper>
+            </div> */}
+          {/* </ExploreWrapper> */}
         </MaxWidthProvider>
       </div>
     </ProtectorProvider>
