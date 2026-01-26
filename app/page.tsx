@@ -9,6 +9,10 @@ import { MarketTable } from "./explore/components/market-table/market-table";
 import { SubscribeModal } from "./explore/_components/subscribe/subscribe-modal";
 import { ExploreWrapper } from "./explore/provider/explore-wrapper";
 import { VaultsFilter } from "./explore/components/vaults-filter/vaults-filter";
+import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
+import { MAX_SCREEN_WIDTH } from "@/components/constants/constants";
+import { cn } from "@/lib/utils";
+import { AlertIndicator } from "@/components/common/alert-indicator";
 
 const Page = () => {
   return (
@@ -35,7 +39,21 @@ const Page = () => {
             <HeroSection />
           </div>
 
-          <ExploreWrapper>
+          {/**
+           * Coming Soon Banner
+           */}
+      <SlideUpWrapper className="relative z-10 mt-8 flex w-full flex-col place-content-center items-center">
+        <AlertIndicator
+          className={cn(
+            "h-96 w-full rounded-2xl border border-divider bg-white",
+            MAX_SCREEN_WIDTH
+          )}
+        >
+          Coming soon.
+        </AlertIndicator>
+      </SlideUpWrapper>
+
+          {/* <ExploreWrapper> */}
             {/* <div className="mt-6">
               <div>
                 <VaultsFilter />
@@ -45,15 +63,15 @@ const Page = () => {
               </div>
             </div> */}
 
-            <div className="mt-16">
+            {/* <div className="mt-16">
               <div>
                 <MarketFilter />
               </div>
               <div className="mt-6">
                 <MarketTable />
               </div>
-            </div>
-          </ExploreWrapper>
+            </div> */}
+          {/* </ExploreWrapper> */}
         </MaxWidthProvider>
 
         {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
