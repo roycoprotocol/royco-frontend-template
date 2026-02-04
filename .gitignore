@@ -43,4 +43,4 @@ next-env.d.ts
 .vscode
 
 # temporary files
-/temp
+/temp*.nexus.backup
