@@ -15,7 +15,9 @@ import { cn } from "@/lib/utils";
 import { AlertIndicator } from "@/components/common/alert-indicator";
 
 const Page = () => {
-  const showComingSoon = process.env.NEXT_PUBLIC_FRONTEND_TAG !== "plume";
+  const showComingSoon =
+    process.env.NEXT_PUBLIC_FRONTEND_TAG !== "plume" &&
+    process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco";
 
   return (
     <ProtectorProvider>
@@ -78,7 +80,7 @@ const Page = () => {
           )}
         </MaxWidthProvider>
 
-        {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />}
+        {/* {process.env.NEXT_PUBLIC_FRONTEND_TAG === "boyco" && <SubscribeModal />} */}
       </div>
     </ProtectorProvider>
   );

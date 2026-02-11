@@ -14,7 +14,9 @@ import { SlideUpWrapper } from "@/components/animations/slide-up-wrapper";
 import { AlertIndicator } from "@/components/common/alert-indicator";
 
 const Page = () => {
-  const showComingSoon = process.env.NEXT_PUBLIC_FRONTEND_TAG !== "plume";
+  const showComingSoon =
+    process.env.NEXT_PUBLIC_FRONTEND_TAG !== "plume" &&
+    process.env.NEXT_PUBLIC_FRONTEND_TAG !== "boyco";
 
   return (
     <ProtectorProvider>

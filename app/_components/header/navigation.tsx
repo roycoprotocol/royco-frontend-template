@@ -217,7 +217,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
             </div>
           )}
 
-        {tag === "boyco" && (
+        {/* {tag === "boyco" && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
             <a
               href="https://boyco.berachain.com/"
@@ -234,7 +234,7 @@ export const Navigation = React.forwardRef<HTMLDivElement, NavigationProps>(
               </div>
             </a>
           </div>
-        )}
+        )} */}
 
         {tag === "plume" && (
           <div className="flex w-full justify-center bg-_primary_/80 py-2">
