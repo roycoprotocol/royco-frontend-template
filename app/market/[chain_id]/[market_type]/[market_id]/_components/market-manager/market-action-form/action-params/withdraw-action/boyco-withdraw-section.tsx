@@ -59,36 +59,36 @@ export const BoycoWithdrawSection = React.forwardRef<
 
   const isLoading = propsBoycoPosition.isLoading;
 
-  if (enrichedMarket?.lockupTime !== "2592000") {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "flex h-fit flex-1 grow flex-col items-center gap-2",
-          className
-        )}
-        {...props}
-      >
-        <BoycoWithdrawSectionRowContainer className="flex flex-col">
-          <div>Withdrawal is available from boyco.berachain.com</div>
-          <Button
-            size="sm"
-            className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
-            onClick={() => {
-              const redirect_link = `https://boyco.berachain.com/`;
+  // if (enrichedMarket?.lockupTime !== "2592000") {
+  //   return (
+  //     <div
+  //       ref={ref}
+  //       className={cn(
+  //         "flex h-fit flex-1 grow flex-col items-center gap-2",
+  //         className
+  //       )}
+  //       {...props}
+  //     >
+  //       <BoycoWithdrawSectionRowContainer className="flex flex-col">
+  //         <div>Withdrawal is available from boyco.berachain.com</div>
+  //         <Button
+  //           size="sm"
+  //           className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
+  //           onClick={() => {
+  //             const redirect_link = `https://boyco.berachain.com/`;
 
-              window.open(redirect_link, "_blank", "noopener,noreferrer");
-            }}
-          >
-            <div className="flex flex-row items-center gap-2">
-              Go to boyco.berachain.com
-              <ExternalLinkIcon className="h-4 w-4" />
-            </div>
-          </Button>
-        </BoycoWithdrawSectionRowContainer>
-      </div>
-    );
-  }
+  //             window.open(redirect_link, "_blank", "noopener,noreferrer");
+  //           }}
+  //         >
+  //           <div className="flex flex-row items-center gap-2">
+  //             Go to boyco.berachain.com
+  //             <ExternalLinkIcon className="h-4 w-4" />
+  //           </div>
+  //         </Button>
+  //       </BoycoWithdrawSectionRowContainer>
+  //     </div>
+  //   );
+  // }
 
   if (isLoading) {
     return (
@@ -122,36 +122,36 @@ export const BoycoWithdrawSection = React.forwardRef<
     );
   }
 
-  if (enrichedMarket?.lockupTime !== "2592000") {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "flex h-fit flex-1 grow flex-col items-center gap-2",
-          className
-        )}
-        {...props}
-      >
-        <BoycoWithdrawSectionRowContainer className="flex flex-col">
-          <div>Withdrawal is available from boyco.berachain.com</div>
-          <Button
-            size="sm"
-            className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
-            onClick={() => {
-              const redirect_link = `https://boyco.berachain.com/`;
+  // if (enrichedMarket?.lockupTime !== "2592000") {
+  //   return (
+  //     <div
+  //       ref={ref}
+  //       className={cn(
+  //         "flex h-fit flex-1 grow flex-col items-center gap-2",
+  //         className
+  //       )}
+  //       {...props}
+  //     >
+  //       <BoycoWithdrawSectionRowContainer className="flex flex-col">
+  //         <div>Withdrawal is available from boyco.berachain.com</div>
+  //         <Button
+  //           size="sm"
+  //           className="h-fit w-full rounded-lg px-4 py-2 text-sm font-normal"
+  //           onClick={() => {
+  //             const redirect_link = `https://boyco.berachain.com/`;
 
-              window.open(redirect_link, "_blank", "noopener,noreferrer");
-            }}
-          >
-            <div className="flex flex-row items-center gap-2">
-              Go to boyco.berachain.com
-              <ExternalLinkIcon className="h-4 w-4" />
-            </div>
-          </Button>
-        </BoycoWithdrawSectionRowContainer>
-      </div>
-    );
-  }
+  //             window.open(redirect_link, "_blank", "noopener,noreferrer");
+  //           }}
+  //         >
+  //           <div className="flex flex-row items-center gap-2">
+  //             Go to boyco.berachain.com
+  //             <ExternalLinkIcon className="h-4 w-4" />
+  //           </div>
+  //         </Button>
+  //       </BoycoWithdrawSectionRowContainer>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div
@@ -214,7 +214,7 @@ export const BoycoWithdrawSection = React.forwardRef<
         );
       })}
 
-      <div className="flex w-full flex-row items-center justify-center gap-2 rounded-xl border border-divider bg-z2 p-3 transition-all duration-200 ease-in-out hover:bg-focus">
+      {/* <div className="flex w-full flex-row items-center justify-center gap-2 rounded-xl border border-divider bg-z2 p-3 transition-all duration-200 ease-in-out hover:bg-focus">
         <InfoIcon
           strokeWidth={1.5}
           className="h-5 w-5 shrink-0 fill-tertiary stroke-z2"
@@ -237,9 +237,9 @@ export const BoycoWithdrawSection = React.forwardRef<
             </>
           )}
         </div>
-      </div>
+      </div> */}
 
-      <div className="my-2 h-px w-full rounded-full bg-divider" />
+      {/* <div className="my-2 h-px w-full rounded-full bg-divider" />
 
       <div className="text-sm font-normal text-secondary">
         Underlying Incentives
@@ -261,9 +261,9 @@ export const BoycoWithdrawSection = React.forwardRef<
         >
           Claim
         </Button>
-      </BoycoWithdrawSectionRowContainer>
+      </BoycoWithdrawSectionRowContainer> */}
 
-      <div className="my-2 h-px w-full rounded-full bg-divider" />
+      {/* <div className="my-2 h-px w-full rounded-full bg-divider" />
 
       <div className="text-sm font-normal text-secondary">
         Native Incentives
@@ -286,7 +286,7 @@ export const BoycoWithdrawSection = React.forwardRef<
         >
           View
         </Button>
-      </BoycoWithdrawSectionRowContainer>
+      </BoycoWithdrawSectionRowContainer> */}
     </div>
   );
 });
