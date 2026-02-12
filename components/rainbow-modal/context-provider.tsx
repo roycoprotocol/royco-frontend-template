@@ -55,41 +55,41 @@ export default function WalletProvider({
       config={config}
       initialState={initialState}
     >
-      <AuthWrapper>
-        <RainbowKitProvider
-          theme={roycoLightTheme}
-          locale="en-US"
-          appInfo={{
-            appName: "Royco",
-            disclaimer: ({ Text, Link }) => (
-              <div className="text-sm text-secondary">
-                By connecting your wallet, you agree to our{" "}
-                <a
-                  className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
-                  href={GLOBAL_LINKS.TERMS_OF_SERVICE}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  terms of service
-                </a>{" "}
-                and{" "}
-                <a
-                  className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
-                  href={GLOBAL_LINKS.PRIVACY_POLICY}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  privacy policy
-                </a>
-                .
-              </div>
-            ),
-            learnMoreUrl: "https://royco.org",
-          }}
-        >
-          <ConnectWalletProvider>{children}</ConnectWalletProvider>
-        </RainbowKitProvider>
-      </AuthWrapper>
+      {/* <AuthWrapper> */}
+      <RainbowKitProvider
+        theme={roycoLightTheme}
+        locale="en-US"
+        appInfo={{
+          appName: "Royco",
+          disclaimer: ({ Text, Link }) => (
+            <div className="text-sm text-secondary">
+              By connecting your wallet, you agree to our{" "}
+              <a
+                className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
+                href={GLOBAL_LINKS.TERMS_OF_SERVICE}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                terms of service
+              </a>{" "}
+              and{" "}
+              <a
+                className="underline underline-offset-2 transition-all duration-200 ease-in-out hover:opacity-70"
+                href={GLOBAL_LINKS.PRIVACY_POLICY}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                privacy policy
+              </a>
+              .
+            </div>
+          ),
+          learnMoreUrl: "https://royco.org",
+        }}
+      >
+        <ConnectWalletProvider>{children}</ConnectWalletProvider>
+      </RainbowKitProvider>
+      {/* </AuthWrapper> */}
     </WagmiProvider>
   );
 }
