@@ -22,7 +22,8 @@ export const PortfolioWrapper = React.forwardRef<
 >(({ children, className, ...props }, ref) => {
   const { isConnected } = useAccount();
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
-  const isAuthEnabled = useAtomValue(isAuthEnabledAtom);
+  // const isAuthEnabled = useAtomValue(isAuthEnabledAtom);
+  const isAuthEnabled = false;
   const [linkWallet, setLinkWallet] = useAtom(linkWalletAtom);
   const { data, isLoading, isError } = useAtomValue(
     loadablePortfolioPositionsAtom
@@ -39,26 +40,26 @@ export const PortfolioWrapper = React.forwardRef<
     );
   }
 
-  if (isAuthEnabled && !isAuthenticated) {
-    return (
-      <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
-        <AlertIndicator
-          className={cn(
-            "h-96 w-full rounded-2xl border border-divider bg-white"
-          )}
-        >
-          <div className="flex flex-col items-center gap-5">
-            <p>
-              {linkWallet
-                ? "Connect another wallet and it will be auto-linked to your royalty account"
-                : "Please connect and verify your wallet to view your portfolio"}
-            </p>
-            <ConnectWalletButton className="h-10 w-fit rounded-sm" />
-          </div>
-        </AlertIndicator>
-      </SlideUpWrapper>
-    );
-  }
+  // if (isAuthEnabled && !isAuthenticated) {
+  //   return (
+  //     <SlideUpWrapper className="flex w-full flex-col place-content-center items-center pt-16">
+  //       <AlertIndicator
+  //         className={cn(
+  //           "h-96 w-full rounded-2xl border border-divider bg-white"
+  //         )}
+  //       >
+  //         <div className="flex flex-col items-center gap-5">
+  //           <p>
+  //             {linkWallet
+  //               ? "Connect another wallet and it will be auto-linked to your royalty account"
+  //               : "Please connect and verify your wallet to view your portfolio"}
+  //           </p>
+  //           <ConnectWalletButton className="h-10 w-fit rounded-sm" />
+  //         </div>
+  //       </AlertIndicator>
+  //     </SlideUpWrapper>
+  //   );
+  // }
 
   if (isError || !data) {
     return (
@@ -70,9 +71,7 @@ export const PortfolioWrapper = React.forwardRef<
         >
           {!isConnected ? (
             <div className="flex flex-col items-center gap-5">
-              <p>
-                Please connect and verify your wallet to view your portfolio
-              </p>
+              <p>Please connect your wallet to view your portfolio</p>
               <ConnectWalletButton className="h-10 w-fit rounded-sm" />
             </div>
           ) : (
