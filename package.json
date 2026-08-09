@@ -156,7 +156,8 @@
     "viem": "^2.22.1",
     "wagmi": "^2.14.3",
     "zod": "^3.23.8",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "blockintel-gate-sdk": "^0.3.6"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.35.1",
